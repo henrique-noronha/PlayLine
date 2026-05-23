@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install *)",
+      "Bash(python -c \"import fastapi, uvicorn; print\\('FastAPI OK'\\); import mpv; print\\('python-mpv OK'\\)\")",
+      "Bash(where mpv *)",
+      "Bash(Get-ChildItem \"C:\\\\Program Files\\\\mpv\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object Name)",
+      "Bash(python main.py)",
+      "Bash(curl -s http://127.0.0.1:8000/api/schedule)",
+      "Bash(curl -s http://127.0.0.1:8000/api/state)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:8000/)",
+      "Read(//tmp/**)",
+      "Bash(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\backend\\\\core\")",
+      "Bash(Out-Null)",
+      "Bash(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\backend\\\\api\")",
+      "Bash(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\frontend\\\\core\")",
+      "Bash(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\frontend\\\\components\")",
+      "Bash(Write-Host \"Diretórios criados\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\backend\\\\core\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\backend\\\\api\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\frontend\\\\core\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\frontend\\\\components\")"
+    ]
+  }
+}
