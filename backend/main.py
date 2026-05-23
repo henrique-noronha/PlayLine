@@ -1,22 +1,20 @@
-"""
-Ponto de entrada do sistema de playout.
-FastAPI + WebSocket + servindo o frontend estático.
-"""
+"""Ponto de entrada do PlayLine — inicialização do FastAPI e wiring dos módulos."""
 
 import asyncio
 import json
 import logging
-import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from player import Player
-from playlist import PlaylistEngine
+from core.player import Player
+from core.playlist import PlaylistEngine
+from api.routes import router as http_router, setup as setup_routes
+from api.websocket import router as ws_router, setup as setup_ws
 
 logging.basicConfig(
     level=logging.INFO,
@@ -25,6 +23,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
+
 
 # ------------------------------------------------------------------ #
 # Gerenciador de conexões WebSocket                                   #
@@ -55,14 +54,14 @@ class ConnectionManager:
             self._clients.remove(c)
 
 
+# ------------------------------------------------------------------ #
+# Lifecycle                                                            #
+# ------------------------------------------------------------------ #
+
 manager = ConnectionManager()
 playlist_engine: PlaylistEngine | None = None
 player_instance: Player | None = None
 
-
-# ------------------------------------------------------------------ #
-# Lifecycle                                                            #
-# ------------------------------------------------------------------ #
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -78,6 +77,9 @@ async def lifespan(app: FastAPI):
     playlist_engine.set_event_loop(loop)
     playlist_engine.load_schedule()
 
+    setup_routes(playlist_engine, manager)
+    setup_ws(playlist_engine, manager)
+
     logger.info("Sistema de playout iniciado")
     yield
 
@@ -86,89 +88,20 @@ async def lifespan(app: FastAPI):
     logger.info("Sistema encerrado")
 
 
-app = FastAPI(title="Playout TV", lifespan=lifespan)
+# ------------------------------------------------------------------ #
+# App                                                                  #
+# ------------------------------------------------------------------ #
 
-# Servir frontend
+app = FastAPI(title="PlayLine", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+app.include_router(http_router)
+app.include_router(ws_router)
 
-
-# ------------------------------------------------------------------ #
-# Rotas HTTP                                                           #
-# ------------------------------------------------------------------ #
 
 @app.get("/")
 async def index():
     return FileResponse(str(FRONTEND_DIR / "index.html"))
 
-
-@app.get("/api/schedule")
-async def get_schedule():
-    return playlist_engine.get_schedule()
-
-
-@app.put("/api/schedule")
-async def update_schedule(items: list[dict]):
-    playlist_engine.save_schedule(items)
-    await manager.broadcast({"event": "schedule_updated", "items": items})
-    return {"ok": True}
-
-
-@app.get("/api/state")
-async def get_state():
-    return playlist_engine.state()
-
-
-# ------------------------------------------------------------------ #
-# WebSocket                                                            #
-# ------------------------------------------------------------------ #
-
-@app.websocket("/ws")
-async def websocket_endpoint(ws: WebSocket):
-    await manager.connect(ws)
-    try:
-        await ws.send_text(json.dumps(playlist_engine.state()))
-    except Exception as exc:
-        logger.error("Erro ao enviar estado inicial: %s", exc)
-    try:
-        while True:
-            raw = await ws.receive_text()
-            await handle_command(json.loads(raw))
-    except WebSocketDisconnect:
-        manager.disconnect(ws)
-    except Exception as exc:
-        logger.error("Erro no WS: %s", exc)
-        manager.disconnect(ws)
-
-
-async def handle_command(cmd: dict):
-    action = cmd.get("action")
-    logger.info("Comando recebido: %s", action)
-
-    if action == "play":
-        await playlist_engine.play()
-    elif action == "pause":
-        await playlist_engine.pause_toggle()
-    elif action == "stop":
-        await playlist_engine.stop()
-    elif action == "next":
-        await playlist_engine.next_item()
-    elif action == "prev":
-        await playlist_engine.prev_item()
-    elif action == "jump":
-        index = cmd.get("index", 0)
-        await playlist_engine.jump_to(index)
-    elif action == "state":
-        await manager.broadcast(playlist_engine.state())
-    elif action == "reload_schedule":
-        items = playlist_engine.load_schedule()
-        await manager.broadcast({"event": "schedule_updated", "items": items})
-    else:
-        logger.warning("Ação desconhecida: %s", action)
-
-
-# ------------------------------------------------------------------ #
-# Entrypoint                                                           #
-# ------------------------------------------------------------------ #
 
 if __name__ == "__main__":
     uvicorn.run(
