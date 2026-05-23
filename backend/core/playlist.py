@@ -10,7 +10,8 @@ from typing import Callable, Optional
 
 logger = logging.getLogger(__name__)
 
-SCHEDULE_PATH = Path(__file__).parent / "schedule.json"
+# schedule.json fica em backend/, um nível acima deste arquivo
+SCHEDULE_PATH = Path(__file__).parent.parent / "schedule.json"
 
 
 class PlaylistEngine:
@@ -24,6 +25,7 @@ class PlaylistEngine:
         self._items: list[dict] = []
         self._index: int = -1
         self._running: bool = False
+        self._paused: bool = False
         self._loop: Optional[asyncio.AbstractEventLoop] = None
 
     # ------------------------------------------------------------------ #
@@ -85,23 +87,22 @@ class PlaylistEngine:
             return
         self._index = index
         self._running = True
+        self._paused = False
         item = self._items[index]
-        self._player.play(item["path"])
         await self._broadcast(
             {"event": "now_playing", "index": index, "item": item}
         )
 
     async def pause_toggle(self):
-        if self._player.paused:
-            self._player.resume()
-            await self._broadcast({"event": "resumed"})
-        else:
-            self._player.pause()
+        self._paused = not self._paused
+        if self._paused:
             await self._broadcast({"event": "paused"})
+        else:
+            await self._broadcast({"event": "resumed"})
 
     async def stop(self):
         self._running = False
-        self._player.stop()
+        self._paused = False
         await self._broadcast({"event": "stopped"})
 
     async def next_item(self):
@@ -123,10 +124,8 @@ class PlaylistEngine:
         return {
             "event": "state",
             "running": self._running,
-            "paused": self._player.paused,
+            "paused": self._paused,
             "index": self._index,
             "current_item": item,
-            "position": self._player.position,
-            "duration": self._player.duration,
             "total_items": len(self._items),
         }
