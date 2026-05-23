@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Playout TV — Painel de Controle</title>
+  <title>PlayLine — Painel de Controle</title>
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <header>
-    <div class="logo">📺 Playout TV</div>
+    <div class="logo">📺 PlayLine</div>
     <div class="conn-status">
       <span class="dot" id="dot"></span>
       <span id="conn-label">Desconectado</span>
@@ -19,6 +19,7 @@
     <!-- ── NOW PLAYING ── -->
     <section class="card" id="now-playing-card">
       <h2>Reproduzindo agora</h2>
+      <video id="player-video" controls></video>
       <div class="now-playing-title" id="np-title">—</div>
       <div class="progress-wrap">
         <span id="pos">0:00</span>
@@ -30,29 +31,48 @@
       <div class="state-badge" id="state-badge">parado</div>
     </section>
 
-    <!-- ── CONTROLES ── -->
-    <section class="card controls-card">
-      <h2>Controles</h2>
-      <div class="controls">
-        <button id="btn-prev" title="Anterior">⏮</button>
-        <button id="btn-stop" title="Parar">⏹</button>
-        <button id="btn-play" title="Play / Pause">▶</button>
-        <button id="btn-next" title="Próximo">⏭</button>
-      </div>
-    </section>
+    <!-- ── COLUNA DIREITA (controles + roteiro) ── -->
+    <div class="right-col">
 
-    <!-- ── ROTEIRO ── -->
-    <section class="card schedule-card">
-      <div class="schedule-header">
-        <h2>Roteiro</h2>
-        <div class="schedule-actions">
-          <button id="btn-reload" title="Recarregar do disco">↺ Recarregar</button>
-          <button id="btn-save" title="Salvar alterações">💾 Salvar</button>
-          <button id="btn-add" title="Adicionar item">+ Item</button>
+      <!-- ── CONTROLES ── -->
+      <section class="card controls-card">
+        <h2>Controles</h2>
+        <div class="controls">
+          <button id="btn-prev" title="Anterior">⏮</button>
+          <button id="btn-stop" title="Parar">⏹</button>
+          <button id="btn-play" title="Play / Pause">▶</button>
+          <button id="btn-next" title="Próximo">⏭</button>
+        </div>
+      </section>
+
+      <!-- ── ROTEIRO ── -->
+      <section class="card schedule-card">
+        <div class="schedule-header">
+          <h2>Roteiro <span id="remaining-time"></span></h2>
+          <div class="schedule-actions">
+            <button id="btn-reload" title="Recarregar do disco">↺ Recarregar</button>
+            <button id="btn-save" title="Salvar alterações">💾 Salvar</button>
+            <button id="btn-add" title="Adicionar item">+ Item</button>
+          </div>
+        </div>
+        <div class="schedule-list" id="schedule-list">
+          <div class="empty">Carregando roteiro…</div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ── BIBLIOTECA ── -->
+    <section class="card library-card">
+      <div class="library-header">
+        <h2>Biblioteca</h2>
+        <div class="library-folder-row">
+          <input id="library-folder-input" type="text" placeholder="Ex: C:\Videos" />
+          <button id="btn-load-library" title="Carregar pasta">↺</button>
         </div>
       </div>
-      <div class="schedule-list" id="schedule-list">
-        <div class="empty">Carregando roteiro…</div>
+      <div class="library-list" id="library-list">
+        <div class="empty">Informe o caminho de uma pasta acima</div>
       </div>
     </section>
 
@@ -66,6 +86,12 @@
     </section>
   </main>
 
+  <!-- ordem de carregamento: utilitários → player → playlist → biblioteca → ws → app -->
+  <script src="/static/components/logs.js"></script>
+  <script src="/static/components/player.js"></script>
+  <script src="/static/components/playlist.js"></script>
+  <script src="/static/components/library.js"></script>
+  <script src="/static/core/ws.js"></script>
   <script src="/static/app.js"></script>
 </body>
 </html>
