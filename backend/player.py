@@ -48,7 +48,7 @@ class Player:
                 try:
                     raw = event.get("reason") if isinstance(event, dict) else getattr(event, "reason", None)
                     s = str(raw).lower() if raw is not None else "eof"
-                    if "stop" in s:
+                    if "stop" in s or "quit" in s:
                         reason = "stop"
                     elif "error" in s:
                         reason = "error"
@@ -59,9 +59,22 @@ class Player:
                 logger.info("end-file reason=%s", reason)
                 self._on_end_file(reason)
 
+            @self._mpv.event_callback("shutdown")
+            def _shutdown_handler(event):
+                logger.info("Janela MPV fechada — reinicializando")
+                threading.Thread(target=self._reinit_mpv, daemon=True).start()
+
         except (ImportError, OSError) as exc:
             logger.warning("MPV não disponível (%s) — modo simulação ativado", exc)
             self._mpv = None
+
+    def _reinit_mpv(self):
+        import time
+        time.sleep(0.2)  # aguarda MPV liberar recursos internos
+        with self._lock:
+            self._mpv = None
+        self._init_mpv()
+        logger.info("MPV reinicializado com sucesso")
 
     # ------------------------------------------------------------------ #
     # Callbacks internos                                                   #
