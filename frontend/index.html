@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Playout TV — Painel de Controle</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">📺 Playout TV</div>
+    <div class="conn-status">
+      <span class="dot" id="dot"></span>
+      <span id="conn-label">Desconectado</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- ── NOW PLAYING ── -->
+    <section class="card" id="now-playing-card">
+      <h2>Reproduzindo agora</h2>
+      <div class="now-playing-title" id="np-title">—</div>
+      <div class="progress-wrap">
+        <span id="pos">0:00</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span id="dur">0:00</span>
+      </div>
+      <div class="state-badge" id="state-badge">parado</div>
+    </section>
+
+    <!-- ── CONTROLES ── -->
+    <section class="card controls-card">
+      <h2>Controles</h2>
+      <div class="controls">
+        <button id="btn-prev" title="Anterior">⏮</button>
+        <button id="btn-stop" title="Parar">⏹</button>
+        <button id="btn-play" title="Play / Pause">▶</button>
+        <button id="btn-next" title="Próximo">⏭</button>
+      </div>
+    </section>
+
+    <!-- ── ROTEIRO ── -->
+    <section class="card schedule-card">
+      <div class="schedule-header">
+        <h2>Roteiro</h2>
+        <div class="schedule-actions">
+          <button id="btn-reload" title="Recarregar do disco">↺ Recarregar</button>
+          <button id="btn-save" title="Salvar alterações">💾 Salvar</button>
+          <button id="btn-add" title="Adicionar item">+ Item</button>
+        </div>
+      </div>
+      <div class="schedule-list" id="schedule-list">
+        <div class="empty">Carregando roteiro…</div>
+      </div>
+    </section>
+
+    <!-- ── LOG ── -->
+    <section class="card log-card">
+      <div class="log-header">
+        <h2>Log de eventos</h2>
+        <button id="btn-clear-log">Limpar</button>
+      </div>
+      <div class="log" id="log"></div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

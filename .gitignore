@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# DLL binária — instale via mpv no ambiente de destino
+backend/libmpv-2.dll
+
+# Ambiente virtual
+.venv/
+venv/
+
+# Editor
+.vscode/
