@@ -1,8 +1,20 @@
 [
   {
-    "id": "item-1779514762947",
+    "id": "item-1779566171238",
     "title": "Guido",
-    "path": "C:/Users/HENRIQUE NORONHA/Desktop/Guido.MP4",
-    "duration": 1
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Videos\\PlayLine\\Guido.MP4",
+    "duration": 220
+  },
+  {
+    "id": "item-1779567500266",
+    "title": "Guido",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Videos\\PlayLine\\Guido.MP4",
+    "duration": 0
+  },
+  {
+    "id": "item-1779566186086",
+    "title": "RÜFÜS DU SOL - On My Knees (Official Music Video) [1]",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Videos\\PlayLine\\RÜFÜS DU SOL - On My Knees (Official Music Video) [1].MP4",
+    "duration": 263
   }
 ]
