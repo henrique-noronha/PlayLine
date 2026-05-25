@@ -8,7 +8,21 @@ const state = {
   playing: false,
   paused: false,
   currentItemStartTime: null,
+  pausedAt: null,       // timestamp de quando pausou
+  totalPausedMs: 0,     // soma de todos os tempos pausados no clipe atual
 };
+
+let _remainingTimer = null;
+
+function startRemainingTimer() {
+  clearInterval(_remainingTimer);
+  _remainingTimer = setInterval(() => updateStartTimes(), 1000);
+}
+
+function stopRemainingTimer() {
+  clearInterval(_remainingTimer);
+  _remainingTimer = null;
+}
 
 // ------------------------------------------------------------------ //
 // Eventos do servidor                                                  //
@@ -25,22 +39,34 @@ function handleEvent(ev) {
       state.currentIndex = ev.index;
       state.playing = true;
       state.paused = false;
-      state.currentItemStartTime = new Date();
+      state.currentItemStartTime = Date.now();
+      state.pausedAt = null;
+      state.totalPausedMs = 0;
       updateNowPlaying(ev.item);
       updateBadge("playing");
       highlightActive(ev.index);
       loadVideo(ev.item.path);
       updateStartTimes();
+      startRemainingTimer();
       break;
     case "paused":
       state.paused = true;
+      state.pausedAt = Date.now();
+      stopRemainingTimer();
       updateBadge("paused");
+      updateStartTimes();
       document.getElementById("btn-play").textContent = "▶";
       video.pause();
       break;
     case "resumed":
       state.paused = false;
+      if (state.pausedAt) {
+        state.totalPausedMs += Date.now() - state.pausedAt;
+        state.pausedAt = null;
+      }
       updateBadge("playing");
+      updateStartTimes();
+      startRemainingTimer();
       document.getElementById("btn-play").textContent = "⏸";
       video.play().catch(() => {});
       break;
@@ -49,6 +75,9 @@ function handleEvent(ev) {
       state.paused = false;
       state.currentIndex = -1;
       state.currentItemStartTime = null;
+      state.pausedAt = null;
+      state.totalPausedMs = 0;
+      stopRemainingTimer();
       updateNowPlaying(null);
       updateBadge("stopped");
       document.getElementById("btn-play").textContent = "▶";
@@ -59,6 +88,9 @@ function handleEvent(ev) {
     case "playlist_end":
       state.playing = false;
       state.currentItemStartTime = null;
+      state.pausedAt = null;
+      state.totalPausedMs = 0;
+      stopRemainingTimer();
       updateBadge("stopped");
       updateNowPlaying(null);
       highlightActive(-1);
@@ -84,6 +116,7 @@ function applyState(s) {
   if (state.playing && !state.paused) {
     updateBadge("playing");
     document.getElementById("btn-play").textContent = "⏸";
+    startRemainingTimer();
   } else if (state.paused) {
     updateBadge("paused");
     document.getElementById("btn-play").textContent = "▶";
@@ -99,7 +132,6 @@ function applyState(s) {
 // ------------------------------------------------------------------ //
 document.getElementById("btn-stop").addEventListener("click", () => send({ action: "stop" }));
 document.getElementById("btn-next").addEventListener("click", () => send({ action: "next" }));
-document.getElementById("btn-prev").addEventListener("click", () => send({ action: "prev" }));
 
 document.getElementById("btn-play").replaceWith(
   (() => {

@@ -5,8 +5,10 @@ const video = document.getElementById("player-video");
 function fmt(secs) {
   if (secs == null || isNaN(secs)) return "0:00";
   secs = Math.floor(secs);
-  const m = Math.floor(secs / 60);
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
   const s = String(secs % 60).padStart(2, "0");
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${s}`;
   return `${m}:${s}`;
 }
 

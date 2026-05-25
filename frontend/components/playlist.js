@@ -1,20 +1,76 @@
 /* PlayLine — Roteiro: renderização, drag & drop e miniaturas */
 
+// thumbCache[path] = { state: 'loading'|'done'|'error', url: string, pending: imgEl[] }
 const thumbCache = {};
-let dragSrcIdx  = null;   // índice no roteiro (reordenar)
-let libDragFile = null;   // arquivo vindo da biblioteca
+const durLoading = new Set(); // paths com carregamento de duração em andamento
+let dragSrcIdx  = null;
+let libDragFile = null;
+
+const THUMB_PREFIX = "playline_thumb:";
+
+function thumbFromStorage(path) {
+  try { return localStorage.getItem(THUMB_PREFIX + path); } catch (_) { return null; }
+}
+
+function thumbToStorage(path, url) {
+  try { localStorage.setItem(THUMB_PREFIX + path, url); } catch (_) {}
+}
+
+// Carrega apenas os metadados do vídeo para obter a duração quando ela não está definida.
+// Chamado sempre que um item pode ter duration === 0, independente do cache de thumbnail.
+function ensureDuration(path) {
+  const idx = state.schedule.findIndex(it => it.path === path);
+  if (idx < 0) return;
+  if (state.schedule[idx].duration > 0) return;
+  if (durLoading.has(path)) return;
+
+  durLoading.add(path);
+  const v = document.createElement("video");
+  v.muted = true;
+  v.preload = "metadata";
+  v.src = "/media?path=" + encodeURIComponent(path);
+  v.addEventListener("loadedmetadata", () => {
+    const i = state.schedule.findIndex(it => it.path === path);
+    if (i >= 0 && !state.schedule[i].duration) {
+      state.schedule[i].duration = Math.round(v.duration);
+      const durEl = document.querySelector(`.item-dur[data-idx="${i}"]`);
+      if (durEl) durEl.value = state.schedule[i].duration;
+      updateStartTimes();
+    }
+    durLoading.delete(path);
+    v.src = "";
+  });
+  v.addEventListener("error", () => { durLoading.delete(path); v.src = ""; });
+}
 
 // ------------------------------------------------------------------ //
 // Miniaturas                                                           //
 // ------------------------------------------------------------------ //
-function generateThumb(path, imgEl, scheduleIdx) {
+function generateThumb(path, imgEl) {
   if (!path) return;
-  if (thumbCache[path] && thumbCache[path] !== "loading") {
-    imgEl.src = thumbCache[path];
+
+  // Garante duração carregada independente do estado do thumbnail
+  ensureDuration(path);
+
+  const entry = thumbCache[path];
+
+  // Cache em memória já resolvido
+  if (entry) {
+    if (entry.state === "done")    { imgEl.src = entry.url; return; }
+    if (entry.state === "loading") { entry.pending.push(imgEl); return; }
+    return; // error — não tenta de novo
+  }
+
+  // Thumb persistida no localStorage
+  const stored = thumbFromStorage(path);
+  if (stored) {
+    thumbCache[path] = { state: "done", url: stored, pending: [] };
+    imgEl.src = stored;
     return;
   }
-  if (thumbCache[path] === "loading") return;
-  thumbCache[path] = "loading";
+
+  // Primeira vez — gera via vídeo oculto (duração + frame)
+  thumbCache[path] = { state: "loading", url: "", pending: [imgEl] };
 
   const v = document.createElement("video");
   v.muted = true;
@@ -22,14 +78,7 @@ function generateThumb(path, imgEl, scheduleIdx) {
   v.src = "/media?path=" + encodeURIComponent(path);
 
   v.addEventListener("loadedmetadata", () => {
-    if (scheduleIdx >= 0 && scheduleIdx < state.schedule.length) {
-      if (!state.schedule[scheduleIdx].duration || state.schedule[scheduleIdx].duration === 0) {
-        state.schedule[scheduleIdx].duration = Math.round(v.duration);
-        const durEl = document.querySelector(`.item-dur[data-idx="${scheduleIdx}"]`);
-        if (durEl) durEl.value = state.schedule[scheduleIdx].duration;
-        updateStartTimes();
-      }
-    }
+    // duração já é gerenciada por ensureDuration; aqui só avança para o frame
     v.currentTime = Math.min(2, (v.duration || 0) * 0.1 || 1);
   });
 
@@ -38,12 +87,20 @@ function generateThumb(path, imgEl, scheduleIdx) {
     canvas.width = 112; canvas.height = 63;
     canvas.getContext("2d").drawImage(v, 0, 0, 112, 63);
     const url = canvas.toDataURL("image/jpeg", 0.8);
-    thumbCache[path] = url;
-    imgEl.src = url;
+    thumbToStorage(path, url);
+    const cache = thumbCache[path];
+    cache.state = "done";
+    cache.url = url;
+    cache.pending.forEach(el => { el.src = url; });
+    cache.pending = [];
     v.src = "";
   });
 
-  v.addEventListener("error", () => { thumbCache[path] = ""; v.src = ""; });
+  v.addEventListener("error", () => {
+    thumbCache[path].state = "error";
+    thumbCache[path].pending = [];
+    v.src = "";
+  });
 }
 
 // ------------------------------------------------------------------ //
@@ -55,7 +112,7 @@ function calcStartTimes() {
   const idx = state.currentIndex;
   if (idx < 0 || !state.playing || !state.currentItemStartTime) return times;
 
-  times[idx] = new Date(state.currentItemStartTime);
+  times[idx] = new Date(state.currentItemStartTime);  // ms timestamp → Date
   for (let i = idx + 1; i < n; i++) {
     times[i] = new Date(times[i - 1].getTime() + (state.schedule[i - 1].duration || 0) * 1000);
   }
@@ -67,7 +124,11 @@ function calcStartTimes() {
 
 function calcRemaining() {
   if (!state.playing || state.currentIndex < 0) return 0;
-  return state.schedule.slice(state.currentIndex).reduce((s, it) => s + (it.duration || 0), 0);
+  const total = state.schedule.slice(state.currentIndex).reduce((s, it) => s + (it.duration || 0), 0);
+  if (!state.currentItemStartTime) return total;
+  const pausedMs = (state.totalPausedMs || 0) + (state.pausedAt ? Date.now() - state.pausedAt : 0);
+  const elapsed = Math.max(0, (Date.now() - state.currentItemStartTime - pausedMs) / 1000);
+  return Math.max(0, total - elapsed);
 }
 
 function updateStartTimes() {
@@ -76,9 +137,17 @@ function updateStartTimes() {
     const el = document.querySelector(`.item-start[data-idx="${i}"]`);
     if (el) el.textContent = fmtTime(t);
   });
-  const rem = document.getElementById("remaining-time");
+
   const secs = calcRemaining();
-  if (rem) rem.textContent = secs > 0 ? `— restante: ${fmt(secs)}` : "";
+  const rem = document.getElementById("remaining-time");
+  if (rem) rem.textContent = secs > 0 ? fmt(secs) : "—";
+
+  const nextEl = document.getElementById("next-clip-time");
+  if (nextEl) {
+    const nextIdx = state.currentIndex + 1;
+    const nextStart = times[nextIdx];
+    nextEl.textContent = nextStart ? fmtTime(nextStart) : "—";
+  }
 }
 
 function highlightActive(index) {
@@ -114,6 +183,21 @@ function addFromLibrary(file, atIndex) {
 // ------------------------------------------------------------------ //
 function renderSchedule() {
   const list = document.getElementById("schedule-list");
+
+  // Captura as imagens já renderizadas no DOM antes de destruí-las
+  const domThumbs = {};
+  list.querySelectorAll(".schedule-item").forEach(row => {
+    const img  = row.querySelector(".item-thumb");
+    const path = row.querySelector("input[data-field='path']")?.value;
+    if (img && path && img.src && img.src.startsWith("data:")) {
+      domThumbs[path] = img.src;
+      // garante que o cache em memória está sincronizado
+      if (!thumbCache[path] || thumbCache[path].state !== "done") {
+        thumbCache[path] = { state: "done", url: img.src, pending: [] };
+      }
+    }
+  });
+
   list.innerHTML = "";
   const startTimes = calcStartTimes();
 
@@ -157,7 +241,15 @@ function renderSchedule() {
 
     list.appendChild(row);
 
-    if (item.path) generateThumb(item.path, row.querySelector(".item-thumb"), i);
+    if (item.path) {
+      const imgEl = row.querySelector(".item-thumb");
+      ensureDuration(item.path);  // sempre, independente do cache de thumbnail
+      if (domThumbs[item.path]) {
+        imgEl.src = domThumbs[item.path];
+      } else {
+        generateThumb(item.path, imgEl);
+      }
+    }
 
     row.querySelectorAll("input").forEach(inp => {
       inp.addEventListener("change", () => {
@@ -173,7 +265,7 @@ function renderSchedule() {
             row.querySelector(".item-title").value = autoTitle;
           }
           delete thumbCache[val];
-          generateThumb(val, row.querySelector(".item-thumb"), idx);
+          generateThumb(val, row.querySelector(".item-thumb"));
         }
 
         updateStartTimes();
@@ -184,7 +276,6 @@ function renderSchedule() {
     row.querySelector(".btn-play-item").addEventListener("click", e => {
       e.stopPropagation();
       send({ action: "jump", index: i });
-      send({ action: "play" });
     });
 
     row.querySelector(".btn-delete").addEventListener("click", e => {
@@ -195,7 +286,6 @@ function renderSchedule() {
 
     row.addEventListener("dblclick", () => {
       send({ action: "jump", index: i });
-      send({ action: "play" });
     });
   });
 

@@ -76,7 +76,7 @@ main {
   margin: 0 auto;
 }
 
-/* Coluna direita: controles + roteiro empilhados, roteiro ocupa o espaço restante */
+/* Coluna direita: controles + roteiro empilhados */
 .right-col {
   grid-column: 2;
   grid-row: 1 / 3;
@@ -232,7 +232,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: 520px;
+  max-height: 45vh;
   overflow-y: auto;
 }
 
@@ -327,9 +327,8 @@ main {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  flex: 1;
+  max-height: 60vh;
   overflow-y: auto;
-  min-height: 0;
 }
 
 .schedule-item {
@@ -427,13 +426,53 @@ main {
 .item-actions .btn-play-item:hover  { background: #14532d; color: var(--success); }
 .item-actions .btn-delete:hover     { background: #450a0a; color: var(--danger); }
 
-#remaining-time {
-  font-size: 12px;
+.control-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 24px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 16px;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 50%;
+  flex-shrink: 0;
+}
+
+.stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--muted);
   font-weight: 600;
-  color: var(--warning);
-  margin-left: 10px;
-  text-transform: none;
-  letter-spacing: 0;
+}
+
+.stat-value {
+  font-size: 64px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 1px;
+  width: 6ch;
+  text-align: center;
+}
+
+.stat-remaining { color: var(--warning); }
+.stat-next      { color: var(--accent); }
+
+.stat-divider {
+  width: 1px;
+  height: 72px;
+  background: var(--border);
+  flex-shrink: 0;
 }
 
 .empty { color: var(--muted); text-align: center; padding: 24px; }

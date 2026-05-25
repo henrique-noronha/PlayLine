@@ -69,8 +69,15 @@ class PlaylistEngine:
                 asyncio.run_coroutine_threadsafe(self._advance(), self._loop)
 
     async def _advance(self):
-        if self._index + 1 < len(self._items):
-            await self.play_index(self._index + 1)
+        """Consome o clipe atual e avança para o próximo."""
+        if self._items:
+            self._items.pop(0)
+            self.save_schedule(self._items)
+
+        await self._broadcast({"event": "schedule_updated", "items": list(self._items)})
+
+        if self._items:
+            await self.play_index(0)
         else:
             self._running = False
             self._index = -1
@@ -78,9 +85,8 @@ class PlaylistEngine:
             logger.info("Fim da playlist")
 
     async def play(self):
-        """Inicia a partir do item atual (ou do início)."""
-        start = max(self._index, 0)
-        await self.play_index(start)
+        """Inicia pelo primeiro item do roteiro."""
+        await self.play_index(0)
 
     async def play_index(self, index: int):
         if not (0 <= index < len(self._items)):
@@ -103,17 +109,24 @@ class PlaylistEngine:
     async def stop(self):
         self._running = False
         self._paused = False
+        self._index = -1
         await self._broadcast({"event": "stopped"})
 
     async def next_item(self):
         await self._advance()
 
     async def prev_item(self):
-        target = max(self._index - 1, 0)
-        await self.play_index(target)
+        pass  # roteiro linear — não retrocede
 
     async def jump_to(self, index: int):
-        await self.play_index(index)
+        """Pula para o índice N, consumindo todos os anteriores."""
+        if not (0 <= index < len(self._items)):
+            return
+        if index > 0:
+            del self._items[:index]
+            self.save_schedule(self._items)
+            await self._broadcast({"event": "schedule_updated", "items": list(self._items)})
+        await self.play_index(0)
 
     # ------------------------------------------------------------------ #
     # Estado                                                               #

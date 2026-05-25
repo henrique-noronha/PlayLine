@@ -36,9 +36,19 @@
 
       <!-- ── CONTROLES ── -->
       <section class="card controls-card">
-        <h2>Controles</h2>
+        <h2>Painel de Controle</h2>
+        <div class="control-stats">
+          <div class="stat-block">
+            <div class="stat-label">Tempo restante</div>
+            <div class="stat-value stat-remaining" id="remaining-time">—</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-block">
+            <div class="stat-label">Próximo clipe às</div>
+            <div class="stat-value stat-next" id="next-clip-time">—</div>
+          </div>
+        </div>
         <div class="controls">
-          <button id="btn-prev" title="Anterior">⏮</button>
           <button id="btn-stop" title="Parar">⏹</button>
           <button id="btn-play" title="Play / Pause">▶</button>
           <button id="btn-next" title="Próximo">⏭</button>
@@ -48,7 +58,7 @@
       <!-- ── ROTEIRO ── -->
       <section class="card schedule-card">
         <div class="schedule-header">
-          <h2>Roteiro <span id="remaining-time"></span></h2>
+          <h2>Roteiro</h2>
           <div class="schedule-actions">
             <button id="btn-reload" title="Recarregar do disco">↺ Recarregar</button>
             <button id="btn-save" title="Salvar alterações">💾 Salvar</button>
