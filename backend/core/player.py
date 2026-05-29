@@ -1,17 +1,22 @@
 """
-Camada de integração com o MPV via python-mpv.
-Expõe uma interface simples de controle e registra callbacks de eventos.
+Player — cliente TCP para o MPV Daemon (processo separado).
+Conecta-se a 127.0.0.1:6600; se o daemon não estiver rodando, inicia-o.
+O daemon sobrevive ao crash do servidor
 """
 
-import os
-import threading
+import json
 import logging
+import socket
+import subprocess
+import sys
+import threading
+import time
 from pathlib import Path
 from typing import Callable, Optional
 
-# libmpv-2.dll fica em backend/, um nível acima deste arquivo
-_here = str(Path(__file__).parent.parent)
-os.environ["PATH"] = _here + os.pathsep + os.environ.get("PATH", "")
+DAEMON_HOST = "127.0.0.1"
+DAEMON_PORT = 6600
+_DAEMON_SCRIPT = Path(__file__).parent.parent / "mpv_daemon.py"
 
 logger = logging.getLogger(__name__)
 
@@ -19,135 +24,154 @@ logger = logging.getLogger(__name__)
 class Player:
     def __init__(self, on_end_file: Callable[[str], None]):
         self._on_end_file = on_end_file
-        self._mpv = None
-        self._lock = threading.Lock()
-        self._dead = False  # True quando a janela foi fechada pelo X
-        self._init_mpv()
+        self._sock: Optional[socket.socket] = None
+        self._send_lock = threading.Lock()
+        self._connected = False
+        self._buf = b""
+        self._pending_state_event: Optional[threading.Event] = None
+        self._pending_state_path: Optional[str] = None
+        self._connect_or_start()
 
-    def _init_mpv(self):
-        self._dead = False
+    # Conexão                                                              #
+
+    def _connect_or_start(self):
+        if self._try_connect():
+            logger.info("Conectado ao MPV Daemon existente em %s:%d", DAEMON_HOST, DAEMON_PORT)
+            return
+        logger.info("Daemon não encontrado — iniciando %s...", _DAEMON_SCRIPT.name)
+        self._launch_daemon()
+        for _ in range(30):
+            time.sleep(0.3)
+            if self._try_connect():
+                logger.info("MPV Daemon iniciado com sucesso")
+                return
+        logger.error("Não foi possível conectar ao MPV Daemon após 9 s")
+
+    def _launch_daemon(self):
+        flags = 0
+        if sys.platform == "win32":
+            flags = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
         try:
-            import mpv
-            self._mpv = mpv.MPV(
-                ytdl=False,
-                input_default_bindings=False,
-                input_vo_keyboard=False,
-                video_sync="display-resample",
-                hr_seek="yes",
-                keep_open=False,
-                idle=True,
-                log_handler=self._mpv_log,
-                loglevel="warn",
+            subprocess.Popen(
+                [sys.executable, str(_DAEMON_SCRIPT)],
+                creationflags=flags,
             )
-            self._mpv.observe_property("time-pos", self._on_time_pos)
+        except Exception as exc:
+            logger.error("Falha ao iniciar daemon: %s", exc)
 
-            @self._mpv.event_callback("end-file")
-            def _end_file_handler(event):
-                try:
-                    raw = None
-                    if isinstance(event, dict):
-                        raw = event.get("reason")
-                        if raw is None:
-                            evt = event.get("event")
-                            raw = evt.get("reason") if isinstance(evt, dict) else getattr(evt, "reason", None)
-                    else:
-                        raw = getattr(event, "reason", None)
+    def _try_connect(self) -> bool:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1.0)
+            s.connect((DAEMON_HOST, DAEMON_PORT))
+            s.settimeout(None)
+            self._sock = s
+            self._connected = True
+            threading.Thread(target=self._read_loop, daemon=True).start()
+            return True
+        except (ConnectionRefusedError, OSError):
+            return False
 
-                    s = str(raw).lower() if raw is not None else ""
-                    try:
-                        r = int(raw)
-                    except (TypeError, ValueError):
-                        r = -1
+    # Leitura de eventos                                                   
+   
+    def _read_loop(self):
+        while self._connected:
+            try:
+                chunk = self._sock.recv(4096)
+                if not chunk:
+                    logger.warning("MPV Daemon encerrou a conexão")
+                    self._connected = False
+                    break
+                self._buf += chunk
+                while b"\n" in self._buf:
+                    line, self._buf = self._buf.split(b"\n", 1)
+                    line = line.strip()
+                    if line:
+                        try:
+                            self._handle_event(json.loads(line))
+                        except json.JSONDecodeError:
+                            pass
+            except Exception as exc:
+                if self._connected:
+                    logger.error("Erro de leitura: %s", exc)
+                self._connected = False
+                break
 
-                    # libmpv: EOF=0, STOP=2, QUIT=3, ERROR=4
-                    if r in (2, 3) or "stop" in s or "quit" in s:
-                        reason = "stop"
-                    elif r == 4 or "error" in s:
-                        reason = "error"
-                    else:
-                        reason = "eof"
-                except Exception:
-                    reason = "eof"
-                logger.info("end-file raw=%r reason=%s", raw, reason)
-                self._on_end_file(reason)
+    def _handle_event(self, msg: dict):
+        event = msg.get("event")
+        if event == "end-file":
+            self._on_end_file(msg.get("reason", "eof"))
+        elif event == "mpv_closed":
+            self._on_end_file("mpv_closed")
+        elif event == "state_response":
+            self._pending_state_path = msg.get("playing_path")
+            if self._pending_state_event:
+                self._pending_state_event.set()
 
-            @self._mpv.event_callback("shutdown")
-            def _shutdown_handler(event):
-                self._dead = True
-                logger.info("Janela MPV fechada pelo usuário")
+    # Envio                                                                #
 
-        except (ImportError, OSError) as exc:
-            logger.warning("MPV não disponível (%s) — modo simulação ativado", exc)
-            self._mpv = None
+    def _send(self, cmd: dict):
+        if not self._connected or self._sock is None:
+            logger.debug("Daemon não conectado — ignorando: %s", cmd.get("action"))
+            return
+        with self._send_lock:
+            try:
+                self._sock.sendall((json.dumps(cmd) + "\n").encode())
+            except Exception as exc:
+                logger.error("Erro ao enviar: %s", exc)
+                self._connected = False
 
-    # ------------------------------------------------------------------ #
-    # Callbacks internos                                                   #
-    # ------------------------------------------------------------------ #
+    # Consulta de estado (bloqueante — chamar via run_in_executor)        #
 
-    def _mpv_log(self, level, component, message):
-        logger.debug("[mpv/%s] %s", component, message.strip())
+    def get_playing_path(self) -> Optional[str]:
+        """Retorna o caminho do arquivo que o daemon está reproduzindo, ou None."""
+        if not self._connected:
+            return None
+        evt = threading.Event()
+        self._pending_state_path = None
+        self._pending_state_event = evt
+        self._send({"action": "get_state"})
+        evt.wait(timeout=2.0)
+        self._pending_state_event = None
+        return self._pending_state_path
 
-    def _on_time_pos(self, name, value):
-        pass
-
-    # ------------------------------------------------------------------ #
     # API pública                                                          #
-    # ------------------------------------------------------------------ #
 
     def play(self, path: str):
-        with self._lock:
-            if self._dead or self._mpv is None:
-                logger.info("Reinicializando MPV antes de reproduzir...")
-                self._mpv = None
-                self._init_mpv()
-            if self._mpv:
-                self._mpv.play(path)
-                logger.info("Reproduzindo: %s", path)
-            else:
-                logger.info("[SIM] play: %s", path)
+        self._send({"action": "play", "path": path})
+        logger.info("Reproduzindo: %s", path)
 
     def pause(self):
-        with self._lock:
-            if self._mpv and not self._dead:
-                self._mpv.pause = True
+        self._send({"action": "pause"})
 
     def resume(self):
-        with self._lock:
-            if self._mpv and not self._dead:
-                self._mpv.pause = False
+        self._send({"action": "resume"})
 
     def stop(self):
-        with self._lock:
-            if self._mpv and not self._dead:
-                self._mpv.command("stop")
+        self._send({"action": "stop"})
 
     def seek(self, seconds: float, mode: str = "absolute"):
-        with self._lock:
-            if self._mpv and not self._dead:
-                self._mpv.seek(seconds, mode)
+        self._send({"action": "seek", "seconds": seconds, "mode": mode})
 
     @property
     def position(self) -> Optional[float]:
-        try:
-            return self._mpv.time_pos if self._mpv and not self._dead else None
-        except Exception:
-            return None
+        return None
 
     @property
     def duration(self) -> Optional[float]:
-        try:
-            return self._mpv.duration if self._mpv and not self._dead else None
-        except Exception:
-            return None
+        return None
 
     @property
     def paused(self) -> bool:
-        try:
-            return bool(self._mpv.pause) if self._mpv and not self._dead else False
-        except Exception:
-            return False
+        return False
 
     def shutdown(self):
-        if self._mpv:
-            self._mpv.terminate()
-            logger.info("MPV encerrado")
+        """Fecha a conexão com o daemon (daemon continua rodando independentemente)."""
+        self._connected = False
+        if self._sock:
+            try:
+                self._sock.close()
+            except Exception:
+                pass
+            self._sock = None
+        logger.info("Conexão com MPV Daemon encerrada (daemon continua rodando)")
