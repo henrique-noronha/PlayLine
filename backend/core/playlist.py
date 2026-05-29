@@ -10,16 +10,12 @@ from typing import Callable, Optional
 
 logger = logging.getLogger(__name__)
 
-# schedule.json fica em backend/, um nível acima deste arquivo
 SCHEDULE_PATH = Path(__file__).parent.parent / "schedule.json"
+CHECKPOINT_PATH = Path(__file__).parent.parent / "checkpoint.json"
 
 
 class PlaylistEngine:
     def __init__(self, player, broadcast: Callable):
-        """
-        player:    instância de Player
-        broadcast: coroutine async que envia dicionário a todos os WS clients
-        """
         self._player = player
         self._broadcast = broadcast
         self._items: list[dict] = []
@@ -27,11 +23,11 @@ class PlaylistEngine:
         self._running: bool = False
         self._paused: bool = False
         self._loop: Optional[asyncio.AbstractEventLoop] = None
+        self._advance_seq: int = 0  # incrementado a cada avanço; evita avanço duplo
+        self._skip_end_file: int = 0  # end-files a ignorar após substituição manual de vídeo
 
-    # ------------------------------------------------------------------ #
     # Roteiro                                                              #
-    # ------------------------------------------------------------------ #
-
+ 
     def load_schedule(self) -> list[dict]:
         try:
             self._items = json.loads(SCHEDULE_PATH.read_text(encoding="utf-8"))
@@ -51,32 +47,95 @@ class PlaylistEngine:
     def get_schedule(self) -> list[dict]:
         return self._items
 
-    # ------------------------------------------------------------------ #
+    def _read_checkpoint(self) -> Optional[dict]:
+        try:
+            return json.loads(CHECKPOINT_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            return None
+
+    # Recuperação após crash                                               #
+
+    def restore_after_crash(self):
+        """
+        Detecta se o daemon já está reproduzindo algo após um crash/reinício
+        do servidor. Deve ser chamado via run_in_executor (é bloqueante).
+        """
+        playing = self._player.get_playing_path()
+        if playing is None:
+            logger.info("Daemon ocioso — aguardando comando de play")
+            return
+
+        logger.info("Daemon em reprodução: %s — retomando estado", playing)
+        self._running = True
+        self._index = 0
+
+        if self._loop:
+            asyncio.run_coroutine_threadsafe(
+                self._broadcast(self.state()), self._loop
+            )
+
     # Controle de reprodução                                               #
-    # ------------------------------------------------------------------ #
 
     def set_event_loop(self, loop: asyncio.AbstractEventLoop):
         self._loop = loop
 
     def on_end_file(self, reason: str):
-        """Chamado pelo Player (thread do MPV) quando um arquivo termina."""
-        if reason in ("stop",):
+        """Chamado pelo Player (thread de leitura TCP) quando um arquivo termina."""
+        if reason == "stop":
+            return
+        if reason == "mpv_closed":
+            if self._loop:
+                asyncio.run_coroutine_threadsafe(self._on_mpv_closed(), self._loop)
             return
         if reason == "error":
             logger.warning("Arquivo com erro — avançando automaticamente")
+        if self._skip_end_file > 0:
+            self._skip_end_file -= 1
+            logger.debug("end-file ignorado (substituição por avanço manual)")
+            return
         if self._running:
             if self._loop:
-                asyncio.run_coroutine_threadsafe(self._advance(), self._loop)
+                # Captura o seq atual; se outro avanço já ocorreu, esta chamada será ignorada
+                seq = self._advance_seq
+                asyncio.run_coroutine_threadsafe(
+                    self._advance(expected_seq=seq), self._loop
+                )
 
-    async def _advance(self):
-        """Consome o clipe atual e avança para o próximo."""
+    async def _on_mpv_closed(self):
+        self._advance_seq += 1  # invalida qualquer avanço pendente
+        self._running = False
+        self._paused = False
+        self._index = -1
+        await self._broadcast({"event": "stopped"})
+        logger.info("Playout parado (janela MPV fechada)")
+
+    async def _advance(self, expected_seq: int = -1):
+        """
+        Consome o clipe atual e avança para o próximo.
+        expected_seq >= 0: ignora se outro avanço já ocorreu (evita avanço duplo
+        quando end-file natural e next/jump chegam simultaneamente).
+        expected_seq = -1: avança incondicionalmente (next manual, jump).
+        """
+        if expected_seq >= 0 and expected_seq != self._advance_seq:
+            logger.debug("_advance obsoleto (seq %d != %d) — ignorado", expected_seq, self._advance_seq)
+            return
+        self._advance_seq += 1
+
         if self._items:
+            self._items.pop(0)
+            self.save_schedule(self._items)
+
+        # Pula itens sem caminho válido
+        while self._items and not self._items[0].get("path"):
+            logger.warning("Pulando item sem caminho: %s", self._items[0].get("title", "?"))
             self._items.pop(0)
             self.save_schedule(self._items)
 
         await self._broadcast({"event": "schedule_updated", "items": list(self._items)})
 
         if self._items:
+            if expected_seq < 0:  # avanço manual — vídeo em reprodução será substituído
+                self._skip_end_file += 1
             await self.play_index(0)
         else:
             self._running = False
@@ -86,6 +145,7 @@ class PlaylistEngine:
 
     async def play(self):
         """Inicia pelo primeiro item do roteiro."""
+        self._advance_seq += 1  # invalida qualquer end-file pendente
         await self.play_index(0)
 
     async def play_index(self, index: int):
@@ -95,24 +155,46 @@ class PlaylistEngine:
         self._running = True
         self._paused = False
         item = self._items[index]
+
+        if item.get("path"):
+            self._player.play(item["path"])
+
+            # Retoma posição do checkpoint se for a primeira reprodução após reinício
+            cp = self._read_checkpoint()
+            if cp and cp.get("path") == item["path"]:
+                pos = cp.get("position", 0.0)
+                if pos > 2.0:
+                    asyncio.ensure_future(self._deferred_seek(pos))
+
         await self._broadcast(
             {"event": "now_playing", "index": index, "item": item}
         )
 
+    async def _deferred_seek(self, position: float):
+        """Aguarda o MPV carregar o arquivo e então busca a posição salva."""
+        await asyncio.sleep(1.5)
+        self._player.seek(position)
+        logger.info("Retomando posição: %.1f s", position)
+
     async def pause_toggle(self):
         self._paused = not self._paused
         if self._paused:
+            self._player.pause()
             await self._broadcast({"event": "paused"})
         else:
+            self._player.resume()
             await self._broadcast({"event": "resumed"})
 
     async def stop(self):
+        self._advance_seq += 1  # invalida qualquer end-file pendente
         self._running = False
         self._paused = False
         self._index = -1
+        self._player.stop()
         await self._broadcast({"event": "stopped"})
 
     async def next_item(self):
+        # next manual: sem verificação de seq (sempre avança)
         await self._advance()
 
     async def prev_item(self):
@@ -122,6 +204,9 @@ class PlaylistEngine:
         """Pula para o índice N, consumindo todos os anteriores."""
         if not (0 <= index < len(self._items)):
             return
+        self._advance_seq += 1  # invalida qualquer end-file pendente
+        if self._running:  # vídeo em reprodução será substituído
+            self._skip_end_file += 1
         if index > 0:
             del self._items[:index]
             self.save_schedule(self._items)

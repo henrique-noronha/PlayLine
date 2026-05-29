@@ -25,9 +25,7 @@ logger = logging.getLogger(__name__)
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 
 
-# ------------------------------------------------------------------ #
-# Gerenciador de conexões WebSocket                                   #
-# ------------------------------------------------------------------ #
+# Gerenciador de conexões WebSocket                                   
 
 class ConnectionManager:
     def __init__(self):
@@ -54,9 +52,7 @@ class ConnectionManager:
             self._clients.remove(c)
 
 
-# ------------------------------------------------------------------ #
 # Lifecycle                                                            #
-# ------------------------------------------------------------------ #
 
 manager = ConnectionManager()
 playlist_engine: PlaylistEngine | None = None
@@ -80,6 +76,9 @@ async def lifespan(app: FastAPI):
     setup_routes(playlist_engine, manager)
     setup_ws(playlist_engine, manager)
 
+    # Detecta se o daemon já estava reproduzindo algo (crash/reinício do servidor)
+    await loop.run_in_executor(None, playlist_engine.restore_after_crash)
+
     logger.info("Sistema de playout iniciado")
     yield
 
@@ -88,9 +87,7 @@ async def lifespan(app: FastAPI):
     logger.info("Sistema encerrado")
 
 
-# ------------------------------------------------------------------ #
 # App                                                                  #
-# ------------------------------------------------------------------ #
 
 app = FastAPI(title="PlayLine", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
