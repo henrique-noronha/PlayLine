@@ -45,9 +45,7 @@ class MPVDaemon:
         self._last_position: float = 0.0
         self._checkpoint_dirty = False
 
-    # ------------------------------------------------------------------ #
     # MPV                                                                  #
-    # ------------------------------------------------------------------ #
 
     def _init_mpv(self):
         import mpv
@@ -95,9 +93,7 @@ class MPVDaemon:
             self._last_position = float(value)
             self._checkpoint_dirty = True
 
-    # ------------------------------------------------------------------ #
     # Checkpoint                                                           #
-    # ------------------------------------------------------------------ #
 
     def _write_checkpoint(self, path: str):
         try:
@@ -123,9 +119,7 @@ class MPVDaemon:
         except Exception:
             pass
 
-    # ------------------------------------------------------------------ #
     # Broadcast (MPV callbacks rodam em thread separada)                  #
-    # ------------------------------------------------------------------ #
 
     def _broadcast_sync(self, data: dict):
         if self._loop and not self._loop.is_closed():
@@ -144,9 +138,7 @@ class MPVDaemon:
             if w in self._clients:
                 self._clients.remove(w)
 
-    # ------------------------------------------------------------------ #
     # Clientes TCP                                                         #
-    # ------------------------------------------------------------------ #
 
     async def handle_client(
         self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter
@@ -236,9 +228,7 @@ class MPVDaemon:
             except Exception:
                 pass
 
-    # ------------------------------------------------------------------ #
     # Lifecycle                                                            #
-    # ------------------------------------------------------------------ #
 
     async def _checkpoint_task(self):
         while True:
@@ -255,9 +245,7 @@ class MPVDaemon:
             await server.serve_forever()
 
 
-# ------------------------------------------------------------------ #
 # Helpers                                                              #
-# ------------------------------------------------------------------ #
 
 def _parse_end_reason(event) -> str:
     try:
