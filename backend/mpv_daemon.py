@@ -58,7 +58,6 @@ class MPVDaemon:
             hr_seek="yes",
             keep_open=False,
             idle=True,
-            autofit="440x248",
             title="PlayLine",
             log_handler=self._mpv_log,
             loglevel="warn",
