@@ -82,6 +82,8 @@ class PlaylistEngine:
     def on_end_file(self, reason: str):
         """Chamado pelo Player (thread de leitura TCP) quando um arquivo termina."""
         if reason == "stop":
+            if self._skip_end_file > 0:
+                self._skip_end_file -= 1  # confirma a substituição esperada
             return
         if reason == "mpv_closed":
             if self._loop:

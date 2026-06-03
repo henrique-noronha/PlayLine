@@ -63,27 +63,39 @@ header {
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: .4; }
+  50%      { opacity: .4; }
 }
 
-/* ── Layout ── */
+/* ==========================================
+   ARQUITETURA DE LAYOUT (GRID + WRAPPER ABSOLUTO)
+   ========================================== */
+
 main {
   display: grid;
-  grid-template-columns: 480px 1fr;
+  grid-template-columns: 420px 1fr;
   gap: 16px;
   padding: 20px 24px;
   max-width: 1400px;
   margin: 0 auto;
+  align-items: stretch; /* Garante que a coluna direita empate a altura com a esquerda */
 }
 
-/* Coluna direita: controles + roteiro empilhados */
-.right-col {
-  grid-column: 2;
-  grid-row: 1 / 3;
+/* Isolamento das colunas */
+.left-col {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: 0;
 }
+
+.right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100%; /* Estica para acompanhar a esquerda */
+}
+
+/* ========================================== */
 
 .card {
   background: var(--surface);
@@ -100,9 +112,7 @@ main {
   margin-bottom: 14px;
 }
 
-/* ── Now Playing ── */
-#now-playing-card { grid-column: 1; }
-
+/* ── Now Playing & Controls ── */
 #player-video {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -159,9 +169,6 @@ main {
 .state-badge.playing { background: #14532d; color: var(--success); }
 .state-badge.paused  { background: #451a03; color: var(--warning); }
 
-/* ── Controls ── */
-.controls-card { align-self: start; }
-
 .controls {
   display: flex;
   gap: 12px;
@@ -192,239 +199,17 @@ main {
 }
 #btn-play:hover { background: #3b6fd4; }
 
-/* ── Library ── */
-.library-card { grid-column: 1; align-self: start; }
-
-.library-header { margin-bottom: 10px; }
-.library-header h2 { margin-bottom: 8px; }
-
-.library-folder-row {
-  display: flex;
-  gap: 6px;
+#btn-pause {
+  border: 1px solid var(--warning);
+  color: var(--warning);
 }
+#btn-pause:hover { background: var(--warning); color: #000; }
 
-.library-folder-row input {
-  flex: 1;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 12px;
-  font-family: var(--font);
-  padding: 5px 8px;
-  outline: none;
+.controls button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
 }
-.library-folder-row input:focus { border-color: var(--accent); }
-
-.library-folder-row button {
-  padding: 5px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface2);
-  color: var(--text);
-  cursor: pointer;
-  font-size: 14px;
-  transition: background .15s;
-}
-.library-folder-row button:hover { background: var(--border); }
-
-.library-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  max-height: 45vh;
-  overflow-y: auto;
-}
-
-.lib-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 7px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  cursor: grab;
-  transition: border-color .15s;
-  user-select: none;
-}
-.lib-item:hover { border-color: var(--accent); }
-.lib-item.dragging { opacity: .35; }
-
-.lib-thumb {
-  width: 56px;
-  height: 32px;
-  object-fit: cover;
-  border-radius: 3px;
-  background: var(--surface);
-  flex-shrink: 0;
-}
-
-.lib-name {
-  font-size: 12px;
-  color: var(--text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
-}
-
-.schedule-drop-end {
-  border: 2px dashed var(--border);
-  border-radius: 8px;
-  padding: 14px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  transition: border-color .15s, color .15s, background .15s;
-}
-.schedule-drop-end.drag-over {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: #1a2040;
-}
-
-/* ── Schedule ── */
-.schedule-card {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-height: 0;
-}
-
-.schedule-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.schedule-header h2 { margin-bottom: 0; }
-
-.schedule-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.schedule-actions button, #btn-reload, #btn-save, #btn-add {
-  padding: 6px 14px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface2);
-  color: var(--text);
-  font-size: 13px;
-  cursor: pointer;
-  transition: background .15s;
-}
-.schedule-actions button:hover { background: var(--border); }
-
-#btn-save  { border-color: var(--accent);  color: var(--accent); }
-#btn-save:hover { background: var(--accent); color: #fff; }
-#btn-add   { border-color: var(--success); color: var(--success); }
-#btn-add:hover { background: var(--success); color: #000; }
-
-.schedule-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-.schedule-item {
-  display: grid;
-  grid-template-columns: 18px 26px 80px 1fr 68px 58px;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 10px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  transition: border-color .15s;
-  cursor: pointer;
-}
-.schedule-item:hover        { border-color: var(--muted); }
-.schedule-item.active       { border-color: var(--accent); background: #1a2040; }
-.schedule-item.active .item-index { color: var(--accent); }
-.schedule-item.dragging     { opacity: .35; }
-.schedule-item.drag-over    { border-color: var(--accent); border-style: dashed; }
-
-.item-drag {
-  cursor: grab;
-  color: var(--muted);
-  font-size: 14px;
-  text-align: center;
-  user-select: none;
-}
-.item-drag:active { cursor: grabbing; }
-
-.item-index {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-  text-align: center;
-}
-
-.item-thumb {
-  width: 80px;
-  height: 45px;
-  object-fit: cover;
-  border-radius: 4px;
-  background: var(--surface);
-  display: block;
-}
-
-.item-meta { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-
-.item-title, .item-path {
-  background: transparent;
-  border: none;
-  color: var(--text);
-  font-size: 13px;
-  font-family: var(--font);
-  width: 100%;
-  outline: none;
-  padding: 2px 4px;
-  border-radius: 4px;
-}
-.item-title { font-weight: 600; }
-.item-path  { color: var(--muted); font-size: 11px; }
-.item-title:focus, .item-path:focus {
-  background: var(--surface);
-  outline: 1px solid var(--accent);
-}
-
-.item-time { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-.item-start { font-size: 12px; font-weight: 700; color: var(--accent); }
-
-.item-dur {
-  background: transparent;
-  border: none;
-  color: var(--muted);
-  font-size: 11px;
-  width: 58px;
-  font-family: var(--font);
-  outline: none;
-  padding: 1px 4px;
-  border-radius: 4px;
-  text-align: right;
-}
-.item-dur:focus { background: var(--surface); outline: 1px solid var(--accent); }
-
-.item-actions { display: flex; gap: 4px; justify-content: flex-end; }
-.item-actions button {
-  width: 26px; height: 26px;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 13px;
-  transition: background .15s, color .15s;
-  display: flex; align-items: center; justify-content: center;
-}
-.item-actions .btn-play-item:hover  { background: #14532d; color: var(--success); }
-.item-actions .btn-delete:hover     { background: #450a0a; color: var(--danger); }
 
 .control-stats {
   display: flex;
@@ -475,10 +260,225 @@ main {
   flex-shrink: 0;
 }
 
+
+/* ── Library (A Âncora que define o tamanho da tela) ── */
+.library-card { 
+  display: flex;
+  flex-direction: column;
+  height: 60vh; 
+  min-height: 400px; 
+}
+
+/* ── Schedule (O Truque Definitivo do Wrapper Absoluto) ── */
+.schedule-wrapper {
+  flex: 1; /* A caixa invisível estica até o fundo */
+  position: relative;
+}
+
+.schedule-card { 
+  position: absolute; /* Prende o cartão na caixa invisível */
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0; 
+}
+
+
+/* ── Cabeçalhos das Listas ── */
+.library-header, .schedule-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.library-header h2, .schedule-header h2 { margin-bottom: 0; }
+
+.library-folder-row {
+  display: flex;
+  gap: 6px;
+}
+
+.library-folder-row input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font);
+  padding: 5px 8px;
+  outline: none;
+}
+.library-folder-row input:focus { border-color: var(--accent); }
+
+.library-folder-row button, .schedule-actions button {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  transition: background .15s;
+}
+.library-folder-row button:hover, .schedule-actions button:hover { background: var(--border); }
+
+.schedule-actions { display: flex; gap: 8px; }
+#btn-add { border-color: var(--success); color: var(--success); padding: 6px 14px; }
+#btn-add:hover { background: var(--success); color: #000; }
+
+/* ── Listas e Scroll Interno ── */
+.library-list, .schedule-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1; 
+  overflow-y: auto; /* SCROLL ATIVADO */
+  min-height: 0; /* IMPEDE O VAZAMENTO DO CONTEÚDO */
+}
+.library-list { gap: 4px; }
+.schedule-list { gap: 6px; }
+
+.lib-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: grab;
+  transition: border-color .15s;
+  user-select: none;
+}
+.lib-item:hover { border-color: var(--accent); }
+.lib-item.dragging { opacity: .35; }
+
+.lib-thumb {
+  width: 56px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 3px;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.lib-name {
+  font-size: 12px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.schedule-item {
+  display: grid;
+  grid-template-columns: 18px 26px 80px 1fr 68px 30px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color .15s;
+  cursor: grab;
+  user-select: none;
+}
+.schedule-item:hover        { border-color: var(--muted); }
+.schedule-item.active       { border-color: var(--accent); background: #1a2040; }
+.schedule-item.active .item-index { color: var(--accent); }
+.schedule-item.dragging     { opacity: .35; cursor: grabbing; }
+.schedule-item.drag-over    { border-color: var(--accent); border-style: dashed; }
+.schedule-item input         { pointer-events: none; cursor: grab; user-select: none; }
+.schedule-item.editing input { pointer-events: auto; cursor: text;  user-select: text; }
+
+.item-drag {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.item-index {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  text-align: center;
+}
+
+.item-thumb {
+  width: 80px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--surface);
+  display: block;
+}
+
+.item-meta { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+
+.item-title, .item-path {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font);
+  width: 100%;
+  outline: none;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.item-title { font-weight: 600; }
+.item-path  { color: var(--muted); font-size: 11px; }
+.item-title:focus, .item-path:focus {
+  background: var(--surface);
+  outline: 1px solid var(--accent);
+}
+
+.item-time { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.item-start { font-size: 12px; font-weight: 700; color: var(--accent); }
+
+.item-dur {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.lib-dur {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.item-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.item-actions button {
+  width: 26px; height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  transition: background .15s, color .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.item-actions .btn-delete:hover { background: #450a0a; color: var(--danger); }
+
+.schedule-list.drag-over {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  border-radius: 6px;
+  background: rgba(79, 142, 247, 0.04);
+}
+
 .empty { color: var(--muted); text-align: center; padding: 24px; }
 
-/* ── Log ── */
-.log-card { grid-column: 1 / -1; }
+/* ── Log (Rodapé Colapsável) ── */
+.log-card { 
+  grid-column: 1 / -1; 
+}
 
 .log-header {
   display: flex;
@@ -487,6 +487,12 @@ main {
   margin-bottom: 10px;
 }
 .log-header h2 { margin-bottom: 0; }
+
+.log-actions {
+  display: flex;
+  gap: 8px;
+}
+
 #btn-clear-log {
   padding: 4px 12px;
   border: 1px solid var(--border);
@@ -497,6 +503,17 @@ main {
   font-size: 12px;
 }
 #btn-clear-log:hover { background: var(--surface2); }
+
+#btn-toggle-log {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 10px;
+}
+#btn-toggle-log:hover { background: var(--surface2); }
 
 .log {
   background: #090b12;
@@ -520,7 +537,18 @@ main {
 .log-entry.ev-error .ev        { color: var(--danger); }
 .log-entry .msg { color: var(--muted); }
 
-/* ── Scrollbar ── */
+/* Estados do Log Colapsado */
+.log-card.collapsed .log {
+  display: none;
+}
+.log-card.collapsed {
+  padding-bottom: 14px;
+}
+.log-card.collapsed .log-header {
+  margin-bottom: 0;
+}
+
+/* ── Scrollbar Customizada ── */
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }

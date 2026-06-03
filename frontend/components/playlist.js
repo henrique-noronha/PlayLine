@@ -19,10 +19,9 @@ function thumbToStorage(path, url) {
 // Carrega apenas os metadados do vídeo para obter a duração quando ela não está definida.
 // Chamado sempre que um item pode ter duration === 0, independente do cache de thumbnail.
 function ensureDuration(path) {
-  const idx = state.schedule.findIndex(it => it.path === path);
-  if (idx < 0) return;
-  if (state.schedule[idx].duration > 0) return;
-  if (durLoading.has(path)) return;
+  // Retorna apenas se TODAS as ocorrências do path já têm duração
+  if (!state.schedule.some(it => it.path === path && !(it.duration > 0))) return;
+  if (durLoading.has(path)) return;  // já carregando; handler atualizará todas
 
   durLoading.add(path);
   const v = document.createElement("video");
@@ -30,22 +29,25 @@ function ensureDuration(path) {
   v.preload = "metadata";
   v.src = "/media?path=" + encodeURIComponent(path);
   v.addEventListener("loadedmetadata", () => {
-    const i = state.schedule.findIndex(it => it.path === path);
-    if (i >= 0 && !state.schedule[i].duration) {
-      state.schedule[i].duration = Math.round(v.duration);
-      const durEl = document.querySelector(`.item-dur[data-idx="${i}"]`);
-      if (durEl) durEl.value = state.schedule[i].duration;
-      updateStartTimes();
-    }
+    const dur = Math.round(v.duration);
+    let updated = false;
+    state.schedule.forEach((it, i) => {
+      if (it.path === path && !(it.duration > 0)) {
+        state.schedule[i].duration = dur;
+        const durEl = document.querySelector(`.item-dur[data-idx="${i}"]`);
+        if (durEl) durEl.textContent = fmt(dur);
+        updated = true;
+      }
+    });
+    if (updated) updateStartTimes();
     durLoading.delete(path);
     v.src = "";
   });
   v.addEventListener("error", () => { durLoading.delete(path); v.src = ""; });
 }
 
-// ------------------------------------------------------------------ //
-// Miniaturas                                                           //
-// ------------------------------------------------------------------ //
+
+// Miniaturas                                                           
 function generateThumb(path, imgEl) {
   if (!path) return;
 
@@ -103,9 +105,9 @@ function generateThumb(path, imgEl) {
   });
 }
 
-// ------------------------------------------------------------------ //
-// Horários                                                             //
-// ------------------------------------------------------------------ //
+
+// Horários                                                             
+
 function calcStartTimes() {
   const n = state.schedule.length;
   const times = new Array(n).fill(null);
@@ -156,9 +158,8 @@ function highlightActive(index) {
   });
 }
 
-// ------------------------------------------------------------------ //
-// Sincronização com servidor                                           //
-// ------------------------------------------------------------------ //
+// Sincronização com servidor                                           
+
 async function syncOrderToServer() {
   try {
     await fetch("/api/schedule", {
@@ -178,9 +179,8 @@ function addFromLibrary(file, atIndex) {
   syncOrderToServer();
 }
 
-// ------------------------------------------------------------------ //
 // Renderização                                                         //
-// ------------------------------------------------------------------ //
+
 function renderSchedule() {
   const list = document.getElementById("schedule-list");
 
@@ -230,12 +230,10 @@ function renderSchedule() {
       </div>
       <div class="item-time">
         <span class="item-start" data-idx="${i}">${fmtTime(startTimes[i])}</span>
-        <input class="item-dur" value="${item.duration ?? ""}" placeholder="seg" type="number" min="0"
-               data-field="duration" data-idx="${i}" title="Duração em segundos" />
+        <span class="item-dur" data-idx="${i}">${item.duration > 0 ? fmt(item.duration) : "—"}</span>
       </div>
       <div class="item-actions">
-        <button class="btn-play-item" title="Reproduzir este item" data-idx="${i}">▶</button>
-        <button class="btn-delete"    title="Remover" data-idx="${i}">✕</button>
+        <button class="btn-delete" title="Remover" data-idx="${i}">✕</button>
       </div>
     `;
 
@@ -273,11 +271,6 @@ function renderSchedule() {
       inp.addEventListener("click", e => e.stopPropagation());
     });
 
-    row.querySelector(".btn-play-item").addEventListener("click", e => {
-      e.stopPropagation();
-      send({ action: "jump", index: i });
-    });
-
     row.querySelector(".btn-delete").addEventListener("click", e => {
       e.stopPropagation();
       state.schedule.splice(i, 1);
@@ -287,31 +280,54 @@ function renderSchedule() {
     row.addEventListener("dblclick", () => {
       send({ action: "jump", index: i });
     });
+
+    // Ativa edição ao clicar na área visual de um input (que tem pointer-events:none por padrão)
+    row.addEventListener("click", e => {
+      for (const inp of row.querySelectorAll("input")) {
+        const r = inp.getBoundingClientRect();
+        if (e.clientX >= r.left && e.clientX <= r.right &&
+            e.clientY >= r.top  && e.clientY <= r.bottom) {
+          row.classList.add("editing");
+          inp.focus();
+          break;
+        }
+      }
+    });
+    row.addEventListener("focusin",  e => {
+      if (e.target.tagName === "INPUT") row.classList.add("editing");
+    });
+    row.addEventListener("focusout", () => {
+      setTimeout(() => {
+        if (!row.contains(document.activeElement)) row.classList.remove("editing");
+      }, 0);
+    });
   });
 
   initDnD(list);
   updateStartTimes();
 }
 
-// ------------------------------------------------------------------ //
-// Drag & Drop                                                          //
-// ------------------------------------------------------------------ //
+// Drag & Drop                                                          
+
 function initDnD(list) {
   list.querySelectorAll(".schedule-item").forEach((row, i) => {
     row.addEventListener("dragstart", e => {
       if (libDragFile) return;
+      document.querySelectorAll(".schedule-item.editing").forEach(r => r.classList.remove("editing"));
       dragSrcIdx = i;
       e.dataTransfer.effectAllowed = "move";
       setTimeout(() => row.classList.add("dragging"), 0);
     });
     row.addEventListener("dragend", () => {
       row.classList.remove("dragging");
-      list.querySelectorAll(".schedule-item, .schedule-drop-end").forEach(el => el.classList.remove("drag-over"));
+      list.querySelectorAll(".schedule-item").forEach(el => el.classList.remove("drag-over"));
+      list.classList.remove("drag-over");
     });
     row.addEventListener("dragover", e => {
       e.preventDefault();
       e.dataTransfer.dropEffect = libDragFile ? "copy" : "move";
-      list.querySelectorAll(".schedule-item, .schedule-drop-end").forEach(el => el.classList.remove("drag-over"));
+      list.querySelectorAll(".schedule-item").forEach(el => el.classList.remove("drag-over"));
+      list.classList.remove("drag-over");
       row.classList.add("drag-over");
     });
     row.addEventListener("dragleave", () => row.classList.remove("drag-over"));
@@ -335,53 +351,44 @@ function initDnD(list) {
     });
   });
 
-  // Zona de drop no final do roteiro
-  const dropEnd = document.createElement("div");
-  dropEnd.className = "schedule-drop-end";
-  dropEnd.textContent = "Solte aqui para adicionar ao final";
-  list.appendChild(dropEnd);
+}
 
-  dropEnd.addEventListener("dragover", e => {
+// Botões do roteiro
+
+document.getElementById("btn-add").addEventListener("click", () => {
+  state.schedule.push({ id: `item-${Date.now()}`, title: "Novo item", path: "", duration: 0 });
+  renderSchedule();
+});
+
+// Drop na área vazia do roteiro — registrado uma única vez (não dentro de initDnD)
+(function setupListDrop() {
+  const list = document.getElementById("schedule-list");
+
+  list.addEventListener("dragover", e => {
+    if (e.target.closest(".schedule-item")) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = libDragFile ? "copy" : "move";
-    list.querySelectorAll(".schedule-item").forEach(el => el.classList.remove("drag-over"));
-    dropEnd.classList.add("drag-over");
+    list.classList.add("drag-over");
   });
-  dropEnd.addEventListener("dragleave", () => dropEnd.classList.remove("drag-over"));
-  dropEnd.addEventListener("drop", e => {
+
+  list.addEventListener("dragleave", e => {
+    if (!list.contains(e.relatedTarget)) list.classList.remove("drag-over");
+  });
+
+  list.addEventListener("drop", e => {
+    if (e.target.closest(".schedule-item")) return;
     e.preventDefault();
-    dropEnd.classList.remove("drag-over");
+    list.classList.remove("drag-over");
     const libRaw = e.dataTransfer.getData("library-file");
     if (libRaw) {
       addFromLibrary(JSON.parse(libRaw), state.schedule.length);
       libDragFile = null;
     }
   });
-}
 
-// ------------------------------------------------------------------ //
-// Botões do roteiro                                                    //
-// ------------------------------------------------------------------ //
-document.getElementById("btn-reload").addEventListener("click", () => {
-  send({ action: "reload_schedule" });
-  log("Recarregando roteiro do disco…", "info");
-});
-
-document.getElementById("btn-save").addEventListener("click", async () => {
-  try {
-    const res = await fetch("/api/schedule", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(state.schedule),
-    });
-    if (res.ok) log("Roteiro salvo com sucesso", "info");
-    else log("Erro ao salvar roteiro", "error");
-  } catch (err) {
-    log(`Erro: ${err.message}`, "error");
-  }
-});
-
-document.getElementById("btn-add").addEventListener("click", () => {
-  state.schedule.push({ id: `item-${Date.now()}`, title: "Novo item", path: "", duration: 0 });
-  renderSchedule();
-});
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".schedule-item")) {
+      document.querySelectorAll(".schedule-item.editing").forEach(r => r.classList.remove("editing"));
+    }
+  });
+})();

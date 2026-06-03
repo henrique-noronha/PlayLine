@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <div class="logo">📺 PlayLine</div>
+    <div class="logo">PlayLine</div>
     <div class="conn-status">
       <span class="dot" id="dot"></span>
       <span id="conn-label">Desconectado</span>
@@ -16,25 +16,39 @@
   </header>
 
   <main>
-    <!-- ── NOW PLAYING ── -->
-    <section class="card" id="now-playing-card">
-      <h2>Reproduzindo agora</h2>
-      <video id="player-video" controls></video>
-      <div class="now-playing-title" id="np-title">—</div>
-      <div class="progress-wrap">
-        <span id="pos">0:00</span>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progress-fill"></div>
+    <div class="left-col">
+      
+      <section class="card" id="now-playing-card">
+        <h2>Reproduzindo agora</h2>
+        <video id="player-video" muted></video>
+        <div class="now-playing-title" id="np-title">—</div>
+        <div class="progress-wrap">
+          <span id="pos">0:00</span>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <span id="dur">0:00</span>
         </div>
-        <span id="dur">0:00</span>
-      </div>
-      <div class="state-badge" id="state-badge">parado</div>
-    </section>
+        <div class="state-badge" id="state-badge">parado</div>
+      </section>
 
-    <!-- ── COLUNA DIREITA (controles + roteiro) ── -->
+      <section class="card library-card">
+        <div class="library-header">
+          <h2>Biblioteca</h2>
+          <div class="library-folder-row">
+            <input id="library-folder-input" type="text" placeholder="Ex: C:\Videos" />
+            <button id="btn-load-library" title="Carregar pasta">↺</button>
+          </div>
+        </div>
+        <div class="library-list" id="library-list">
+          <div class="empty">Informe o caminho de uma pasta acima</div>
+        </div>
+      </section>
+
+    </div>
+
     <div class="right-col">
-
-      <!-- ── CONTROLES ── -->
+      
       <section class="card controls-card">
         <h2>Painel de Controle</h2>
         <div class="control-stats">
@@ -49,54 +63,41 @@
           </div>
         </div>
         <div class="controls">
-          <button id="btn-stop" title="Parar">⏹</button>
-          <button id="btn-play" title="Play / Pause">▶</button>
-          <button id="btn-next" title="Próximo">⏭</button>
+          <button id="btn-stop"  title="Parar">⏹</button>
+          <button id="btn-play"  title="Play">▶</button>
+          <button id="btn-pause" title="Pausar">⏸</button>
+          <button id="btn-next"  title="Próximo">⏭</button>
         </div>
       </section>
 
-      <!-- ── ROTEIRO ── -->
-      <section class="card schedule-card">
-        <div class="schedule-header">
-          <h2>Roteiro</h2>
-          <div class="schedule-actions">
-            <button id="btn-reload" title="Recarregar do disco">↺ Recarregar</button>
-            <button id="btn-save" title="Salvar alterações">💾 Salvar</button>
-            <button id="btn-add" title="Adicionar item">+ Item</button>
+      <div class="schedule-wrapper">
+        <section class="card schedule-card">
+          <div class="schedule-header">
+            <h2>Roteiro</h2>
+            <div class="schedule-actions">
+              <button id="btn-add" title="Adicionar item manualmente">+ Item</button>
+            </div>
           </div>
-        </div>
-        <div class="schedule-list" id="schedule-list">
-          <div class="empty">Carregando roteiro…</div>
-        </div>
-      </section>
+          <div class="schedule-list" id="schedule-list">
+            <div class="empty">Carregando roteiro…</div>
+          </div>
+        </section>
+      </div>
 
     </div>
 
-    <!-- ── BIBLIOTECA ── -->
-    <section class="card library-card">
-      <div class="library-header">
-        <h2>Biblioteca</h2>
-        <div class="library-folder-row">
-          <input id="library-folder-input" type="text" placeholder="Ex: C:\Videos" />
-          <button id="btn-load-library" title="Carregar pasta">↺</button>
-        </div>
-      </div>
-      <div class="library-list" id="library-list">
-        <div class="empty">Informe o caminho de uma pasta acima</div>
-      </div>
-    </section>
-
-    <!-- ── LOG ── -->
-    <section class="card log-card">
+    <section class="card log-card collapsed" id="log-section">
       <div class="log-header">
         <h2>Log de eventos</h2>
-        <button id="btn-clear-log">Limpar</button>
+        <div class="log-actions">
+          <button id="btn-clear-log">Limpar</button>
+          <button id="btn-toggle-log" title="Expandir/Recolher">▲</button>
+        </div>
       </div>
       <div class="log" id="log"></div>
     </section>
   </main>
 
-  <!-- ordem de carregamento: utilitários → player → playlist → biblioteca → ws → app -->
   <script src="/static/components/logs.js"></script>
   <script src="/static/components/player.js"></script>
   <script src="/static/components/playlist.js"></script>

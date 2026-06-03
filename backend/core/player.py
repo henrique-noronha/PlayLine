@@ -22,8 +22,9 @@ logger = logging.getLogger(__name__)
 
 
 class Player:
-    def __init__(self, on_end_file: Callable[[str], None]):
+    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None):
         self._on_end_file = on_end_file
+        self._on_position = on_position
         self._sock: Optional[socket.socket] = None
         self._send_lock = threading.Lock()
         self._connected = False
@@ -103,6 +104,9 @@ class Player:
             self._on_end_file(msg.get("reason", "eof"))
         elif event == "mpv_closed":
             self._on_end_file("mpv_closed")
+        elif event == "position":
+            if self._on_position:
+                self._on_position(msg.get("pos", 0.0))
         elif event == "state_response":
             self._pending_state_path = msg.get("playing_path")
             if self._pending_state_event:
