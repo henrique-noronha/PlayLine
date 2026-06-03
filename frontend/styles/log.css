@@ -1,0 +1,63 @@
+/* ── Card do log (rodapé full-width) ── */
+.log-card { grid-column: 1 / -1; }
+
+.log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.log-header h2 { margin-bottom: 0; }
+
+.log-actions { display: flex; gap: 8px; }
+
+#btn-clear-log {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+#btn-clear-log:hover { background: var(--surface2); }
+
+#btn-toggle-log {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 10px;
+}
+#btn-toggle-log:hover { background: var(--surface2); }
+
+/* ── Área de log ── */
+.log {
+  background: #090b12;
+  border-radius: 8px;
+  padding: 12px 14px;
+  height: 180px;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.log-entry { display: flex; gap: 8px; }
+.log-entry .ts  { color: #4a5568; min-width: 80px; }
+.log-entry .ev  { font-weight: 600; min-width: 120px; }
+.log-entry .msg { color: var(--muted); }
+
+.log-entry.ev-now_playing .ev  { color: var(--success); }
+.log-entry.ev-paused .ev       { color: var(--warning); }
+.log-entry.ev-resumed .ev      { color: var(--accent); }
+.log-entry.ev-stopped .ev      { color: var(--danger); }
+.log-entry.ev-playlist_end .ev { color: var(--accent2); }
+.log-entry.ev-error .ev        { color: var(--danger); }
+
+/* ── Estado colapsado ── */
+.log-card.collapsed .log        { display: none; }
+.log-card.collapsed             { padding-bottom: 14px; }
+.log-card.collapsed .log-header { margin-bottom: 0; }

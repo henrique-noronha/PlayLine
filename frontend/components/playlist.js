@@ -106,7 +106,20 @@ function generateThumb(path, imgEl) {
 }
 
 
-// Horários                                                             
+// Horários
+
+function fmtDate(date) {
+  if (!date) return "";
+  return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+}
+
+function isToday(date) {
+  if (!date) return true;
+  const now = new Date();
+  return date.getDate() === now.getDate() &&
+         date.getMonth() === now.getMonth() &&
+         date.getFullYear() === now.getFullYear();
+}
 
 function calcStartTimes() {
   const n = state.schedule.length;
@@ -138,6 +151,11 @@ function updateStartTimes() {
   times.forEach((t, i) => {
     const el = document.querySelector(`.item-start[data-idx="${i}"]`);
     if (el) el.textContent = fmtTime(t);
+    const de = document.querySelector(`.item-date[data-idx="${i}"]`);
+    if (de) {
+      de.textContent = fmtDate(t);
+      de.classList.toggle("future", !!t && !isToday(t));
+    }
   });
 
   const secs = calcRemaining();
@@ -155,6 +173,14 @@ function updateStartTimes() {
 function highlightActive(index) {
   document.querySelectorAll(".schedule-item").forEach((el, i) => {
     el.classList.toggle("active", i === index);
+    const locked = state.playing && i === index;
+    el.classList.toggle("locked", locked);
+    el.setAttribute("draggable", locked ? "false" : "true");
+    const drag = el.querySelector(".item-drag");
+    if (drag) {
+      drag.textContent = locked ? "▶" : "⠿";
+      drag.title      = locked ? "Em reprodução" : "Arrastar";
+    }
   });
 }
 
@@ -215,13 +241,14 @@ function renderSchedule() {
       ? item.title
       : (item.path ? item.path.split(/[/\\]/).pop().replace(/\.[^.]+$/, "") : "Novo item");
 
+    const isLocked = state.playing && i === state.currentIndex;
     const row = document.createElement("div");
-    row.className = "schedule-item" + (i === state.currentIndex ? " active" : "");
+    row.className = "schedule-item" + (i === state.currentIndex ? " active" : "") + (isLocked ? " locked" : "");
     row.dataset.index = i;
-    row.setAttribute("draggable", "true");
+    row.setAttribute("draggable", isLocked ? "false" : "true");
 
     row.innerHTML = `
-      <div class="item-drag" title="Arrastar">⠿</div>
+      <div class="item-drag" title="${isLocked ? "Em reprodução" : "Arrastar"}">${isLocked ? "▶" : "⠿"}</div>
       <div class="item-index">${i + 1}</div>
       <img class="item-thumb" draggable="false" src="" alt="" />
       <div class="item-meta">
@@ -230,7 +257,8 @@ function renderSchedule() {
       </div>
       <div class="item-time">
         <span class="item-start" data-idx="${i}">${fmtTime(startTimes[i])}</span>
-        <span class="item-dur" data-idx="${i}">${item.duration > 0 ? fmt(item.duration) : "—"}</span>
+        <span class="item-date ${isToday(startTimes[i]) ? "" : "future"}" data-idx="${i}">${fmtDate(startTimes[i])}</span>
+        <span class="item-dur"  data-idx="${i}">${item.duration > 0 ? fmt(item.duration) : "—"}</span>
       </div>
       <div class="item-actions">
         <button class="btn-delete" title="Remover" data-idx="${i}">✕</button>
@@ -313,6 +341,7 @@ function initDnD(list) {
   list.querySelectorAll(".schedule-item").forEach((row, i) => {
     row.addEventListener("dragstart", e => {
       if (libDragFile) return;
+      if (state.playing && i === state.currentIndex) { e.preventDefault(); return; }
       document.querySelectorAll(".schedule-item.editing").forEach(r => r.classList.remove("editing"));
       dragSrcIdx = i;
       e.dataTransfer.effectAllowed = "move";
@@ -324,6 +353,7 @@ function initDnD(list) {
       list.classList.remove("drag-over");
     });
     row.addEventListener("dragover", e => {
+      if (state.playing && i <= state.currentIndex) return; // não aceita drop sobre/antes do clipe em execução
       e.preventDefault();
       e.dataTransfer.dropEffect = libDragFile ? "copy" : "move";
       list.querySelectorAll(".schedule-item").forEach(el => el.classList.remove("drag-over"));
@@ -332,6 +362,7 @@ function initDnD(list) {
     });
     row.addEventListener("dragleave", () => row.classList.remove("drag-over"));
     row.addEventListener("drop", e => {
+      if (state.playing && i <= state.currentIndex) return; // bloqueia drop sobre/antes do clipe em execução
       e.preventDefault();
       row.classList.remove("drag-over");
       const libRaw = e.dataTransfer.getData("library-file");
@@ -341,6 +372,7 @@ function initDnD(list) {
         return;
       }
       if (dragSrcIdx === null || dragSrcIdx === i) return;
+      if (state.playing && dragSrcIdx === state.currentIndex) return; // não move o clipe em execução
       const currentId = state.currentIndex >= 0 ? state.schedule[state.currentIndex]?.id : null;
       const [moved] = state.schedule.splice(dragSrcIdx, 1);
       state.schedule.splice(i, 0, moved);

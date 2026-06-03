@@ -1,0 +1,91 @@
+/* ── Card da biblioteca (âncora de altura) ── */
+.library-card {
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+  min-height: 400px;
+}
+
+/* ── Linha de pasta ── */
+.library-folder-row {
+  display: flex;
+  gap: 6px;
+}
+
+.library-folder-row input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font);
+  padding: 5px 8px;
+  outline: none;
+}
+.library-folder-row input:focus { border-color: var(--accent); }
+
+.library-folder-row button {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  transition: background .15s;
+}
+.library-folder-row button:hover { background: var(--border); }
+
+/* ── Lista da biblioteca ── */
+.library-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  gap: 4px;
+}
+
+/* ── Item da biblioteca ── */
+.lib-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: grab;
+  transition: border-color .15s;
+  user-select: none;
+}
+.lib-item:hover   { border-color: var(--accent); }
+.lib-item.dragging { opacity: .35; }
+
+.lib-thumb {
+  width: 56px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 3px;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.lib-name {
+  font-size: 12px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.lib-dur {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
