@@ -1,6 +1,7 @@
 /* PlayLine — Player de vídeo HTML5 */
 
 const video = document.getElementById("player-video");
+let _lastMpvPos = null;
 
 function fmt(secs) {
   if (secs == null || isNaN(secs)) return "0:00";
@@ -18,18 +19,26 @@ function fmtTime(date) {
 }
 
 function loadVideo(path) {
+  _lastMpvPos = null;
   const url = "/media?path=" + encodeURIComponent(path);
   log(`Carregando: ${url}`, "info");
   video.src = url;
-  video.load();
-  video.play().catch(e => log(`Autoplay: ${e.message}`, "info"));
+  video.play().catch(e => { if (e.name !== "AbortError") log(`Autoplay: ${e.message}`, "warn"); });
 }
 
 function stopVideo() {
-  video.pause();
+  _lastMpvPos = null;
   video.removeAttribute("src");
   video.load();
   resetProgress();
+}
+
+function syncPosition(pos) {
+  _lastMpvPos = pos;
+  if (!video.src || isNaN(video.duration) || video.duration === 0) return;
+  if (Math.abs(video.currentTime - pos) > 1.5) {
+    video.currentTime = pos;
+  }
 }
 
 function resetProgress() {
@@ -51,6 +60,9 @@ function updateBadge(status) {
 
 video.addEventListener("loadedmetadata", () => {
   log(`Metadados OK — duração: ${fmt(video.duration)}`, "info");
+  if (_lastMpvPos !== null && _lastMpvPos > 1.0) {
+    video.currentTime = _lastMpvPos;
+  }
 });
 
 video.addEventListener("timeupdate", () => {
@@ -63,12 +75,10 @@ video.addEventListener("timeupdate", () => {
 });
 
 video.addEventListener("ended", () => {
-  log("Vídeo finalizado — avançando", "info");
-  send({ action: "next" });
+  log("Preview finalizado", "info");
 });
 
 video.addEventListener("error", () => {
   const code = video.error ? video.error.code : "?";
-  log(`Erro no vídeo (código ${code}) — avançando`, "error");
-  send({ action: "next" });
+  log(`Erro no preview (código ${code})`, "error");
 });

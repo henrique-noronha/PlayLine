@@ -8,18 +8,18 @@
 
 ## Status do projeto
 
-> 🚧 **Em desenvolvimento** — protótipo funcional em andamento (TCC 1)
+> **Em desenvolvimento** — protótipo funcional em andamento 
 
-| Componente | Status |
+| Componente | |
 |---|---|
-| Motor de vídeo (MPV) | ✅ Funcional |
-| Backend FastAPI + WebSocket | ✅ Funcional |
-| Controles play / pause / stop | ✅ Funcional |
-| Avanço automático (end-file) | 🔧 Em ajuste |
-| Recuperação de erros | 🔧 Em ajuste |
-| Interface HTML/JS | 🔧 Em ajuste |
-| Empacotamento .exe (PyWebView) | ⏳ Previsto para TCC 2 |
-| Testes de usabilidade (SUS) | ⏳ Previsto para TCC 2 |
+| Motor de vídeo (MPV) | 
+| Backend FastAPI + WebSocket | 
+| Controles play / pause / stop |
+| Avanço automático (end-file) |
+| Recuperação de erros |
+| Interface HTML/JS |
+| Empacotamento .exe (PyWebView) |
+| Testes de usabilidade (SUS) |
 
 ---
 

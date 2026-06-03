@@ -24,9 +24,8 @@ function stopRemainingTimer() {
   _remainingTimer = null;
 }
 
-// ------------------------------------------------------------------ //
-// Eventos do servidor                                                  //
-// ------------------------------------------------------------------ //
+// Eventos do servidor                                                 
+
 function handleEvent(ev) {
   const type = ev.event ?? "state";
   log(JSON.stringify(ev), type);
@@ -48,6 +47,7 @@ function handleEvent(ev) {
       loadVideo(ev.item.path);
       updateStartTimes();
       startRemainingTimer();
+      updateButtons();
       break;
     case "paused":
       state.paused = true;
@@ -55,7 +55,7 @@ function handleEvent(ev) {
       stopRemainingTimer();
       updateBadge("paused");
       updateStartTimes();
-      document.getElementById("btn-play").textContent = "▶";
+      updateButtons();
       video.pause();
       break;
     case "resumed":
@@ -67,7 +67,7 @@ function handleEvent(ev) {
       updateBadge("playing");
       updateStartTimes();
       startRemainingTimer();
-      document.getElementById("btn-play").textContent = "⏸";
+      updateButtons();
       video.play().catch(() => {});
       break;
     case "stopped":
@@ -80,7 +80,7 @@ function handleEvent(ev) {
       stopRemainingTimer();
       updateNowPlaying(null);
       updateBadge("stopped");
-      document.getElementById("btn-play").textContent = "▶";
+      updateButtons();
       highlightActive(-1);
       stopVideo();
       updateStartTimes();
@@ -96,6 +96,10 @@ function handleEvent(ev) {
       highlightActive(-1);
       stopVideo();
       updateStartTimes();
+      updateButtons();
+      break;
+    case "position":
+      syncPosition(ev.pos);
       break;
     case "schedule_updated":
       state.schedule = ev.items ?? [];
@@ -115,41 +119,57 @@ function applyState(s) {
 
   if (state.playing && !state.paused) {
     updateBadge("playing");
-    document.getElementById("btn-play").textContent = "⏸";
     startRemainingTimer();
   } else if (state.paused) {
     updateBadge("paused");
-    document.getElementById("btn-play").textContent = "▶";
   } else {
     updateBadge("stopped");
-    document.getElementById("btn-play").textContent = "▶";
   }
+  updateButtons();
   highlightActive(state.currentIndex);
 }
 
-// ------------------------------------------------------------------ //
-// Botões de controle                                                   //
-// ------------------------------------------------------------------ //
-document.getElementById("btn-stop").addEventListener("click", () => send({ action: "stop" }));
-document.getElementById("btn-next").addEventListener("click", () => send({ action: "next" }));
+// Botões de controle de mídia                                                  
 
-document.getElementById("btn-play").replaceWith(
-  (() => {
-    const btn = document.createElement("button");
-    btn.id = "btn-play";
-    btn.title = "Play / Pause";
-    btn.textContent = "▶";
-    btn.addEventListener("click", () => {
-      if (!state.playing) send({ action: "play" });
-      else send({ action: "pause" });
-    });
-    return btn;
-  })()
-);
+document.getElementById("btn-stop").addEventListener("click",  () => send({ action: "stop" }));
+document.getElementById("btn-next").addEventListener("click",  () => send({ action: "next" }));
+document.getElementById("btn-play").addEventListener("click",  () => send({ action: "play" }));
+document.getElementById("btn-pause").addEventListener("click", () => send({ action: "pause" }));
 
-// ------------------------------------------------------------------ //
-// Bootstrap                                                            //
-// ------------------------------------------------------------------ //
+function updateButtons() {
+  const stopped = !state.playing;
+  const paused  = state.paused;
+  document.getElementById("btn-play").disabled = !stopped;
+  document.getElementById("btn-stop").disabled = stopped;
+  document.getElementById("btn-next").disabled = stopped;
+  const btnPause = document.getElementById("btn-pause");
+  btnPause.disabled    = stopped;
+  btnPause.textContent = paused ? "▶" : "⏸";
+  btnPause.title       = paused ? "Retomar" : "Pausar";
+}
+
+// Lógica da Interface (Log Colapsável)                                                  
+
+const logSection = document.getElementById('log-section');
+const btnToggleLog = document.getElementById('btn-toggle-log');
+
+if (btnToggleLog && logSection) {
+  btnToggleLog.addEventListener('click', () => {
+    logSection.classList.toggle('collapsed');
+    
+    // Altera o ícone da setinha dependendo do estado
+    if (logSection.classList.contains('collapsed')) {
+      btnToggleLog.innerHTML = '▲'; // Indica que pode abrir
+      btnToggleLog.title = 'Expandir';
+    } else {
+      btnToggleLog.innerHTML = '▼'; // Indica que pode fechar
+      btnToggleLog.title = 'Recolher';
+    }
+  });
+}
+  
+// Bootstrap                                                                    
+
 async function init() {
   try {
     const res = await fetch("/api/schedule");
@@ -164,6 +184,7 @@ async function init() {
   }
 
   connect();
+  updateButtons();
 }
 
 init();
