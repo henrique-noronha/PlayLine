@@ -25,7 +25,8 @@ from typing import Optional
 _here = str(Path(__file__).parent)
 os.environ["PATH"] = _here + os.pathsep + os.environ.get("PATH", "")
 
-CHECKPOINT_PATH = Path(__file__).parent / "checkpoint.json"
+CHECKPOINT_PATH  = Path(__file__).parent / "checkpoint.json"
+_INPUT_CONF_PATH = Path(__file__).parent / ".playline_input.conf"
 HOST = "127.0.0.1"
 PORT = 6600
 
@@ -50,10 +51,12 @@ class MPVDaemon:
     def _init_mpv(self):
         import mpv
         self._mpv_dead = False
+        _INPUT_CONF_PATH.write_text("CLOSE_WIN ignore\n", encoding="utf-8")
         self._mpv = mpv.MPV(
             ytdl=False,
             input_default_bindings=False,
             input_vo_keyboard=False,
+            input_conf=str(_INPUT_CONF_PATH),
             video_sync="display-resample",
             hr_seek="yes",
             keep_open=False,
