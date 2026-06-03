@@ -1,0 +1,151 @@
+/* ── Vídeo ── */
+#player-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 6px;
+  display: block;
+  margin-bottom: 14px;
+}
+
+.now-playing-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  min-height: 28px;
+  color: var(--text);
+}
+
+/* ── Barra de progresso ── */
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--surface2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 3px;
+  transition: width .5s linear;
+}
+
+/* ── Badge de estado ── */
+.state-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  background: var(--surface2);
+  color: var(--muted);
+}
+.state-badge.playing { background: #14532d; color: var(--success); }
+.state-badge.paused  { background: #451a03; color: var(--warning); }
+
+/* ── Controles ── */
+.controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.controls button {
+  width: 56px; height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 22px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.controls button:hover  { background: var(--border); }
+.controls button:active { transform: scale(.93); }
+
+#btn-play {
+  background: var(--accent);
+  color: #fff;
+  width: 64px; height: 64px;
+  font-size: 26px;
+}
+#btn-play:hover { background: #3b6fd4; }
+
+#btn-pause {
+  border: 1px solid var(--warning);
+  color: var(--warning);
+}
+#btn-pause:hover { background: var(--warning); color: #000; }
+
+.controls button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Painel de stats (tempo restante / próximo) ── */
+.control-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 24px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 16px;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 50%;
+  flex-shrink: 0;
+}
+
+.stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 64px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 1px;
+  width: 6ch;
+  text-align: center;
+}
+
+.stat-remaining { color: var(--warning); }
+.stat-next      { color: var(--accent); }
+
+.stat-divider {
+  width: 1px;
+  height: 72px;
+  background: var(--border);
+  flex-shrink: 0;
+}
