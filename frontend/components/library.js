@@ -13,10 +13,17 @@ async function loadLibrary(folder) {
       const item = document.createElement("div");
       item.className = "lib-item";
       item.setAttribute("draggable", "true");
-      item.innerHTML = `<img class="lib-thumb" draggable="false" src="" alt="" /><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span>`;
+      item.innerHTML = `<img class="lib-thumb" draggable="false" src="" alt="" /><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span>`;
       list.appendChild(item);
 
       generateThumb(file.path, item.querySelector(".lib-thumb"), -1);
+
+      const durSpan = item.querySelector(".lib-dur");
+      const dv = document.createElement("video");
+      dv.muted = true; dv.preload = "metadata";
+      dv.src = "/media?path=" + encodeURIComponent(file.path);
+      dv.addEventListener("loadedmetadata", () => { durSpan.textContent = fmt(Math.round(dv.duration)); dv.src = ""; });
+      dv.addEventListener("error", () => { dv.src = ""; });
 
       item.addEventListener("dragstart", e => {
         libDragFile = file;

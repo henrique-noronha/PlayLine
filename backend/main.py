@@ -68,7 +68,13 @@ async def lifespan(app: FastAPI):
         if playlist_engine:
             playlist_engine.on_end_file(reason)
 
-    player_instance = Player(on_end_file=_on_end)
+    def _on_position(pos: float):
+        asyncio.run_coroutine_threadsafe(
+            manager.broadcast({"event": "position", "pos": pos}),
+            loop,
+        )
+
+    player_instance = Player(on_end_file=_on_end, on_position=_on_position)
     playlist_engine = PlaylistEngine(player=player_instance, broadcast=manager.broadcast)
     playlist_engine.set_event_loop(loop)
     playlist_engine.load_schedule()

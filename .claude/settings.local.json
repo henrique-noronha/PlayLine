@@ -20,7 +20,12 @@
       "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\backend\\\\core\")",
       "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\backend\\\\api\")",
       "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\frontend\\\\core\")",
-      "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\frontend\\\\components\")"
+      "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\HENRIQUE NORONHA\\\\Documents\\\\PlayLine\\\\frontend\\\\components\")",
+      "Bash(python -c \"from core.player import Player; print\\('player OK'\\)\")",
+      "Bash(python -c \"from core.playlist import PlaylistEngine; print\\('playlist OK'\\)\")",
+      "Bash(python -c \"import mpv_daemon; print\\('daemon OK'\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"from core.playlist import PlaylistEngine; from mpv_daemon import MPVDaemon; print\\('OK'\\)\")"
     ]
   }
 }

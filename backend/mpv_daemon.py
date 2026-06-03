@@ -58,7 +58,7 @@ class MPVDaemon:
             hr_seek="yes",
             keep_open=False,
             idle=True,
-            geometry="440x248",
+            autofit="440x248",
             title="PlayLine",
             log_handler=self._mpv_log,
             loglevel="warn",
@@ -235,12 +235,24 @@ class MPVDaemon:
             await asyncio.sleep(5)
             self._flush_checkpoint()
 
+    async def _position_task(self):
+        while True:
+            await asyncio.sleep(0.5)
+            if self._mpv and not self._mpv_dead:
+                try:
+                    pos = self._mpv.time_pos
+                    if pos is not None:
+                        await self._broadcast({"event": "position", "pos": round(float(pos), 2)})
+                except Exception:
+                    pass
+
     async def serve(self):
         self._loop = asyncio.get_event_loop()
         self._init_mpv()
         server = await asyncio.start_server(self.handle_client, HOST, PORT)
         logger.info("MPV Daemon escutando em %s:%d — PID %d", HOST, PORT, os.getpid())
         asyncio.create_task(self._checkpoint_task())
+        asyncio.create_task(self._position_task())
         async with server:
             await server.serve_forever()
 
