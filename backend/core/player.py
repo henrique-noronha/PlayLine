@@ -22,9 +22,10 @@ logger = logging.getLogger(__name__)
 
 
 class Player:
-    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None):
+    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None):
         self._on_end_file = on_end_file
         self._on_position = on_position
+        self._on_logo_list = on_logo_list
         self._sock: Optional[socket.socket] = None
         self._send_lock = threading.Lock()
         self._connected = False
@@ -111,6 +112,9 @@ class Player:
             self._pending_state_path = msg.get("playing_path")
             if self._pending_state_event:
                 self._pending_state_event.set()
+        elif event == "logo_list":
+            if self._on_logo_list:
+                self._on_logo_list(msg.get("files", []))
 
     # Envio                                                                #
 
@@ -145,6 +149,10 @@ class Player:
         self._send({"action": "play", "path": path})
         logger.info("Reproduzindo: %s", path)
 
+    def preload(self, path: str):
+        self._send({"action": "preload", "path": path})
+        logger.info("Pré-carregando: %s", path)
+
     def pause(self):
         self._send({"action": "pause"})
 
@@ -168,6 +176,13 @@ class Player:
     @property
     def paused(self) -> bool:
         return False
+
+    def set_logo(self, slot: int, filename: str, corner: str, active: bool):
+        logger.info("[set_logo] slot=%d filename=%r corner=%s active=%s", slot, filename, corner, active)
+        self._send({"action": "set_logo", "slot": slot, "filename": filename, "corner": corner, "active": active})
+
+    def request_logo_list(self):
+        self._send({"action": "list_logos"})
 
     def shutdown(self):
         """Fecha a conexão com o daemon (daemon continua rodando independentemente)."""

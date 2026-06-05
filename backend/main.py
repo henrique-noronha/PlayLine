@@ -74,7 +74,13 @@ async def lifespan(app: FastAPI):
             loop,
         )
 
-    player_instance = Player(on_end_file=_on_end, on_position=_on_position)
+    def _on_logo_list(files: list):
+        asyncio.run_coroutine_threadsafe(
+            manager.broadcast({"event": "logo_list", "files": files}),
+            loop,
+        )
+
+    player_instance = Player(on_end_file=_on_end, on_position=_on_position, on_logo_list=_on_logo_list)
     playlist_engine = PlaylistEngine(player=player_instance, broadcast=manager.broadcast)
     playlist_engine.set_event_loop(loop)
     playlist_engine.load_schedule()
