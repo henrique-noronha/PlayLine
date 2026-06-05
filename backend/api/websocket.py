@@ -26,6 +26,7 @@ async def websocket_endpoint(ws: WebSocket):
         await ws.send_text(json.dumps(_playlist_engine.state()))
     except Exception as exc:
         logger.error("Erro ao enviar estado inicial: %s", exc)
+    _playlist_engine.request_logo_list()
     try:
         while True:
             raw = await ws.receive_text()
@@ -59,5 +60,10 @@ async def _handle_command(cmd: dict):
     elif action == "reload_schedule":
         items = _playlist_engine.load_schedule()
         await _manager.broadcast({"event": "schedule_updated", "items": items})
+    elif action == "set_logo":
+        _playlist_engine.set_logo(
+            cmd.get("slot", 1), cmd.get("filename", ""),
+            cmd.get("corner", "br"), cmd.get("active", False),
+        )
     else:
         logger.warning("Ação desconhecida: %s", action)
