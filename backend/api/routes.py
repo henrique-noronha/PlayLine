@@ -1,11 +1,17 @@
 """Rotas HTTP do PlayLine."""
 
+import io
 import mimetypes
 import logging
+import os
+import subprocess
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse, Response
+
+# Mesmo caminho usado pelo mpv_daemon — sem espaços para compatibilidade com lavfi
+_LOGO_WORK_DIR = Path(os.environ.get("PUBLIC", r"C:\Users\Public")) / "pltmp"
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +59,99 @@ async def serve_media(path: str):
         raise HTTPException(status_code=404, detail="Arquivo não encontrado")
     mime, _ = mimetypes.guess_type("x" + p.suffix.lower())
     return FileResponse(str(p), media_type=mime or "video/mp4")
+
+
+_IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg"}
+
+_LOGOS_STATIC_DIR = Path(__file__).parent.parent / "logos"
+
+
+@router.get("/api/logos")
+async def list_logos():
+    """Lista os arquivos de logo disponíveis na pasta logos/."""
+    try:
+        files = sorted(
+            f.name for f in _LOGOS_STATIC_DIR.iterdir()
+            if f.is_file() and f.suffix.lower() in {".png", ".jpg", ".jpeg"}
+        )
+    except Exception:
+        files = []
+    return {"files": files}
+
+
+@router.get("/api/logos/{filename}")
+async def get_logo_static(filename: str):
+    """Serve um arquivo de logo da pasta estática logos/ (para preview na interface)."""
+    if "/" in filename or "\\" in filename or ".." in filename:
+        raise HTTPException(status_code=400, detail="Nome de arquivo inválido")
+    p = _LOGOS_STATIC_DIR / filename
+    if not p.is_file() or p.suffix.lower() not in {".png", ".jpg", ".jpeg"}:
+        raise HTTPException(status_code=404, detail="Logo não encontrado")
+    mime = "image/png" if p.suffix.lower() == ".png" else "image/jpeg"
+    return FileResponse(str(p), media_type=mime)
+
+
+@router.post("/api/logo/{slot}")
+async def upload_logo(slot: int, file: UploadFile = File(...)):
+    """Recebe um PNG, redimensiona para padrão emissora e salva no dir de trabalho."""
+    if slot not in (1, 2):
+        raise HTTPException(status_code=400, detail="Slot inválido (use 1 ou 2)")
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Apenas imagens são aceitas")
+    try:
+        from PIL import Image
+        data = await file.read()
+        img = Image.open(io.BytesIO(data)).convert("RGBA")
+        target_h = 90
+        if img.height != target_h:
+            ratio = target_h / img.height
+            img = img.resize((max(1, int(img.width * ratio)), target_h), Image.LANCZOS)
+        _LOGO_WORK_DIR.mkdir(parents=True, exist_ok=True)
+        work = _LOGO_WORK_DIR / f"l{slot}.png"
+        img.save(str(work), "PNG")
+        logger.info("Logo %d salvo: %s (%dx%d)", slot, work, img.width, img.height)
+        return {"ok": True, "slot": slot, "name": file.filename, "w": img.width, "h": img.height}
+    except Exception as exc:
+        logger.error("Erro ao salvar logo %d: %s", slot, exc)
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/api/logo/{slot}")
+async def get_logo_slot(slot: int):
+    """Serve o arquivo de trabalho do logo (para preview na interface)."""
+    if slot not in (1, 2):
+        raise HTTPException(status_code=400)
+    work = _LOGO_WORK_DIR / f"l{slot}.png"
+    if not work.is_file():
+        raise HTTPException(status_code=404, detail="Logo não enviado ainda")
+    return FileResponse(str(work), media_type="image/png")
+
+
+@router.get("/api/thumbnail")
+async def get_thumbnail(path: str):
+    p = Path(path)
+    if p.suffix.lower() not in _MEDIA_EXTS:
+        raise HTTPException(status_code=403)
+    if not p.is_file():
+        raise HTTPException(status_code=404)
+    try:
+        result = subprocess.run(
+            [
+                "ffmpeg", "-y", "-ss", "2", "-i", str(p),
+                "-vframes", "1",
+                "-vf", "scale=112:63:force_original_aspect_ratio=decrease,pad=112:63:(ow-iw)/2:(oh-ih)/2:color=black",
+                "-f", "image2", "-vcodec", "mjpeg", "pipe:1",
+            ],
+            capture_output=True,
+            timeout=15,
+        )
+        if result.returncode == 0 and result.stdout:
+            return Response(content=result.stdout, media_type="image/jpeg")
+    except FileNotFoundError:
+        pass  # ffmpeg não instalado
+    except Exception as exc:
+        logger.warning("Thumbnail ffmpeg error: %s", exc)
+    raise HTTPException(status_code=404, detail="Thumbnail não disponível")
 
 
 @router.get("/api/library")

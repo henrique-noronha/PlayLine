@@ -25,6 +25,7 @@ class PlaylistEngine:
         self._loop: Optional[asyncio.AbstractEventLoop] = None
         self._advance_seq: int = 0  # incrementado a cada avanço; evita avanço duplo
         self._skip_end_file: int = 0  # end-files a ignorar após substituição manual de vídeo
+        self._preloading: bool = False  # True quando próximo vídeo já está na fila do MPV
 
     # Roteiro                                                              #
  
@@ -82,14 +83,17 @@ class PlaylistEngine:
     def on_end_file(self, reason: str):
         """Chamado pelo Player (thread de leitura TCP) quando um arquivo termina."""
         if reason == "stop":
+            # end-file(stop) vem de loadfile replace ou do comando stop — não avança
             if self._skip_end_file > 0:
-                self._skip_end_file -= 1  # confirma a substituição esperada
+                self._skip_end_file -= 1
             return
         if reason == "mpv_closed":
+            self._preloading = False
             if self._loop:
                 asyncio.run_coroutine_threadsafe(self._on_mpv_closed(), self._loop)
             return
         if reason == "error":
+            self._preloading = False  # erro: não confia no estado da playlist interna
             logger.warning("Arquivo com erro — avançando automaticamente")
         if self._skip_end_file > 0:
             self._skip_end_file -= 1
@@ -97,7 +101,6 @@ class PlaylistEngine:
             return
         if self._running:
             if self._loop:
-                # Captura o seq atual; se outro avanço já ocorreu, esta chamada será ignorada
                 seq = self._advance_seq
                 asyncio.run_coroutine_threadsafe(
                     self._advance(expected_seq=seq), self._loop
@@ -108,6 +111,7 @@ class PlaylistEngine:
         self._running = False
         self._paused = False
         self._index = -1
+        self._preloading = False
         await self._broadcast({"event": "stopped"})
         logger.info("Playout parado (janela MPV fechada)")
 
@@ -136,7 +140,8 @@ class PlaylistEngine:
         await self._broadcast({"event": "schedule_updated", "items": list(self._items)})
 
         if self._items:
-            if expected_seq < 0:  # avanço manual — vídeo em reprodução será substituído
+            if expected_seq < 0:  # avanço manual — cancela preload e substitui explicitamente
+                self._preloading = False
                 self._skip_end_file += 1
             await self.play_index(0)
         else:
@@ -159,7 +164,21 @@ class PlaylistEngine:
         item = self._items[index]
 
         if item.get("path"):
-            self._player.play(item["path"])
+            if self._preloading:
+                # MPV já avançou para este vídeo via playlist interna (pré-carregado)
+                # Não chama player.play() para não interromper a reprodução
+                logger.info("MPV já está em transição para: %s", item["path"])
+            else:
+                self._player.play(item["path"])
+
+            self._preloading = False
+
+            # Pré-carrega o próximo vídeo na fila do MPV para transição sem flash
+            if index + 1 < len(self._items):
+                next_item = self._items[index + 1]
+                if next_item.get("path"):
+                    self._player.preload(next_item["path"])
+                    self._preloading = True
 
             # Retoma posição do checkpoint se for a primeira reprodução após reinício
             cp = self._read_checkpoint()
@@ -192,12 +211,19 @@ class PlaylistEngine:
         self._running = False
         self._paused = False
         self._index = -1
+        self._preloading = False
         self._player.stop()
         await self._broadcast({"event": "stopped"})
 
     async def next_item(self):
         # next manual: sem verificação de seq (sempre avança)
         await self._advance()
+
+    def set_logo(self, slot: int, filename: str, corner: str, active: bool):
+        self._player.set_logo(slot, filename, corner, active)
+
+    def request_logo_list(self):
+        self._player.request_logo_list()
 
     async def prev_item(self):
         pass  # roteiro linear — não retrocede
