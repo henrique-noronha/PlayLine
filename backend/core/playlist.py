@@ -38,7 +38,13 @@ class PlaylistEngine:
             self._items = []
         return self._items
 
-    def save_schedule(self, items: list[dict]):
+    def save_schedule(self, items: list[dict], from_ui: bool = False):
+        if from_ui and self._preloading:
+            old_next_id = self._items[1].get("id") if len(self._items) > 1 else None
+            new_next_id = items[1].get("id") if len(items) > 1 else None
+            if old_next_id != new_next_id:
+                self._preloading = False
+                logger.debug("Pré-carregamento cancelado — próximo item alterado externamente")
         self._items = items
         SCHEDULE_PATH.write_text(
             json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8"

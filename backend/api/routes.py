@@ -40,7 +40,7 @@ async def get_schedule():
 
 @router.put("/api/schedule")
 async def update_schedule(items: list[dict]):
-    _playlist_engine.save_schedule(items)
+    _playlist_engine.save_schedule(items, from_ui=True)
     await _manager.broadcast({"event": "schedule_updated", "items": items})
     return {"ok": True}
 
