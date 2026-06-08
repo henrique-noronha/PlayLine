@@ -2,30 +2,28 @@
 
 > Sistema de automação de *playout* televisivo de código aberto, desenvolvido como TCC do curso de Ciência da Computação da Universidade Federal do Tocantins (UFT).
 
-**PlayLine** é um software de automação de exibição televisiva focado em emissoras de pequeno porte — TVs Câmaras, canais educativos e emissoras comunitárias — que não dispõem de orçamento para soluções comerciais. O sistema é projetado para ser operado por não especialistas, com interface simples e tolerância automática a falhas.
+**PlayLine** é um software de automação de exibição televisiva voltado para emissoras de pequeno porte que não dispõem de orçamento para soluções comerciais. O sistema é projetado para ser operado por não especialistas, com interface simples.
 
 ---
 
-## Status do projeto
+## Funcionalidades
 
-> **Em desenvolvimento** — protótipo funcional em andamento 
-
-| Componente | |
-|---|---|
-| Motor de vídeo (MPV) | 
-| Backend FastAPI + WebSocket | 
-| Controles play / pause / stop |
-| Avanço automático (end-file) |
-| Recuperação de erros |
-| Interface HTML/JS |
-| Empacotamento .exe (PyWebView) |
-| Testes de usabilidade (SUS) |
+- Reprodução automatizada de vídeos via roteiro (`schedule.json`)
+- Controles de play, pause, stop e avanço manual
+- Avanço automático ao fim de cada clipe, com recuperação silenciosa em caso de erro
+- **MPV Daemon** — processo independente que mantém o vídeo no ar mesmo após reinício do servidor
+- **Retomada pós-crash** — checkpoint persiste a posição de reprodução; ao reiniciar, o sistema retoma de onde parou
+- **Overlay de logos** — dois slots de logo com posicionamento livre nos quatro cantos da tela
+- **Detecção de monitor secundário** — MPV abre em tela cheia no segundo monitor automaticamente
+- **Biblioteca de vídeos** — navegação por pasta para adicionar clipes ao roteiro via interface
+- Painel de controle em tempo real com relógio, tempo restante e próximo clipe
+- Log de eventos ao vivo com opção de limpeza
 
 ---
 
 ## Arquitetura
 
-PlayLine adota uma **arquitetura cliente-servidor orientada a eventos (EDA)**. Os três processos principais rodam de forma completamente isolada — uma falha na interface não interrompe o sinal ao ar.
+PlayLine adota uma **arquitetura cliente-servidor orientada a eventos (EDA)** com três processos completamente isolados — uma falha na interface não interrompe o sinal ao ar.
 
 ```
 ┌─────────────────┐        WebSocket         ┌──────────────────────┐
@@ -33,19 +31,20 @@ PlayLine adota uma **arquitetura cliente-servidor orientada a eventos (EDA)**. O
 │   HTML/JS       │    eventos assíncronos     │   Python + FastAPI   │
 │   (navegador)   │                            │                      │
 └─────────────────┘                            └──────────┬───────────┘
-                                                          │ python-mpv
+                                                          │ TCP :6600
                                                           ▼
                                                ┌──────────────────────┐
-                                               │   Motor de Vídeo     │
-                                               │   MPV (background)   │
+                                               │   MPV Daemon         │
+                                               │   Processo isolado   │
+                                               │   python-mpv / MPV   │
                                                └──────────────────────┘
 ```
 
 **Fluxo de um evento típico:**
 1. Operador clica "Próximo" na interface
 2. Frontend envia `{"event": "next"}` via WebSocket
-3. Playlist Engine consulta o `schedule.json` e carrega o próximo item no MPV
-4. MPV emite `end-file` ao terminar — Playlist Engine avança automaticamente
+3. Playlist Engine consulta o `schedule.json` e envia `{"action": "play", "path": "..."}` ao Daemon via TCP
+4. MPV emite `end-file` ao terminar → Daemon notifica o Playlist Engine → próximo clipe carrega automaticamente
 5. Interface recebe `{"event": "now_playing", ...}` e atualiza em tempo real
 
 **Tolerância a falhas:** arquivo corrompido ou inexistente → MPV emite `end-file` com `reason=error` → Playlist Engine pula para o próximo item automaticamente, sem intervenção do operador.
@@ -58,8 +57,10 @@ PlayLine adota uma **arquitetura cliente-servidor orientada a eventos (EDA)**. O
 |---|---|---|
 | Motor de vídeo | MPV + python-mpv | Gratuito, open source, eventos nativos assíncronos |
 | Backend | Python 3 + FastAPI | Async-first, WebSocket nativo via ASGI |
-| Comunicação | WebSocket (RFC 6455) | Bidirecional, baixa latência, sem polling |
-| Roteiro | JSON | Leve, legível, editável em runtime |
+| Daemon | asyncio TCP server | Processo isolado; sobrevive ao crash do servidor |
+| Comunicação servidor↔daemon | JSON over TCP (newline-delimited) | Leve, sem dependências externas |
+| Comunicação servidor↔interface | WebSocket (RFC 6455) | Bidirecional, baixa latência, sem polling |
+| Roteiro | JSON | Leve, legível, editável em tempo de execução |
 | Interface | HTML + CSS + JS nativos | Sem dependências de build, servido pelo FastAPI |
 | Plataforma | Windows / Linux | Desenvolvimento em Windows, portável para Linux |
 
@@ -70,14 +71,40 @@ PlayLine adota uma **arquitetura cliente-servidor orientada a eventos (EDA)**. O
 ```
 playline/
 ├── backend/
-│   ├── main.py          # FastAPI + WebSocket + orquestração
-│   ├── player.py        # Integração MPV via python-mpv
-│   ├── playlist.py      # Playlist Engine: fila e roteiro
-│   └── schedule.json    # Roteiro de programação (editável)
+│   ├── main.py              # Ponto de entrada FastAPI + wiring dos módulos
+│   ├── mpv_daemon.py        # Ponto de entrada do MPV Daemon
+│   ├── schedule.json        # Roteiro de programação (editável em runtime)
+│   ├── logos/               # Imagens de logo para overlay
+│   ├── core/
+│   │   ├── events.py        # Definição de eventos do sistema
+│   │   ├── player.py        # Interface com o MPV Daemon
+│   │   └── playlist.py      # Playlist Engine: fila e avanço automático
+│   ├── api/
+│   │   ├── routes.py        # Rotas HTTP REST
+│   │   └── websocket.py     # Handler WebSocket
+│   └── daemon/
+│       ├── daemon.py        # MPVDaemon: servidor TCP + controle do MPV
+│       ├── checkpoint.py    # Persistência de posição para retomada pós-crash
+│       ├── monitor.py       # Detecção de monitor secundário
+│       ├── overlay.py       # Renderização de logos via MPV OSD
+│       └── protocol.py      # Parsing do protocolo TCP
 └── frontend/
-    ├── index.html        # Interface de operação
-    ├── style.css         # Estilos
-    └── app.js            # Conexão WebSocket e controles
+    ├── index.html           # Interface de operação
+    ├── app.js               # Inicialização e wiring dos componentes
+    ├── core/
+    │   └── ws.js            # Cliente WebSocket
+    ├── components/
+    │   ├── player.js        # Componente de reprodução e controles
+    │   ├── playlist.js      # Componente de roteiro
+    │   ├── library.js       # Componente de biblioteca de vídeos
+    │   └── logs.js          # Componente de log de eventos
+    └── styles/
+        ├── base.css
+        ├── layout.css
+        ├── player.css
+        ├── schedule.css
+        ├── library.css
+        └── log.css
 ```
 
 ---
@@ -87,7 +114,7 @@ playline/
 ### Pré-requisitos
 
 - Python 3.11+
-- [MPV](https://mpv.io/installation/) instalado e acessível no PATH (Windows: `.dll` na pasta do projeto ou no PATH)
+- [MPV](https://mpv.io/installation/) — no Windows, o arquivo `libmpv-2.dll` deve estar na pasta `backend/` ou no PATH do sistema
 
 ### Passos
 
@@ -99,10 +126,11 @@ cd playline
 # Instale as dependências Python
 pip install fastapi uvicorn python-mpv
 
-# Configure o roteiro com seus arquivos de vídeo
-# Edite backend/schedule.json
+# Inicie o MPV Daemon (processo independente)
+cd backend
+python mpv_daemon.py
 
-# Inicie o servidor
+# Em outro terminal, inicie o servidor
 cd backend
 python main.py
 ```

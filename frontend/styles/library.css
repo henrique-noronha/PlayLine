@@ -60,8 +60,32 @@
   transition: border-color .15s;
   user-select: none;
 }
-.lib-item:hover   { border-color: var(--accent); }
+.lib-item:hover    { border-color: var(--accent); }
 .lib-item.dragging { opacity: .35; }
+.lib-item.selected { border-color: var(--warning); background: rgba(245,158,11,.08); }
+
+.lib-sel-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 2px 5px 4px;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.lib-sel-bar button {
+  padding: 3px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 12px;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.lib-sel-bar button:hover { background: var(--accent); color: #fff; }
 
 .lib-thumb {
   width: 56px;

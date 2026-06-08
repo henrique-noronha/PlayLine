@@ -5,8 +5,34 @@ const thumbCache = {};
 const durLoading = new Set(); // paths com carregamento de duração em andamento
 let dragSrcIdx  = null;
 let libDragFile = null;
+let selectedScheduleIds = new Set();
 
 const THUMB_PREFIX = "playline_thumb:";
+
+function updateScheduleSelectionUI() {
+  let btn = document.getElementById("btn-delete-selected");
+  if (!btn) {
+    btn = document.createElement("button");
+    btn.id = "btn-delete-selected";
+    btn.title = "Remover selecionados";
+    document.querySelector(".schedule-actions").prepend(btn);
+    btn.addEventListener("click", () => {
+      const playingId = state.playing && state.currentIndex >= 0
+        ? state.schedule[state.currentIndex]?.id : null;
+      state.schedule = state.schedule.filter(it => !selectedScheduleIds.has(it.id));
+      if (playingId) state.currentIndex = state.schedule.findIndex(it => it.id === playingId);
+      selectedScheduleIds.clear();
+      renderSchedule();
+      syncOrderToServer();
+    });
+  }
+  if (selectedScheduleIds.size > 0) {
+    btn.textContent = `✕ ${selectedScheduleIds.size}`;
+    btn.style.display = "";
+  } else {
+    btn.style.display = "none";
+  }
+}
 
 function thumbFromStorage(path) {
   try { return localStorage.getItem(THUMB_PREFIX + path); } catch (_) { return null; }
@@ -99,9 +125,22 @@ function generateThumb(path, imgEl) {
   });
 
   v.addEventListener("error", () => {
-    thumbCache[path].state = "error";
-    thumbCache[path].pending = [];
     v.src = "";
+    const cache = thumbCache[path];
+    fetch("/api/thumbnail?path=" + encodeURIComponent(path))
+      .then(res => { if (!res.ok) throw 0; return res.blob(); })
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        thumbToStorage(path, url);
+        cache.state = "done";
+        cache.url   = url;
+        cache.pending.forEach(el => { el.src = url; });
+        cache.pending = [];
+      })
+      .catch(() => {
+        cache.state = "error";
+        cache.pending = [];
+      });
   });
 }
 
@@ -266,6 +305,7 @@ function renderSchedule() {
     `;
 
     list.appendChild(row);
+    if (selectedScheduleIds.has(item.id)) row.classList.add("selected");
 
     if (item.path) {
       const imgEl = row.querySelector(".item-thumb");
@@ -301,8 +341,23 @@ function renderSchedule() {
 
     row.querySelector(".btn-delete").addEventListener("click", e => {
       e.stopPropagation();
-      state.schedule.splice(i, 1);
+      const playingId = state.playing && state.currentIndex >= 0
+        ? state.schedule[state.currentIndex]?.id : null;
+      if (selectedScheduleIds.has(item.id) && selectedScheduleIds.size > 1) {
+        // Batch: preserva o clipe em reprodução mesmo que esteja selecionado
+        state.schedule = state.schedule.filter(it =>
+          !selectedScheduleIds.has(it.id) || it.id === playingId
+        );
+        if (playingId) state.currentIndex = state.schedule.findIndex(it => it.id === playingId);
+        selectedScheduleIds.clear();
+      } else {
+        if (playingId && item.id === playingId) return; // não remove clipe em reprodução
+        state.schedule.splice(i, 1);
+        selectedScheduleIds.delete(item.id);
+        if (state.playing && state.currentIndex > i) state.currentIndex--;
+      }
       renderSchedule();
+      syncOrderToServer();
     });
 
     row.addEventListener("dblclick", () => {
@@ -311,6 +366,20 @@ function renderSchedule() {
 
     // Ativa edição ao clicar na área visual de um input (que tem pointer-events:none por padrão)
     row.addEventListener("click", e => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (state.playing && i === state.currentIndex) return; // não seleciona clipe em reprodução
+        if (selectedScheduleIds.has(item.id)) {
+          selectedScheduleIds.delete(item.id);
+          row.classList.remove("selected");
+        } else {
+          selectedScheduleIds.add(item.id);
+          row.classList.add("selected");
+        }
+        updateScheduleSelectionUI();
+        return;
+      }
       for (const inp of row.querySelectorAll("input")) {
         const r = inp.getBoundingClientRect();
         if (e.clientX >= r.left && e.clientX <= r.right &&
@@ -333,6 +402,7 @@ function renderSchedule() {
 
   initDnD(list);
   updateStartTimes();
+  updateScheduleSelectionUI();
 }
 
 // Drag & Drop                                                          
@@ -385,13 +455,6 @@ function initDnD(list) {
 
 }
 
-// Botões do roteiro
-
-document.getElementById("btn-add").addEventListener("click", () => {
-  state.schedule.push({ id: `item-${Date.now()}`, title: "Novo item", path: "", duration: 0 });
-  renderSchedule();
-});
-
 // Drop na área vazia do roteiro — registrado uma única vez (não dentro de initDnD)
 (function setupListDrop() {
   const list = document.getElementById("schedule-list");
@@ -421,6 +484,11 @@ document.getElementById("btn-add").addEventListener("click", () => {
   document.addEventListener("click", e => {
     if (!e.target.closest(".schedule-item")) {
       document.querySelectorAll(".schedule-item.editing").forEach(r => r.classList.remove("editing"));
+      if (!e.ctrlKey && !e.metaKey && selectedScheduleIds.size > 0) {
+        selectedScheduleIds.clear();
+        document.querySelectorAll(".schedule-item.selected").forEach(r => r.classList.remove("selected"));
+        updateScheduleSelectionUI();
+      }
     }
   });
 })();
