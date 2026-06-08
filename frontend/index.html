@@ -25,7 +25,11 @@
       
       <section class="card" id="now-playing-card">
         <h2>Reproduzindo agora</h2>
-        <video id="player-video" muted></video>
+        <div class="player-wrap">
+          <video id="player-video" muted></video>
+          <img id="logo-overlay-1" class="logo-overlay" style="display:none" alt="" draggable="false" />
+          <img id="logo-overlay-2" class="logo-overlay" style="display:none" alt="" draggable="false" />
+        </div>
         <div class="now-playing-title" id="np-title">—</div>
         <div class="progress-wrap">
           <span id="pos">0:00</span>
@@ -62,16 +66,59 @@
             <div class="stat-value stat-remaining" id="remaining-time">—</div>
           </div>
           <div class="stat-divider"></div>
+          <div class="stat-block stat-block--clock">
+            <div class="stat-label" id="clock-date">—</div>
+            <div class="stat-value stat-clock" id="clock-time">—</div>
+          </div>
+          <div class="stat-divider"></div>
           <div class="stat-block">
             <div class="stat-label">Próximo clipe às</div>
             <div class="stat-value stat-next" id="next-clip-time">—</div>
           </div>
         </div>
-        <div class="controls">
-          <button id="btn-stop"  title="Parar">⏹</button>
-          <button id="btn-play"  title="Play">▶</button>
-          <button id="btn-pause" title="Pausar">⏸</button>
-          <button id="btn-next"  title="Próximo">⏭</button>
+        <div class="controls-row">
+          <div class="controls">
+            <button id="btn-stop"  title="Parar">⏹</button>
+            <button id="btn-play"  title="Play">▶</button>
+            <button id="btn-pause" title="Pausar">⏸</button>
+            <button id="btn-next"  title="Próximo">⏭</button>
+          </div>
+
+          <div class="logo-controls-compact">
+
+            <div class="logo-ctrl">
+              <span class="logo-label">Logo 1</span>
+              <div class="logo-pos-selector" data-slot="1">
+                <div class="pos-zone" data-slot="1" data-corner="tl" title="Superior esquerdo"></div>
+                <div class="pos-zone" data-slot="1" data-corner="tr" title="Superior direito"></div>
+                <div class="pos-zone" data-slot="1" data-corner="bl" title="Inferior esquerdo"></div>
+                <div class="pos-zone" data-slot="1" data-corner="br" title="Inferior direito"></div>
+                <div class="pos-indicator"></div>
+              </div>
+              <div class="logo-toggle-wrap">
+                <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1">⏻</button>
+                <button class="btn-logo-pick" data-slot="1" title="Selecionar logo">▾</button>
+                <div class="logo-picker-dropdown" id="logo-picker-1"></div>
+              </div>
+            </div>
+
+            <div class="logo-ctrl">
+              <span class="logo-label">Logo 2</span>
+              <div class="logo-pos-selector" data-slot="2">
+                <div class="pos-zone" data-slot="2" data-corner="tl" title="Superior esquerdo"></div>
+                <div class="pos-zone" data-slot="2" data-corner="tr" title="Superior direito"></div>
+                <div class="pos-zone" data-slot="2" data-corner="bl" title="Inferior esquerdo"></div>
+                <div class="pos-zone" data-slot="2" data-corner="br" title="Inferior direito"></div>
+                <div class="pos-indicator"></div>
+              </div>
+              <div class="logo-toggle-wrap">
+                <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2">⏻</button>
+                <button class="btn-logo-pick" data-slot="2" title="Selecionar logo">▾</button>
+                <div class="logo-picker-dropdown" id="logo-picker-2"></div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </section>
 
@@ -79,9 +126,7 @@
         <section class="card schedule-card">
           <div class="schedule-header">
             <h2>Roteiro</h2>
-            <div class="schedule-actions">
-              <button id="btn-add" title="Adicionar item manualmente">+ Item</button>
-            </div>
+            <div class="schedule-actions"></div>
           </div>
           <div class="schedule-list" id="schedule-list">
             <div class="empty">Carregando roteiro…</div>

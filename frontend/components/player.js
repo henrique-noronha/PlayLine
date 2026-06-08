@@ -18,19 +18,49 @@ function fmtTime(date) {
   return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
 
+function _showUnavailable() {
+  let el = document.getElementById("preview-unavailable");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "preview-unavailable";
+    el.textContent = "Preview não disponível para este formato";
+    video.parentNode.appendChild(el);
+  }
+  video.style.display = "none";
+  el.style.display = "flex";
+}
+
+function _hideUnavailable() {
+  const el = document.getElementById("preview-unavailable");
+  if (el) el.style.display = "none";
+  video.style.display = "block";
+}
+
 function loadVideo(path) {
   _lastMpvPos = null;
+  _hideUnavailable();
+  _restoreLogoOverlays();
   const url = "/media?path=" + encodeURIComponent(path);
   log(`Carregando: ${url}`, "info");
   video.src = url;
   video.play().catch(e => { if (e.name !== "AbortError") log(`Autoplay: ${e.message}`, "warn"); });
 }
 
+function _restoreLogoOverlays() {
+  if (typeof _logoState === "undefined" || typeof _updateLogoOverlay === "undefined") return;
+  [1, 2].forEach(slot => {
+    const s = _logoState[slot];
+    _updateLogoOverlay(slot, s.corner, s.active);
+  });
+}
+
 function stopVideo() {
   _lastMpvPos = null;
+  _hideUnavailable();
   video.removeAttribute("src");
   video.load();
   resetProgress();
+  document.querySelectorAll(".logo-overlay").forEach(el => el.style.display = "none");
 }
 
 function syncPosition(pos) {
@@ -81,4 +111,5 @@ video.addEventListener("ended", () => {
 video.addEventListener("error", () => {
   const code = video.error ? video.error.code : "?";
   log(`Erro no preview (código ${code})`, "error");
+  _showUnavailable();
 });
