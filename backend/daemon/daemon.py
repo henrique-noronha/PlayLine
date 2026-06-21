@@ -4,10 +4,11 @@ Sobrevive ao crash do servidor; o vídeo continua sem interrupção.
 TCP 127.0.0.1:6600 — protocolo JSON por linha (newline-delimited JSON).
 
 Comandos aceitos:
-    {"action": "play",     "path": "C:\\video.mp4"}
-    {"action": "preload",  "path": "C:\\next.mp4"}
+    {"action": "play",       "path": "C:\\video.mp4"}
+    {"action": "preload",    "path": "C:\\next.mp4"}
     {"action": "pause"}  |  {"action": "resume"}  |  {"action": "stop"}
-    {"action": "seek",    "seconds": 42.0, "mode": "absolute"}
+    {"action": "seek",       "seconds": 42.0, "mode": "absolute"}
+    {"action": "set_volume", "volume": 100}   -- MPV volume 0-130 (100 = 0 dB)
     {"action": "get_state"}
     {"action": "list_logos"}
     {"action": "set_logo", "slot": 1, "corner": "br", "active": true, "filename": "logo.png"}
@@ -58,6 +59,7 @@ class MPVDaemon:
         self._last_position  = 0.0
         self._checkpoint_dirty = False
         self._window_positioned = False  # move_to_tv() só roda uma vez por sessão MPV
+        self._volume: float  = 100.0   # persiste entre reinits do MPV (100 = 0 dB)
         self._logo: dict = {
             1: {"corner": "br", "active": False, "filename": ""},
             2: {"corner": "bl", "active": False, "filename": ""},
@@ -88,6 +90,7 @@ class MPVDaemon:
             log_handler=self._mpv_log,
             loglevel="warn",
             prefetch_playlist=True,
+            volume_max=150,   # permite até ~+3.5 dB (141 = +3 dB)
         )
 
         if has_secondary:
@@ -100,6 +103,7 @@ class MPVDaemon:
             )
 
         self._mpv = mpv.MPV(**mpv_kwargs)
+        self._mpv.volume = self._volume   # restaura volume ao reinicializar
         self._mpv.observe_property("time-pos", self._on_time_pos)
         try:
             self._mpv.observe_property("osd-width", self._on_osd_resize)
@@ -318,6 +322,16 @@ class MPVDaemon:
                 self._apply_overlay()
 
             threading.Thread(target=_update, daemon=True).start()
+
+        elif action == "set_volume":
+            vol = max(0, min(150, int(cmd.get("volume", 100))))
+            self._volume = float(vol)   # persiste para reaplicar no reinit
+            if self._mpv and not self._mpv_dead:
+                try:
+                    self._mpv.volume = self._volume
+                    logger.debug("volume → %.1f (%.1f dB)", vol, 20 * __import__("math").log10(max(vol, 0.001) / 100))
+                except Exception as exc:
+                    logger.warning("set_volume: %s", exc)
 
         elif action == "get_state":
             playing_path = None

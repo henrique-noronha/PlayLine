@@ -91,15 +91,202 @@
 .controls-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 0;
   margin-top: 8px;
-  flex-wrap: wrap;
+}
+
+/* ── Áudio ── */
+.audio-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  padding-right: 16px;
+  border-right: 1px solid var(--border);
+}
+
+.audio-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.audio-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Botão mudo */
+.btn-mute {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface2);
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+}
+.btn-mute:hover { background: var(--border); color: var(--text); }
+.btn-mute.muted {
+  background: #3b1111;
+  color: var(--danger);
+  border-color: var(--danger);
+  box-shadow: 0 0 7px rgba(239,68,68,.3);
+}
+
+/* Trilho horizontal — fader de canal */
+.fader-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+#volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  border: none;
+  outline: none;
+  cursor: grab;
+  background: #22263a;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,.55);
+}
+#volume-slider:active { cursor: grabbing; }
+
+/* Thumb — landscape (mais largo que alto) p/ deslizar na vertical */
+#volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 30px;
+  height: 16px;
+  border-radius: 5px;
+  cursor: grab;
+  border: 1px solid rgba(0,0,0,.65);
+  transition: box-shadow .12s, transform .06s;
+  box-shadow:
+    0 3px 12px rgba(0,0,0,.85),
+    inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -2px 0 rgba(0,0,0,.4);
+  /* Ranhuras horizontais (to bottom = linhas atravessando a largura do cap) */
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,.0)        0px,
+      rgba(0,0,0,.0)        1.8px,
+      rgba(0,0,0,.24)       1.8px,
+      rgba(0,0,0,.24)       2.3px,
+      rgba(255,255,255,.11) 2.3px,
+      rgba(255,255,255,.11) 2.8px
+    ),
+    /* gradiente lateral: escuro → claro → escuro (efeito 3-D lado a lado) */
+    linear-gradient(
+      to right,
+      #343858 0%,
+      #5c6484 22%,
+      #6e7898 50%,
+      #5c6484 78%,
+      #343858 100%
+    );
+}
+#volume-slider::-webkit-slider-thumb:hover {
+  box-shadow:
+    0 4px 16px rgba(0,0,0,.9),
+    inset 0 1px 0 rgba(255,255,255,.32),
+    inset 0 -2px 0 rgba(0,0,0,.4),
+    0 0 0 2px rgba(79,142,247,.22);
+}
+#volume-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scaleX(.94);
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.8),
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -2px 0 rgba(0,0,0,.4),
+    0 0 0 2px rgba(79,142,247,.38);
+}
+
+/* Régua dB abaixo do slider — marcas absolutas alinhadas ao range real */
+.volume-scale {
+  position: relative;
+  height: 12px;
+  width: 100%;
+}
+.volume-scale span {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: var(--muted);
+  opacity: .6;
+  letter-spacing: .3px;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* ── VU Meter ── */
+.vu-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#vu-canvas {
+  flex: 1;
+  min-width: 0;
+  display: block;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--surface2);
+}
+
+.vu-clip {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--muted);
+  opacity: .3;
+  min-width: 26px;
+  text-align: center;
+  user-select: none;
+  transition: color .05s, opacity .05s, text-shadow .05s;
+}
+.vu-clip.active {
+  color: #ef4444;
+  opacity: 1;
+  text-shadow: 0 0 8px rgba(239,68,68,.8);
+}
+
+/* Valor dB em destaque */
+.volume-db {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 40px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  letter-spacing: .3px;
 }
 
 .controls {
   display: flex;
   gap: 10px;
   align-items: center;
+  padding: 0 16px;
+  flex-shrink: 0;
 }
 
 .controls button {
@@ -136,6 +323,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  flex: 1;
   padding-left: 16px;
   border-left: 1px solid var(--border);
 }

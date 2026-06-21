@@ -77,6 +77,29 @@
           </div>
         </div>
         <div class="controls-row">
+
+          <div class="audio-controls">
+            <span class="audio-label">Volume</span>
+            <div class="audio-row">
+              <button id="btn-mute" class="btn-mute" title="Mudo">🔊</button>
+              <div class="fader-wrap">
+                <input type="range" id="volume-slider" min="-10" max="3" step="0.5" value="0" />
+                <div class="volume-scale">
+                  <!-- left = calc(15px + P*(100%-30px)), P=(val+10)/13 -->
+                  <span style="left:15px">-10</span>
+                  <span style="left:calc(38.5% + 3.5px)">-5</span>
+                  <span style="left:calc(76.9% - 8px)">0</span>
+                  <span style="left:calc(100% - 15px)">+3</span>
+                </div>
+              </div>
+              <span class="volume-db" id="volume-db">0 dB</span>
+            </div>
+            <div class="vu-wrap">
+              <canvas id="vu-canvas" height="10"></canvas>
+              <span class="vu-clip" id="vu-clip">CLIP</span>
+            </div>
+          </div>
+
           <div class="controls">
             <button id="btn-stop"  title="Parar">⏹</button>
             <button id="btn-play"  title="Play">▶</button>

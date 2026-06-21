@@ -60,6 +60,8 @@ async def _handle_command(cmd: dict):
     elif action == "reload_schedule":
         items = _playlist_engine.load_schedule()
         await _manager.broadcast({"event": "schedule_updated", "items": items})
+    elif action == "set_volume":
+        _playlist_engine.set_volume(cmd.get("volume", 100))
     elif action == "set_logo":
         _playlist_engine.set_logo(
             cmd.get("slot", 1), cmd.get("filename", ""),
