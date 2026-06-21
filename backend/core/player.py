@@ -177,6 +177,9 @@ class Player:
     def paused(self) -> bool:
         return False
 
+    def set_volume(self, volume: int):
+        self._send({"action": "set_volume", "volume": volume})
+
     def set_logo(self, slot: int, filename: str, corner: str, active: bool):
         logger.info("[set_logo] slot=%d filename=%r corner=%s active=%s", slot, filename, corner, active)
         self._send({"action": "set_logo", "slot": slot, "filename": filename, "corner": corner, "active": active})

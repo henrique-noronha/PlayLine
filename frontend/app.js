@@ -165,12 +165,70 @@ function applyState(s) {
   highlightActive(state.currentIndex);
 }
 
-// Botões de controle de mídia                                                 
+// Botões de controle de mídia
 
 document.getElementById("btn-stop").addEventListener("click",  () => send({ action: "stop" }));
 document.getElementById("btn-next").addEventListener("click",  () => send({ action: "next" }));
 document.getElementById("btn-play").addEventListener("click",  () => send({ action: "play" }));
 document.getElementById("btn-pause").addEventListener("click", () => send({ action: "pause" }));
+
+// Controle de volume
+
+const _volSlider  = document.getElementById("volume-slider");
+const _volDisplay = document.getElementById("volume-db");
+const _btnMute    = document.getElementById("btn-mute");
+let _muted = false;
+let _volDb = parseFloat(localStorage.getItem("playline_volume_db") ?? "0");
+
+function _dbToMpvVol(db) {
+  return Math.round(100 * Math.pow(10, db / 20));
+}
+
+function _updateFaderFill(slider) {
+  const min = parseFloat(slider.min);
+  const max = parseFloat(slider.max);
+  const val = parseFloat(slider.value);
+  const pct = ((val - min) / (max - min)) * 100;
+  slider.style.background =
+    `linear-gradient(to right, rgba(79,142,247,.45) ${pct}%, #22263a ${pct}%)`;
+}
+
+function _fmtDb(db) {
+  const sign = db > 0 ? "+" : "";
+  return sign + db.toFixed(1) + " dB";
+}
+
+// Clamp ao novo range caso localStorage tenha valor antigo fora de -10..+3
+_volDb = Math.max(-10, Math.min(3, _volDb));
+_volSlider.value = _volDb;
+_volDisplay.textContent = _fmtDb(_volDb);
+_updateFaderFill(_volSlider);
+
+_volSlider.addEventListener("input", () => {
+  _volDb = parseFloat(_volSlider.value);
+  localStorage.setItem("playline_volume_db", _volDb);
+  _volDisplay.textContent = _fmtDb(_volDb);
+  _updateFaderFill(_volSlider);
+  if (_muted) {
+    _muted = false;
+    _btnMute.textContent = "🔊";
+    _btnMute.classList.remove("muted");
+  }
+  send({ action: "set_volume", volume: _dbToMpvVol(_volDb) });
+});
+
+_btnMute.addEventListener("click", () => {
+  _muted = !_muted;
+  if (_muted) {
+    _btnMute.textContent = "🔇";
+    _btnMute.classList.add("muted");
+    send({ action: "set_volume", volume: 0 });
+  } else {
+    _btnMute.textContent = "🔊";
+    _btnMute.classList.remove("muted");
+    send({ action: "set_volume", volume: _dbToMpvVol(_volDb) });
+  }
+});
 
 function updateButtons() {
   const stopped = !state.playing;
@@ -377,7 +435,123 @@ function _sendLogo(slot) {
   });
 }
 
-// Bootstrap                                                                   
+// ── VU Meter ─────────────────────────────────────────────────────────────────
+
+const VU_MIN  = -40;   // dBFS mínimo do meter
+const VU_MAX  =  3;    // dBFS máximo (iguala o slider)
+const VU_SEGS = 30;    // nº de segmentos LED
+const VU_HOLD = 1500;  // ms de peak hold antes do decay
+const VU_DCY  = 0.3;   // dB/frame de decay do peak
+
+let _vuAudioCtx = null;
+let _vuAnalyser  = null;
+let _vuBuf       = null;
+let _vuReady     = false;
+let _vuPeakDb    = VU_MIN;
+let _vuPeakTil   = 0;
+let _vuClipTil   = 0;
+
+function _vuSegColor(i) {
+  const p = i / VU_SEGS;
+  if (p < 0.63) return { on: "#22c55e", dim: "rgba(34,197,94,.09)"  };
+  if (p < 0.80) return { on: "#f59e0b", dim: "rgba(245,158,11,.09)" };
+  if (p < 0.92) return { on: "#f97316", dim: "rgba(249,115,22,.09)" };
+  return             { on: "#ef4444", dim: "rgba(239,68,68,.11)"  };
+}
+
+function _vuDraw(db) {
+  const canvas = document.getElementById("vu-canvas");
+  if (!canvas || canvas.width === 0) return;
+  const W = canvas.width, H = canvas.height;
+  const gfx = canvas.getContext("2d");
+  const segW = Math.max(1, Math.floor((W - VU_SEGS + 1) / VU_SEGS));
+
+  const active  = Math.max(0, Math.min(VU_SEGS,
+    Math.round((db - VU_MIN) / (VU_MAX - VU_MIN) * VU_SEGS)));
+  const peakSeg = Math.min(VU_SEGS - 1,
+    Math.max(0, Math.round((_vuPeakDb - VU_MIN) / (VU_MAX - VU_MIN) * VU_SEGS)));
+
+  gfx.clearRect(0, 0, W, H);
+
+  for (let i = 0; i < VU_SEGS; i++) {
+    const c = _vuSegColor(i);
+    gfx.fillStyle = i < active ? c.on : c.dim;
+    gfx.fillRect(i * (segW + 1), 0, segW, H);
+  }
+
+  // Peak hold — tick branco, vermelho se em clip
+  if (_vuPeakDb > VU_MIN + 2) {
+    gfx.fillStyle = _vuPeakDb >= 0 ? "#ef4444" : "rgba(255,255,255,.85)";
+    gfx.fillRect(peakSeg * (segW + 1), 0, segW, H);
+  }
+}
+
+function _vuFrame() {
+  requestAnimationFrame(_vuFrame);
+
+  const canvas = document.getElementById("vu-canvas");
+  if (canvas && canvas.offsetWidth > 0 && canvas.offsetWidth !== canvas.width) {
+    canvas.width = canvas.offsetWidth;
+  }
+
+  if (!_vuReady || !_vuAnalyser) { _vuDraw(VU_MIN); return; }
+
+  _vuAnalyser.getFloatTimeDomainData(_vuBuf);
+  let sum = 0;
+  for (let i = 0; i < _vuBuf.length; i++) sum += _vuBuf[i] * _vuBuf[i];
+  const rms = Math.sqrt(sum / _vuBuf.length);
+  const sigDb = 20 * Math.log10(Math.max(rms, 1e-10));
+  const outDb = _muted ? VU_MIN : Math.min(VU_MAX, sigDb + _volDb);
+
+  const now = performance.now();
+  if (outDb > _vuPeakDb) { _vuPeakDb = outDb; _vuPeakTil = now + VU_HOLD; }
+  else if (now > _vuPeakTil) _vuPeakDb = Math.max(VU_MIN, _vuPeakDb - VU_DCY);
+
+  if (outDb >= 0) _vuClipTil = now + 2000;
+  const clipEl = document.getElementById("vu-clip");
+  if (clipEl) clipEl.classList.toggle("active", now < _vuClipTil);
+
+  _vuDraw(outDb);
+}
+
+function _initVuMeter() {
+  if (_vuReady) return;
+  try {
+    _vuAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // createMediaElementSource toma posse do áudio: desconecta saída padrão
+    const src = _vuAudioCtx.createMediaElementSource(video);
+    video.muted = false; // seguro após a captura acima
+
+    _vuAnalyser = _vuAudioCtx.createAnalyser();
+    _vuAnalyser.fftSize = 2048;
+    _vuAnalyser.smoothingTimeConstant = 0.1;
+
+    const silencer = _vuAudioCtx.createGain();
+    silencer.gain.value = 0; // browser fica mudo — MPV é o som real
+
+    src.connect(_vuAnalyser);
+    _vuAnalyser.connect(silencer);
+    silencer.connect(_vuAudioCtx.destination);
+
+    _vuBuf   = new Float32Array(_vuAnalyser.fftSize);
+    _vuReady = true;
+  } catch (e) {
+    console.warn("[VU]", e);
+  }
+}
+
+function _resumeVuCtx() {
+  if (_vuAudioCtx && _vuAudioCtx.state === "suspended") {
+    _vuAudioCtx.resume().catch(() => {});
+  }
+}
+
+document.addEventListener("click",      _resumeVuCtx);
+document.addEventListener("touchstart", _resumeVuCtx, { passive: true });
+
+requestAnimationFrame(_vuFrame);
+
+// Bootstrap
 
 async function init() {
   try {
@@ -400,6 +574,7 @@ async function init() {
   }
 
   initLogoUI();
+  _initVuMeter();
 
   if (typeof connect === "function") connect();
 

@@ -225,6 +225,9 @@ class PlaylistEngine:
         # next manual: sem verificação de seq (sempre avança)
         await self._advance()
 
+    def set_volume(self, volume: int):
+        self._player.set_volume(volume)
+
     def set_logo(self, slot: int, filename: str, corner: str, active: bool):
         self._player.set_logo(slot, filename, corner, active)
 
