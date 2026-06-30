@@ -1,0 +1,194 @@
+/* ── Preview de texto sobre o vídeo ──
+   font-size definido por JS: max(8, round(videoH * 0.018))
+   Mesma fórmula e mesma fonte (Segoe UI) que o daemon PIL usa.
+   Layout: [ temp | hora ] / [ cidade ] ── */
+
+.text-preview-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+}
+.text-preview-overlay.corner-tl { top: 5%;    left: 4%;  }
+.text-preview-overlay.corner-tr { top: 5%;    right: 4%; }
+.text-preview-overlay.corner-bl { bottom: 5%; left: 4%;  }
+.text-preview-overlay.corner-br { bottom: 5%; right: 4%; }
+
+/* Linha superior: temp (esquerda) + hora (direita) */
+.to-top {
+  display: flex;
+  flex-direction: row;
+  border-radius: 3px 3px 0 0;
+  overflow: hidden;
+}
+
+/* Blocos — mesmos RGBA que o PIL (215/255 ≈ 0.843) */
+.to-time {
+  background: rgba(0, 61, 165, 0.843);
+  color: #fff;
+  padding: 0.16em 0.25em;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.to-temp {
+  background: rgba(190, 120, 0, 0.843);
+  color: #fff;
+  padding: 0.16em 0.25em;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+/* Cidade — linha inteira abaixo (0.72 × font_sz) */
+.to-city-lbl {
+  background: rgba(5, 115, 48, 0.843);
+  color: #fff;
+  padding: 0.18em 0.25em;
+  font-size: 0.72em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 0 3px 3px;
+}
+
+/* ── Hora / Temperatura overlay controls ── */
+
+.text-overlay-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.to-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  flex-shrink: 0;
+  width: 52px;
+  line-height: 1.3;
+}
+
+/* ── Seletor de canto (reutiliza dimensões de .logo-pos-selector) ── */
+#text-pos-selector {
+  width: 64px;
+  height: 36px;
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface2);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+#text-pos-selector .pos-zone {
+  background: transparent;
+  transition: background .1s;
+}
+#text-pos-selector .pos-zone:hover   { background: rgba(255,255,255,.08); }
+#text-pos-selector .pos-zone.active  { background: rgba(34,197,94,.30); }
+#text-pos-selector .pos-zone.blocked {
+  background: rgba(239,68,68,.18);
+  cursor: not-allowed;
+}
+
+#text-pos-selector .pos-indicator {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 2;
+  background: var(--success);
+  box-shadow: 0 0 5px var(--success);
+  transition: top .12s, right .12s, bottom .12s, left .12s;
+}
+
+/* ── Opções (checkboxes + cidade) ── */
+.to-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.to-check {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.to-check input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+  accent-color: var(--success);
+}
+
+.to-city {
+  flex: 1;
+  min-width: 0;
+  max-width: 90px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  font-size: 11px;
+  padding: 4px 7px;
+  outline: none;
+  font-family: inherit;
+}
+.to-city:focus { border-color: var(--accent); }
+
+/* ── Botão liga/desliga ── */
+.btn-text-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, border-color .15s, color .15s, box-shadow .15s, text-shadow .15s;
+}
+.btn-text-toggle:hover { background: var(--border); color: var(--text); }
+.btn-text-toggle.active {
+  background: #0d1f14;
+  color: var(--success);
+  border-color: var(--success);
+  box-shadow: 0 0 8px rgba(34,197,94,.45);
+  text-shadow: 0 0 7px var(--success);
+}

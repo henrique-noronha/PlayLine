@@ -30,7 +30,7 @@ import threading
 from pathlib import Path
 from typing import Optional
 
-from . import checkpoint, monitor, overlay, osd_text, protocol, weather
+from . import checkpoint, monitor, overlay, osd_text, preview, protocol, weather
 
 # Garante que libmpv-2.dll seja encontrada (em sys._MEIPASS quando empacotado)
 if getattr(sys, 'frozen', False):
@@ -196,6 +196,10 @@ class MPVDaemon:
             self._resize_scheduled = False
             if logos_active:
                 self._apply_overlay()
+            if text_active and self._mpv and not self._mpv_dead:
+                with self._text_overlay_lock:
+                    cfg = dict(self._text_overlay)
+                osd_text.apply(self._mpv, cfg, None)
 
         threading.Thread(target=_delayed, daemon=True).start()
 
@@ -489,6 +493,25 @@ class MPVDaemon:
                 except Exception:
                     pass
 
+    async def _preview_task(self):
+        """Captura frames MPV a ~10 fps e distribui para clientes TCP conectados."""
+        import base64
+        loop = asyncio.get_event_loop()
+        while True:
+            await asyncio.sleep(0.05)   # alvo 20 fps (limitado pelo tempo de captura)
+            if self._mpv_dead or self._mpv is None or not self._clients:
+                continue
+            try:
+                if self._mpv.path is None:
+                    continue
+            except Exception:
+                continue
+            mpv_ref = self._mpv
+            jpeg = await loop.run_in_executor(None, preview.capture_jpeg, mpv_ref)
+            if jpeg and self._clients:
+                b64 = base64.b64encode(jpeg).decode("ascii")
+                await self._broadcast({"event": "preview_frame", "data": b64})
+
     async def serve(self):
         self._loop = asyncio.get_event_loop()
         self._init_mpv()
@@ -497,6 +520,7 @@ class MPVDaemon:
         asyncio.create_task(self._checkpoint_task())
         asyncio.create_task(self._position_task())
         asyncio.create_task(self._text_overlay_task())
+        asyncio.create_task(self._preview_task())
         async with server:
             await server.serve_forever()
 

@@ -22,11 +22,12 @@ logger = logging.getLogger(__name__)
 
 
 class Player:
-    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None, on_text_overlay_state: Optional[Callable[[dict], None]] = None):
+    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None, on_text_overlay_state: Optional[Callable[[dict], None]] = None, on_preview_frame: Optional[Callable[[str], None]] = None):
         self._on_end_file = on_end_file
         self._on_position = on_position
         self._on_logo_list = on_logo_list
         self._on_text_overlay_state = on_text_overlay_state
+        self._on_preview_frame = on_preview_frame
         self._sock: Optional[socket.socket] = None
         self._send_lock = threading.Lock()
         self._connected = False
@@ -134,6 +135,9 @@ class Player:
         elif event == "text_overlay_state":
             if self._on_text_overlay_state:
                 self._on_text_overlay_state(msg)
+        elif event == "preview_frame":
+            if self._on_preview_frame:
+                self._on_preview_frame(msg.get("data", ""))
 
     # Envio                                                                #
 

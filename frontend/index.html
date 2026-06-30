@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/static/styles/schedule.css" />
   <link rel="stylesheet" href="/static/styles/library.css" />
   <link rel="stylesheet" href="/static/styles/log.css" />
+  <link rel="stylesheet" href="/static/styles/text_overlay.css" />
 </head>
 <body>
   <header>
@@ -26,9 +27,11 @@
       <section class="card" id="now-playing-card">
         <h2>Reproduzindo agora</h2>
         <div class="player-wrap">
+          <canvas id="mpv-preview"></canvas>
           <video id="player-video" muted></video>
           <img id="logo-overlay-1" class="logo-overlay" style="display:none" alt="" draggable="false" />
           <img id="logo-overlay-2" class="logo-overlay" style="display:none" alt="" draggable="false" />
+          <div id="text-preview-overlay" class="text-preview-overlay" style="display:none"></div>
         </div>
         <div class="now-playing-title" id="np-title">—</div>
         <div class="progress-wrap">
@@ -142,7 +145,26 @@
             </div>
 
           </div>
+
         </div>
+
+        <div class="text-overlay-row">
+          <span class="to-label">Hora / Temp.</span>
+          <div id="text-pos-selector">
+            <div class="pos-zone" data-corner="tl" title="Superior esquerdo"></div>
+            <div class="pos-zone" data-corner="tr" title="Superior direito"></div>
+            <div class="pos-zone" data-corner="bl" title="Inferior esquerdo"></div>
+            <div class="pos-zone" data-corner="br" title="Inferior direito"></div>
+            <div class="pos-indicator"></div>
+          </div>
+          <div class="to-options">
+            <label class="to-check"><input type="checkbox" id="to-show-time" checked /> Hora</label>
+            <label class="to-check"><input type="checkbox" id="to-show-temp" checked /> Temp.</label>
+            <input type="text" id="to-city-input" class="to-city" value="Palmas,TO" placeholder="Cidade" />
+          </div>
+          <button class="btn-text-toggle" id="btn-text-toggle" title="Ativar hora/temperatura">⏻</button>
+        </div>
+
       </section>
 
       <div class="schedule-wrapper">
@@ -176,6 +198,8 @@
   <script src="/static/components/playlist.js"></script>
   <script src="/static/components/library.js"></script>
   <script src="/static/core/ws.js"></script>
+  <script src="/static/components/text_overlay.js"></script>
   <script src="/static/app.js"></script>
+  <script src="/static/components/preview_ws.js"></script>
 </body>
 </html>
