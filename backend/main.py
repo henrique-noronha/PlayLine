@@ -29,7 +29,7 @@ else:
     FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 
 
-# Gerenciador de conexões WebSocket                                   
+# Gerenciadores de conexões WebSocket
 
 class ConnectionManager:
     def __init__(self):
@@ -56,9 +56,42 @@ class ConnectionManager:
             self._clients.remove(c)
 
 
+class PreviewManager:
+    """Distribui frames JPEG (binário) para clientes /ws/preview."""
+
+    def __init__(self):
+        self._clients: list[WebSocket] = []
+
+    async def connect(self, ws: WebSocket) -> None:
+        await ws.accept()
+        self._clients.append(ws)
+        logger.info("Preview WS conectado — total: %d", len(self._clients))
+
+    def disconnect(self, ws: WebSocket) -> None:
+        if ws in self._clients:
+            self._clients.remove(ws)
+        logger.info("Preview WS desconectado — total: %d", len(self._clients))
+
+    async def broadcast(self, data: bytes) -> None:
+        dead = []
+        for client in self._clients:
+            try:
+                await client.send_bytes(data)
+            except Exception:
+                dead.append(client)
+        for c in dead:
+            if c in self._clients:
+                self._clients.remove(c)
+
+    @property
+    def count(self) -> int:
+        return len(self._clients)
+
+
 # Lifecycle                                                            #
 
 manager = ConnectionManager()
+preview_manager = PreviewManager()
 playlist_engine: PlaylistEngine | None = None
 player_instance: Player | None = None
 
@@ -90,11 +123,22 @@ async def lifespan(app: FastAPI):
             loop,
         )
 
+    def _on_preview_frame(b64: str):
+        if preview_manager.count == 0:
+            return
+        try:
+            import base64
+            data = base64.b64decode(b64)
+        except Exception:
+            return
+        asyncio.run_coroutine_threadsafe(preview_manager.broadcast(data), loop)
+
     player_instance = Player(
         on_end_file=_on_end,
         on_position=_on_position,
         on_logo_list=_on_logo_list,
         on_text_overlay_state=_on_text_overlay_state,
+        on_preview_frame=_on_preview_frame,
     )
     playlist_engine = PlaylistEngine(player=player_instance, broadcast=manager.broadcast)
     playlist_engine.set_event_loop(loop)
@@ -120,6 +164,16 @@ app = FastAPI(title="PlayLine", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 app.include_router(http_router)
 app.include_router(ws_router)
+
+
+@app.websocket("/ws/preview")
+async def preview_ws(ws: WebSocket):
+    await preview_manager.connect(ws)
+    try:
+        while True:
+            await ws.receive_text()   # mantém vivo; dados fluem apenas servidor→cliente
+    except Exception:
+        preview_manager.disconnect(ws)
 
 
 @app.get("/")

@@ -2,6 +2,8 @@
 
 const video = document.getElementById("player-video");
 let _lastMpvPos = null;
+let _syncPending = false;
+let _lastSyncAt  = 0;      // performance.now() do último seek de sincronização
 
 function fmt(secs) {
   if (secs == null || isNaN(secs)) return "0:00";
@@ -26,21 +28,24 @@ function _showUnavailable() {
     el.textContent = "Preview não disponível para este formato";
     video.parentNode.appendChild(el);
   }
-  video.style.display = "none";
   el.style.display = "flex";
 }
 
 function _hideUnavailable() {
   const el = document.getElementById("preview-unavailable");
   if (el) el.style.display = "none";
-  video.style.display = "block";
 }
 
-function loadVideo(path) {
-  _lastMpvPos = null;
+// startAt > 1: appends #t=N so the browser opens the file at that second natively,
+// avoiding a post-load manual seek (which freezes while buffering).
+function loadVideo(path, startAt = 0) {
+  _lastMpvPos = startAt > 1 ? startAt : null;
+  _syncPending = false;
+  _lastSyncAt  = 0;
   _hideUnavailable();
   _restoreLogoOverlays();
-  const url = "/media?path=" + encodeURIComponent(path);
+  const fragment = startAt > 1 ? `#t=${Math.floor(startAt)}` : '';
+  const url = "/media?path=" + encodeURIComponent(path) + fragment;
   log(`Carregando: ${url}`, "info");
   video.src = url;
   video.play().catch(e => { if (e.name !== "AbortError") log(`Autoplay: ${e.message}`, "warn"); });
@@ -63,10 +68,19 @@ function stopVideo() {
   document.querySelectorAll(".logo-overlay").forEach(el => el.style.display = "none");
 }
 
+// Threshold alto: drift normal de playback (1-2s de buffering) nunca dispara resync.
+// Só corrige saltos reais (próximo clipe, seek manual, reconexão com grande offset).
+const _SYNC_THRESHOLD_S  = 12;   // segundos de diferença para forçar resync
+const _SYNC_COOLDOWN_MS  = 6000; // ms mínimos entre dois resyncs consecutivos
+
 function syncPosition(pos) {
   _lastMpvPos = pos;
   if (!video.src || isNaN(video.duration) || video.duration === 0) return;
-  if (Math.abs(video.currentTime - pos) > 1.5) {
+  if (_syncPending) return;
+  if (performance.now() - _lastSyncAt < _SYNC_COOLDOWN_MS) return;
+  if (Math.abs(video.currentTime - pos) > _SYNC_THRESHOLD_S) {
+    _syncPending = true;
+    _lastSyncAt  = performance.now();
     video.currentTime = pos;
   }
 }
@@ -90,9 +104,12 @@ function updateBadge(status) {
 
 video.addEventListener("loadedmetadata", () => {
   log(`Metadados OK — duração: ${fmt(video.duration)}`, "info");
-  if (_lastMpvPos !== null && _lastMpvPos > 1.0) {
-    video.currentTime = _lastMpvPos;
-  }
+  // Sem seek manual aqui: quando loadVideo usa #t=N, o browser já inicia
+  // na posição certa via range request nativo, sem freeze de buffering.
+});
+
+video.addEventListener("seeked", () => {
+  _syncPending = false;
 });
 
 video.addEventListener("timeupdate", () => {

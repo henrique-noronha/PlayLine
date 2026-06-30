@@ -45,9 +45,9 @@ def apply(mpv, config: dict, temperature: Optional[str]) -> None:
 
     corner    = config.get("corner", "tl")
     osd_w, osd_h = _osd_dims(mpv)
-    font_sz   = max(13, int(osd_h * 0.018))
-    margin_x  = max(12, int(osd_w * _MARGIN_X))
-    margin_y  = max(28, int(osd_h * _MARGIN_Y))
+    font_sz   = max(6, int(osd_h * 0.020))
+    margin_x  = max(4, int(osd_w * _MARGIN_X))
+    margin_y  = max(6, int(osd_h * _MARGIN_Y))
 
     result = _render(config, temperature, font_sz)
     if result is None:
@@ -134,11 +134,11 @@ def _render(config: dict, temperature: Optional[str], font_sz: int) -> Optional[
             return None
 
         font_main = _load_font(font_sz)
-        font_city = _load_font(max(10, int(font_sz * 0.72)))
+        font_city = _load_font(max(4, int(font_sz * 0.72)))
 
-        pad_x  = max(5, int(font_sz * 0.25))
-        pad_y  = max(3, int(font_sz * 0.16))
-        pad_cy = max(5, int(font_sz * 0.22))
+        pad_x  = max(2, int(font_sz * 0.25))
+        pad_y  = max(1, int(font_sz * 0.16))
+        pad_cy = max(2, int(font_sz * 0.22))
 
         probe = Image.new("RGBA", (1, 1))
         d     = ImageDraw.Draw(probe)
@@ -146,6 +146,13 @@ def _render(config: dict, temperature: Optional[str], font_sz: int) -> Optional[
         def measure(txt, fnt):
             bb = d.textbbox((0, 0), txt, font=fnt)
             return bb[2] - bb[0], bb[3] - bb[1]
+
+        def cpos(txt, fnt, box_x, box_y, box_w, box_h):
+            """Posição (x,y) para centralizar visualmente o texto no retângulo."""
+            bb = d.textbbox((0, 0), txt, font=fnt)
+            x = box_x + (box_w - (bb[2] - bb[0])) // 2 - bb[0]
+            y = box_y + (box_h - (bb[3] - bb[1])) // 2 - bb[1]
+            return x, y
 
         tw, th = measure(time_str, font_main) if time_str else (0, 0)
         ew, eh = measure(temp_str, font_main) if temp_str else (0, 0)
@@ -174,27 +181,22 @@ def _render(config: dict, temperature: Optional[str], font_sz: int) -> Optional[
         if both:
             # Temp à esquerda (amarelo)
             draw.rectangle([0, 0, left_w - 1, top_h - 1], fill=_BG_TEMP)
-            ex = (left_w - ew) // 2
-            ey = (top_h - eh) // 2
-            draw.text((ex, ey), temp_str, font=font_main, fill=_FG)
+            draw.text(cpos(temp_str, font_main, 0, 0, left_w, top_h), temp_str, font=font_main, fill=_FG)
             # Hora à direita (azul) — ocupa o restante
             r_start = left_w
-            r_end   = total_w - 1
-            r_w     = r_end - r_start + 1
-            draw.rectangle([r_start, 0, r_end, top_h - 1], fill=_BG_TIME)
-            tx = r_start + (r_w - tw) // 2
-            ty = (top_h - th) // 2
-            draw.text((tx, ty), time_str, font=font_main, fill=_FG)
+            r_w     = total_w - r_start
+            draw.rectangle([r_start, 0, total_w - 1, top_h - 1], fill=_BG_TIME)
+            draw.text(cpos(time_str, font_main, r_start, 0, r_w, top_h), time_str, font=font_main, fill=_FG)
         elif time_str:
             draw.rectangle([0, 0, total_w - 1, top_h - 1], fill=_BG_TIME)
-            draw.text(((total_w - tw) // 2, (top_h - th) // 2), time_str, font=font_main, fill=_FG)
+            draw.text(cpos(time_str, font_main, 0, 0, total_w, top_h), time_str, font=font_main, fill=_FG)
         else:
             draw.rectangle([0, 0, total_w - 1, top_h - 1], fill=_BG_TEMP)
-            draw.text(((total_w - ew) // 2, (top_h - eh) // 2), temp_str, font=font_main, fill=_FG)
+            draw.text(cpos(temp_str, font_main, 0, 0, total_w, top_h), temp_str, font=font_main, fill=_FG)
 
         # Cidade em baixo (verde)
         draw.rectangle([0, top_h, total_w - 1, total_h - 1], fill=_BG_CITY)
-        draw.text(((total_w - cw) // 2, top_h + (city_h - ch) // 2), city, font=font_city, fill=_FG)
+        draw.text(cpos(city, font_city, 0, top_h, total_w, city_h), city, font=font_city, fill=_FG)
 
         # RGBA → BGRA pré-multiplicado
         rgba = img.tobytes()
