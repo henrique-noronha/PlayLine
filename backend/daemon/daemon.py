@@ -25,19 +25,35 @@ import asyncio
 import json
 import logging
 import os
+import sys
 import threading
 from pathlib import Path
 from typing import Optional
 
-from . import checkpoint, monitor, overlay, protocol
+from . import checkpoint, monitor, overlay, osd_text, protocol, weather
 
-# Garante que backend/ está no PATH para encontrar libmpv-2.dll
-_BACKEND_DIR = str(Path(__file__).parent.parent)
+# Garante que libmpv-2.dll seja encontrada (em sys._MEIPASS quando empacotado)
+if getattr(sys, 'frozen', False):
+    _BACKEND_DIR = str(Path(sys._MEIPASS))
+    _DATA_DIR    = Path(sys.executable).parent
+else:
+    _BACKEND_DIR = str(Path(__file__).parent.parent)
+    _DATA_DIR    = Path(__file__).parent.parent
+
 os.environ["PATH"] = _BACKEND_DIR + os.pathsep + os.environ.get("PATH", "")
 
-CHECKPOINT_PATH  = Path(__file__).parent.parent / "checkpoint.json"
-LOGOS_DIR        = Path(__file__).parent.parent / "logos"
-_INPUT_CONF_PATH = Path(__file__).parent.parent / ".playline_input.conf"
+CHECKPOINT_PATH      = _DATA_DIR / "checkpoint.json"
+TEXT_OVERLAY_PATH    = _DATA_DIR / "text_overlay.json"
+LOGOS_DIR            = _DATA_DIR / "logos"
+_INPUT_CONF_PATH     = _DATA_DIR / ".playline_input.conf"
+
+_TEXT_OVERLAY_DEFAULTS = {
+    "active":    False,
+    "show_time": True,
+    "show_temp": True,
+    "corner":    "tl",
+    "city":      "Palmas,TO",
+}
 
 HOST = "127.0.0.1"
 PORT = 6600
@@ -65,6 +81,9 @@ class MPVDaemon:
             2: {"corner": "bl", "active": False, "filename": ""},
         }
         self._resize_scheduled = False  # debounce do osd-width
+        self._logo_lock = threading.Lock()
+        self._text_overlay: dict = self._load_text_overlay()
+        self._text_overlay_lock = threading.Lock()
 
     # ── Inicialização do MPV ──────────────────────────────────────────────────
 
@@ -97,7 +116,7 @@ class MPVDaemon:
             mpv_kwargs.update(border=False, fullscreen=True, ontop=True, geometry=geo)
             logger.info("MPV geometry: %s", geo)
         else:
-            mpv_kwargs.update(border=True, fullscreen=False, ontop=False, geometry="380x213")
+            mpv_kwargs.update(border=False, fullscreen=False, ontop=False, geometry="380x213")
             logger.warning(
                 "Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)"
             )
@@ -114,8 +133,14 @@ class MPVDaemon:
         def _file_loaded(event):
             if not self._window_positioned:
                 threading.Thread(target=self._move_to_tv, daemon=True).start()
-            if any(d["active"] for d in self._logo.values()):
+            with self._logo_lock:
+                has_active = any(d["active"] for d in self._logo.values())
+            if has_active:
                 threading.Thread(target=self._apply_overlay_delayed, daemon=True).start()
+            with self._text_overlay_lock:
+                text_active = self._text_overlay.get("active", False)
+            if text_active:
+                threading.Thread(target=self._apply_text_overlay_delayed, daemon=True).start()
 
         @self._mpv.event_callback("end-file")
         def _end_file(event):
@@ -152,8 +177,14 @@ class MPVDaemon:
             self._checkpoint_dirty = True
 
     def _on_osd_resize(self, name, value):
-        """Re-aplica overlay (com debounce) quando a janela MPV é redimensionada."""
-        if value is None or not any(d["active"] for d in self._logo.values()):
+        """Re-aplica overlays (com debounce) quando a janela MPV é redimensionada."""
+        if value is None:
+            return
+        with self._logo_lock:
+            logos_active = any(d["active"] for d in self._logo.values())
+        with self._text_overlay_lock:
+            text_active = self._text_overlay.get("active", False)
+        if not logos_active and not text_active:
             return
         if self._resize_scheduled:
             return
@@ -163,19 +194,33 @@ class MPVDaemon:
             import time
             time.sleep(0.15)
             self._resize_scheduled = False
-            self._apply_overlay()
+            if logos_active:
+                self._apply_overlay()
 
         threading.Thread(target=_delayed, daemon=True).start()
 
     # ── Logo overlay ─────────────────────────────────────────────────────────
 
     def _apply_overlay(self):
-        overlay.apply(self._mpv, self._logo, LOGOS_DIR)
+        with self._logo_lock:
+            logo_snapshot = {k: dict(v) for k, v in self._logo.items()}
+        overlay.apply(self._mpv, logo_snapshot, LOGOS_DIR)
 
     def _apply_overlay_delayed(self):
         import time
         time.sleep(0.5)
-        self._apply_overlay()
+        if not self._mpv_dead:
+            self._apply_overlay()
+
+    def _apply_text_overlay_delayed(self):
+        import time
+        time.sleep(0.5)
+        if self._mpv_dead or self._mpv is None:
+            return
+        with self._text_overlay_lock:
+            cfg = dict(self._text_overlay)
+        if cfg.get("active"):
+            osd_text.apply(self._mpv, cfg, None)
 
     # ── Checkpoint ───────────────────────────────────────────────────────────
 
@@ -280,7 +325,7 @@ class MPVDaemon:
         elif action == "stop":
             if self._mpv and not self._mpv_dead:
                 self._mpv.command("stop")
-                for slot in (1, 2):
+                for slot in (1, 2, 3):
                     try:
                         self._mpv.command("overlay-remove", str(slot))
                     except Exception:
@@ -314,11 +359,12 @@ class MPVDaemon:
                         slot, filename, corner, active)
 
             def _update(s=slot, c=corner, a=active, f=filename):
-                self._logo[s]["corner"] = c
-                self._logo[s]["active"] = a
-                if f:
-                    self._logo[s]["filename"] = f
-                logger.info("[set_logo] estado: %s", self._logo)
+                with self._logo_lock:
+                    self._logo[s]["corner"] = c
+                    self._logo[s]["active"] = a
+                    if f:
+                        self._logo[s]["filename"] = f
+                    logger.info("[set_logo] estado: %s", self._logo)
                 self._apply_overlay()
 
             threading.Thread(target=_update, daemon=True).start()
@@ -332,6 +378,31 @@ class MPVDaemon:
                     logger.debug("volume → %.1f (%.1f dB)", vol, 20 * __import__("math").log10(max(vol, 0.001) / 100))
                 except Exception as exc:
                     logger.warning("set_volume: %s", exc)
+
+        elif action == "set_text_overlay":
+            cfg = {
+                "active":    bool(cmd.get("active",    False)),
+                "show_time": bool(cmd.get("show_time", True)),
+                "show_temp": bool(cmd.get("show_temp", True)),
+                "corner":    str(cmd.get("corner",    "tl")),
+                "city":      str(cmd.get("city",      "Palmas,TO")),
+            }
+            with self._text_overlay_lock:
+                self._text_overlay.update(cfg)
+            self._save_text_overlay()
+            if not cfg["active"] and self._mpv and not self._mpv_dead:
+                osd_text.remove(self._mpv)
+            self._broadcast_sync({"event": "text_overlay_state", **cfg})
+
+        elif action == "get_text_overlay":
+            with self._text_overlay_lock:
+                cfg = dict(self._text_overlay)
+            resp = {"event": "text_overlay_state", **cfg}
+            try:
+                writer.write((json.dumps(resp) + "\n").encode())
+                await writer.drain()
+            except Exception:
+                pass
 
         elif action == "get_state":
             playing_path = None
@@ -357,12 +428,55 @@ class MPVDaemon:
             except Exception:
                 pass
 
+    # ── Text overlay (hora + temperatura) ────────────────────────────────────
+
+    def _load_text_overlay(self) -> dict:
+        try:
+            data = json.loads(TEXT_OVERLAY_PATH.read_text(encoding="utf-8"))
+            result = {**_TEXT_OVERLAY_DEFAULTS, **data}
+            if result.get("city") == "Palmas":
+                result["city"] = "Palmas,TO"
+            return result
+        except Exception:
+            return dict(_TEXT_OVERLAY_DEFAULTS)
+
+    def _save_text_overlay(self) -> None:
+        try:
+            with self._text_overlay_lock:
+                data = dict(self._text_overlay)
+            TEXT_OVERLAY_PATH.write_text(
+                json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+        except Exception as exc:
+            logger.warning("[text_overlay] falha ao salvar: %s", exc)
+
     # ── Tarefas assíncronas ───────────────────────────────────────────────────
 
     async def _checkpoint_task(self):
+        # Primeiros dois flushes em 1s e 2s para cobrir crashes logo no início do clipe
+        for early in (1, 2):
+            await asyncio.sleep(early)
+            self._flush_checkpoint()
         while True:
             await asyncio.sleep(5)
             self._flush_checkpoint()
+
+    async def _text_overlay_task(self):
+        while True:
+            await asyncio.sleep(1)
+            if self._mpv_dead or self._mpv is None:
+                continue
+            with self._text_overlay_lock:
+                cfg = dict(self._text_overlay)
+            if not cfg.get("active"):
+                continue
+            temp = None
+            if cfg.get("show_temp"):
+                try:
+                    temp = await weather.get_temperature(cfg.get("city", "Palmas,TO"))
+                except Exception:
+                    pass
+            osd_text.apply(self._mpv, cfg, temp)
 
     async def _position_task(self):
         while True:
@@ -382,6 +496,7 @@ class MPVDaemon:
         logger.info("MPV Daemon escutando em %s:%d — PID %d", HOST, PORT, os.getpid())
         asyncio.create_task(self._checkpoint_task())
         asyncio.create_task(self._position_task())
+        asyncio.create_task(self._text_overlay_task())
         async with server:
             await server.serve_forever()
 

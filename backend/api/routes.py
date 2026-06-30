@@ -5,6 +5,7 @@ import mimetypes
 import logging
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, UploadFile, File
@@ -16,6 +17,21 @@ _LOGO_WORK_DIR = Path(os.environ.get("PUBLIC", r"C:\Users\Public")) / "pltmp"
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+def _validate_path(path: str, allowed_exts: set) -> Path:
+    """Valida que o caminho é absoluto, sem traversal (..) e com extensão permitida."""
+    if not path:
+        raise HTTPException(status_code=400, detail="Caminho vazio")
+    p = Path(path)
+    if not p.is_absolute():
+        raise HTTPException(status_code=400, detail="Caminho deve ser absoluto")
+    if any(part == ".." for part in p.parts):
+        raise HTTPException(status_code=400, detail="Caminho inválido")
+    if p.suffix.lower() not in allowed_exts:
+        raise HTTPException(status_code=403, detail="Tipo de arquivo não permitido")
+    return p
+
 
 _MEDIA_EXTS = {
     ".mp4", ".avi", ".mov", ".mkv", ".mts", ".m2ts", ".mxf",
@@ -52,9 +68,7 @@ async def get_state():
 
 @router.get("/media")
 async def serve_media(path: str):
-    p = Path(path)
-    if p.suffix.lower() not in _MEDIA_EXTS:
-        raise HTTPException(status_code=403, detail="Tipo de arquivo não permitido")
+    p = _validate_path(path, _MEDIA_EXTS)
     if not p.is_file():
         raise HTTPException(status_code=404, detail="Arquivo não encontrado")
     mime, _ = mimetypes.guess_type("x" + p.suffix.lower())
@@ -63,7 +77,11 @@ async def serve_media(path: str):
 
 _IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg"}
 
-_LOGOS_STATIC_DIR = Path(__file__).parent.parent / "logos"
+_LOGOS_STATIC_DIR = (
+    Path(sys.executable).parent / "logos"
+    if getattr(sys, 'frozen', False)
+    else Path(__file__).parent.parent / "logos"
+)
 
 
 @router.get("/api/logos")
@@ -91,6 +109,9 @@ async def get_logo_static(filename: str):
     return FileResponse(str(p), media_type=mime)
 
 
+_MAX_LOGO_BYTES = 5 * 1024 * 1024  # 5 MB
+
+
 @router.post("/api/logo/{slot}")
 async def upload_logo(slot: int, file: UploadFile = File(...)):
     """Recebe um PNG, redimensiona para padrão emissora e salva no dir de trabalho."""
@@ -100,7 +121,9 @@ async def upload_logo(slot: int, file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Apenas imagens são aceitas")
     try:
         from PIL import Image
-        data = await file.read()
+        data = await file.read(_MAX_LOGO_BYTES + 1)
+        if len(data) > _MAX_LOGO_BYTES:
+            raise HTTPException(status_code=413, detail="Arquivo muito grande (limite 5 MB)")
         img = Image.open(io.BytesIO(data)).convert("RGBA")
         target_h = 90
         if img.height != target_h:
@@ -129,9 +152,7 @@ async def get_logo_slot(slot: int):
 
 @router.get("/api/thumbnail")
 async def get_thumbnail(path: str):
-    p = Path(path)
-    if p.suffix.lower() not in _MEDIA_EXTS:
-        raise HTTPException(status_code=403)
+    p = _validate_path(path, _MEDIA_EXTS)
     if not p.is_file():
         raise HTTPException(status_code=404)
     try:
@@ -154,10 +175,33 @@ async def get_thumbnail(path: str):
     raise HTTPException(status_code=404, detail="Thumbnail não disponível")
 
 
+@router.get("/api/temperature")
+async def get_temperature(city: str = "Palmas,TO"):
+    """Proxy para wttr.in — retorna temperatura como texto (ex: '+28°C')."""
+    import asyncio
+    from urllib.request import urlopen
+    from urllib.parse import quote
+    from fastapi.responses import PlainTextResponse
+
+    def _fetch():
+        try:
+            url = f"https://wttr.in/{quote(city)}?format=%t"
+            with urlopen(url, timeout=5) as resp:
+                return resp.read().decode("utf-8").strip()
+        except Exception:
+            return ""
+
+    loop = asyncio.get_running_loop()
+    val = await loop.run_in_executor(None, _fetch)
+    return PlainTextResponse(val or "—")
+
+
 @router.get("/api/library")
 async def get_library(folder: str = ""):
     if not folder:
         return {"files": []}
+    if not Path(folder).is_absolute() or any(part == ".." for part in Path(folder).parts):
+        raise HTTPException(status_code=400, detail="Caminho inválido")
     p = Path(folder)
     if not p.is_dir():
         raise HTTPException(status_code=400, detail="Pasta não encontrada")
