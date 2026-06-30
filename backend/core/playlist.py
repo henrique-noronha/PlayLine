@@ -5,13 +5,15 @@ Playlist Engine — gerencia a fila de reprodução e responde a eventos do Play
 import json
 import logging
 import asyncio
+import sys
 from pathlib import Path
 from typing import Callable, Optional
 
 logger = logging.getLogger(__name__)
 
-SCHEDULE_PATH = Path(__file__).parent.parent / "schedule.json"
-CHECKPOINT_PATH = Path(__file__).parent.parent / "checkpoint.json"
+_DATA_DIR = Path(sys.executable).parent if getattr(sys, 'frozen', False) else Path(__file__).parent.parent
+SCHEDULE_PATH   = _DATA_DIR / "schedule.json"
+CHECKPOINT_PATH = _DATA_DIR / "checkpoint.json"
 
 
 class PlaylistEngine:
@@ -74,7 +76,15 @@ class PlaylistEngine:
 
         logger.info("Daemon em reprodução: %s — retomando estado", playing)
         self._running = True
-        self._index = 0
+
+        # Localiza o item em reprodução no roteiro para definir o índice correto
+        idx = next(
+            (i for i, it in enumerate(self._items) if it.get("path") == playing),
+            0,
+        )
+        self._index = idx
+        if idx > 0:
+            logger.info("Retomando no índice %d do roteiro: %s", idx, playing)
 
         if self._loop:
             asyncio.run_coroutine_threadsafe(
@@ -191,15 +201,20 @@ class PlaylistEngine:
             if cp and cp.get("path") == item["path"]:
                 pos = cp.get("position", 0.0)
                 if pos > 2.0:
-                    asyncio.ensure_future(self._deferred_seek(pos))
+                    asyncio.ensure_future(self._deferred_seek(pos, item["path"]))
 
         await self._broadcast(
             {"event": "now_playing", "index": index, "item": item}
         )
 
-    async def _deferred_seek(self, position: float):
-        """Aguarda o MPV carregar o arquivo e então busca a posição salva."""
+    async def _deferred_seek(self, position: float, expected_path: str):
+        """Aguarda o MPV carregar o arquivo e então busca a posição salva.
+        Cancela o seek se o item atual mudou antes dos 1.5s."""
         await asyncio.sleep(1.5)
+        current_path = self._items[0].get("path") if self._items else None
+        if current_path != expected_path:
+            logger.debug("_deferred_seek cancelado — item mudou antes do seek")
+            return
         self._player.seek(position)
         logger.info("Retomando posição: %.1f s", position)
 
@@ -234,6 +249,12 @@ class PlaylistEngine:
     def request_logo_list(self):
         self._player.request_logo_list()
 
+    def set_text_overlay(self, config: dict):
+        self._player.set_text_overlay(config)
+
+    def request_text_overlay_state(self):
+        self._player.get_text_overlay()
+
     async def prev_item(self):
         pass  # roteiro linear — não retrocede
 
@@ -242,7 +263,12 @@ class PlaylistEngine:
         if not (0 <= index < len(self._items)):
             return
         self._advance_seq += 1  # invalida qualquer end-file pendente
-        if self._running:  # vídeo em reprodução será substituído
+        # Cancela preload: o item preloaded pode não ser o destino do jump.
+        # play_index vai chamar player.play() explicitamente, gerando end-file(stop).
+        was_preloading = self._preloading
+        self._preloading = False
+        if self._running and (not was_preloading or index != 1):
+            # Um loadfile replace será emitido → precisamos ignorar o end-file(stop)
             self._skip_end_file += 1
         if index > 0:
             del self._items[:index]
