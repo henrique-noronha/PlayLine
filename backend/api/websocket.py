@@ -27,6 +27,7 @@ async def websocket_endpoint(ws: WebSocket):
     except Exception as exc:
         logger.error("Erro ao enviar estado inicial: %s", exc)
     _playlist_engine.request_logo_list()
+    _playlist_engine.request_text_overlay_state()
     try:
         while True:
             raw = await ws.receive_text()
@@ -67,5 +68,13 @@ async def _handle_command(cmd: dict):
             cmd.get("slot", 1), cmd.get("filename", ""),
             cmd.get("corner", "br"), cmd.get("active", False),
         )
+    elif action == "set_text_overlay":
+        _playlist_engine.set_text_overlay({
+            "active":    bool(cmd.get("active",    False)),
+            "show_time": bool(cmd.get("show_time", True)),
+            "show_temp": bool(cmd.get("show_temp", True)),
+            "corner":    str(cmd.get("corner",    "tl")),
+            "city":      str(cmd.get("city",      "Palmas")),
+        })
     else:
         logger.warning("Ação desconhecida: %s", action)

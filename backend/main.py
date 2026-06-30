@@ -3,6 +3,7 @@
 import asyncio
 import json
 import logging
+import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -22,7 +23,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
+if getattr(sys, 'frozen', False):
+    FRONTEND_DIR = Path(sys._MEIPASS) / "frontend"
+else:
+    FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 
 
 # Gerenciador de conexões WebSocket                                   
@@ -80,7 +84,18 @@ async def lifespan(app: FastAPI):
             loop,
         )
 
-    player_instance = Player(on_end_file=_on_end, on_position=_on_position, on_logo_list=_on_logo_list)
+    def _on_text_overlay_state(state: dict):
+        asyncio.run_coroutine_threadsafe(
+            manager.broadcast(state),
+            loop,
+        )
+
+    player_instance = Player(
+        on_end_file=_on_end,
+        on_position=_on_position,
+        on_logo_list=_on_logo_list,
+        on_text_overlay_state=_on_text_overlay_state,
+    )
     playlist_engine = PlaylistEngine(player=player_instance, broadcast=manager.broadcast)
     playlist_engine.set_event_loop(loop)
     playlist_engine.load_schedule()

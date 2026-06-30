@@ -22,16 +22,18 @@ logger = logging.getLogger(__name__)
 
 
 class Player:
-    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None):
+    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None, on_text_overlay_state: Optional[Callable[[dict], None]] = None):
         self._on_end_file = on_end_file
         self._on_position = on_position
         self._on_logo_list = on_logo_list
+        self._on_text_overlay_state = on_text_overlay_state
         self._sock: Optional[socket.socket] = None
         self._send_lock = threading.Lock()
         self._connected = False
         self._buf = b""
         self._pending_state_event: Optional[threading.Event] = None
         self._pending_state_path: Optional[str] = None
+        self._state_lock = threading.Lock()
         self._connect_or_start()
 
     # Conexão                                                              #
@@ -54,10 +56,12 @@ class Player:
         if sys.platform == "win32":
             flags = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
         try:
-            subprocess.Popen(
-                [sys.executable, str(_DAEMON_SCRIPT)],
-                creationflags=flags,
-            )
+            if getattr(sys, 'frozen', False):
+                daemon_exe = Path(sys.executable).parent / "PlayLine-daemon.exe"
+                cmd = [str(daemon_exe)]
+            else:
+                cmd = [sys.executable, str(_DAEMON_SCRIPT)]
+            subprocess.Popen(cmd, creationflags=flags)
         except Exception as exc:
             logger.error("Falha ao iniciar daemon: %s", exc)
 
@@ -99,6 +103,18 @@ class Player:
                 self._connected = False
                 break
 
+        # Tenta reconectar após perda de conexão com o daemon
+        if self._sock:
+            try:
+                self._sock.close()
+            except Exception:
+                pass
+            self._sock = None
+        self._buf = b""
+        logger.info("Tentando reconectar ao MPV Daemon em 3s...")
+        time.sleep(3)
+        self._connect_or_start()
+
     def _handle_event(self, msg: dict):
         event = msg.get("event")
         if event == "end-file":
@@ -115,6 +131,9 @@ class Player:
         elif event == "logo_list":
             if self._on_logo_list:
                 self._on_logo_list(msg.get("files", []))
+        elif event == "text_overlay_state":
+            if self._on_text_overlay_state:
+                self._on_text_overlay_state(msg)
 
     # Envio                                                                #
 
@@ -135,13 +154,14 @@ class Player:
         """Retorna o caminho do arquivo que o daemon está reproduzindo, ou None."""
         if not self._connected:
             return None
-        evt = threading.Event()
-        self._pending_state_path = None
-        self._pending_state_event = evt
-        self._send({"action": "get_state"})
-        evt.wait(timeout=2.0)
-        self._pending_state_event = None
-        return self._pending_state_path
+        with self._state_lock:
+            evt = threading.Event()
+            self._pending_state_path = None
+            self._pending_state_event = evt
+            self._send({"action": "get_state"})
+            evt.wait(timeout=2.0)
+            self._pending_state_event = None
+            return self._pending_state_path
 
     # API pública                                                          #
 
@@ -186,6 +206,12 @@ class Player:
 
     def request_logo_list(self):
         self._send({"action": "list_logos"})
+
+    def set_text_overlay(self, config: dict):
+        self._send({"action": "set_text_overlay", **config})
+
+    def get_text_overlay(self):
+        self._send({"action": "get_text_overlay"})
 
     def shutdown(self):
         """Fecha a conexão com o daemon (daemon continua rodando independentemente)."""
