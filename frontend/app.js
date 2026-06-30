@@ -14,6 +14,27 @@ const state = {
 
 let _remainingTimer = null;
 
+// Carregamento diferido do preview: aguarda o primeiro evento "position" para
+// saber onde abrir o vídeo via #t=N, evitando o seek manual que congela o browser.
+let _pendingLoad         = null;   // { path, paused } enquanto aguarda posição
+let _pendingLoadTimeout  = null;   // fallback caso nenhum evento position chegue
+
+function _commitPendingLoad(pos) {
+  if (!_pendingLoad) return;
+  const { path, paused } = _pendingLoad;
+  _pendingLoad        = null;
+  clearTimeout(_pendingLoadTimeout);
+  _pendingLoadTimeout = null;
+  loadVideo(path, pos);
+  if (paused) video.addEventListener("canplay", () => video.pause(), { once: true });
+}
+
+function _cancelPendingLoad() {
+  _pendingLoad        = null;
+  clearTimeout(_pendingLoadTimeout);
+  _pendingLoadTimeout = null;
+}
+
 (function startClock() {
   const elTime = document.getElementById("clock-time");
   const elDate = document.getElementById("clock-date");
@@ -54,6 +75,7 @@ function handleEvent(ev) {
       applyState(ev);
       break;
     case "now_playing":
+      _cancelPendingLoad();
       state.currentIndex = ev.index;
       state.playing = true;
       state.paused = false;
@@ -90,6 +112,7 @@ function handleEvent(ev) {
       video.play().catch(() => {});
       break;
     case "stopped":
+      _cancelPendingLoad();
       state.playing = false;
       state.paused = false;
       state.currentIndex = -1;
@@ -105,6 +128,7 @@ function handleEvent(ev) {
       updateStartTimes();
       break;
     case "playlist_end":
+      _cancelPendingLoad();
       state.playing = false;
       state.currentItemStartTime = null;
       state.pausedAt = null;
@@ -118,6 +142,7 @@ function handleEvent(ev) {
       updateButtons();
       break;
     case "position":
+      if (_pendingLoad) _commitPendingLoad(ev.pos);
       syncPosition(ev.pos);
       break;
     case "schedule_updated":
@@ -126,6 +151,9 @@ function handleEvent(ev) {
       break;
     case "logo_list":
       updateLogoDropdowns(ev.files);
+      break;
+    case "text_overlay_state":
+      if (typeof applyTextOverlayState === "function") applyTextOverlayState(ev);
       break;
   }
 }
@@ -147,10 +175,10 @@ function applyState(s) {
   }
 
   if ((state.playing || state.paused) && s.current_item?.path && !video.src) {
-    loadVideo(s.current_item.path);
-    if (state.paused) {
-      video.addEventListener("canplay", () => video.pause(), { once: true });
-    }
+    // Adia o loadVideo até o primeiro evento "position" para usar #t=N na URL.
+    // Fallback de 1.5s garante que o vídeo carregue mesmo que o evento demore.
+    _pendingLoad        = { path: s.current_item.path, paused: state.paused };
+    _pendingLoadTimeout = setTimeout(() => _commitPendingLoad(0), 1500);
   }
 
   if (state.playing && !state.paused) {
@@ -375,6 +403,7 @@ function initLogoUI() {
           _sendLogo(slot);
           _updateLogoOverlay(slot, s.corner, s.active);
         }
+        if (typeof _updateTextPosSelector === "function") _updateTextPosSelector();
       });
     });
 
@@ -391,6 +420,7 @@ function initLogoUI() {
         toggle.classList.toggle("active", s.active);
         _sendLogo(slot);
         _updateLogoOverlay(slot, s.corner, s.active);
+        if (typeof _updateTextPosSelector === "function") _updateTextPosSelector();
       });
     }
 
@@ -574,6 +604,7 @@ async function init() {
   }
 
   initLogoUI();
+  initTextOverlayUI();
   _initVuMeter();
 
   if (typeof connect === "function") connect();
