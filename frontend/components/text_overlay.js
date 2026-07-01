@@ -86,7 +86,7 @@ let _previewTemp = null;
 let _previewCityFetched = "";
 
 async function _fetchPreviewTemp() {
-  const city = _textState.city || "Palmas";
+  const city = (_textState.city || "Palmas").split(",")[0].trim();
   try {
     const r = await fetch(`/api/temperature?city=${encodeURIComponent(city)}`);
     const t = await r.text();
@@ -121,7 +121,7 @@ function _updatePreviewOverlay() {
   const hh   = String(now.getHours()).padStart(2, "0");
   const mm   = String(now.getMinutes()).padStart(2, "0");
   const ss   = String(now.getSeconds()).padStart(2, "0");
-  const city = _textState.city || "Palmas";
+  const city = (_textState.city || "Palmas").split(",")[0].trim();
 
   // Layout: linha superior (to-top) com temp à esq + hora à dir; cidade abaixo
   let topEl  = el.querySelector(".to-top");
