@@ -1,13 +1,5 @@
 """Overlay de texto (hora + temperatura + cidade) via overlay-add BGRA.
 
-Layout vertical — mais compacto:
-  ┌──────────────┐
-  │  11:44:10    │  ← azul Tocantins
-  ├──────────────┤
-  │   +28°C      │  ← amarelo Tocantins
-  ├──────────────┤
-  │   Palmas     │  ← verde Tocantins (fonte menor)
-  └──────────────┘
 """
 
 import logging
@@ -163,8 +155,8 @@ def _render(config: dict, temperature: Optional[str], font_sz: int) -> Optional[
         city_h    = ch + pad_cy * 2
 
         if both:
-            left_w  = ew + pad_x * 2   # temp (esquerda)
-            right_w = tw + pad_x * 2   # hora  (direita)
+            left_w  = tw + pad_x * 2   # hora  (esquerda)
+            right_w = ew + pad_x * 2   # temp  (direita)
             top_w   = left_w + right_w
         else:
             sw, _   = (tw, th) if time_str else (ew, eh)
@@ -179,14 +171,14 @@ def _render(config: dict, temperature: Optional[str], font_sz: int) -> Optional[
 
         # Linha superior
         if both:
-            # Temp à esquerda (amarelo)
-            draw.rectangle([0, 0, left_w - 1, top_h - 1], fill=_BG_TEMP)
-            draw.text(cpos(temp_str, font_main, 0, 0, left_w, top_h), temp_str, font=font_main, fill=_FG)
-            # Hora à direita (azul) — ocupa o restante
+            # Hora à esquerda (azul)
+            draw.rectangle([0, 0, left_w - 1, top_h - 1], fill=_BG_TIME)
+            draw.text(cpos(time_str, font_main, 0, 0, left_w, top_h), time_str, font=font_main, fill=_FG)
+            # Temp à direita (amarelo) — ocupa o restante
             r_start = left_w
             r_w     = total_w - r_start
-            draw.rectangle([r_start, 0, total_w - 1, top_h - 1], fill=_BG_TIME)
-            draw.text(cpos(time_str, font_main, r_start, 0, r_w, top_h), time_str, font=font_main, fill=_FG)
+            draw.rectangle([r_start, 0, total_w - 1, top_h - 1], fill=_BG_TEMP)
+            draw.text(cpos(temp_str, font_main, r_start, 0, r_w, top_h), temp_str, font=font_main, fill=_FG)
         elif time_str:
             draw.rectangle([0, 0, total_w - 1, top_h - 1], fill=_BG_TIME)
             draw.text(cpos(time_str, font_main, 0, 0, total_w, top_h), time_str, font=font_main, fill=_FG)
