@@ -125,7 +125,7 @@ def _render(config: dict, temperature: Optional[str], font_sz: int) -> Optional[
 
         show_time = config.get("show_time", True)
         show_temp = config.get("show_temp", True)
-        city      = (config.get("city") or "Palmas").strip() or "Palmas"
+        city      = ((config.get("city") or "Palmas").split(",")[0]).strip() or "Palmas"
 
         time_str = datetime.now().strftime("%H:%M:%S") if show_time else None
         temp_str = temperature if (show_temp and temperature) else None

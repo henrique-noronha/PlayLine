@@ -177,18 +177,40 @@ async def get_thumbnail(path: str):
 
 @router.get("/api/temperature")
 async def get_temperature(city: str = "Palmas,TO"):
-    """Proxy para wttr.in — retorna temperatura como texto (ex: '+28°C')."""
-    import asyncio
+    """Proxy para OpenWeatherMap — retorna temperatura como texto (ex: '24°C')."""
+    import asyncio, json
     from urllib.request import urlopen
     from urllib.parse import quote
     from fastapi.responses import PlainTextResponse
 
+    _API_KEY = "f69ea9de2f716268934177c04852b89b"
+
     def _fetch():
+        import logging
+        log = logging.getLogger("api.routes")
+        owm_name = city.split(",")[0].strip()  # OWM: só cidade, sem estado
+        # Tenta OpenWeatherMap primeiro
+        try:
+            url  = f"https://api.openweathermap.org/data/2.5/weather?q={quote(owm_name)},BR&appid={_API_KEY}&units=metric"
+            with urlopen(url, timeout=5) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                temp = data.get("main", {}).get("temp")
+                if temp is not None:
+                    found   = data.get("name", "?")
+                    country = data.get("sys", {}).get("country", "?")
+                    log.info("[weather] OWM: %.1f°C (%s, %s)", temp, found, country)
+                    return f"{round(temp)}°C"
+        except Exception as e:
+            log.warning("[weather] OWM falhou: %s — tentando wttr.in", e)
+        # Fallback: wttr.in — usa cidade completa com estado para evitar ambiguidade
         try:
             url = f"https://wttr.in/{quote(city)}?format=%t"
             with urlopen(url, timeout=5) as resp:
-                return resp.read().decode("utf-8").strip()
-        except Exception:
+                val = resp.read().decode("utf-8").strip().lstrip("+")
+                log.info("[weather] wttr.in fallback: %s", val)
+                return val
+        except Exception as e:
+            log.warning("[weather] wttr.in também falhou: %s", e)
             return ""
 
     loop = asyncio.get_running_loop()

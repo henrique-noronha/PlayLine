@@ -28,6 +28,8 @@
 .schedule-actions button:hover { background: var(--border); }
 
 
+#btn-clear-schedule  { border-color: var(--danger); color: var(--danger); padding: 6px 10px; opacity: 0.75; }
+#btn-clear-schedule:hover  { background: var(--danger); color: #fff; opacity: 1; }
 #btn-delete-selected { border-color: var(--danger); color: var(--danger); padding: 6px 10px; }
 #btn-delete-selected:hover { background: var(--danger); color: #fff; }
 

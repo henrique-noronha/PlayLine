@@ -41,12 +41,22 @@ class PlaylistEngine:
         return self._items
 
     def save_schedule(self, items: list[dict], from_ui: bool = False):
-        if from_ui and self._preloading:
-            old_next_id = self._items[1].get("id") if len(self._items) > 1 else None
-            new_next_id = items[1].get("id") if len(items) > 1 else None
-            if old_next_id != new_next_id:
-                self._preloading = False
-                logger.debug("Pré-carregamento cancelado — próximo item alterado externamente")
+        if from_ui:
+            current_id  = self._items[0].get("id") if self._items else None
+            new_first_id = items[0].get("id") if items else None
+            if current_id != new_first_id:
+                # O primeiro item mudou: invalida qualquer _advance pendente
+                # e para o avanço automático para não consumir o novo roteiro.
+                self._advance_seq += 1
+                self._running     = False
+                self._preloading  = False
+                logger.debug("Roteiro substituído via UI — avanço automático pausado")
+            elif self._preloading:
+                old_next_id = self._items[1].get("id") if len(self._items) > 1 else None
+                new_next_id = items[1].get("id") if len(items) > 1 else None
+                if old_next_id != new_next_id:
+                    self._preloading = False
+                    logger.debug("Pré-carregamento cancelado — próximo item alterado externamente")
         self._items = items
         SCHEDULE_PATH.write_text(
             json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8"
