@@ -10,12 +10,37 @@ let selectedScheduleIds = new Set();
 const THUMB_PREFIX = "playline_thumb:";
 
 function updateScheduleSelectionUI() {
+  // Botão "limpar tudo"
+  let btnClear = document.getElementById("btn-clear-schedule");
+  if (!btnClear) {
+    btnClear = document.createElement("button");
+    btnClear.id = "btn-clear-schedule";
+    btnClear.title = "Limpar roteiro inteiro";
+    btnClear.textContent = "🗑 Limpar";
+    document.querySelector(".schedule-actions").prepend(btnClear);
+    btnClear.addEventListener("click", () => {
+      if (!state.schedule.length) return;
+      const playingId = state.playing && state.currentIndex >= 0
+        ? state.schedule[state.currentIndex]?.id : null;
+      if (playingId) {
+        state.schedule = state.schedule.filter(it => it.id === playingId);
+      } else {
+        state.schedule = [];
+      }
+      selectedScheduleIds.clear();
+      renderSchedule();
+      syncOrderToServer();
+    });
+  }
+  btnClear.style.display = state.schedule.length ? "" : "none";
+
+  // Botão "remover selecionados"
   let btn = document.getElementById("btn-delete-selected");
   if (!btn) {
     btn = document.createElement("button");
     btn.id = "btn-delete-selected";
     btn.title = "Remover selecionados";
-    document.querySelector(".schedule-actions").prepend(btn);
+    document.querySelector(".schedule-actions").appendChild(btn);
     btn.addEventListener("click", () => {
       const playingId = state.playing && state.currentIndex >= 0
         ? state.schedule[state.currentIndex]?.id : null;
@@ -68,8 +93,8 @@ function ensureDuration(path) {
     if (updated) updateStartTimes();
     durLoading.delete(path);
     v.src = "";
-  });
-  v.addEventListener("error", () => { durLoading.delete(path); v.src = ""; });
+  }, { once: true });
+  v.addEventListener("error", () => { durLoading.delete(path); v.src = ""; }, { once: true });
 }
 
 
@@ -89,9 +114,13 @@ function generateThumb(path, imgEl) {
     return; // error — não tenta de novo
   }
 
-  // Thumb persistida no localStorage
+  // Thumb persistida no localStorage (inclui estado de erro persistido)
   const stored = thumbFromStorage(path);
   if (stored) {
+    if (stored === "__error__") {
+      thumbCache[path] = { state: "error", url: "", pending: [] };
+      return;
+    }
     thumbCache[path] = { state: "done", url: stored, pending: [] };
     imgEl.src = stored;
     return;
@@ -106,9 +135,8 @@ function generateThumb(path, imgEl) {
   v.src = "/media?path=" + encodeURIComponent(path);
 
   v.addEventListener("loadedmetadata", () => {
-    // duração já é gerenciada por ensureDuration; aqui só avança para o frame
     v.currentTime = Math.min(2, (v.duration || 0) * 0.1 || 1);
-  });
+  }, { once: true });
 
   v.addEventListener("seeked", () => {
     const canvas = document.createElement("canvas");
@@ -122,11 +150,13 @@ function generateThumb(path, imgEl) {
     cache.pending.forEach(el => { el.src = url; });
     cache.pending = [];
     v.src = "";
-  });
+  }, { once: true });
 
   v.addEventListener("error", () => {
-    v.src = "";
     const cache = thumbCache[path];
+    if (!cache || cache.state !== "loading") return;
+    cache.state = "error";
+    v.src = "";
     fetch("/api/thumbnail?path=" + encodeURIComponent(path))
       .then(res => { if (!res.ok) throw 0; return res.blob(); })
       .then(blob => {
@@ -140,8 +170,9 @@ function generateThumb(path, imgEl) {
       .catch(() => {
         cache.state = "error";
         cache.pending = [];
+        thumbToStorage(path, "__error__");
       });
-  });
+  }, { once: true });
 }
 
 
@@ -205,7 +236,7 @@ function updateStartTimes() {
   if (nextEl) {
     const nextIdx = state.currentIndex + 1;
     const nextStart = times[nextIdx];
-    nextEl.textContent = nextStart ? fmtTime(nextStart) : "—";
+    nextEl.textContent = nextStart ? nextStart.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "—";
   }
 }
 

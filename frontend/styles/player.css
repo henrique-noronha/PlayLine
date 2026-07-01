@@ -529,18 +529,18 @@
 }
 
 .stat-value {
-  font-size: 64px;
+  font-size: 54px;
   font-weight: 300;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   letter-spacing: 1px;
-  width: 6ch;
+  width: 8ch;
   text-align: center;
 }
 
 .stat-remaining { color: var(--warning); }
 .stat-next      { color: var(--accent); }
-.stat-clock     { color: var(--text); width: auto; font-size: 56px; }
+.stat-clock     { color: var(--text); }
 .stat-block--clock .stat-label { font-size: 13px; letter-spacing: 0.5px; text-transform: none; color: var(--muted); }
 
 .stat-divider {

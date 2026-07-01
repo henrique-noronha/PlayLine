@@ -6,18 +6,17 @@ let _syncPending = false;
 let _lastSyncAt  = 0;      // performance.now() do último seek de sincronização
 
 function fmt(secs) {
-  if (secs == null || isNaN(secs)) return "0:00";
+  if (secs == null || isNaN(secs)) return "00:00:00";
   secs = Math.floor(secs);
-  const h = Math.floor(secs / 3600);
-  const m = Math.floor((secs % 3600) / 60);
+  const h = String(Math.floor(secs / 3600)).padStart(2, "0");
+  const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "0");
   const s = String(secs % 60).padStart(2, "0");
-  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${s}`;
-  return `${m}:${s}`;
+  return `${h}:${m}:${s}`;
 }
 
 function fmtTime(date) {
   if (!date) return "--:--";
-  return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
 function _showUnavailable() {
