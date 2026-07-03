@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PlayLine — Painel de Controle</title>
+  <link rel="icon" type="image/png" href="/api/logos/FavPlayline.png" />
   <link rel="stylesheet" href="/static/styles/base.css" />
   <link rel="stylesheet" href="/static/styles/layout.css" />
   <link rel="stylesheet" href="/static/styles/player.css" />
@@ -14,7 +15,7 @@
 </head>
 <body>
   <header>
-    <div class="logo">PlayLine</div>
+    <div class="logo"><img src="/api/logos/LogoPlayLineD.png" alt="PlayLine" /></div>
     <div class="conn-status">
       <span class="dot" id="dot"></span>
       <span id="conn-label">Desconectado</span>
@@ -153,10 +154,19 @@
                 <div class="pos-zone" data-corner="br" title="Inferior direito"></div>
                 <div class="pos-indicator"></div>
               </div>
-              <div class="text-ctrl-bottom">
-                <label class="to-check"><input type="checkbox" id="to-show-time" checked /> Hora</label>
-                <label class="to-check"><input type="checkbox" id="to-show-temp" checked /> Temp.</label>
-                <button class="btn-text-toggle" id="btn-text-toggle" title="Ativar hora/temperatura">⏻</button>
+              <div class="logo-toggle-wrap">
+                <button class="btn-text-toggle btn-logo-toggle" id="btn-text-toggle" title="Ativar hora/temperatura">⏻</button>
+                <button class="btn-logo-pick" id="btn-text-pick" title="Selecionar itens">▾</button>
+                <div class="logo-picker-dropdown" id="text-picker-dropdown">
+                  <div class="logo-picker-item" id="pick-time">
+                    <span class="logo-picker-check" id="pick-time-check">✓</span>
+                    <span class="logo-picker-name">Hora</span>
+                  </div>
+                  <div class="logo-picker-item" id="pick-temp">
+                    <span class="logo-picker-check" id="pick-temp-check">✓</span>
+                    <span class="logo-picker-name">Temp.</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -191,6 +201,16 @@
       <div class="log" id="log"></div>
     </section>
   </main>
+
+  <div id="confirm-modal" class="confirm-modal-backdrop" style="display:none">
+    <div class="confirm-modal-box">
+      <p id="confirm-modal-text"></p>
+      <div class="confirm-modal-actions">
+        <button id="confirm-modal-cancel">Cancelar</button>
+        <button id="confirm-modal-ok" class="confirm-modal-danger">Confirmar</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/static/components/logs.js"></script>
   <script src="/static/components/player.js"></script>

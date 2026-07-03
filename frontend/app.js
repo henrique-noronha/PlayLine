@@ -89,6 +89,15 @@ function handleEvent(ev) {
       updateStartTimes();
       startRemainingTimer();
       updateButtons();
+      {
+        const schedItem = state.schedule[ev.index];
+        if (schedItem?.clip_overlays) {
+          if (!_clipOverrideActive) _saveOverlayBaseline();
+          _applyClipOverlays(schedItem.clip_overlays);
+        } else if (_clipOverrideActive) {
+          _restoreOverlayBaseline();
+        }
+      }
       break;
     case "paused":
       state.paused = true;
@@ -153,7 +162,7 @@ function handleEvent(ev) {
       updateLogoDropdowns(ev.files);
       break;
     case "text_overlay_state":
-      if (typeof applyTextOverlayState === "function") applyTextOverlayState(ev);
+      if (!_clipOverrideActive && typeof applyTextOverlayState === "function") applyTextOverlayState(ev);
       break;
   }
 }
@@ -580,6 +589,65 @@ document.addEventListener("click",      _resumeVuCtx);
 document.addEventListener("touchstart", _resumeVuCtx, { passive: true });
 
 requestAnimationFrame(_vuFrame);
+
+// ── Automação de overlays por clipe ──────────────────────────────────────────
+// Regra: nunca modificar _logoState/_textState — estado global pertence ao operador.
+// Per-clip manda comandos direto ao daemon e atualiza só o DOM de preview.
+
+let _clipOverrideActive = false; // true = override de clipe ativo; suprime echo text_overlay_state
+
+function _saveOverlayBaseline() {
+  _clipOverrideActive = true;
+}
+
+function _restoreOverlayBaseline() {
+  if (!_clipOverrideActive) return;
+  _clipOverrideActive = false; // desbloqueia antes de reenviar para o echo atualizar UI se necessário
+  [1, 2].forEach(slot => {
+    _sendLogo(slot);
+    _updateLogoOverlay(slot, _logoState[slot].corner, _logoState[slot].active);
+  });
+  if (typeof _sendTextOverlay === "function") _sendTextOverlay();
+}
+
+function _applyClipOverlays(co) {
+  if (!co) return;
+
+  [1, 2].forEach(slot => {
+    const cfg = co[`logo${slot}`];
+    if (!cfg) return;
+    const s        = _logoState[slot]; // leitura apenas — não modifica
+    const filename = cfg.filename !== undefined ? cfg.filename : s.filename;
+    const corner   = cfg.corner   !== undefined ? cfg.corner   : s.corner;
+    const active   = cfg.active   !== undefined ? cfg.active   : s.active;
+
+    // Comando ao daemon
+    send({ action: "set_logo", slot, filename, corner, active });
+
+    // Atualiza DOM de preview sem alterar _logoState
+    const el = document.getElementById(`logo-overlay-${slot}`);
+    if (el) {
+      el.classList.remove("corner-tl", "corner-tr", "corner-bl", "corner-br");
+      if (active && filename) {
+        el.src = `/api/logos/${encodeURIComponent(filename)}`;
+        el.classList.add(`corner-${corner}`);
+        el.style.display = "";
+      } else {
+        el.src = "";
+        el.style.display = "none";
+      }
+    }
+  });
+
+  if (co.text) {
+    const active    = co.text.active    !== undefined ? co.text.active    : _textState.active;
+    const show_time = co.text.show_time !== undefined ? co.text.show_time : _textState.show_time;
+    const show_temp = co.text.show_temp !== undefined ? co.text.show_temp : _textState.show_temp;
+    // Manda direto ao daemon — _textState e botões do painel não são tocados
+    send({ action: "set_text_overlay", active, show_time, show_temp,
+           corner: _textState.corner, city: _textState.city });
+  }
+}
 
 // Bootstrap
 
