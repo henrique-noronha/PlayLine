@@ -2,7 +2,7 @@
 
 > Sistema de playout para transmissão ao vivo — painel web, overlays em tempo real e automação por clipe.
 
-**PlayLine** é um software de controle de playout em desenvolvimento para operações de transmissão ao vivo. O operador gerencia o roteiro de programação, os overlays de logo e texto e o volume, tudo por um painel web, com sincronização em tempo real via WebSocket.
+**PlayLine** é um software de controle de playout em desenvolvimento para operações de transmissão de TV. O operador gerencia o roteiro de programação, os overlays de logo e texto e o volume, tudo por um painel web, com sincronização em tempo real via WebSocket.
 
 O sistema foi projetado para ser operado sem conhecimento técnico aprofundado, com interface clara e comportamento previsível.
 
