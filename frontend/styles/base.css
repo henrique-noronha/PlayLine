@@ -27,6 +27,56 @@ body {
 
 .empty { color: var(--muted); text-align: center; padding: 24px; }
 
+/* ── Modal de confirmação ── */
+.confirm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.confirm-modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 28px;
+  min-width: 280px;
+  max-width: 360px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.6);
+}
+.confirm-modal-box p {
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.confirm-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.confirm-modal-actions button {
+  padding: 7px 18px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.confirm-modal-actions button:hover { background: var(--border); }
+.confirm-modal-danger {
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+.confirm-modal-danger:hover {
+  background: var(--danger) !important;
+  color: #fff !important;
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

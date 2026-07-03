@@ -14,6 +14,27 @@ const state = {
 
 let _remainingTimer = null;
 
+// Carregamento diferido do preview: aguarda o primeiro evento "position" para
+// saber onde abrir o vídeo via #t=N, evitando o seek manual que congela o browser.
+let _pendingLoad         = null;   // { path, paused } enquanto aguarda posição
+let _pendingLoadTimeout  = null;   // fallback caso nenhum evento position chegue
+
+function _commitPendingLoad(pos) {
+  if (!_pendingLoad) return;
+  const { path, paused } = _pendingLoad;
+  _pendingLoad        = null;
+  clearTimeout(_pendingLoadTimeout);
+  _pendingLoadTimeout = null;
+  loadVideo(path, pos);
+  if (paused) video.addEventListener("canplay", () => video.pause(), { once: true });
+}
+
+function _cancelPendingLoad() {
+  _pendingLoad        = null;
+  clearTimeout(_pendingLoadTimeout);
+  _pendingLoadTimeout = null;
+}
+
 (function startClock() {
   const elTime = document.getElementById("clock-time");
   const elDate = document.getElementById("clock-date");
@@ -54,6 +75,7 @@ function handleEvent(ev) {
       applyState(ev);
       break;
     case "now_playing":
+      _cancelPendingLoad();
       state.currentIndex = ev.index;
       state.playing = true;
       state.paused = false;
@@ -67,6 +89,15 @@ function handleEvent(ev) {
       updateStartTimes();
       startRemainingTimer();
       updateButtons();
+      {
+        const schedItem = state.schedule[ev.index];
+        if (schedItem?.clip_overlays) {
+          if (!_clipOverrideActive) _saveOverlayBaseline();
+          _applyClipOverlays(schedItem.clip_overlays);
+        } else if (_clipOverrideActive) {
+          _restoreOverlayBaseline();
+        }
+      }
       break;
     case "paused":
       state.paused = true;
@@ -90,6 +121,7 @@ function handleEvent(ev) {
       video.play().catch(() => {});
       break;
     case "stopped":
+      _cancelPendingLoad();
       state.playing = false;
       state.paused = false;
       state.currentIndex = -1;
@@ -105,6 +137,7 @@ function handleEvent(ev) {
       updateStartTimes();
       break;
     case "playlist_end":
+      _cancelPendingLoad();
       state.playing = false;
       state.currentItemStartTime = null;
       state.pausedAt = null;
@@ -118,6 +151,7 @@ function handleEvent(ev) {
       updateButtons();
       break;
     case "position":
+      if (_pendingLoad) _commitPendingLoad(ev.pos);
       syncPosition(ev.pos);
       break;
     case "schedule_updated":
@@ -126,6 +160,9 @@ function handleEvent(ev) {
       break;
     case "logo_list":
       updateLogoDropdowns(ev.files);
+      break;
+    case "text_overlay_state":
+      if (!_clipOverrideActive && typeof applyTextOverlayState === "function") applyTextOverlayState(ev);
       break;
   }
 }
@@ -147,10 +184,10 @@ function applyState(s) {
   }
 
   if ((state.playing || state.paused) && s.current_item?.path && !video.src) {
-    loadVideo(s.current_item.path);
-    if (state.paused) {
-      video.addEventListener("canplay", () => video.pause(), { once: true });
-    }
+    // Adia o loadVideo até o primeiro evento "position" para usar #t=N na URL.
+    // Fallback de 1.5s garante que o vídeo carregue mesmo que o evento demore.
+    _pendingLoad        = { path: s.current_item.path, paused: state.paused };
+    _pendingLoadTimeout = setTimeout(() => _commitPendingLoad(0), 1500);
   }
 
   if (state.playing && !state.paused) {
@@ -375,6 +412,7 @@ function initLogoUI() {
           _sendLogo(slot);
           _updateLogoOverlay(slot, s.corner, s.active);
         }
+        if (typeof _updateTextPosSelector === "function") _updateTextPosSelector();
       });
     });
 
@@ -391,6 +429,7 @@ function initLogoUI() {
         toggle.classList.toggle("active", s.active);
         _sendLogo(slot);
         _updateLogoOverlay(slot, s.corner, s.active);
+        if (typeof _updateTextPosSelector === "function") _updateTextPosSelector();
       });
     }
 
@@ -551,6 +590,65 @@ document.addEventListener("touchstart", _resumeVuCtx, { passive: true });
 
 requestAnimationFrame(_vuFrame);
 
+// ── Automação de overlays por clipe ──────────────────────────────────────────
+// Regra: nunca modificar _logoState/_textState — estado global pertence ao operador.
+// Per-clip manda comandos direto ao daemon e atualiza só o DOM de preview.
+
+let _clipOverrideActive = false; // true = override de clipe ativo; suprime echo text_overlay_state
+
+function _saveOverlayBaseline() {
+  _clipOverrideActive = true;
+}
+
+function _restoreOverlayBaseline() {
+  if (!_clipOverrideActive) return;
+  _clipOverrideActive = false; // desbloqueia antes de reenviar para o echo atualizar UI se necessário
+  [1, 2].forEach(slot => {
+    _sendLogo(slot);
+    _updateLogoOverlay(slot, _logoState[slot].corner, _logoState[slot].active);
+  });
+  if (typeof _sendTextOverlay === "function") _sendTextOverlay();
+}
+
+function _applyClipOverlays(co) {
+  if (!co) return;
+
+  [1, 2].forEach(slot => {
+    const cfg = co[`logo${slot}`];
+    if (!cfg) return;
+    const s        = _logoState[slot]; // leitura apenas — não modifica
+    const filename = cfg.filename !== undefined ? cfg.filename : s.filename;
+    const corner   = cfg.corner   !== undefined ? cfg.corner   : s.corner;
+    const active   = cfg.active   !== undefined ? cfg.active   : s.active;
+
+    // Comando ao daemon
+    send({ action: "set_logo", slot, filename, corner, active });
+
+    // Atualiza DOM de preview sem alterar _logoState
+    const el = document.getElementById(`logo-overlay-${slot}`);
+    if (el) {
+      el.classList.remove("corner-tl", "corner-tr", "corner-bl", "corner-br");
+      if (active && filename) {
+        el.src = `/api/logos/${encodeURIComponent(filename)}`;
+        el.classList.add(`corner-${corner}`);
+        el.style.display = "";
+      } else {
+        el.src = "";
+        el.style.display = "none";
+      }
+    }
+  });
+
+  if (co.text) {
+    const active    = co.text.active    !== undefined ? co.text.active    : _textState.active;
+    const show_time = co.text.show_time !== undefined ? co.text.show_time : _textState.show_time;
+    const show_temp = co.text.show_temp !== undefined ? co.text.show_temp : _textState.show_temp;
+    // Manda direto ao daemon — _textState e botões do painel não são tocados
+    send({ action: "set_text_overlay", active, show_time, show_temp,
+           corner: _textState.corner, city: _textState.city });
+  }
+}
+
 // Bootstrap
 
 async function init() {
@@ -574,6 +672,7 @@ async function init() {
   }
 
   initLogoUI();
+  initTextOverlayUI();
   _initVuMeter();
 
   if (typeof connect === "function") connect();

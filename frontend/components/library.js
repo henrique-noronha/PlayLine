@@ -6,10 +6,18 @@ let currentLibFiles  = [];
 function updateLibSelectionUI() {
   const bar = document.getElementById("lib-sel-bar");
   if (!bar) return;
-  if (selectedLibPaths.size > 0) {
+  if (currentLibFiles.length > 0) {
     bar.style.display = "flex";
+    const n = selectedLibPaths.size;
     document.getElementById("lib-sel-count").textContent =
-      `${selectedLibPaths.size} selecionado${selectedLibPaths.size !== 1 ? "s" : ""}`;
+      n > 0 ? `${n} selecionado${n !== 1 ? "s" : ""}` : "";
+    const btnAll = document.getElementById("btn-sel-all");
+    if (btnAll) {
+      const allSelected = currentLibFiles.length > 0 && currentLibFiles.every(f => selectedLibPaths.has(f.path));
+      btnAll.textContent = allSelected ? "Desmarcar" : "Todos";
+    }
+    const btnAdd = document.getElementById("btn-add-selected");
+    if (btnAdd) btnAdd.style.display = n > 0 ? "" : "none";
   } else {
     bar.style.display = "none";
   }
@@ -33,8 +41,20 @@ async function loadLibrary(folder) {
       selBar.id = "lib-sel-bar";
       selBar.className = "lib-sel-bar";
       selBar.style.display = "none";
-      selBar.innerHTML = `<span id="lib-sel-count"></span><button id="btn-add-selected">Adicionar ao roteiro</button>`;
+      selBar.innerHTML = `<span id="lib-sel-count"></span><button id="btn-sel-all">Todos</button><button id="btn-add-selected">Adicionar ao roteiro</button>`;
       list.parentNode.insertBefore(selBar, list);
+      document.getElementById("btn-sel-all").addEventListener("click", () => {
+        const allSelected = currentLibFiles.every(f => selectedLibPaths.has(f.path));
+        if (allSelected) {
+          selectedLibPaths.clear();
+          document.querySelectorAll(".lib-item.selected").forEach(el => el.classList.remove("selected"));
+        } else {
+          currentLibFiles.forEach(f => selectedLibPaths.add(f.path));
+          document.querySelectorAll(".lib-item").forEach(el => el.classList.add("selected"));
+        }
+        updateLibSelectionUI();
+      });
+
       document.getElementById("btn-add-selected").addEventListener("click", () => {
         const toAdd = currentLibFiles.filter(f => selectedLibPaths.has(f.path));
         const now = Date.now();
@@ -69,8 +89,8 @@ async function loadLibrary(folder) {
       const dv = document.createElement("video");
       dv.muted = true; dv.preload = "metadata";
       dv.src = "/media?path=" + encodeURIComponent(file.path);
-      dv.addEventListener("loadedmetadata", () => { durSpan.textContent = fmt(Math.round(dv.duration)); dv.src = ""; });
-      dv.addEventListener("error", () => { dv.src = ""; });
+      dv.addEventListener("loadedmetadata", () => { durSpan.textContent = fmt(Math.round(dv.duration)); dv.src = ""; }, { once: true });
+      dv.addEventListener("error", () => { dv.src = ""; }, { once: true });
 
       item.addEventListener("click", e => {
         if (e.ctrlKey || e.metaKey) {

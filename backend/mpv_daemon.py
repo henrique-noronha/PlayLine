@@ -1,11 +1,5 @@
 """Ponto de entrada do daemon MPV — lançado como processo independente por player.py.
 
-A lógica está em backend/daemon/:
-    daemon.py    — MPVDaemon (orquestração, servidor TCP, comandos)
-    overlay.py   — renderização de logo BGRA via overlay-add
-    monitor.py   — detecção de monitor secundário e posicionamento
-    checkpoint.py — leitura/escrita do checkpoint de posição
-    protocol.py  — parsing do evento end-file do MPV
 """
 
 import asyncio

@@ -28,6 +28,35 @@
 .schedule-actions button:hover { background: var(--border); }
 
 
+#schedule-menu-wrap { position: relative; }
+#btn-schedule-menu { letter-spacing: 1px; font-size: 13px; padding: 4px 7px; line-height: 1; }
+
+#schedule-menu-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 170px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 0;
+  z-index: 300;
+  box-shadow: 0 6px 20px rgba(0,0,0,.5);
+}
+#schedule-menu-dropdown.open { display: block; }
+
+.sch-menu-item {
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text);
+  transition: background .1s;
+}
+.sch-menu-item:hover { background: var(--surface2); }
+.sch-menu-separator { height: 1px; background: var(--border); margin: 4px 0; }
+#sch-menu-clear { color: var(--danger); }
+#sch-menu-clear:hover { background: rgba(239,68,68,.12); }
 #btn-delete-selected { border-color: var(--danger); color: var(--danger); padding: 6px 10px; }
 #btn-delete-selected:hover { background: var(--danger); color: #fff; }
 
@@ -50,7 +79,7 @@
 /* ── Item do roteiro ── */
 .schedule-item {
   display: grid;
-  grid-template-columns: 18px 20px 56px 1fr 62px 26px;
+  grid-template-columns: 18px 20px 56px 1fr 62px 56px;
   gap: 5px;
   align-items: center;
   padding: 4px 6px;
@@ -143,3 +172,144 @@
   display: flex; align-items: center; justify-content: center;
 }
 .item-actions .btn-delete:hover { background: #450a0a; color: var(--danger); }
+
+/* Botão de overlay por clipe */
+.btn-clip-overlay                    { transition: color .15s, background .15s; }
+.has-clip-overlays .btn-clip-overlay { color: var(--accent); }
+.btn-clip-overlay:hover              { color: var(--text) !important; background: var(--border); }
+
+/* ── Popup de overlay por clipe ── */
+.cop-popup {
+  position: fixed;
+  z-index: 600;
+  width: 260px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.55);
+  padding: 12px 14px 14px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.cop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cop-enable-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  user-select: none;
+}
+
+.cop-enable-label input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.cop-close-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: color .15s;
+}
+.cop-close-btn:hover { color: var(--text); }
+
+.cop-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: opacity .15s;
+}
+
+.cop-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+}
+
+.cop-lbl {
+  flex: 0 0 68px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.cop-tog {
+  flex-shrink: 0;
+  width: 26px !important;
+  height: 26px !important;
+  font-size: 14px !important;
+  border-radius: 6px !important;
+  border-right: 1px solid var(--border) !important;
+}
+
+.cop-pick-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.cop-pbtn {
+  width: 100%;
+  padding: 3px 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  font-size: 11px;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background .15s;
+}
+.cop-pbtn:hover { background: var(--border); }
+
+.cop-pick-wrap .logo-picker-dropdown {
+  top: calc(100% + 3px);
+  left: 0;
+  right: auto;
+  min-width: 100%;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.cop-text-opts {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+  align-items: center;
+}
+.cop-text-opts .logo-picker-item {
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  font-size: 12px;
+  cursor: pointer;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.cop-text-opts .logo-picker-item:hover { background: var(--border); }

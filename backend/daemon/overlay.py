@@ -154,3 +154,4 @@ def _corner_pos(
         return max(0, mx),            max(0, osd_h - h - my)
     # br (default)
     return max(0, osd_w - w - mx), max(0, osd_h - h - my)
+    
