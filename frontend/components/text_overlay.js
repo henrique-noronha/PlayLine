@@ -32,14 +32,14 @@ function applyTextOverlayState(s) {
 }
 
 function _syncTextUI() {
-  const toggle  = document.getElementById("btn-text-toggle");
-  const timeChk = document.getElementById("to-show-time");
-  const tempChk = document.getElementById("to-show-temp");
-  const cityInp = document.getElementById("to-city-input");
+  const toggle    = document.getElementById("btn-text-toggle");
+  const timeCheck = document.getElementById("pick-time-check");
+  const tempCheck = document.getElementById("pick-temp-check");
+  const cityInp   = document.getElementById("to-city-input");
 
-  if (toggle)  toggle.classList.toggle("active", _textState.active);
-  if (timeChk) timeChk.checked = _textState.show_time;
-  if (tempChk) tempChk.checked = _textState.show_temp;
+  if (toggle)    toggle.classList.toggle("active", _textState.active);
+  if (timeCheck) timeCheck.style.visibility = _textState.show_time ? "" : "hidden";
+  if (tempCheck) tempCheck.style.visibility = _textState.show_temp ? "" : "hidden";
   if (cityInp && document.activeElement !== cityInp) cityInp.value = _textState.city;
 
   _updateTextPosSelector();
@@ -175,8 +175,8 @@ function _updatePreviewOverlay() {
 
 function initTextOverlayUI() {
   const toggle  = document.getElementById("btn-text-toggle");
-  const timeChk = document.getElementById("to-show-time");
-  const tempChk = document.getElementById("to-show-temp");
+  const timeBtn = document.getElementById("to-show-time-btn");
+  const tempBtn = document.getElementById("to-show-temp-btn");
   const cityInp = document.getElementById("to-city-input");
 
   _syncTextUI();
@@ -200,18 +200,36 @@ function initTextOverlayUI() {
     });
   }
 
-  if (timeChk) {
-    timeChk.addEventListener("change", () => {
-      _textState.show_time = timeChk.checked;
+  const textPick = document.getElementById("btn-text-pick");
+  const textDropdown = document.getElementById("text-picker-dropdown");
+
+  if (textPick && textDropdown) {
+    textPick.addEventListener("click", e => {
+      e.stopPropagation();
+      textDropdown.classList.toggle("open");
+    });
+    document.addEventListener("click", () => textDropdown.classList.remove("open"));
+  }
+
+  const pickTime = document.getElementById("pick-time");
+  const pickTemp = document.getElementById("pick-temp");
+
+  if (pickTime) {
+    pickTime.addEventListener("click", e => {
+      e.stopPropagation();
+      _textState.show_time = !_textState.show_time;
+      document.getElementById("pick-time-check").style.visibility = _textState.show_time ? "" : "hidden";
       _updatePreviewOverlay();
       _sendTextOverlay();
     });
   }
 
-  if (tempChk) {
-    tempChk.addEventListener("change", () => {
-      _textState.show_temp = tempChk.checked;
-      if (tempChk.checked) _fetchPreviewTemp();
+  if (pickTemp) {
+    pickTemp.addEventListener("click", e => {
+      e.stopPropagation();
+      _textState.show_temp = !_textState.show_temp;
+      document.getElementById("pick-temp-check").style.visibility = _textState.show_temp ? "" : "hidden";
+      if (_textState.show_temp) _fetchPreviewTemp();
       _updatePreviewOverlay();
       _sendTextOverlay();
     });

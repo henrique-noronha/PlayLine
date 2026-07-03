@@ -4,17 +4,26 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 14px 24px;
+  height: 52px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 100;
+  overflow: visible;
 }
 
 .logo {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: .5px;
+  display: flex;
+  align-items: center;
+}
+.logo img {
+  height: 130px;
+  width: auto;
+  object-fit: contain;
 }
 
 .conn-status {

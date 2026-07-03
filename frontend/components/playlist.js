@@ -1,5 +1,17 @@
 /* PlayLine — Roteiro: renderização, drag & drop e miniaturas */
 
+function showConfirm(message, onConfirm) {
+  const backdrop = document.getElementById("confirm-modal");
+  document.getElementById("confirm-modal-text").textContent = message;
+  backdrop.style.display = "flex";
+  const ok     = document.getElementById("confirm-modal-ok");
+  const cancel = document.getElementById("confirm-modal-cancel");
+  const close  = () => { backdrop.style.display = "none"; };
+  ok.onclick     = () => { close(); onConfirm(); };
+  cancel.onclick = close;
+  backdrop.onclick = e => { if (e.target === backdrop) close(); };
+}
+
 // thumbCache[path] = { state: 'loading'|'done'|'error', url: string, pending: imgEl[] }
 const thumbCache = {};
 const durLoading = new Set(); // paths com carregamento de duração em andamento
@@ -10,29 +22,64 @@ let selectedScheduleIds = new Set();
 const THUMB_PREFIX = "playline_thumb:";
 
 function updateScheduleSelectionUI() {
-  // Botão "limpar tudo"
-  let btnClear = document.getElementById("btn-clear-schedule");
-  if (!btnClear) {
-    btnClear = document.createElement("button");
-    btnClear.id = "btn-clear-schedule";
-    btnClear.title = "Limpar roteiro inteiro";
-    btnClear.textContent = "🗑 Limpar";
-    document.querySelector(".schedule-actions").prepend(btnClear);
-    btnClear.addEventListener("click", () => {
+  // Menu "···" com opções do roteiro
+  let btnMenu = document.getElementById("btn-schedule-menu");
+  if (!btnMenu) {
+    btnMenu = document.createElement("button");
+    btnMenu.id = "btn-schedule-menu";
+    btnMenu.title = "Opções do roteiro";
+    btnMenu.textContent = "···";
+
+    const dropdown = document.createElement("div");
+    dropdown.id = "schedule-menu-dropdown";
+    dropdown.innerHTML = `
+      <div class="sch-menu-item" id="sch-menu-duplicate">⎘ Duplicar roteiro</div>
+      <div class="sch-menu-separator"></div>
+      <div class="sch-menu-item" id="sch-menu-clear">🗑 Limpar roteiro</div>
+    `;
+
+    const wrap = document.createElement("div");
+    wrap.id = "schedule-menu-wrap";
+    wrap.appendChild(btnMenu);
+    wrap.appendChild(dropdown);
+    document.querySelector(".schedule-actions").prepend(wrap);
+
+    btnMenu.addEventListener("click", e => {
+      e.stopPropagation();
+      dropdown.classList.toggle("open");
+    });
+    document.addEventListener("click", () => dropdown.classList.remove("open"));
+
+    document.getElementById("sch-menu-duplicate").addEventListener("click", () => {
+      dropdown.classList.remove("open");
       if (!state.schedule.length) return;
-      const playingId = state.playing && state.currentIndex >= 0
-        ? state.schedule[state.currentIndex]?.id : null;
-      if (playingId) {
-        state.schedule = state.schedule.filter(it => it.id === playingId);
-      } else {
-        state.schedule = [];
-      }
-      selectedScheduleIds.clear();
+      const now = Date.now();
+      const copies = state.schedule.map((it, i) => ({
+        ...it,
+        id: `item-${now + i}`
+      }));
+      state.schedule = [...state.schedule, ...copies];
       renderSchedule();
       syncOrderToServer();
     });
+
+    document.getElementById("sch-menu-clear").addEventListener("click", () => {
+      dropdown.classList.remove("open");
+      if (!state.schedule.length) return;
+      showConfirm("Tem certeza que deseja limpar o roteiro inteiro?", () => {
+        const playingId = state.playing && state.currentIndex >= 0
+          ? state.schedule[state.currentIndex]?.id : null;
+        if (playingId) {
+          state.schedule = state.schedule.filter(it => it.id === playingId);
+        } else {
+          state.schedule = [];
+        }
+        selectedScheduleIds.clear();
+        renderSchedule();
+        syncOrderToServer();
+      });
+    });
   }
-  btnClear.style.display = state.schedule.length ? "" : "none";
 
   // Botão "remover selecionados"
   let btn = document.getElementById("btn-delete-selected");
@@ -313,7 +360,10 @@ function renderSchedule() {
 
     const isLocked = state.playing && i === state.currentIndex;
     const row = document.createElement("div");
-    row.className = "schedule-item" + (i === state.currentIndex ? " active" : "") + (isLocked ? " locked" : "");
+    row.className = "schedule-item"
+      + (i === state.currentIndex ? " active" : "")
+      + (isLocked ? " locked" : "")
+      + (item.clip_overlays ? " has-clip-overlays" : "");
     row.dataset.index = i;
     row.setAttribute("draggable", isLocked ? "false" : "true");
 
@@ -331,6 +381,7 @@ function renderSchedule() {
         <span class="item-dur"  data-idx="${i}">${item.duration > 0 ? fmt(item.duration) : "—"}</span>
       </div>
       <div class="item-actions">
+        ${!isLocked ? `<button class="btn-clip-overlay${item.clip_overlays ? ' configured' : ''}" title="Automação de overlays" data-idx="${i}">⚙</button>` : ''}
         <button class="btn-delete" title="Remover" data-idx="${i}">✕</button>
       </div>
     `;
@@ -368,6 +419,11 @@ function renderSchedule() {
         updateStartTimes();
       });
       inp.addEventListener("click", e => e.stopPropagation());
+    });
+
+    row.querySelector(".btn-clip-overlay")?.addEventListener("click", e => {
+      e.stopPropagation();
+      openClipOverlayPanel(item, i, e.currentTarget);
     });
 
     row.querySelector(".btn-delete").addEventListener("click", e => {
@@ -485,6 +541,210 @@ function initDnD(list) {
   });
 
 }
+
+// ── Popup de overlay por clipe ────────────────────────────────────────────────
+
+let _cop    = null;
+let _copIdx = null;
+
+function _closeCop() {
+  if (_cop) {
+    _cop.querySelectorAll(".logo-picker-dropdown.open").forEach(d => d.classList.remove("open"));
+    _cop.style.display = "none";
+  }
+  _copIdx = null;
+}
+
+function _copGetOrCreate() {
+  if (_cop) return _cop;
+  const el = document.createElement("div");
+  el.id = "cop-popup";
+  el.className = "cop-popup";
+  el.style.display = "none";
+  el.innerHTML = `
+    <div class="cop-header">
+      <label class="cop-enable-label">
+        <input type="checkbox" id="cop-enable" />
+        <span>Automatizar overlays</span>
+      </label>
+      <button id="cop-close" class="cop-close-btn">✕</button>
+    </div>
+    <div id="cop-body" class="cop-body">
+      <div class="cop-row">
+        <span class="cop-lbl">Logo 1</span>
+        <button class="btn-logo-toggle cop-tog" id="cop-tog-1">⏻</button>
+        <div class="cop-pick-wrap">
+          <button class="cop-pbtn" id="cop-pbtn-1">— ▾</button>
+          <div class="logo-picker-dropdown" id="cop-pdd-1"></div>
+        </div>
+      </div>
+      <div class="cop-row">
+        <span class="cop-lbl">Logo 2</span>
+        <button class="btn-logo-toggle cop-tog" id="cop-tog-2">⏻</button>
+        <div class="cop-pick-wrap">
+          <button class="cop-pbtn" id="cop-pbtn-2">— ▾</button>
+          <div class="logo-picker-dropdown" id="cop-pdd-2"></div>
+        </div>
+      </div>
+      <div class="cop-row">
+        <span class="cop-lbl">Hora / Temp.</span>
+        <button class="btn-logo-toggle cop-tog" id="cop-tog-text">⏻</button>
+        <div class="cop-text-opts">
+          <div class="logo-picker-item" id="cop-chk-time">
+            <span class="logo-picker-check" id="cop-chk-time-mark">✓</span>
+            <span class="logo-picker-name">Hora</span>
+          </div>
+          <div class="logo-picker-item" id="cop-chk-temp">
+            <span class="logo-picker-check" id="cop-chk-temp-mark">✓</span>
+            <span class="logo-picker-name">Temp.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(el);
+  _cop = el;
+
+  el.addEventListener("click", e => e.stopPropagation());
+  document.addEventListener("click", _closeCop);
+  el.querySelector("#cop-close").addEventListener("click", _closeCop);
+
+  el.querySelector("#cop-enable").addEventListener("change", function () {
+    if (_copIdx === null) return;
+    const item = state.schedule[_copIdx];
+    if (!item) return;
+    item.clip_overlays = this.checked ? _copDefaultConfig() : null;
+    _copRefreshBody(item);
+    _copMarkRow(_copIdx, !!item.clip_overlays);
+    syncOrderToServer();
+  });
+
+  ["1", "2", "text"].forEach(slot => {
+    el.querySelector(`#cop-tog-${slot}`).addEventListener("click", e => {
+      e.stopPropagation();
+      if (_copIdx === null) return;
+      const item = state.schedule[_copIdx];
+      if (!item?.clip_overlays) return;
+      const key = slot === "text" ? "text" : `logo${slot}`;
+      item.clip_overlays[key].active = !item.clip_overlays[key].active;
+      _copRefreshBody(item);
+      syncOrderToServer();
+    });
+  });
+
+  [1, 2].forEach(slot => {
+    const pbtn = el.querySelector(`#cop-pbtn-${slot}`);
+    const pdd  = el.querySelector(`#cop-pdd-${slot}`);
+    pbtn.addEventListener("click", e => {
+      e.stopPropagation();
+      const isOpen = pdd.classList.contains("open");
+      el.querySelectorAll(".logo-picker-dropdown").forEach(d => d.classList.remove("open"));
+      if (!isOpen) pdd.classList.add("open");
+    });
+    pdd.addEventListener("click", e => e.stopPropagation());
+  });
+
+  ["time", "temp"].forEach(key => {
+    el.querySelector(`#cop-chk-${key}`).addEventListener("click", e => {
+      e.stopPropagation();
+      if (_copIdx === null) return;
+      const item = state.schedule[_copIdx];
+      if (!item?.clip_overlays?.text) return;
+      item.clip_overlays.text[`show_${key}`] = !item.clip_overlays.text[`show_${key}`];
+      _copRefreshBody(item);
+      syncOrderToServer();
+    });
+  });
+
+  return el;
+}
+
+function _copDefaultConfig() {
+  const ls = (typeof _logoState !== "undefined") ? _logoState : {};
+  const ts = (typeof _textState !== "undefined") ? _textState : {};
+  return {
+    logo1: { active: ls[1]?.active ?? false, filename: ls[1]?.filename ?? "", corner: ls[1]?.corner ?? "br" },
+    logo2: { active: ls[2]?.active ?? false, filename: ls[2]?.filename ?? "", corner: ls[2]?.corner ?? "bl" },
+    text:  { active: ts.active ?? false, show_time: ts.show_time ?? true, show_temp: ts.show_temp ?? true },
+  };
+}
+
+function _copRefreshBody(item) {
+  const el = _cop;
+  if (!el) return;
+  const co      = item.clip_overlays;
+  const enabled = !!co;
+  el.querySelector("#cop-enable").checked = enabled;
+  const body = el.querySelector("#cop-body");
+  body.style.opacity       = enabled ? "1" : "0.4";
+  body.style.pointerEvents = enabled ? "" : "none";
+  if (!enabled) return;
+
+  [1, 2].forEach(slot => {
+    const cfg = co[`logo${slot}`] || {};
+    el.querySelector(`#cop-tog-${slot}`).classList.toggle("active", !!cfg.active);
+    const fname = cfg.filename || "—";
+    el.querySelector(`#cop-pbtn-${slot}`).textContent = fname + " ▾";
+
+    const pdd   = el.querySelector(`#cop-pdd-${slot}`);
+    const files = (typeof _logoFiles !== "undefined" ? _logoFiles : []);
+    pdd.innerHTML = "";
+    if (!files.length) {
+      pdd.innerHTML = '<div class="logo-picker-empty">Pasta logos/ vazia</div>';
+    } else {
+      files.forEach(f => {
+        const it  = document.createElement("div");
+        it.className = "logo-picker-item";
+        it.innerHTML = `<span class="logo-picker-check">${cfg.filename === f ? "✓" : ""}</span><span class="logo-picker-name">${esc(f)}</span>`;
+        it.addEventListener("click", e => {
+          e.stopPropagation();
+          if (_copIdx === null) return;
+          const itm = state.schedule[_copIdx];
+          if (!itm?.clip_overlays) return;
+          itm.clip_overlays[`logo${slot}`].filename = f;
+          pdd.classList.remove("open");
+          _copRefreshBody(itm);
+          syncOrderToServer();
+        });
+        pdd.appendChild(it);
+      });
+    }
+  });
+
+  const text = co.text || {};
+  el.querySelector("#cop-tog-text").classList.toggle("active", !!text.active);
+  el.querySelector("#cop-chk-time-mark").style.visibility = text.show_time !== false ? "" : "hidden";
+  el.querySelector("#cop-chk-temp-mark").style.visibility = text.show_temp !== false ? "" : "hidden";
+}
+
+function _copMarkRow(idx, hasConfig) {
+  const row = document.querySelector(`.schedule-item[data-index="${idx}"]`);
+  if (!row) return;
+  row.classList.toggle("has-clip-overlays", hasConfig);
+  const btn = row.querySelector(".btn-clip-overlay");
+  if (btn) btn.classList.toggle("configured", hasConfig);
+}
+
+function openClipOverlayPanel(item, idx, anchorEl) {
+  const el = _copGetOrCreate();
+  _copIdx = idx;
+  _copRefreshBody(item);
+
+  // Exibe para poder medir altura real
+  el.style.display = "block";
+  const W    = 260;
+  const H    = el.offsetHeight;
+  const rect = anchorEl.getBoundingClientRect();
+  let left = rect.left - W - 6;
+  let top  = rect.top;
+  if (left < 4) left = rect.right + 6;
+  if (top + H > window.innerHeight - 8) top = window.innerHeight - H - 8;
+  if (top < 4) top = 4;
+  el.style.left = left + "px";
+  el.style.top  = top  + "px";
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 // Drop na área vazia do roteiro — registrado uma única vez (não dentro de initDnD)
 (function setupListDrop() {
