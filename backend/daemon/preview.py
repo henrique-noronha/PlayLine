@@ -36,9 +36,12 @@ def capture_jpeg(mpv) -> Optional[bytes]:
 
         with Image.open(str(_TMP)) as img:
             img = img.convert("RGB")
-            if img.width > 0 and img.width != _W:
-                new_h = max(1, int(img.height * _W / img.width))
-                img = img.resize((_W, new_h), Image.LANCZOS)
+            # Descarta frames de janela minimizada (dimensões inválidas)
+            if img.width < 100 or img.height < 50:
+                return None
+            # Força sempre saída 16:9 para não quebrar proporção no canvas
+            _H = round(_W * 9 / 16)
+            img = img.resize((_W, _H), Image.LANCZOS)
             buf = io.BytesIO()
             img.save(buf, "JPEG", quality=_Q, optimize=False)
             return buf.getvalue()
