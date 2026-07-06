@@ -218,21 +218,92 @@ async def get_temperature(city: str = "Palmas,TO"):
     return PlainTextResponse(val or "—")
 
 
-@router.get("/api/library")
-async def get_library(folder: str = ""):
-    if not folder:
-        return {"files": []}
-    if not Path(folder).is_absolute() or any(part == ".." for part in Path(folder).parts):
-        raise HTTPException(status_code=400, detail="Caminho inválido")
-    p = Path(folder)
-    if not p.is_dir():
-        raise HTTPException(status_code=400, detail="Pasta não encontrada")
-    files = sorted(
-        [
-            {"name": f.stem, "filename": f.name, "path": str(f)}
-            for f in p.iterdir()
-            if f.is_file() and f.suffix.lower() in _MEDIA_EXTS
-        ],
+# ── Biblioteca estruturada ──────────────────────────────────────────────────
+
+_LIBRARY_BASE: Path = (
+    Path(sys.executable).parent / "Biblioteca"
+    if getattr(sys, "frozen", False)
+    else Path(__file__).parent.parent.parent / "Biblioteca"
+)
+_LIBRARY_BASE.mkdir(exist_ok=True)
+
+
+def _scan_media(path: Path) -> list[dict]:
+    return sorted(
+        [{"name": f.stem, "filename": f.name, "path": str(f)}
+         for f in path.iterdir()
+         if f.is_file() and f.suffix.lower() in _MEDIA_EXTS],
         key=lambda x: x["filename"].lower(),
     )
-    return {"folder": str(p), "files": files}
+
+
+@router.get("/api/library")
+async def get_library_info():
+    """Retorna as subpastas da Biblioteca."""
+    subfolders = sorted(f.name for f in _LIBRARY_BASE.iterdir() if f.is_dir())
+    return {"subfolders": subfolders, "base": str(_LIBRARY_BASE)}
+
+
+@router.get("/api/library/files")
+async def get_library_files(subfolder: str = ""):
+    """Retorna arquivos de mídia de uma subpasta ou de toda a Biblioteca."""
+    if subfolder:
+        if ".." in subfolder or "/" in subfolder or "\\" in subfolder:
+            raise HTTPException(status_code=400, detail="Subfolder inválido")
+        target = _LIBRARY_BASE / subfolder
+        if not target.is_dir():
+            raise HTTPException(status_code=404, detail="Pasta não encontrada")
+        files = _scan_media(target)
+    else:
+        # Todos: raiz + todas as subpastas
+        files = _scan_media(_LIBRARY_BASE)
+        for sub in sorted(_LIBRARY_BASE.iterdir()):
+            if sub.is_dir():
+                files += _scan_media(sub)
+    return {"files": files}
+
+
+@router.post("/api/library/folder")
+async def create_library_folder(body: dict):
+    """Cria uma nova subpasta na Biblioteca."""
+    name = (body.get("name") or "").strip()
+    if not name or ".." in name or "/" in name or "\\" in name:
+        raise HTTPException(status_code=400, detail="Nome inválido")
+    ((_LIBRARY_BASE / name)).mkdir(exist_ok=True)
+    return {"created": name}
+
+
+@router.patch("/api/library/folder")
+async def rename_library_folder(body: dict):
+    """Renomeia uma subpasta da Biblioteca."""
+    old = (body.get("old") or "").strip()
+    new = (body.get("new") or "").strip()
+    for v in (old, new):
+        if not v or ".." in v or "/" in v or "\\" in v:
+            raise HTTPException(status_code=400, detail="Nome inválido")
+    src = _LIBRARY_BASE / old
+    dst = _LIBRARY_BASE / new
+    if not src.is_dir():
+        raise HTTPException(status_code=404, detail="Pasta não encontrada")
+    if dst.exists():
+        raise HTTPException(status_code=409, detail="Já existe uma pasta com esse nome")
+    try:
+        src.rename(dst)
+    except OSError as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao renomear: {e}")
+    return {"renamed": {"old": old, "new": new}}
+
+
+@router.delete("/api/library/folder")
+async def delete_library_folder(subfolder: str):
+    """Remove uma subpasta vazia da Biblioteca."""
+    if ".." in subfolder or "/" in subfolder or "\\" in subfolder:
+        raise HTTPException(status_code=400, detail="Nome inválido")
+    target = _LIBRARY_BASE / subfolder
+    if not target.is_dir():
+        raise HTTPException(status_code=404, detail="Pasta não encontrada")
+    try:
+        target.rmdir()  # só remove se estiver vazia
+    except OSError:
+        raise HTTPException(status_code=409, detail="A pasta não está vazia")
+    return {"deleted": subfolder}
