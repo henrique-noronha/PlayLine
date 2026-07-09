@@ -664,12 +664,7 @@ async function init() {
     updateLogoDropdowns(data.files || []);
   } catch (err) {}
 
-  const savedFolder = localStorage.getItem("playline_library_folder");
-  if (savedFolder) {
-    const folderInput = document.getElementById("library-folder-input");
-    if (folderInput) folderInput.value = savedFolder;
-    if (typeof loadLibrary === "function") loadLibrary(savedFolder);
-  }
+  if (typeof loadLibraryFolders === "function") loadLibraryFolders();
 
   initLogoUI();
   initTextOverlayUI();

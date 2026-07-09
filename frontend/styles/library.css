@@ -6,36 +6,149 @@
   min-height: 400px;
 }
 
-/* ── Linha de pasta ── */
-.library-folder-row {
+/* ── Cabeçalho ── */
+.lib-header-actions {
   display: flex;
-  gap: 6px;
+  gap: 4px;
 }
 
-.library-folder-row input {
-  flex: 1;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 12px;
-  font-family: var(--font);
-  padding: 5px 8px;
-  outline: none;
-}
-.library-folder-row input:focus { border-color: var(--accent); }
-
-.library-folder-row button {
-  padding: 5px 10px;
+.lib-header-actions button {
+  width: 28px;
+  height: 28px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface2);
   color: var(--text);
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background .15s;
 }
-.library-folder-row button:hover { background: var(--border); }
+.lib-header-actions button:hover { background: var(--border); }
+
+/* ── Abas de subpastas ── */
+.lib-folders {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  min-height: 26px;
+}
+
+.lib-folder-tab {
+  padding: 3px 11px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  transition: border-color .15s, color .15s, background .15s;
+  white-space: nowrap;
+}
+.lib-folder-tab:hover  { border-color: var(--accent); color: var(--text); }
+.lib-folder-tab.active { border-color: var(--accent); background: rgba(79,142,247,.12); color: var(--accent); font-weight: 600; }
+
+/* ── Menu ··· da biblioteca ── */
+#lib-menu-wrap { position: relative; }
+
+#btn-lib-menu { letter-spacing: 1px; font-size: 13px; padding: 4px 7px; line-height: 1; }
+
+#lib-menu-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 170px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 300;
+  box-shadow: 0 6px 20px rgba(0,0,0,.5);
+}
+#lib-menu-dropdown.open { display: block; }
+
+.lib-menu-item {
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background .12s;
+  white-space: nowrap;
+}
+.lib-menu-item:hover { background: var(--border); }
+.lib-menu-item.disabled { opacity: .35; pointer-events: none; }
+.lib-menu-danger:hover { background: rgba(239,68,68,.15); color: var(--danger); }
+
+.lib-menu-separator {
+  height: 1px;
+  background: var(--border);
+  margin: 3px 0;
+}
+
+/* ── Barra de pesquisa ── */
+.lib-search-row {
+  display: none;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.lib-search-row.open { display: flex; }
+
+.lib-search-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font);
+  padding: 4px 8px;
+  outline: none;
+  transition: border-color .15s;
+}
+.lib-search-input::placeholder { color: var(--muted); }
+.lib-search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(79,142,247,.15); }
+
+/* ── Formulário nova/renomear pasta ── */
+.lib-new-folder-form {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.lib-new-folder-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font);
+  padding: 4px 8px;
+  outline: none;
+}
+
+.lib-new-folder-ok,
+.lib-new-folder-cancel {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, color .15s;
+}
+.lib-new-folder-ok:hover     { background: var(--success); color: #fff; border-color: var(--success); }
+.lib-new-folder-cancel:hover { background: var(--danger);  color: #fff; border-color: var(--danger); }
 
 /* ── Lista da biblioteca ── */
 .library-list {
@@ -60,9 +173,12 @@
   transition: border-color .15s;
   user-select: none;
 }
-.lib-item:hover    { border-color: var(--accent); }
-.lib-item.dragging { opacity: .35; }
-.lib-item.selected { border-color: var(--warning); background: rgba(245,158,11,.08); }
+.lib-item:hover              { border-color: var(--accent); }
+.lib-item.dragging           { opacity: .35; }
+.lib-item.selected           { border-color: var(--warning); background: rgba(245,158,11,.08); }
+.lib-item.invalid            { border-color: var(--danger); }
+.lib-item.invalid .lib-name  { color: var(--danger); }
+.lib-item.invalid .lib-dur   { color: var(--danger); }
 
 .lib-sel-bar {
   display: flex;
