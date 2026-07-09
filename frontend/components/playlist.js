@@ -158,7 +158,9 @@ function generateThumb(path, imgEl) {
   if (entry) {
     if (entry.state === "done")    { imgEl.src = entry.url; return; }
     if (entry.state === "loading") { entry.pending.push(imgEl); return; }
-    return; // error — não tenta de novo
+    // error — não tenta de novo; marca o item como inválido
+    imgEl.closest(".lib-item, .schedule-item")?.classList.add("invalid");
+    return;
   }
 
   // Thumb persistida no localStorage (inclui estado de erro persistido)
@@ -166,6 +168,7 @@ function generateThumb(path, imgEl) {
   if (stored) {
     if (stored === "__error__") {
       thumbCache[path] = { state: "error", url: "", pending: [] };
+      imgEl.closest(".lib-item, .schedule-item")?.classList.add("invalid");
       return;
     }
     thumbCache[path] = { state: "done", url: stored, pending: [] };
@@ -216,6 +219,9 @@ function generateThumb(path, imgEl) {
       })
       .catch(() => {
         cache.state = "error";
+        cache.pending.forEach(el => {
+          el.closest(".lib-item, .schedule-item")?.classList.add("invalid");
+        });
         cache.pending = [];
         thumbToStorage(path, "__error__");
       });
@@ -372,7 +378,7 @@ function renderSchedule() {
       <div class="item-index">${i + 1}</div>
       <img class="item-thumb" draggable="false" src="" alt="" />
       <div class="item-meta">
-        <input class="item-title" value="${esc(displayTitle)}" placeholder="Título" data-field="title" data-idx="${i}" />
+        <span class="item-title" title="${esc(displayTitle)}">${esc(displayTitle)}</span>
         <input class="item-path"  value="${esc(item.path)}"   placeholder="Caminho do arquivo" data-field="path" data-idx="${i}" />
       </div>
       <div class="item-time">
@@ -391,6 +397,7 @@ function renderSchedule() {
 
     if (item.path) {
       const imgEl = row.querySelector(".item-thumb");
+      imgEl.addEventListener("error", () => row.classList.add("invalid"), { once: true });
       ensureDuration(item.path);  // sempre, independente do cache de thumbnail
       if (domThumbs[item.path]) {
         imgEl.src = domThumbs[item.path];
@@ -410,7 +417,7 @@ function renderSchedule() {
           const autoTitle = val.split(/[/\\]/).pop().replace(/\.[^.]+$/, "");
           if (!state.schedule[idx].title || state.schedule[idx].title === "Novo item") {
             state.schedule[idx].title = autoTitle;
-            row.querySelector(".item-title").value = autoTitle;
+            row.querySelector(".item-title").textContent = autoTitle;
           }
           delete thumbCache[val];
           generateThumb(val, row.querySelector(".item-thumb"));
@@ -445,10 +452,6 @@ function renderSchedule() {
       }
       renderSchedule();
       syncOrderToServer();
-    });
-
-    row.addEventListener("dblclick", () => {
-      send({ action: "jump", index: i });
     });
 
     // Ativa edição ao clicar na área visual de um input (que tem pointer-events:none por padrão)
