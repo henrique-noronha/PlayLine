@@ -38,9 +38,7 @@
     const url = URL.createObjectURL(blob);
     const img = new Image();
     img.onload = () => {
-      if (canvas.width  !== img.naturalWidth)  canvas.width  = img.naturalWidth;
-      if (canvas.height !== img.naturalHeight) canvas.height = img.naturalHeight;
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
     };
     img.onerror = () => URL.revokeObjectURL(url);
