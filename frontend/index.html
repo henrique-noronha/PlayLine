@@ -28,7 +28,7 @@
       <section class="card" id="now-playing-card">
         <h2>Reproduzindo agora</h2>
         <div class="player-wrap">
-          <canvas id="mpv-preview"></canvas>
+          <canvas id="mpv-preview" width="1280" height="720"></canvas>
           <video id="player-video" muted></video>
           <img id="logo-overlay-1" class="logo-overlay" style="display:none" alt="" draggable="false" />
           <img id="logo-overlay-2" class="logo-overlay" style="display:none" alt="" draggable="false" />
@@ -48,13 +48,26 @@
       <section class="card library-card">
         <div class="library-header">
           <h2>Biblioteca</h2>
-          <div class="library-folder-row">
-            <input id="library-folder-input" type="text" placeholder="Ex: C:\Videos" />
-            <button id="btn-load-library" title="Carregar pasta">↺</button>
+          <div class="lib-header-actions">
+            <button id="btn-lib-search" title="Pesquisar vídeo">🔍</button>
+            <button id="btn-lib-refresh" title="Atualizar biblioteca">↺</button>
+            <div id="lib-menu-wrap">
+              <button id="btn-lib-menu" title="Opções da biblioteca">···</button>
+              <div id="lib-menu-dropdown">
+                <div class="lib-menu-item" id="lib-menu-new-folder">+ Nova pasta</div>
+                <div class="lib-menu-separator"></div>
+                <div class="lib-menu-item" id="lib-menu-rename-folder">✏ Renomear pasta</div>
+                <div class="lib-menu-item lib-menu-danger" id="lib-menu-remove-folder">✕ Remover pasta</div>
+              </div>
+            </div>
           </div>
         </div>
+        <div class="lib-folders" id="lib-folders"></div>
+        <div class="lib-search-row" id="lib-search-row">
+          <input id="lib-search-input" class="lib-search-input" type="text" placeholder="Pesquisar vídeo…" autocomplete="off" />
+        </div>
         <div class="library-list" id="library-list">
-          <div class="empty">Informe o caminho de uma pasta acima</div>
+          <div class="empty">Carregando…</div>
         </div>
       </section>
 
