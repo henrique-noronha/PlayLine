@@ -9,6 +9,8 @@ import sys
 from pathlib import Path
 from typing import Callable, Optional
 
+from .history import HistoryManager
+
 logger = logging.getLogger(__name__)
 
 _DATA_DIR = Path(sys.executable).parent if getattr(sys, 'frozen', False) else Path(__file__).parent.parent
@@ -28,6 +30,7 @@ class PlaylistEngine:
         self._advance_seq: int = 0  # incrementado a cada avanço; evita avanço duplo
         self._skip_end_file: int = 0  # end-files a ignorar após substituição manual de vídeo
         self._preloading: bool = False  # True quando próximo vídeo já está na fila do MPV
+        self._history = HistoryManager()
 
     # Roteiro                                                              #
  
@@ -120,7 +123,10 @@ class PlaylistEngine:
             return
         if reason == "error":
             self._preloading = False  # erro: não confia no estado da playlist interna
+            self._history.close_entry("error")
             logger.warning("Arquivo com erro — avançando automaticamente")
+        elif reason == "eof":
+            self._history.close_entry("completed")
         if self._skip_end_file > 0:
             self._skip_end_file -= 1
             logger.debug("end-file ignorado (substituição por avanço manual)")
@@ -138,6 +144,7 @@ class PlaylistEngine:
         self._paused = False
         self._index = -1
         self._preloading = False
+        self._history.close_entry("interrupted")
         await self._broadcast({"event": "stopped"})
         logger.info("Playout parado (janela MPV fechada)")
 
@@ -190,6 +197,7 @@ class PlaylistEngine:
         item = self._items[index]
 
         if item.get("path"):
+            self._history.open_entry(item.get("title") or item["path"].split("\\")[-1], item["path"])
             if self._preloading:
                 # MPV já avançou para este vídeo via playlist interna (pré-carregado)
                 # Não chama player.play() para não interromper a reprodução
@@ -231,6 +239,7 @@ class PlaylistEngine:
     async def pause_toggle(self):
         self._paused = not self._paused
         if self._paused:
+            self._history.mark_pause()
             self._player.pause()
             await self._broadcast({"event": "paused"})
         else:
@@ -243,11 +252,12 @@ class PlaylistEngine:
         self._paused = False
         self._index = -1
         self._preloading = False
+        self._history.close_entry("stopped")
         self._player.stop()
         await self._broadcast({"event": "stopped"})
 
     async def next_item(self):
-        # next manual: sem verificação de seq (sempre avança)
+        self._history.close_entry("skipped")
         await self._advance()
 
     def set_volume(self, volume: int):
