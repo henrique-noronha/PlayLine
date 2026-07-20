@@ -1,0 +1,49 @@
+PlayLine — Licença
+
+Copyright (c) 2026 Henrique Noronha Fernandes.
+
+
+LICENÇA DE SOFTWARE
+
+Este projeto é licenciado sob a GNU General Public License v3.0 (GPLv3).
+
+Você tem permissão para:
+
+  - Usar este software para qualquer finalidade;
+  - Estudar o código-fonte e adaptá-lo às suas necessidades;
+  - Redistribuir cópias do software original;
+  - Distribuir versões modificadas do software.
+
+Sob as seguintes condições:
+
+  - Qualquer redistribuição ou obra derivada deve ser licenciada sob a mesma GPLv3;
+  - O código-fonte deve ser disponibilizado em qualquer distribuição;
+  - Modificações devem ser claramente identificadas como tal;
+  - O aviso de copyright original deve ser mantido.
+
+O texto completo da licença está disponível em:
+https://www.gnu.org/licenses/gpl-3.0.html
+
+
+MARCA
+
+O nome "PlayLine" e o logotipo associado são de uso exclusivo deste
+projeto. Forks e obras derivadas devem adotar nome e identidade visual
+próprios, não podendo utilizar o nome "PlayLine" sem autorização prévia
+e escrita do autor.
+
+
+CRÉDITOS
+
+Trabalhos acadêmicos, artigos ou qualquer referência pública a este
+projeto devem creditar o autor original:
+
+  PlayLine — Henrique Noronha Fernandes
+  https://github.com/henrique-noronha/playline
+
+
+ISENÇÃO DE GARANTIA
+
+Este software é fornecido "como está", sem garantias de qualquer natureza,
+expressas ou implícitas. O autor não se responsabiliza por danos decorrentes
+do uso deste software, conforme os termos da GPLv3.
