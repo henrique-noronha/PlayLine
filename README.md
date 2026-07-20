@@ -100,7 +100,20 @@ A motivação central é a democratização da infraestrutura de *broadcasting* 
 
 ## Licença
 
-[MIT](LICENSE) — livre para usar, modificar e distribuir.
+Este projeto é licenciado sob a GPLv3 — veja o arquivo
+[LICENSE](LICENSE) para detalhes.
+
+## Contribuições
+
+Contribuições são bem-vindas via Pull Request. Toda
+modificação proposta será analisada pelo autor antes da
+aprovação. Consulte [CONTRIBUTING.md](CONTRIBUTING.md) para as diretrizes.
+
+## Marca
+
+O nome "PlayLine" e o logotipo associado são de uso
+exclusivo deste projeto. Forks e derivações devem adotar
+nome e identidade visual próprios.
 
 ---
 
