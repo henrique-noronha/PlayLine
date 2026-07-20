@@ -88,5 +88,45 @@
     "duration_played": 30,
     "end_reason": "stopped",
     "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "A CASA É SUA 91 BL 1 ",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 1 .mp4",
+    "started_at": "10:41:10",
+    "ended_at": "10:41:50",
+    "duration_played": 40,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "A CASA É SUA 91 BL 1 ",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 1 .mp4",
+    "started_at": "10:54:41",
+    "ended_at": "10:54:45",
+    "duration_played": 5,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "19 COMO AJUDAR ALGUÉM EM SOFRIMENTO",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4",
+    "started_at": "10:54:45",
+    "ended_at": "10:54:47",
+    "duration_played": 1,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "A CASA É SUA 91 BL 2",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 2.mp4",
+    "started_at": "10:54:47",
+    "ended_at": "10:54:49",
+    "duration_played": 2,
+    "end_reason": "stopped",
+    "had_pause": false
   }
 ]
