@@ -128,5 +128,15 @@
     "duration_played": 2,
     "end_reason": "stopped",
     "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "A CASA É SUA 91 BL 2",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 2.mp4",
+    "started_at": "11:13:20",
+    "ended_at": "11:13:26",
+    "duration_played": 6,
+    "end_reason": "stopped",
+    "had_pause": false
   }
 ]

@@ -1,8 +1,10 @@
 """Ponto de entrada do PlayLine — inicialização do FastAPI e wiring dos módulos."""
 
 import asyncio
+import base64
 import json
 import logging
+import os
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -11,6 +13,8 @@ import uvicorn
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response as StarletteResponse
 
 from core.player import Player
 from core.playlist import PlaylistEngine
@@ -160,7 +164,31 @@ async def lifespan(app: FastAPI):
 
 # App                                                                  #
 
+_AUTH_USER = os.environ.get("PLAYLINE_USER", "playline")
+_AUTH_PASS = os.environ.get("PLAYLINE_PASS", "playline")
+
+
+class _BasicAuth(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        if request.headers.get("upgrade", "").lower() == "websocket":
+            return await call_next(request)
+        auth = request.headers.get("Authorization", "")
+        if auth.startswith("Basic "):
+            try:
+                user, _, pw = base64.b64decode(auth[6:]).decode().partition(":")
+                if user == _AUTH_USER and pw == _AUTH_PASS:
+                    return await call_next(request)
+            except Exception:
+                pass
+        return StarletteResponse(
+            "Não autorizado",
+            status_code=401,
+            headers={"WWW-Authenticate": 'Basic realm="PlayLine"'},
+        )
+
+
 app = FastAPI(title="PlayLine", lifespan=lifespan)
+app.add_middleware(_BasicAuth)
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 app.include_router(http_router)
 app.include_router(ws_router)
