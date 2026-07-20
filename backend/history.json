@@ -1,0 +1,92 @@
+[
+  {
+    "date": "2026-07-10",
+    "title": "DIGA NÃO 02",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\DIGA NÃO 02.mp4",
+    "started_at": "12:12:02",
+    "ended_at": "12:12:15",
+    "duration_played": 13,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-10",
+    "title": "MOMENTO SAUDE - ESPERANÇA",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\MOMENTO SAUDE - ESPERANÇA.mp4",
+    "started_at": "12:12:15",
+    "ended_at": "12:12:21",
+    "duration_played": 6,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-10",
+    "title": "TESOUROS DO TOCANTINS ,  CANELA_",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\TESOUROS DO TOCANTINS ,  CANELA_.mp4",
+    "started_at": "12:12:21",
+    "ended_at": "12:12:22",
+    "duration_played": 1,
+    "end_reason": "skipped",
+    "had_pause": true
+  },
+  {
+    "date": "2026-07-10",
+    "title": "AV. CÔNEGO JOÃO LIMA",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\AV. CÔNEGO JOÃO LIMA.mp4",
+    "started_at": "12:12:22",
+    "ended_at": "12:12:23",
+    "duration_played": 0,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-10",
+    "title": "TV ASSEMBLEIA 2026",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\TV ASSEMBLEIA 2026.mp4",
+    "started_at": "12:12:23",
+    "ended_at": "12:12:23",
+    "duration_played": 0,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-10",
+    "title": "MOMENTO SAUDE - SOFRIMENTO MENTAL",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4",
+    "started_at": "12:12:23",
+    "ended_at": "12:12:23",
+    "duration_played": 0,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-10",
+    "title": "DIGA NÃO 01",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\DIGA NÃO 01.mp4",
+    "started_at": "12:12:23",
+    "ended_at": "12:12:27",
+    "duration_played": 4,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "DIGA NÃO 01",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\DIGA NÃO 01.mp4",
+    "started_at": "10:03:40",
+    "ended_at": "10:04:26",
+    "duration_played": 47,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "19 COMO AJUDAR ALGUÉM EM SOFRIMENTO",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4",
+    "started_at": "10:04:26",
+    "ended_at": "10:04:56",
+    "duration_played": 30,
+    "end_reason": "stopped",
+    "had_pause": false
+  }
+]
