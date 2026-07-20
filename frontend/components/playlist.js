@@ -204,7 +204,10 @@ function generateThumb(path, imgEl) {
     const cache = thumbCache[path];
     cache.state = "done";
     cache.url = url;
-    cache.pending.forEach(el => { el.src = url; });
+    cache.pending.forEach(el => {
+      el.src = url;
+      el.closest(".lib-item, .schedule-item")?.classList.remove("invalid");
+    });
     cache.pending = [];
     v.src = "";
   }, { once: true });
@@ -221,7 +224,10 @@ function generateThumb(path, imgEl) {
         thumbToStorage(path, url);
         cache.state = "done";
         cache.url   = url;
-        cache.pending.forEach(el => { el.src = url; });
+        cache.pending.forEach(el => {
+          el.src = url;
+          el.closest(".lib-item, .schedule-item")?.classList.remove("invalid");
+        });
         cache.pending = [];
       })
       .catch(() => {
@@ -383,7 +389,7 @@ function renderSchedule() {
     row.innerHTML = `
       <div class="item-drag" title="${isLocked ? "Em reprodução" : "Arrastar"}">${isLocked ? "▶" : "⠿"}</div>
       <div class="item-index">${i + 1}</div>
-      <img class="item-thumb" draggable="false" src="" alt="" />
+      <img class="item-thumb" draggable="false" alt="" />
       <div class="item-meta">
         <span class="item-title" title="${esc(displayTitle)}">${esc(displayTitle)}</span>
         <input class="item-path"  value="${esc(item.path)}"   placeholder="Caminho do arquivo" data-field="path" data-idx="${i}" />
