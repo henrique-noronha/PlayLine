@@ -215,6 +215,37 @@
     </section>
   </main>
 
+  <!-- Modal de Histórico -->
+  <div id="history-modal" class="history-backdrop" style="display:none">
+    <div class="history-box">
+      <div class="history-header">
+        <h3>Histórico de exibição</h3>
+        <div class="history-nav">
+          <button id="hist-prev-day" title="Dia anterior">&#8249;</button>
+          <span id="hist-date-label"></span>
+          <button id="hist-next-day" title="Próximo dia">&#8250;</button>
+        </div>
+        <button id="hist-close" title="Fechar">✕</button>
+      </div>
+      <div class="history-table-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Entrada</th>
+              <th>Saída</th>
+              <th>Título</th>
+              <th>Duração</th>
+              <th>Status</th>
+              <th>Pause</th>
+            </tr>
+          </thead>
+          <tbody id="hist-tbody"></tbody>
+        </table>
+        <div id="hist-empty" class="hist-empty" style="display:none">Nenhum registro para esta data.</div>
+      </div>
+    </div>
+  </div>
+
   <div id="confirm-modal" class="confirm-modal-backdrop" style="display:none">
     <div class="confirm-modal-box">
       <p id="confirm-modal-text"></p>
@@ -225,6 +256,7 @@
     </div>
   </div>
 
+  <script src="/static/components/history.js"></script>
   <script src="/static/components/logs.js"></script>
   <script src="/static/components/player.js"></script>
   <script src="/static/components/playlist.js"></script>

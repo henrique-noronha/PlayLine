@@ -49,6 +49,11 @@ def setup(playlist_engine, manager):
     _manager = manager
 
 
+@router.get("/api/history")
+async def get_history(date: str = "", limit: int = 200):
+    return {"entries": _playlist_engine._history.get_history(date or None, limit)}
+
+
 @router.get("/api/schedule")
 async def get_schedule():
     return _playlist_engine.get_schedule()

@@ -35,6 +35,8 @@ function updateScheduleSelectionUI() {
     dropdown.innerHTML = `
       <div class="sch-menu-item" id="sch-menu-duplicate">⎘ Duplicar roteiro</div>
       <div class="sch-menu-separator"></div>
+      <div class="sch-menu-item" id="sch-menu-history">📋 Histórico</div>
+      <div class="sch-menu-separator"></div>
       <div class="sch-menu-item" id="sch-menu-clear">🗑 Limpar roteiro</div>
     `;
 
@@ -49,6 +51,11 @@ function updateScheduleSelectionUI() {
       dropdown.classList.toggle("open");
     });
     document.addEventListener("click", () => dropdown.classList.remove("open"));
+
+    document.getElementById("sch-menu-history").addEventListener("click", () => {
+      dropdown.classList.remove("open");
+      openHistoryModal();
+    });
 
     document.getElementById("sch-menu-duplicate").addEventListener("click", () => {
       dropdown.classList.remove("open");
