@@ -138,5 +138,85 @@
     "duration_played": 6,
     "end_reason": "stopped",
     "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "A CASA É SUA 91 BL 2",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 2.mp4",
+    "started_at": "14:07:38",
+    "ended_at": "14:09:14",
+    "duration_played": 96,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "A CASA É SUA 91 BL 2",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 2.mp4",
+    "started_at": "14:12:17",
+    "ended_at": "14:21:44",
+    "duration_played": 566,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "A CASA É SUA 91 BL 2",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 2.mp4",
+    "started_at": "14:29:23",
+    "ended_at": "14:29:25",
+    "duration_played": 2,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "20 PROCURAR AJUDA É CORAGEM",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\20 PROCURAR AJUDA É CORAGEM.mp4",
+    "started_at": "14:29:25",
+    "ended_at": "14:29:27",
+    "duration_played": 1,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "19 COMO AJUDAR ALGUÉM EM SOFRIMENTO",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4",
+    "started_at": "14:29:27",
+    "ended_at": "14:29:28",
+    "duration_played": 1,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "21 TEA E NEURODIVERGÊNCIAS",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\21 TEA E NEURODIVERGÊNCIAS.mp4",
+    "started_at": "14:29:28",
+    "ended_at": "14:29:29",
+    "duration_played": 2,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "A CASA É SUA 91 BL 3",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 3.mp4",
+    "started_at": "14:29:29",
+    "ended_at": "14:29:31",
+    "duration_played": 1,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-20",
+    "title": "21 TEA E NEURODIVERGÊNCIAS",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\21 TEA E NEURODIVERGÊNCIAS.mp4",
+    "started_at": "14:29:31",
+    "ended_at": "14:29:32",
+    "duration_played": 1,
+    "end_reason": "stopped",
+    "had_pause": false
   }
 ]
