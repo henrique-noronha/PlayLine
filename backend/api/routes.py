@@ -155,6 +155,14 @@ async def get_logo_slot(slot: int):
     return FileResponse(str(work), media_type="image/png")
 
 
+def _ffmpeg_bin() -> str:
+    if getattr(sys, "frozen", False):
+        local = Path(sys.executable).parent / "ffmpeg.exe"
+        if local.is_file():
+            return str(local)
+    return "ffmpeg"
+
+
 @router.get("/api/thumbnail")
 async def get_thumbnail(path: str):
     p = _validate_path(path, _MEDIA_EXTS)
@@ -163,7 +171,7 @@ async def get_thumbnail(path: str):
     try:
         result = subprocess.run(
             [
-                "ffmpeg", "-y", "-ss", "2", "-i", str(p),
+                _ffmpeg_bin(), "-y", "-ss", "2", "-i", str(p),
                 "-vframes", "1",
                 "-vf", "scale=112:63:force_original_aspect_ratio=decrease,pad=112:63:(ow-iw)/2:(oh-ih)/2:color=black",
                 "-f", "image2", "-vcodec", "mjpeg", "pipe:1",
