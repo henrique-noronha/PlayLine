@@ -5,19 +5,18 @@ import base64
 import json
 import logging
 import os
+import secrets
 import sys
 import threading
 import time
-import webbrowser
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, WebSocket
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Request, WebSocket
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response as StarletteResponse
 
 from core.player import Player
 from core.playlist import PlaylistEngine
@@ -175,29 +174,77 @@ async def lifespan(app: FastAPI):
 
 _AUTH_USER = os.environ.get("PLAYLINE_USER", "playline")
 _AUTH_PASS = os.environ.get("PLAYLINE_PASS", "playline")
+_SESSIONS: set[str] = set()
 
 
-class _BasicAuth(BaseHTTPMiddleware):
+def _build_login_html(error: bool = False) -> str:
+    if getattr(sys, "frozen", False):
+        logos_dir = Path(sys.executable).parent / "logos"
+    else:
+        logos_dir = Path(__file__).parent / "logos"
+
+    logo_tag = "<span style='font-size:26px;font-weight:700;color:#e5e7eb'>PlayLine</span>"
+    for name in ("LogoPlayLineD.png", "FavPlayline.png"):
+        lp = logos_dir / name
+        if lp.exists():
+            b64 = base64.b64encode(lp.read_bytes()).decode()
+            logo_tag = f'<img src="data:image/png;base64,{b64}" style="max-width:280px;max-height:140px;object-fit:contain" alt="PlayLine" />'
+            break
+
+    error_html = """<p style="color:#ef4444;font-size:12px;text-align:center;margin-top:4px">
+        Usuário ou senha incorretos.</p>""" if error else ""
+
+    return f"""<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PlayLine — Autenticação</title>
+<style>
+*{{box-sizing:border-box;margin:0;padding:0}}
+body{{background:#111827;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;height:100vh;gap:32px;
+  font-family:'Segoe UI',system-ui,sans-serif;color:#e5e7eb}}
+.logo-wrap{{display:flex;flex-direction:column;align-items:center;gap:12px}}
+.subtitle{{font-size:12px;color:#6b7280;letter-spacing:.08em;text-transform:uppercase;font-weight:500}}
+form{{display:flex;flex-direction:column;gap:12px;width:280px}}
+.field{{display:flex;flex-direction:column;gap:5px}}
+label{{font-size:11px;color:#4b5563;font-weight:600;letter-spacing:.06em;text-transform:uppercase}}
+input{{background:#1a2332;border:1px solid #2d3748;border-radius:8px;color:#e5e7eb;
+  font-size:14px;padding:10px 13px;outline:none;transition:border-color .15s;width:100%;
+  font-family:'Segoe UI',system-ui,sans-serif}}
+input:focus{{border-color:#4f8ef7;background:#1e2a40}}
+button{{background:#4f8ef7;border:none;border-radius:8px;color:#fff;cursor:pointer;
+  font-size:13px;font-weight:600;padding:11px;width:100%;margin-top:4px;
+  transition:background .15s;letter-spacing:.02em}}
+button:hover{{background:#3b7de8}}
+</style></head><body>
+<div class="logo-wrap">
+  {logo_tag}
+  <span class="subtitle">Autenticação</span>
+</div>
+{error_html}
+<form method="post" action="/login">
+  <div class="field"><label>Usuário</label>
+    <input type="text" name="username" autocomplete="username" autofocus /></div>
+  <div class="field"><label>Senha</label>
+    <input type="password" name="password" autocomplete="current-password" /></div>
+  <button type="submit">Entrar</button>
+</form>
+</body></html>"""
+
+
+class _SessionAuth(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         if request.headers.get("upgrade", "").lower() == "websocket":
             return await call_next(request)
-        auth = request.headers.get("Authorization", "")
-        if auth.startswith("Basic "):
-            try:
-                user, _, pw = base64.b64decode(auth[6:]).decode().partition(":")
-                if user == _AUTH_USER and pw == _AUTH_PASS:
-                    return await call_next(request)
-            except Exception:
-                pass
-        return StarletteResponse(
-            "Não autorizado",
-            status_code=401,
-            headers={"WWW-Authenticate": 'Basic realm="PlayLine"'},
-        )
+        if request.url.path == "/login":
+            return await call_next(request)
+        token = request.cookies.get("playline_session")
+        if token and token in _SESSIONS:
+            return await call_next(request)
+        return RedirectResponse(url="/login", status_code=302)
 
 
 app = FastAPI(title="PlayLine", lifespan=lifespan)
-app.add_middleware(_BasicAuth)
+app.add_middleware(_SessionAuth)
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 app.include_router(http_router)
 app.include_router(ws_router)
@@ -213,70 +260,29 @@ async def preview_ws(ws: WebSocket):
         preview_manager.disconnect(ws)
 
 
+@app.get("/login")
+async def login_page():
+    return HTMLResponse(_build_login_html())
+
+
+@app.post("/login")
+async def login_submit(request: Request):
+    form = await request.form()
+    if form.get("username") == _AUTH_USER and form.get("password") == _AUTH_PASS:
+        token = secrets.token_urlsafe(32)
+        _SESSIONS.add(token)
+        resp = RedirectResponse(url="/", status_code=302)
+        resp.set_cookie("playline_session", token, httponly=True, samesite="lax")
+        return resp
+    return HTMLResponse(_build_login_html(error=True), status_code=401)
+
+
 @app.get("/")
 async def index():
     return FileResponse(str(FRONTEND_DIR / "index.html"))
 
 
-def _splash_and_open():
-    """Exibe splash screen e abre o browser quando o servidor estiver pronto."""
-    try:
-        import tkinter as tk
-        from PIL import Image, ImageTk
-        import urllib.request as _req
-
-        root = tk.Tk()
-        root.overrideredirect(True)
-        root.attributes("-topmost", True)
-        root.configure(bg="#111827")
-
-        W, H = 360, 240
-        sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
-        root.geometry(f"{W}x{H}+{(sw - W) // 2}+{(sh - H) // 2}")
-
-        if getattr(sys, "frozen", False):
-            base = Path(sys.executable).parent
-        else:
-            base = Path(__file__).parent.parent
-
-        for name in ("LogoPlayLineD.png", "FavPlayline.png"):
-            logo_path = base / "logos" / name
-            if logo_path.exists():
-                img = Image.open(logo_path).convert("RGBA")
-                img.thumbnail((240, 120), Image.LANCZOS)
-                photo = ImageTk.PhotoImage(img)
-                tk.Label(root, image=photo, bg="#111827").pack(expand=True, pady=(40, 8))
-                break
-
-        lbl = tk.Label(root, text="Iniciando servidor…", fg="#6b7280",
-                       bg="#111827", font=("Segoe UI", 10))
-        lbl.pack(pady=(0, 40))
-
-        def _poll():
-            import socket
-            for _ in range(60):
-                time.sleep(0.5)
-                try:
-                    s = socket.create_connection(("localhost", 8000), timeout=1)
-                    s.close()
-                    webbrowser.open("http://localhost:8000")
-                    root.after(400, root.destroy)
-                    return
-                except Exception:
-                    pass
-            root.after(0, root.destroy)
-
-        threading.Thread(target=_poll, daemon=True).start()
-        root.mainloop()
-
-    except Exception as exc:
-        logger.warning("Splash screen indisponível: %s", exc)
-        time.sleep(4)
-        webbrowser.open("http://localhost:8000")
-
-
-if __name__ == "__main__":
-    threading.Thread(target=_splash_and_open, daemon=True).start()
+def _run_server():
     uvicorn.run(
         app,
         host="0.0.0.0",
@@ -285,3 +291,72 @@ if __name__ == "__main__":
         log_level="info",
         log_config=None,
     )
+
+
+def _wait_and_navigate(window):
+    import socket
+    for _ in range(60):
+        time.sleep(0.5)
+        try:
+            s = socket.create_connection(("localhost", 8000), timeout=1)
+            s.close()
+            window.load_url("http://localhost:8000")
+            return
+        except Exception:
+            pass
+
+
+if __name__ == "__main__":
+    import webview
+
+    if getattr(sys, "frozen", False):
+        _base = Path(sys.executable).parent
+    else:
+        _base = Path(__file__).parent
+
+    _logo_html = "<div style=\"font-size:32px;font-weight:700;color:#e5e7eb\">PlayLine</div>"
+    for _name in ("LogoPlayLineD.png", "FavPlayline.png"):
+        _lp = _base / "logos" / _name
+        if _lp.exists():
+            _b64 = base64.b64encode(_lp.read_bytes()).decode()
+            _logo_html = f'<img src="data:image/png;base64,{_b64}" style="max-width:280px;max-height:140px;object-fit:contain" />'
+            break
+
+    _splash = f"""<!DOCTYPE html><html><body style="margin:0;background:#111827;
+        display:flex;flex-direction:column;align-items:center;justify-content:center;
+        height:100vh;gap:24px">
+        {_logo_html}
+        <p style="color:#6b7280;font-family:'Segoe UI',sans-serif;font-size:13px;margin:0">
+            Iniciando servidor…
+        </p></body></html>"""
+
+    def _server_running() -> bool:
+        import socket
+        try:
+            s = socket.create_connection(("localhost", 8000), timeout=1)
+            s.close()
+            return True
+        except Exception:
+            return False
+
+    if _server_running():
+        _window = webview.create_window(
+            "PlayLine",
+            "http://localhost:8000",
+            width=1440,
+            height=860,
+            min_size=(960, 600),
+        )
+        webview.start()
+    else:
+        threading.Thread(target=_run_server, daemon=True).start()
+        _window = webview.create_window(
+            "PlayLine",
+            html=_splash,
+            width=1440,
+            height=860,
+            min_size=(960, 600),
+        )
+        webview.start(
+            lambda: threading.Thread(target=_wait_and_navigate, args=(_window,), daemon=True).start()
+        )
