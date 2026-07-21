@@ -6,6 +6,9 @@ import json
 import logging
 import os
 import sys
+import threading
+import time
+import webbrowser
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -21,9 +24,15 @@ from core.playlist import PlaylistEngine
 from api.routes import router as http_router, setup as setup_routes
 from api.websocket import router as ws_router, setup as setup_ws
 
+_log_handlers = [logging.StreamHandler()]
+if getattr(sys, "frozen", False):
+    _log_file = Path(sys.executable).parent / "playline.log"
+    _log_handlers.append(logging.FileHandler(_log_file, encoding="utf-8"))
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=_log_handlers,
 )
 logger = logging.getLogger(__name__)
 
@@ -209,11 +218,70 @@ async def index():
     return FileResponse(str(FRONTEND_DIR / "index.html"))
 
 
+def _splash_and_open():
+    """Exibe splash screen e abre o browser quando o servidor estiver pronto."""
+    try:
+        import tkinter as tk
+        from PIL import Image, ImageTk
+        import urllib.request as _req
+
+        root = tk.Tk()
+        root.overrideredirect(True)
+        root.attributes("-topmost", True)
+        root.configure(bg="#111827")
+
+        W, H = 360, 240
+        sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
+        root.geometry(f"{W}x{H}+{(sw - W) // 2}+{(sh - H) // 2}")
+
+        if getattr(sys, "frozen", False):
+            base = Path(sys.executable).parent
+        else:
+            base = Path(__file__).parent.parent
+
+        for name in ("LogoPlayLineD.png", "FavPlayline.png"):
+            logo_path = base / "logos" / name
+            if logo_path.exists():
+                img = Image.open(logo_path).convert("RGBA")
+                img.thumbnail((240, 120), Image.LANCZOS)
+                photo = ImageTk.PhotoImage(img)
+                tk.Label(root, image=photo, bg="#111827").pack(expand=True, pady=(40, 8))
+                break
+
+        lbl = tk.Label(root, text="Iniciando servidor…", fg="#6b7280",
+                       bg="#111827", font=("Segoe UI", 10))
+        lbl.pack(pady=(0, 40))
+
+        def _poll():
+            import socket
+            for _ in range(60):
+                time.sleep(0.5)
+                try:
+                    s = socket.create_connection(("localhost", 8000), timeout=1)
+                    s.close()
+                    webbrowser.open("http://localhost:8000")
+                    root.after(400, root.destroy)
+                    return
+                except Exception:
+                    pass
+            root.after(0, root.destroy)
+
+        threading.Thread(target=_poll, daemon=True).start()
+        root.mainloop()
+
+    except Exception as exc:
+        logger.warning("Splash screen indisponível: %s", exc)
+        time.sleep(4)
+        webbrowser.open("http://localhost:8000")
+
+
 if __name__ == "__main__":
+    threading.Thread(target=_splash_and_open, daemon=True).start()
     uvicorn.run(
-        "main:app",
+        app,
         host="0.0.0.0",
         port=8000,
         reload=False,
         log_level="info",
+        log_config=None,
     )

@@ -3,8 +3,19 @@ __pycache__/
 *.pyc
 *.pyo
 
-# DLL binária — instale via mpv no ambiente de destino
+# Binários externos — baixar separadamente antes de buildar
 backend/libmpv-2.dll
+backend/ffmpeg.exe
+
+# Dados de runtime — gerados automaticamente pela aplicação
+backend/schedule.json
+backend/history.json
+
+# Build
+backend/build/
+backend/dist/
+backend/*.spec
+backend/FavPlayline.ico
 
 # Ambiente virtual
 .venv/
@@ -12,4 +23,6 @@ venv/
 
 # Editor
 .vscode/
+
+# Biblioteca de mídia
 Biblioteca/
