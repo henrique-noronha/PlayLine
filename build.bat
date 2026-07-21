@@ -48,6 +48,8 @@ python -m PyInstaller --onedir --noconsole --noconfirm ^
     --add-binary "libmpv-2.dll;." ^
     --add-data "../frontend;frontend" ^
     --paths "." ^
+    --collect-all webview ^
+    --hidden-import clr ^
     %FFMPEG_ARG% ^
     %ICON_ARG% ^
     main.py
