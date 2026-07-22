@@ -1,0 +1,649 @@
+<title>PlayLine — Sistema de Playout para TV</title>
+<link rel="icon" type="image/png" href="FavPlayline.png">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #0d1117;
+  --surface: #111827;
+  --surf2:   #1a2332;
+  --border:  #2d3748;
+  --accent:  #4f8ef7;
+  --accent-h:#3b7de8;
+  --text:    #e5e7eb;
+  --muted:   #6b7280;
+  --green:   #22c55e;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── SMPTE color bars ── */
+.smpte {
+  height: 4px;
+  display: flex;
+}
+.smpte span { flex: 1; }
+
+/* ── Nav ── */
+nav {
+  padding: 0 40px 0 0px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: rgba(13,17,23,.94);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  overflow: hidden;
+}
+.nav-logo {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -.02em;
+}
+.nav-logo img {
+  display: inline-block !important;
+  width: auto !important;
+  height: 120px !important;
+  object-fit: contain !important;
+  vertical-align: middle !important;
+}
+.nav-links { display: flex; gap: 24px; align-items: center; }
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color .15s;
+}
+.nav-links a:hover { color: var(--text); }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  font-family: inherit;
+}
+.btn:active { transform: scale(.98); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-h); }
+.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-outline:hover { background: var(--surface); }
+.btn-lg { padding: 13px 28px; font-size: 15px; border-radius: 8px; }
+
+/* ── Hero ── */
+.hero {
+  padding: 64px 40px 64px;
+  text-align: center;
+  max-width: 780px;
+  margin: 0 auto;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 32px;
+  text-decoration: none;
+}
+.hero-badge:hover { border-color: var(--accent); color: var(--text); }
+.hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-size: clamp(24px, 3.8vw, 40px);
+  font-weight: 700;
+  letter-spacing: -.025em;
+  line-height: 1.2;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.about-text {
+  max-width: 700px;
+  margin: 20px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.about-text p {
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.7;
+  text-align: center;
+}
+.hero-sub {
+  font-size: 19px;
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto 40px;
+  line-height: 1.55;
+}
+.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ── Screenshot ── */
+.screenshot-wrap {
+  max-width: 980px;
+  margin: 0 auto 88px;
+  padding: 0 40px;
+}
+.browser-frame {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7);
+}
+.browser-bar {
+  background: var(--surface);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.browser-dot { width: 10px; height: 10px; border-radius: 50%; }
+.browser-url {
+  background: var(--surf2);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: 8px;
+  font-family: monospace;
+  flex: 1;
+}
+.browser-img {
+  display: block;
+  width: 100%;
+  background: var(--surf2);
+}
+.browser-img img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── Sections ── */
+.section { padding: 80px 40px; }
+.section-label {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.section-title {
+  text-align: center;
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 700;
+  letter-spacing: -.025em;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.section-sub {
+  text-align: center;
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 460px;
+  margin: 0 auto 52px;
+}
+
+/* ── Features grid ── */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.feature {
+  background: var(--surface);
+  padding: 30px 26px;
+  transition: background .15s;
+}
+.feature:hover { background: var(--surf2); }
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(79,142,247,.12);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.feature h3 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.feature p  { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ── Steps ── */
+.steps-bg {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 40px !important;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface);
+  padding: 30px 26px;
+  transition: background .15s;
+}
+.step:hover { background: var(--surf2); }
+.step-num {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.step h3 { font-size: 16px; font-weight: 600; color: var(--text); }
+.step p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.step code {
+  font-family: 'Courier New', monospace;
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+/* ── Download ── */
+.download-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.dl-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color .15s;
+}
+.dl-card:hover { border-color: var(--accent); }
+.dl-icon {
+  width: 42px;
+  height: 42px;
+  background: rgba(79,142,247,.12);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+.dl-card h3 { font-size: 14px; font-weight: 600; color: var(--text); }
+.dl-card p  { font-size: 12px; color: var(--muted); line-height: 1.55; flex: 1; }
+.dl-meta    { font-size: 11px; color: var(--muted); font-family: monospace; }
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 40px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.footer-links { display: flex; gap: 24px; justify-content: center; margin-bottom: 14px; }
+.footer-links a { color: var(--muted); text-decoration: none; transition: color .15s; }
+.footer-links a:hover { color: var(--text); }
+
+/* ── Responsive ── */
+/* ── Tablet ── */
+@media (max-width: 1024px) {
+  .steps { grid-template-columns: repeat(2, 1fr); }
+  .features { grid-template-columns: repeat(2, 1fr); }
+  .hero h1 { font-size: clamp(22px, 3.5vw, 34px); }
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 48px 20px 36px; }
+  .hero-sub { font-size: 16px; }
+  .screenshot-wrap { padding: 0 16px; margin-bottom: 48px; }
+  .section { padding: 48px 20px; }
+  .features { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .download-cards { grid-template-columns: 1fr; }
+  .dl-card { padding: 20px; }
+  footer { padding: 24px 20px; }
+  .footer-links { flex-wrap: wrap; gap: 16px; }
+  .about-text p { font-size: 14px; }
+}
+
+/* ── Dot grid background ── */
+body {
+  background-image: radial-gradient(circle, rgba(45,55,72,0.55) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Hero glow + scanlines ── */
+.hero-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.hero-wrap::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 500px;
+  background: radial-gradient(ellipse, rgba(79,142,247,0.10) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.018) 3px,
+    rgba(0,0,0,0.018) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-wrap > * { position: relative; z-index: 1; }
+
+/* ── Scroll fade-in ── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .55s ease, transform .55s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fade-up { opacity: 1; transform: none; transition: none; }
+}
+</style>
+
+<!-- SMPTE color bars -->
+<div class="smpte">
+  <span style="background:#c0c0c0"></span>
+  <span style="background:#c0c000"></span>
+  <span style="background:#00c0c0"></span>
+  <span style="background:#00c000"></span>
+  <span style="background:#c000c0"></span>
+  <span style="background:#c00000"></span>
+  <span style="background:#0000c0"></span>
+</div>
+
+<!-- Nav -->
+<nav>
+  <a class="nav-logo" href="#"><img src="LogoPlayLineD.png" alt="PlayLine" style="height:44px;object-fit:contain;vertical-align:middle;width:auto;display:inline-block"></a>
+  <div class="nav-links">
+    <a href="#funcionalidades">Funcionalidades</a>
+    <a href="#como-usar">Como usar</a>
+    <a href="#download">Download</a>
+    <a href="https://github.com/henrique-noronha/PlayLine" target="_blank">GitHub</a>
+    <a href="#suporte">Suporte</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero-wrap">
+<section class="hero">
+  <img src="LogoPlayLineD.png" alt="PlayLine" style="max-width:420px;height:auto;margin-bottom:32px;display:block;margin-left:auto;margin-right:auto">
+  <h1> Software de playout televisivo gratuito.</h1>
+  <p class="hero-sub">Um sistema projetado para emissoras que precisam de transmissão contínua sem depender de licenças comerciais ou de equipe técnica especializada.</p>
+</section>
+
+<!-- O que é -->
+<section class="section" id="o-que-e" style="max-width:900px;margin:0 auto">
+  <h2 class="section-title">O que é o PlayLine</h2>
+  <div class="about-text">
+    <p>O PlayLine é um sistema de automação de playout televisivo que
+organiza, reproduz e gerencia a programação da sua emissora de
+forma contínua e automatizada. Ele foi desenvolvido para
+emissoras que não podem arcar com soluções comerciais de alto
+custo e não dispõem de equipe técnica dedicada, sem perder as
+funcionalidades essenciais. Ao viabilizar a operação contínua
+dessas emissoras, o PlayLine contribui para que a televisão
+aberta continue cumprindo seu papel como principal meio de
+acesso à informação para milhões de pessoas.</p>
+
+  </div>
+</section>
+
+</div>
+
+<!-- Screenshot -->
+<div class="screenshot-wrap">
+  <img src="InterfacePlayLine.png" alt="Interface do PlayLine" style="display:block;width:100%;height:auto;border-radius:10px;box-shadow:0 32px 80px rgba(0,0,0,.7)" />
+</div>
+
+<!-- Por que -->
+<section class="section" id="por-que">
+  <h2 class="section-title">Por que o PlayLine?</h2>
+  <p class="section-sub"></p>
+  <div class="features">
+
+        <div class="feature">
+      <h3>Gratuito e de código aberto</h3>
+      <p>Sem licenciamento, sem mensalidade, sem custos ocultos. O código é aberto sob licença GPLv3 e pode ser auditado por qualquer pessoa.</p>
+    </div>
+
+    <div class="feature">
+      <h3>Feito para quem opera, não para quem programa</h3>
+      <p>A interface foi projetada para jornalistas, servidores públicos e voluntários. Play, Pause, Próximo e o roteiro visível na tela. Sem terminal, sem configuração avançada.</p>
+    </div>
+
+    <div class="feature">
+      <h3>A transmissão não para se a interface travar</h3>
+      <p>O motor de vídeo e a interface rodam em processos separados. Se a interface fechar por acidente, o vídeo continua no ar. Ao reabrir, a interface reconecta automaticamente e retoma o controle.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Funcionalidades -->
+<section class="section" id="funcionalidades">
+  <h2 class="section-title">O que o PlayLine faz</h2>
+  <div class="features" style="grid-template-columns:repeat(3,1fr);max-width:1100px">
+
+    <div class="feature">
+      <div class="feature-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+      </div>
+      <h3>Biblioteca de Vídeos</h3>
+      <p>Geração automática de miniaturas. Busca por nome em tempo real. Suporta MP4, MKV, MXF, MTS e mais. Organização por subpastas.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </div>
+      <h3>Roteiro de Programação</h3>
+      <p>Monte a grade arrastando vídeos da biblioteca. Reordene, remova e controle cada item com precisão. O histórico de exibição fica registrado diretamente no roteiro.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <h3>Sobreposição de Logos</h3>
+      <p>Até 2 logotipos simultâneos em qualquer canto da tela. Cada clipe do roteiro pode ter sua própria configuração de overlay, por exemplo: ative a logo apenas em um clipe e ela some automaticamente ao fim do clipe, sem intervenção manual.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3>Hora e Temperatura</h3>
+      <p>Bloco de hora, temperatura e cidade sobrepostos ao vídeo. Seleção de 30 cidades brasileiras ou entrada manual.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <h3>Preview em Tempo Real</h3>
+      <p>Monitore o que está sendo exibido diretamente na interface, sem sair da tela de controle.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+      </div>
+      <h3>Acesso Remoto</h3>
+      <p>Opere de qualquer máquina da rede via navegador ou pelo PlayLine-Client, sem instalar o servidor.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Steps -->
+<h2 class="section-title" id="como-usar" style="padding:60px 40px 36px">Como usar</h2>
+<div style="padding:0 40px 80px">
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">Passo 01</span>
+      <h3>Extraia e organize</h3>
+      <p>Extraia o arquivo <code>PlayLine-v1.0.0.zip</code> e copie seus vídeos para a pasta <code>Biblioteca</code>. Se necessário, crie subpastas dentro dela para organizar o conteúdo, por exemplo: <code>Comerciais</code>, <code>Programas</code>, <code>Vinhetas</code>. As pastas criadas aparecerão automaticamente como categorias na interface.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">Passo 02</span>
+      <h3>Execute e autentique</h3>
+      <p>Abra <code>PlayLine.exe</code>. Faça login com usuário <code>playline</code> e senha <code>playline</code>. A interface abrirá automaticamente.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">Passo 03</span>
+      <h3>Monte o roteiro e transmita</h3>
+      <p>Arraste vídeos da biblioteca para o roteiro, configure logos e hora/temperatura, e inicie a programação. O sinal de saída é enviado via HDMI para um segundo monitor, switch ou mesa de corte. O PlayLine detecta automaticamente as dimensões do dispositivo conectado, seja qual for a resolução ou o canal.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">Passo 04 — Opcional</span>
+      <h3>Controle de outra máquina</h3>
+      <p>Para operar a interface a partir de outro computador na mesma rede, copie o arquivo <code>PlayLine-Client.exe</code>, localizado em <code>PlayLine v1.0.0\PlayLine\</code>, para a outra máquina e execute-o. Informe o IP do computador servidor e clique em conectar. Alternativamente, acesse pelo navegador em qualquer dispositivo digitando <code>http://&lt;IP&gt;:8000</code>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Download -->
+<section class="section" id="download">
+
+  <h2 class="section-title">PlayLine v1.0.0</h2>
+  <p class="section-sub">Windows 10 ou superior.</p>
+  <div style="max-width:380px;margin:0 auto">
+
+    <div class="dl-card">
+      <div class="dl-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <h3>PlayLine v1.0.0</h3>
+      <p>Instalação completa para a máquina de transmissão. Inclui servidor, daemon MPV, interface e PlayLine-Client.</p>
+      <span class="dl-meta">Playline v1.0.0.zip · Windows x64</span>
+      <a class="btn btn-primary" href="https://github.com/henrique-noronha/PlayLine/archive/refs/tags/v1.0.0.zip">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Baixar .zip
+      </a>
+    </div>
+
+  </div>
+
+  <div style="max-width:480px;margin:24px auto 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;font-size:12px;color:var(--muted);line-height:1.6">
+    <strong style="color:var(--text);display:block;margin-bottom:6px">Em caso de erro ao abrir</strong>
+    <p style="margin-bottom:8px">Se aparecer uma mensagem de erro como <code style="background:var(--surf2);padding:1px 5px;border-radius:3px;font-size:11px">VCRUNTIME140.dll não encontrado</code> ou <code style="background:var(--surf2);padding:1px 5px;border-radius:3px;font-size:11px">MSVCP140.dll não encontrado</code>, instale o <a href="https://aka.ms/vs/17/release/vc_redist.x64.exe" style="color:var(--accent);text-decoration:none">Visual C++ Redistributable</a>.</p>
+    <p>Se a janela do PlayLine não abrir ou travar na inicialização, instale o <a href="https://developer.microsoft.com/microsoft-edge/webview2/" style="color:var(--accent);text-decoration:none">WebView2 Runtime</a>. Ambos são gratuitos e fornecidos pela Microsoft.</p>
+  </div>
+</section>
+
+<!-- Suporte -->
+<section class="section" id="suporte" style="padding:60px 40px">
+  <h2 class="section-title">Precisa de ajuda?</h2>
+  <p style="text-align:center;color:var(--muted);font-size:15px;max-width:480px;margin:12px auto 32px;line-height:1.6">Encontrou um erro, tem uma dúvida ou quer sugerir uma melhoria? Entre em contato, responderemos o mais breve possível.</p>
+  <div style="text-align:center">
+    <a href="mailto:playline.suporte@gmail.com" style="color:var(--accent);font-size:15px;text-decoration:none">playline.suporte@gmail.com</a>
+  </div>
+</section>
+
+<!-- Tagline -->
+<div style="text-align:center;padding:60px 40px;border-top:1px solid var(--border)">
+  <p style="font-size:13px;color:var(--muted);font-style:italic">"O sinal precisa continuar no ar."</p>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-links">
+    <a href="https://github.com/henrique-noronha/PlayLine" target="_blank">GitHub</a>
+    <a href="https://github.com/henrique-noronha/PlayLine/releases" target="_blank">Releases</a>
+    <a href="https://github.com/henrique-noronha/PlayLine/blob/main/LICENSE" target="_blank">Licença GPLv3</a>
+  </div>
+  <p>PlayLine · Desenvolvido por <strong style="color:var(--text)">Henrique Noronha Fernandes</strong> · Licenciado sob GPLv3</p>
+</footer>
+
+<script>
+(function() {
+  var els = document.querySelectorAll('.section, .screenshot-wrap, .features, .steps, .dl-card, .hero');
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  els.forEach(function(el) { el.classList.add('fade-up'); io.observe(el); });
+})();
+</script>
