@@ -56,7 +56,19 @@ python -m PyInstaller --onedir --noconsole --noconfirm ^
 if errorlevel 1 ( echo. & echo ERRO ao compilar servidor & cd .. & pause & exit /b 1 )
 
 echo.
-echo [3/3] Montando pasta final...
+echo [3/4] Compilando cliente (PlayLine-Client.exe)...
+python -m PyInstaller --onefile --noconsole --noconfirm ^
+    --name PlayLine-Client ^
+    --add-data "logos;logos" ^
+    --collect-all webview ^
+    --hidden-import clr ^
+    --paths "." ^
+    %ICON_ARG% ^
+    main_client.py
+if errorlevel 1 ( echo. & echo ERRO ao compilar cliente & cd .. & pause & exit /b 1 )
+
+echo.
+echo [4/4] Montando pasta final...
 
 :: Copia o daemon para dentro da pasta do app principal
 copy /y "dist\PlayLine-daemon.exe" "dist\PlayLine\"
@@ -68,16 +80,24 @@ if exist "logos" ( xcopy /e /i /y "logos\*" "dist\PlayLine\logos\" >nul 2>&1 )
 :: Cria pasta Biblioteca vazia
 if not exist "dist\PlayLine\Biblioteca" mkdir "dist\PlayLine\Biblioteca"
 
+:: Copia o cliente para fácil distribuição
+copy /y "dist\PlayLine-Client.exe" "..\PlayLine-Client.exe" >nul 2>&1
+
 cd ..
 
 echo.
 echo ==========================================
 echo  Pronto!
 echo  Pasta gerada: backend\dist\PlayLine\
+echo  Cliente gerado: PlayLine-Client.exe (raiz do projeto)
 echo.
 echo  Para instalar em outro computador:
 echo  1. Copie a pasta PlayLine\ inteira
 echo  2. Execute PlayLine.exe
 echo  (sem instalar Python ou dependencias)
+echo.
+echo  Para acessar de outra maquina:
+echo  1. Copie PlayLine-Client.exe para a maquina cliente
+echo  2. Execute PlayLine-Client.exe e informe o IP do servidor
 echo ==========================================
 pause
