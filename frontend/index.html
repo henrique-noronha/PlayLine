@@ -136,7 +136,7 @@
                 <div class="pos-indicator"></div>
               </div>
               <div class="logo-toggle-wrap">
-                <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1">⏻</button>
+                <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
                 <button class="btn-logo-pick" data-slot="1" title="Selecionar logo">▾</button>
                 <div class="logo-picker-dropdown" id="logo-picker-1"></div>
               </div>
@@ -152,7 +152,7 @@
                 <div class="pos-indicator"></div>
               </div>
               <div class="logo-toggle-wrap">
-                <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2">⏻</button>
+                <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
                 <button class="btn-logo-pick" data-slot="2" title="Selecionar logo">▾</button>
                 <div class="logo-picker-dropdown" id="logo-picker-2"></div>
               </div>
@@ -168,7 +168,7 @@
                 <div class="pos-indicator"></div>
               </div>
               <div class="logo-toggle-wrap">
-                <button class="btn-text-toggle btn-logo-toggle" id="btn-text-toggle" title="Ativar hora/temperatura">⏻</button>
+                <button class="btn-text-toggle btn-logo-toggle" id="btn-text-toggle" title="Ativar hora/temperatura"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
                 <button class="btn-logo-pick" id="btn-text-pick" title="Selecionar itens">▾</button>
                 <div class="logo-picker-dropdown" id="text-picker-dropdown">
                   <div class="logo-picker-item" id="pick-time">
@@ -178,6 +178,45 @@
                   <div class="logo-picker-item" id="pick-temp">
                     <span class="logo-picker-check" id="pick-temp-check">✓</span>
                     <span class="logo-picker-name">Temp.</span>
+                  </div>
+                  <div class="to-city-row">
+                    <select id="to-city-select" class="to-city-select">
+                      <option value="Aracaju,SE">Aracaju</option>
+                      <option value="Belém,PA">Belém</option>
+                      <option value="Belo Horizonte,MG">Belo Horizonte</option>
+                      <option value="Boa Vista,RR">Boa Vista</option>
+                      <option value="Campinas,SP">Campinas</option>
+                      <option value="Campo Grande,MS">Campo Grande</option>
+                      <option value="Cuiabá,MT">Cuiabá</option>
+                      <option value="Curitiba,PR">Curitiba</option>
+                      <option value="Florianópolis,SC">Florianópolis</option>
+                      <option value="Fortaleza,CE">Fortaleza</option>
+                      <option value="Goiânia,GO">Goiânia</option>
+                      <option value="João Pessoa,PB">João Pessoa</option>
+                      <option value="Londrina,PR">Londrina</option>
+                      <option value="Macapá,AP">Macapá</option>
+                      <option value="Maceió,AL">Maceió</option>
+                      <option value="Manaus,AM">Manaus</option>
+                      <option value="Natal,RN">Natal</option>
+                      <option value="Palmas,TO">Palmas</option>
+                      <option value="Porto Alegre,RS">Porto Alegre</option>
+                      <option value="Porto Velho,RO">Porto Velho</option>
+                      <option value="Recife,PE">Recife</option>
+                      <option value="Rio Branco,AC">Rio Branco</option>
+                      <option value="Rio de Janeiro,RJ">Rio de Janeiro</option>
+                      <option value="Salvador,BA">Salvador</option>
+                      <option value="Santos,SP">Santos</option>
+                      <option value="São Luís,MA">São Luís</option>
+                      <option value="São Paulo,SP">São Paulo</option>
+                      <option value="Teresina,PI">Teresina</option>
+                      <option value="Uberlândia,MG">Uberlândia</option>
+                      <option value="Vitória,ES">Vitória</option>
+                    </select>
+                  </div>
+                  <div class="to-temp-row">
+                    <span class="to-temp-label">Temp. manual</span>
+                    <input type="text" id="to-temp-input" class="to-temp-input" placeholder="—" maxlength="7" />
+                    <button id="to-temp-fetch" class="to-temp-fetch" title="Buscar temperatura via API"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
                   </div>
                 </div>
               </div>

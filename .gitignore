@@ -26,3 +26,9 @@ venv/
 
 # Biblioteca de mídia
 Biblioteca/
+
+# Arquivos gerados localmente
+*.exe
+*.docx
+*.pdf
+backend/.playline_server
