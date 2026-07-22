@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PlayLine — Sistema de Playout para TV</title>
 <link rel="icon" type="image/png" href="FavPlayline.png">
 <style>
@@ -352,19 +353,32 @@ footer {
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
-  nav { padding: 0 20px; }
+  nav { padding: 0 12px 0 0; justify-content: flex-start; gap: 0; }
+  .nav-hamburger { margin-left: auto; }
   .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
   .hero { padding: 48px 20px 36px; }
-  .hero-sub { font-size: 16px; }
+  .hero > img { max-width: 220px !important; }
+  .hero-sub { font-size: 17px; }
   .screenshot-wrap { padding: 0 16px; margin-bottom: 48px; }
   .section { padding: 48px 20px; }
-  .features { grid-template-columns: 1fr; }
+  .features { grid-template-columns: 1fr !important; }
   .steps { grid-template-columns: 1fr; }
   .download-cards { grid-template-columns: 1fr; }
   .dl-card { padding: 20px; }
   footer { padding: 24px 20px; }
   .footer-links { flex-wrap: wrap; gap: 16px; }
-  .about-text p { font-size: 14px; }
+  .about-text p { font-size: 16px; }
+  .feature h3 { font-size: 16px; }
+  .feature p  { font-size: 15px; }
+  .step h3    { font-size: 17px; }
+  .step p     { font-size: 15px; }
+  .dl-card h3 { font-size: 15px; }
+  .dl-card p  { font-size: 14px; }
+  .section-sub { font-size: 15px; }
+  h2#como-usar { padding: 40px 20px 24px !important; }
+  h2#como-usar + div { padding: 0 20px 48px !important; }
+  #suporte { padding: 48px 20px !important; }
 }
 
 /* ── Dot grid background ── */
@@ -409,16 +423,65 @@ body {
 /* ── Scroll fade-in ── */
 .fade-up {
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity .55s ease, transform .55s ease;
+  transform: translateY(56px) scale(0.96);
+  transition: opacity .7s cubic-bezier(0.16, 1, 0.3, 1), transform .7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .fade-up.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 @media (prefers-reduced-motion: reduce) {
   .fade-up { opacity: 1; transform: none; transition: none; }
 }
+
+/* ── Mobile hamburger ── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+}
+.nav-hamburger span {
+  display: block;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform .25s, opacity .25s;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.nav-mobile {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: rgba(13,17,23,.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  z-index: 99;
+  flex-direction: column;
+  padding: 8px 0;
+}
+.nav-mobile.open { display: flex; }
+.nav-mobile a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 17px;
+  padding: 15px 24px;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+.nav-mobile a:last-child { border-bottom: none; }
+.nav-mobile a:hover { background: var(--surface); }
 </style>
 
 <!-- SMPTE color bars -->
@@ -442,7 +505,18 @@ body {
     <a href="https://github.com/henrique-noronha/PlayLine" target="_blank">GitHub</a>
     <a href="#suporte">Suporte</a>
   </div>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Abrir menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="nav-mobile" id="nav-mobile">
+  <a href="#funcionalidades">Funcionalidades</a>
+  <a href="#como-usar">Como usar</a>
+  <a href="#download">Download</a>
+  <a href="https://github.com/henrique-noronha/PlayLine" target="_blank">GitHub ↗</a>
+  <a href="#suporte">Suporte</a>
+</div>
 
 <!-- Hero -->
 <div class="hero-wrap">
@@ -645,5 +719,26 @@ acesso à informação para milhões de pessoas.</p>
     });
   }, { threshold: 0.08 });
   els.forEach(function(el) { el.classList.add('fade-up'); io.observe(el); });
+
+  var hamburger = document.getElementById('nav-hamburger');
+  var navMobile = document.getElementById('nav-mobile');
+  if (hamburger && navMobile) {
+    hamburger.addEventListener('click', function() {
+      hamburger.classList.toggle('open');
+      navMobile.classList.toggle('open');
+    });
+    navMobile.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        hamburger.classList.remove('open');
+        navMobile.classList.remove('open');
+      });
+    });
+    document.addEventListener('click', function(e) {
+      if (!hamburger.contains(e.target) && !navMobile.contains(e.target)) {
+        hamburger.classList.remove('open');
+        navMobile.classList.remove('open');
+      }
+    });
+  }
 })();
 </script>
