@@ -309,6 +309,114 @@ def _wait_and_navigate(window):
 if __name__ == "__main__":
     import webview
 
+    def _check_dependencies():
+        import ctypes, subprocess, tempfile, urllib.request, winreg
+        from pathlib import Path as _Path
+
+        MB_OK, MB_OKCANCEL = 0x00, 0x01
+        MB_ICONERROR, MB_ICONWARN, MB_ICONINFO = 0x10, 0x30, 0x40
+        IDOK = 1
+
+        def _msgbox(msg, title="PlayLine", style=MB_OK | MB_ICONINFO):
+            return ctypes.windll.user32.MessageBoxW(0, msg, title, style)
+
+        def _dotnet_ok():
+            try:
+                k = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")
+                val, _ = winreg.QueryValueEx(k, "Release")
+                return val >= 393295
+            except Exception:
+                return False
+
+        def _webview2_ok():
+            guid = "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+            for hive in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
+                for sub in (
+                    rf"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{guid}",
+                    rf"SOFTWARE\Microsoft\EdgeUpdate\Clients\{guid}",
+                ):
+                    try:
+                        winreg.OpenKey(hive, sub)
+                        return True
+                    except Exception:
+                        pass
+            return False
+
+        missing = []
+        if not _dotnet_ok():
+            missing.append((
+                ".NET Framework 4.8",
+                "https://go.microsoft.com/fwlink/?LinkId=2085155",
+                "ndp48-web.exe",
+                ["/passive", "/norestart"],
+            ))
+        if not _webview2_ok():
+            missing.append((
+                "WebView2 Runtime",
+                "https://go.microsoft.com/fwlink/p/?LinkId=2124703",
+                "webview2setup.exe",
+                ["/silent", "/install"],
+            ))
+
+        if not missing:
+            return
+
+        names = "\n".join(f"• {n}" for n, *_ in missing)
+        res = _msgbox(
+            f"O PlayLine precisa dos seguintes componentes para funcionar:\n\n{names}"
+            f"\n\nTodos são gratuitos e fornecidos pela Microsoft."
+            f"\n\nClique em OK para instalar automaticamente agora.",
+            "PlayLine — Instalação necessária",
+            MB_OKCANCEL | MB_ICONWARN,
+        )
+        if res != IDOK:
+            sys.exit(0)
+
+        tmp = _Path(tempfile.gettempdir())
+        errors = []
+        needs_reboot = False
+
+        for name, url, fname, flags in missing:
+            dest = tmp / fname
+            try:
+                urllib.request.urlretrieve(url, dest)
+                proc = subprocess.run([str(dest)] + flags)
+                if proc.returncode in (1641, 3010):
+                    needs_reboot = True
+                elif proc.returncode != 0:
+                    errors.append(f"{name}: código {proc.returncode}")
+            except Exception as e:
+                errors.append(f"{name}: {e}")
+
+        if errors:
+            _msgbox(
+                "Ocorreu um erro durante a instalação:\n\n" + "\n".join(errors)
+                + "\n\nTente instalar manualmente pelo site da Microsoft.",
+                "PlayLine — Erro na instalação",
+                MB_OK | MB_ICONERROR,
+            )
+            sys.exit(1)
+
+        if needs_reboot:
+            _msgbox(
+                "Instalação concluída!\n\nReinicie o Windows para finalizar a instalação do .NET Framework"
+                " e depois abra o PlayLine novamente.",
+                "PlayLine — Reinicialização necessária",
+                MB_OK | MB_ICONINFO,
+            )
+            sys.exit(0)
+
+        _msgbox(
+            "Instalação concluída! O PlayLine será iniciado agora.",
+            "PlayLine",
+            MB_OK | MB_ICONINFO,
+        )
+        subprocess.Popen([sys.executable] + sys.argv)
+        sys.exit(0)
+
+    _check_dependencies()
+
     if getattr(sys, "frozen", False):
         _base = Path(sys.executable).parent
     else:
@@ -351,6 +459,24 @@ if __name__ == "__main__":
     _WIN_W, _WIN_H = 1440, 860
     _cx, _cy = _center(_WIN_W, _WIN_H)
 
+    def _start_webview(func=None):
+        import ctypes
+        try:
+            if func:
+                webview.start(func)
+            else:
+                webview.start()
+        except Exception as e:
+            ctypes.windll.user32.MessageBoxW(
+                0,
+                "Não foi possível iniciar a interface do PlayLine.\n\n"
+                "Verifique se .NET Framework 4.8 e WebView2 Runtime estão instalados.\n\n"
+                f"Detalhe: {type(e).__name__}: {e}",
+                "PlayLine — Erro de inicialização",
+                0x10,
+            )
+            sys.exit(1)
+
     if _server_running():
         _window = webview.create_window(
             "PlayLine",
@@ -361,7 +487,7 @@ if __name__ == "__main__":
             y=_cy,
             min_size=(960, 600),
         )
-        webview.start()
+        _start_webview()
     else:
         threading.Thread(target=_run_server, daemon=True).start()
         _window = webview.create_window(
@@ -373,6 +499,6 @@ if __name__ == "__main__":
             y=_cy,
             min_size=(960, 600),
         )
-        webview.start(
+        _start_webview(
             lambda: threading.Thread(target=_wait_and_navigate, args=(_window,), daemon=True).start()
         )
