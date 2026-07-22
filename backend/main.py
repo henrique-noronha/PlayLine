@@ -339,12 +339,26 @@ if __name__ == "__main__":
         except Exception:
             return False
 
+    def _center(win_w: int, win_h: int) -> tuple[int, int]:
+        try:
+            import ctypes
+            sw = ctypes.windll.user32.GetSystemMetrics(0)
+            sh = ctypes.windll.user32.GetSystemMetrics(1)
+            return max(0, (sw - win_w) // 2), max(0, (sh - win_h) // 2)
+        except Exception:
+            return 0, 0
+
+    _WIN_W, _WIN_H = 1440, 860
+    _cx, _cy = _center(_WIN_W, _WIN_H)
+
     if _server_running():
         _window = webview.create_window(
             "PlayLine",
             "http://localhost:8000",
-            width=1440,
-            height=860,
+            width=_WIN_W,
+            height=_WIN_H,
+            x=_cx,
+            y=_cy,
             min_size=(960, 600),
         )
         webview.start()
@@ -353,8 +367,10 @@ if __name__ == "__main__":
         _window = webview.create_window(
             "PlayLine",
             html=_splash,
-            width=1440,
-            height=860,
+            width=_WIN_W,
+            height=_WIN_H,
+            x=_cx,
+            y=_cy,
             min_size=(960, 600),
         )
         webview.start(
