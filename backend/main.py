@@ -325,7 +325,7 @@ if __name__ == "__main__":
                 k = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                     r"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")
                 val, _ = winreg.QueryValueEx(k, "Release")
-                return val >= 393295
+                return val >= 528040  # .NET 4.8 mínimo exigido pelo pythonnet
             except Exception:
                 return False
 
