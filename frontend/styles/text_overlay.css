@@ -27,9 +27,9 @@
   overflow: hidden;
 }
 
-/* Blocos — mesmos RGBA que o PIL (215/255 ≈ 0.843) */
+/* Blocos — mesmos RGBA que o PIL (190/255 ≈ 0.745) */
 .to-time {
-  background: rgba(0, 61, 165, 0.843);
+  background: rgba(68, 68, 68, 0.745);
   color: #fff;
   padding: 0.16em 0.25em;
   font-size: 1em;
@@ -40,7 +40,7 @@
 }
 
 .to-temp {
-  background: rgba(190, 120, 0, 0.843);
+  background: rgba(52, 52, 52, 0.745);
   color: #fff;
   padding: 0.16em 0.25em;
   font-size: 1em;
@@ -52,7 +52,7 @@
 
 /* Cidade — linha inteira abaixo (0.72 × font_sz) */
 .to-city-lbl {
-  background: rgba(5, 115, 48, 0.843);
+  background: rgba(38, 38, 38, 0.745);
   color: #fff;
   padding: 0.18em 0.25em;
   font-size: 0.72em;
@@ -61,6 +61,73 @@
   justify-content: center;
   border-radius: 0 0 3px 3px;
 }
+
+/* ── Cidade e temperatura manual no dropdown ── */
+.to-city-row {
+  padding: 6px 10px 4px;
+  border-top: 1px solid var(--border);
+}
+
+.to-city-select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  font-size: 11px;
+  padding: 4px 6px;
+  outline: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+.to-city-select:focus { border-color: var(--accent); }
+
+.to-temp-row {
+  padding: 4px 10px 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.to-temp-label {
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.to-temp-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  font-size: 11px;
+  padding: 4px 6px;
+  outline: none;
+  font-family: inherit;
+}
+.to-temp-input:focus { border-color: var(--accent); }
+.to-temp-input::placeholder { color: var(--muted); }
+
+.to-temp-fetch {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .1s, color .1s;
+  padding: 0;
+}
+.to-temp-fetch:hover   { background: var(--border); color: var(--text); }
+.to-temp-fetch:disabled { opacity: .4; cursor: not-allowed; }
 
 /* ── Hora / Temperatura overlay controls ── */
 

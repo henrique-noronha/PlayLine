@@ -7,11 +7,12 @@
 })();
 
 const _textState = {
-  active:    false,
-  show_time: true,
-  show_temp: true,
-  corner:    localStorage.getItem("playline_to_corner") || "tl",
-  city:      localStorage.getItem("playline_to_city")   || "Palmas,TO",
+  active:      false,
+  show_time:   true,
+  show_temp:   true,
+  corner:      localStorage.getItem("playline_to_corner")      || "tl",
+  city:        localStorage.getItem("playline_to_city")        || "Palmas,TO",
+  manual_temp: localStorage.getItem("playline_to_manual_temp") || "",
 };
 
 function applyTextOverlayState(s) {
@@ -22,25 +23,31 @@ function applyTextOverlayState(s) {
     _textState.corner = s.corner;
     localStorage.setItem("playline_to_corner", s.corner);
   }
-  if (s.city      !== undefined) {
+  if (s.city !== undefined) {
     const city = (s.city === "Palmas") ? "Palmas,TO" : s.city;
     _textState.city = city;
     localStorage.setItem("playline_to_city", city);
     if (city !== s.city) _sendTextOverlay();
   }
+  if (s.manual_temp !== undefined) {
+    _textState.manual_temp = s.manual_temp;
+    localStorage.setItem("playline_to_manual_temp", s.manual_temp);
+  }
   _syncTextUI();
 }
 
 function _syncTextUI() {
-  const toggle    = document.getElementById("btn-text-toggle");
-  const timeCheck = document.getElementById("pick-time-check");
-  const tempCheck = document.getElementById("pick-temp-check");
-  const cityInp   = document.getElementById("to-city-input");
+  const toggle     = document.getElementById("btn-text-toggle");
+  const timeCheck  = document.getElementById("pick-time-check");
+  const tempCheck  = document.getElementById("pick-temp-check");
+  const citySelect = document.getElementById("to-city-select");
+  const tempInput  = document.getElementById("to-temp-input");
 
-  if (toggle)    toggle.classList.toggle("active", _textState.active);
-  if (timeCheck) timeCheck.style.visibility = _textState.show_time ? "" : "hidden";
-  if (tempCheck) tempCheck.style.visibility = _textState.show_temp ? "" : "hidden";
-  if (cityInp && document.activeElement !== cityInp) cityInp.value = _textState.city;
+  if (toggle)     toggle.classList.toggle("active", _textState.active);
+  if (timeCheck)  timeCheck.style.visibility = _textState.show_time ? "" : "hidden";
+  if (tempCheck)  tempCheck.style.visibility = _textState.show_temp ? "" : "hidden";
+  if (citySelect && document.activeElement !== citySelect) citySelect.value = _textState.city;
+  if (tempInput  && document.activeElement !== tempInput)  tempInput.value  = _textState.manual_temp || "";
 
   _updateTextPosSelector();
   _updatePreviewOverlay();
@@ -86,6 +93,11 @@ let _previewTemp = null;
 let _previewCityFetched = "";
 
 async function _fetchPreviewTemp() {
+  const manual = (_textState.manual_temp || "").trim();
+  if (manual) {
+    _previewTemp = manual;
+    return;
+  }
   const city = (_textState.city || "Palmas").split(",")[0].trim();
   try {
     const r = await fetch(`/api/temperature?city=${encodeURIComponent(city)}`);
@@ -174,10 +186,12 @@ function _updatePreviewOverlay() {
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 function initTextOverlayUI() {
-  const toggle  = document.getElementById("btn-text-toggle");
-  const timeBtn = document.getElementById("to-show-time-btn");
-  const tempBtn = document.getElementById("to-show-temp-btn");
-  const cityInp = document.getElementById("to-city-input");
+  const toggle     = document.getElementById("btn-text-toggle");
+  const timeBtn    = document.getElementById("to-show-time-btn");
+  const tempBtn    = document.getElementById("to-show-temp-btn");
+  const citySelect = document.getElementById("to-city-select");
+  const tempInput  = document.getElementById("to-temp-input");
+  const fetchBtn   = document.getElementById("to-temp-fetch");
 
   _syncTextUI();
 
@@ -189,7 +203,7 @@ function initTextOverlayUI() {
   _fetchPreviewTemp();
   setInterval(() => {
     if (_textState.show_temp) _fetchPreviewTemp();
-  }, 60000);
+  }, 900000);
 
   if (toggle) {
     toggle.addEventListener("click", () => {
@@ -208,6 +222,7 @@ function initTextOverlayUI() {
       e.stopPropagation();
       textDropdown.classList.toggle("open");
     });
+    textDropdown.addEventListener("click", e => e.stopPropagation());
     document.addEventListener("click", () => textDropdown.classList.remove("open"));
   }
 
@@ -235,17 +250,53 @@ function initTextOverlayUI() {
     });
   }
 
-  if (cityInp) {
-    let _cityTimer = null;
-    cityInp.addEventListener("input", () => {
-      const val = cityInp.value.trim();
-      _textState.city = val || "Palmas";
+  if (citySelect) {
+    citySelect.addEventListener("change", () => {
+      _textState.city = citySelect.value;
       localStorage.setItem("playline_to_city", _textState.city);
-      clearTimeout(_cityTimer);
-      _cityTimer = setTimeout(() => {
-        _fetchPreviewTemp();
+      if (!_textState.manual_temp) {
+        _fetchPreviewTemp().then(() => _updatePreviewOverlay());
+      }
+      _sendTextOverlay();
+    });
+  }
+
+  if (tempInput) {
+    let _tempTimer = null;
+    tempInput.addEventListener("input", () => {
+      _textState.manual_temp = tempInput.value.trim();
+      localStorage.setItem("playline_to_manual_temp", _textState.manual_temp);
+      clearTimeout(_tempTimer);
+      _tempTimer = setTimeout(() => {
+        if (_textState.manual_temp) {
+          _previewTemp = _textState.manual_temp;
+          _updatePreviewOverlay();
+        } else {
+          _fetchPreviewTemp().then(() => _updatePreviewOverlay());
+        }
         _sendTextOverlay();
-      }, 700);
+      }, 500);
+    });
+  }
+
+  if (fetchBtn) {
+    fetchBtn.addEventListener("click", async e => {
+      e.stopPropagation();
+      fetchBtn.disabled = true;
+      const prevManual = _textState.manual_temp;
+      _textState.manual_temp = "";
+      await _fetchPreviewTemp();
+      if (_previewTemp) {
+        if (tempInput) tempInput.value = _previewTemp;
+        _textState.manual_temp = _previewTemp;
+        localStorage.setItem("playline_to_manual_temp", _previewTemp);
+      } else {
+        _textState.manual_temp = prevManual;
+        if (tempInput) tempInput.value = prevManual;
+      }
+      _updatePreviewOverlay();
+      _sendTextOverlay();
+      fetchBtn.disabled = false;
     });
   }
 

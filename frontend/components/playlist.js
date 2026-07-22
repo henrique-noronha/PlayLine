@@ -588,7 +588,7 @@ function _copGetOrCreate() {
     <div id="cop-body" class="cop-body">
       <div class="cop-row">
         <span class="cop-lbl">Logo 1</span>
-        <button class="btn-logo-toggle cop-tog" id="cop-tog-1">⏻</button>
+        <button class="btn-logo-toggle cop-tog" id="cop-tog-1"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
         <div class="cop-pick-wrap">
           <button class="cop-pbtn" id="cop-pbtn-1">— ▾</button>
           <div class="logo-picker-dropdown" id="cop-pdd-1"></div>
@@ -596,7 +596,7 @@ function _copGetOrCreate() {
       </div>
       <div class="cop-row">
         <span class="cop-lbl">Logo 2</span>
-        <button class="btn-logo-toggle cop-tog" id="cop-tog-2">⏻</button>
+        <button class="btn-logo-toggle cop-tog" id="cop-tog-2"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
         <div class="cop-pick-wrap">
           <button class="cop-pbtn" id="cop-pbtn-2">— ▾</button>
           <div class="logo-picker-dropdown" id="cop-pdd-2"></div>
@@ -604,7 +604,7 @@ function _copGetOrCreate() {
       </div>
       <div class="cop-row">
         <span class="cop-lbl">Hora / Temp.</span>
-        <button class="btn-logo-toggle cop-tog" id="cop-tog-text">⏻</button>
+        <button class="btn-logo-toggle cop-tog" id="cop-tog-text"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
         <div class="cop-text-opts">
           <div class="logo-picker-item" id="cop-chk-time">
             <span class="logo-picker-check" id="cop-chk-time-mark">✓</span>
