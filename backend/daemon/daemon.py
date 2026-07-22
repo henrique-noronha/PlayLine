@@ -48,11 +48,12 @@ LOGOS_DIR            = _DATA_DIR / "logos"
 _INPUT_CONF_PATH     = _DATA_DIR / ".playline_input.conf"
 
 _TEXT_OVERLAY_DEFAULTS = {
-    "active":    False,
-    "show_time": True,
-    "show_temp": True,
-    "corner":    "tl",
-    "city":      "Palmas,TO",
+    "active":      False,
+    "show_time":   True,
+    "show_temp":   True,
+    "corner":      "tl",
+    "city":        "Palmas,TO",
+    "manual_temp": "",
 }
 
 HOST = "127.0.0.1"
@@ -224,7 +225,8 @@ class MPVDaemon:
         with self._text_overlay_lock:
             cfg = dict(self._text_overlay)
         if cfg.get("active"):
-            osd_text.apply(self._mpv, cfg, None)
+            manual = cfg.get("manual_temp", "").strip()
+            osd_text.apply(self._mpv, cfg, manual or None)
 
     # ── Checkpoint ───────────────────────────────────────────────────────────
 
@@ -385,11 +387,12 @@ class MPVDaemon:
 
         elif action == "set_text_overlay":
             cfg = {
-                "active":    bool(cmd.get("active",    False)),
-                "show_time": bool(cmd.get("show_time", True)),
-                "show_temp": bool(cmd.get("show_temp", True)),
-                "corner":    str(cmd.get("corner",    "tl")),
-                "city":      str(cmd.get("city",      "Palmas,TO")),
+                "active":      bool(cmd.get("active",    False)),
+                "show_time":   bool(cmd.get("show_time", True)),
+                "show_temp":   bool(cmd.get("show_temp", True)),
+                "corner":      str(cmd.get("corner",    "tl")),
+                "city":        str(cmd.get("city",      "Palmas,TO")),
+                "manual_temp": str(cmd.get("manual_temp", "")),
             }
             with self._text_overlay_lock:
                 self._text_overlay.update(cfg)
@@ -476,10 +479,14 @@ class MPVDaemon:
                 continue
             temp = None
             if cfg.get("show_temp"):
-                try:
-                    temp = await weather.get_temperature(cfg.get("city", "Palmas,TO"))
-                except Exception:
-                    pass
+                manual = cfg.get("manual_temp", "").strip()
+                if manual:
+                    temp = manual
+                else:
+                    try:
+                        temp = await weather.get_temperature(cfg.get("city", "Palmas,TO"))
+                    except Exception:
+                        pass
             osd_text.apply(self._mpv, cfg, temp)
 
     async def _position_task(self):

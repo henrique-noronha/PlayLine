@@ -9,7 +9,7 @@ from urllib.parse import quote
 
 logger = logging.getLogger("mpv_daemon")
 
-_TTL     = 60.0
+_TTL     = 900.0
 _API_KEY = "f69ea9de2f716268934177c04852b89b"
 
 _cache_value: Optional[str] = None

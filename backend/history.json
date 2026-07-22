@@ -218,5 +218,125 @@
     "duration_played": 1,
     "end_reason": "stopped",
     "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "21 TEA E NEURODIVERGÊNCIAS",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\21 TEA E NEURODIVERGÊNCIAS.mp4",
+    "started_at": "08:48:27",
+    "ended_at": "08:48:44",
+    "duration_played": 18,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "21 TEA E NEURODIVERGÊNCIAS",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\21 TEA E NEURODIVERGÊNCIAS.mp4",
+    "started_at": "08:50:13",
+    "ended_at": "08:50:26",
+    "duration_played": 13,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "21 TEA E NEURODIVERGÊNCIAS",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\21 TEA E NEURODIVERGÊNCIAS.mp4",
+    "started_at": "08:51:07",
+    "ended_at": "08:51:41",
+    "duration_played": 35,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "21 TEA E NEURODIVERGÊNCIAS",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\21 TEA E NEURODIVERGÊNCIAS.mp4",
+    "started_at": "08:52:25",
+    "ended_at": "08:52:28",
+    "duration_played": 3,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "AV. CÔNEGO JOÃO LIMA",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\AV. CÔNEGO JOÃO LIMA.mp4",
+    "started_at": "08:52:28",
+    "ended_at": "08:52:58",
+    "duration_played": 29,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "AV. CÔNEGO JOÃO LIMA",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\AV. CÔNEGO JOÃO LIMA.mp4",
+    "started_at": "08:55:59",
+    "ended_at": "08:56:31",
+    "duration_played": 32,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "A CASA É SUA 91 BL 1 ",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 1 .mp4",
+    "started_at": "08:56:31",
+    "ended_at": "08:57:14",
+    "duration_played": 44,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "A CASA É SUA 91 BL 1 ",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 1 .mp4",
+    "started_at": "08:59:43",
+    "ended_at": "09:00:35",
+    "duration_played": 52,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "A CASA É SUA 91 BL 1 ",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 1 .mp4",
+    "started_at": "09:34:32",
+    "ended_at": "09:34:34",
+    "duration_played": 2,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "DIGA NÃO 01",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\DIGA NÃO 01.mp4",
+    "started_at": "09:34:34",
+    "ended_at": "09:34:36",
+    "duration_played": 2,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "MOMENTO SAUDE -  OBSERVE O RESULTADO",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4",
+    "started_at": "09:34:36",
+    "ended_at": "09:34:47",
+    "duration_played": 11,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-22",
+    "title": "MOMENTO SAUDE -  OBSERVE O RESULTADO",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4",
+    "started_at": "09:42:43",
+    "ended_at": "09:42:53",
+    "duration_played": 10,
+    "end_reason": "stopped",
+    "had_pause": false
   }
 ]
