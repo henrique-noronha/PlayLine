@@ -1,6 +1,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PlayLine — Sistema de Playout para TV</title>
 <link rel="icon" type="image/png" href="FavPlayline.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -14,6 +17,7 @@
   --text:    #e5e7eb;
   --muted:   #6b7280;
   --green:   #22c55e;
+  --font-display: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
 }
 
 body {
@@ -122,10 +126,11 @@ nav {
   margin-bottom: 16px;
 }
 .hero h1 {
-  font-size: clamp(24px, 3.8vw, 40px);
-  font-weight: 700;
-  letter-spacing: -.025em;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.8vw, 42px);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.15;
   color: var(--text);
   margin-bottom: 20px;
 }
@@ -205,10 +210,11 @@ nav {
   margin-bottom: 6px;
 }
 .section-title {
+  font-family: var(--font-display);
   text-align: center;
-  font-size: clamp(26px, 4vw, 38px);
-  font-weight: 700;
-  letter-spacing: -.025em;
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -.03em;
   color: var(--text);
   margin-bottom: 6px;
 }
@@ -249,7 +255,7 @@ nav {
   color: var(--accent);
   margin-bottom: 14px;
 }
-.feature h3 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.feature h3 { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: -.015em; }
 .feature p  { font-size: 13px; color: var(--muted); line-height: 1.55; }
 
 /* ── Steps ── */
@@ -286,7 +292,7 @@ nav {
   color: var(--accent);
   text-transform: uppercase;
 }
-.step h3 { font-size: 16px; font-weight: 600; color: var(--text); }
+.step h3 { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -.015em; }
 .step p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
 .step code {
   font-family: 'Courier New', monospace;
@@ -330,6 +336,33 @@ nav {
 .dl-card h3 { font-size: 14px; font-weight: 600; color: var(--text); }
 .dl-card p  { font-size: 12px; color: var(--muted); line-height: 1.55; flex: 1; }
 .dl-meta    { font-size: 11px; color: var(--muted); font-family: monospace; }
+
+#download {
+  position: relative;
+  overflow: hidden;
+  background: url('../images/ChatGPT Image 23 de jul. de 2026, 10_55_21.png') center center / cover fixed;
+}
+#download::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(13,17,23,1) 0%, rgba(13,17,23,0.60) 40%, rgba(13,17,23,0.60) 60%, rgba(13,17,23,1) 100%);
+  z-index: 0;
+}
+#download::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(79,142,247,0.10) 0%, transparent 60%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 0;
+}
+#download > * { position: relative; z-index: 1; }
 
 /* ── Footer ── */
 footer {
@@ -391,30 +424,25 @@ body {
 .hero-wrap {
   position: relative;
   overflow: hidden;
+  background: url('../images/gemini-2.5-flash-image_An_angled_view_of_a_minimalist_broadcast_master_control_desk_at_night._Two_moder-0.jpg') center top / cover fixed;
 }
 .hero-wrap::before {
   content: '';
   position: absolute;
-  top: -80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 700px;
-  height: 500px;
-  background: radial-gradient(ellipse, rgba(79,142,247,0.10) 0%, transparent 70%);
-  pointer-events: none;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(13, 17, 23, 0.60) 0%, rgba(13, 17, 23, 0.85) 60%, rgba(13, 17, 23, 1) 100%);
   z-index: 0;
 }
 .hero-wrap::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 3px,
-    rgba(0,0,0,0.018) 3px,
-    rgba(0,0,0,0.018) 4px
-  );
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 500px;
+  background: radial-gradient(ellipse, rgba(34, 197, 94, 0.12) 0%, transparent 60%);
+  mix-blend-mode: screen;
   pointer-events: none;
   z-index: 0;
 }
@@ -522,7 +550,7 @@ body {
 <div class="hero-wrap">
 <section class="hero">
   <img src="LogoPlayLineD.png" alt="PlayLine" style="max-width:420px;height:auto;margin-bottom:32px;display:block;margin-left:auto;margin-right:auto">
-  <h1> Software de playout televisivo gratuito.</h1>
+  <h1 style="font-family:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif"> Software de playout televisivo gratuito.</h1>
   <p class="hero-sub">Um sistema projetado para emissoras que precisam de transmissão contínua sem depender de licenças comerciais ou de equipe técnica especializada.</p>
 </section>
 
@@ -530,14 +558,14 @@ body {
 <section class="section" id="o-que-e" style="max-width:900px;margin:0 auto">
   <h2 class="section-title">O que é o PlayLine</h2>
   <div class="about-text">
-    <p>O PlayLine é um sistema de automação de playout televisivo que
-organiza, reproduz e gerencia a programação da sua emissora de
-forma contínua e automatizada. Ele foi desenvolvido para
-emissoras que não podem arcar com soluções comerciais de alto
-custo e não dispõem de equipe técnica dedicada, sem perder as
-funcionalidades essenciais. Ao viabilizar a operação contínua
-dessas emissoras, o PlayLine contribui para que a televisão
-aberta continue cumprindo seu papel como principal meio de
+    <p>O PlayLine é um <strong>sistema de automação de playout televisivo</strong> que
+organiza, reproduz e gerencia a <strong>programação da sua emissora</strong> de
+forma <strong>contínua e automatizada</strong>. Ele foi desenvolvido para
+emissoras que não podem arcar com <strong>soluções comerciais de alto
+custo</strong> e não dispõem de <strong>equipe técnica dedicada</strong>, sem perder as
+funcionalidades essenciais. Ao viabilizar a <strong>operação contínua</strong>
+dessas emissoras, o PlayLine contribui para que a <strong>televisão
+aberta</strong> continue cumprindo seu papel como principal meio de
 acesso à informação para milhões de pessoas.</p>
 
   </div>

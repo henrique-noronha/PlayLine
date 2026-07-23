@@ -235,7 +235,7 @@ class _SessionAuth(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         if request.headers.get("upgrade", "").lower() == "websocket":
             return await call_next(request)
-        if request.url.path == "/login":
+        if request.url.path in ("/login", "/api/ping"):
             return await call_next(request)
         token = request.cookies.get("playline_session")
         if token and token in _SESSIONS:
@@ -260,6 +260,11 @@ async def preview_ws(ws: WebSocket):
         preview_manager.disconnect(ws)
 
 
+@app.get("/api/ping")
+async def ping():
+    return {"playline": True}
+
+
 @app.get("/login")
 async def login_page():
     return HTMLResponse(_build_login_html())
@@ -282,31 +287,46 @@ async def index():
     return FileResponse(str(FRONTEND_DIR / "index.html"))
 
 
-def _run_server():
+def _run_server(port: int = 18000):
     uvicorn.run(
         app,
         host="0.0.0.0",
-        port=8000,
+        port=port,
         reload=False,
         log_level="info",
         log_config=None,
     )
 
 
-def _wait_and_navigate(window):
+def _wait_and_navigate(window, port: int = 18000):
     import socket
     for _ in range(60):
         time.sleep(0.5)
         try:
-            s = socket.create_connection(("localhost", 8000), timeout=1)
+            s = socket.create_connection(("localhost", port), timeout=1)
             s.close()
-            window.load_url("http://localhost:8000")
+            window.load_url(f"http://localhost:{port}")
             return
         except Exception:
             pass
 
 
 if __name__ == "__main__":
+    def _unblock_meipass():
+        if not getattr(sys, 'frozen', False):
+            return
+        import ctypes
+        k32 = ctypes.windll.kernel32
+        for base in (Path(sys._MEIPASS), Path(sys.executable).parent):
+            try:
+                for f in base.rglob('*'):
+                    if f.is_file():
+                        k32.DeleteFileW(str(f) + ':Zone.Identifier')
+            except Exception:
+                pass
+
+    _unblock_meipass()
+
     import webview
 
     def _check_dependencies():
@@ -320,12 +340,21 @@ if __name__ == "__main__":
         def _msgbox(msg, title="PlayLine", style=MB_OK | MB_ICONINFO):
             return ctypes.windll.user32.MessageBoxW(0, msg, title, style)
 
+        def _is_admin():
+            try:
+                return ctypes.windll.shell32.IsUserAnAdmin() != 0
+            except Exception:
+                return False
+
         def _dotnet_ok():
             try:
-                k = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                    r"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")
-                val, _ = winreg.QueryValueEx(k, "Release")
-                return val >= 528040  # .NET 4.8 mínimo exigido pelo pythonnet
+                key = winreg.OpenKey(
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full",
+                )
+                val, _ = winreg.QueryValueEx(key, "Release")
+                winreg.CloseKey(key)
+                return val >= 528040  # .NET 4.8+
             except Exception:
                 return False
 
@@ -361,6 +390,17 @@ if __name__ == "__main__":
 
         if not missing:
             return
+
+        if not _is_admin():
+            _msgbox(
+                "O PlayLine precisa instalar componentes obrigatórios da Microsoft.\n\n"
+                "Clique em OK para continuar — o Windows pedirá permissão de administrador.",
+                "PlayLine — Permissão necessária",
+                MB_OK | MB_ICONWARN,
+            )
+            params = " ".join(f'"{a}"' for a in sys.argv)
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, params, None, 1)
+            sys.exit(0)
 
         names = "\n".join(f"• {n}" for n, *_ in missing)
         res = _msgbox(
@@ -408,11 +448,10 @@ if __name__ == "__main__":
             sys.exit(0)
 
         _msgbox(
-            "Instalação concluída! O PlayLine será iniciado agora.",
+            "Instalação concluída!\n\nAbra o PlayLine novamente para usar.",
             "PlayLine",
             MB_OK | MB_ICONINFO,
         )
-        subprocess.Popen([sys.executable] + sys.argv)
         sys.exit(0)
 
     _check_dependencies()
@@ -438,14 +477,24 @@ if __name__ == "__main__":
             Iniciando servidor…
         </p></body></html>"""
 
-    def _server_running() -> bool:
-        import socket
+    def _check_playline_running(port: int) -> bool:
+        import urllib.request, json
         try:
-            s = socket.create_connection(("localhost", 8000), timeout=1)
-            s.close()
-            return True
+            with urllib.request.urlopen(f"http://localhost:{port}/api/ping", timeout=1) as r:
+                return json.loads(r.read()).get("playline") is True
         except Exception:
             return False
+
+    def _find_free_port(start: int = 18000) -> int:
+        import socket
+        for port in range(start, start + 100):
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.bind(("0.0.0.0", port))
+                    return port
+            except OSError:
+                continue
+        return start
 
     def _center(win_w: int, win_h: int) -> tuple[int, int]:
         try:
@@ -477,10 +526,11 @@ if __name__ == "__main__":
             )
             sys.exit(1)
 
-    if _server_running():
+    if _check_playline_running(18000):
+        _PORT = 18000
         _window = webview.create_window(
             "PlayLine",
-            "http://localhost:8000",
+            f"http://localhost:{_PORT}",
             width=_WIN_W,
             height=_WIN_H,
             x=_cx,
@@ -489,7 +539,8 @@ if __name__ == "__main__":
         )
         _start_webview()
     else:
-        threading.Thread(target=_run_server, daemon=True).start()
+        _PORT = _find_free_port(18000)
+        threading.Thread(target=_run_server, args=(_PORT,), daemon=True).start()
         _window = webview.create_window(
             "PlayLine",
             html=_splash,
@@ -500,5 +551,5 @@ if __name__ == "__main__":
             min_size=(960, 600),
         )
         _start_webview(
-            lambda: threading.Thread(target=_wait_and_navigate, args=(_window,), daemon=True).start()
+            lambda: threading.Thread(target=_wait_and_navigate, args=(_window, _PORT), daemon=True).start()
         )
