@@ -1,10 +1,10 @@
 # PlayLine
 
-> Sistema de playout para transmissão ao vivo — painel web, overlays em tempo real e automação por clipe.
+> Sistema de automação de playout televisivo gratuito para emissoras de TV.
 
-**PlayLine** é um software de controle de playout em desenvolvimento para operações de transmissão de TV. O operador gerencia o roteiro de programação, os overlays de logo e texto e o volume, tudo por um painel web, com sincronização em tempo real via WebSocket.
+**PlayLine** é um sistema de automação de playout televisivo que organiza, reproduz e gerencia a programação da sua emissora de forma **contínua e automatizada**. Desenvolvido para emissoras que não podem arcar com soluções comerciais de alto custo e não dispõem de equipe técnica dedicada, sem abrir mão das funcionalidades essenciais.
 
-O sistema foi projetado para ser operado sem conhecimento técnico aprofundado, com interface clara e comportamento previsível.
+🌐 **[playline.henrique-noronha.github.io/PlayLine](https://henrique-noronha.github.io/PlayLine/)** 
 
 ![Interface do PlayLine](docs/InterfacePlayLine.png)
 
@@ -12,28 +12,37 @@ O sistema foi projetado para ser operado sem conhecimento técnico aprofundado, 
 
 ## Funcionalidades
 
-### Roteiro de programação
-- Drag & drop para reordenação de clipes
-- Edição inline de título e adição de itens via biblioteca
-- Cálculo em tempo real de horário de início, tempo restante e previsão do próximo clipe (exibição em `HH:MM:SS`)
-- Duplicação de roteiro e limpeza com confirmação
+### Biblioteca de Vídeos
+- Geração automática de miniaturas
+- Busca por nome em tempo real
+- Suporta MP4, MKV, MXF, MTS, AVI, MOV e mais
+- Organização por subpastas (Comerciais, Programas, Vinhetas…)
 
-### Overlays
-- **Logo em dois slots simultâneos** — seleção de arquivo e posicionamento em qualquer dos quatro cantos da tela
-- **Hora em tempo real** — renderizada via Pillow diretamente no output do MPV.
-- **Temperatura e cidade** — via OpenWeatherMap API (atualização a cada 60 s), com fallback automático para wttr.in;
-- **Automação por clipe** — cada vídeo do roteiro pode ter uma configuração independente de logos e textos, aplicada automaticamente ao iniciar a reprodução, sem alterar o estado global do painel de controle
+### Roteiro de Programação
+- Monte a grade arrastando vídeos da biblioteca
+- Reordene, remova e controle cada item com precisão
+- Cálculo em tempo real de horário de início, tempo restante e previsão do próximo clipe
+- Histórico de exibição registrado diretamente no roteiro
+- Recuperação automática de clipes com erro — avança sem intervenção do operador
 
-### Player e áudio
-- Preview ao vivo sincronizado com a posição exata do MPV
+### Sobreposição de Logos
+- Até 2 logotipos simultâneos em qualquer canto da tela
+- Cada clipe do roteiro pode ter configuração independente de overlay
+- Logo ativa e desativa automaticamente conforme o clipe — sem intervenção manual
+
+### Hora e Temperatura
+- Bloco de hora, temperatura e cidade sobrepostos ao vídeo em tempo real
+- Seleção de 30 cidades brasileiras ou entrada manual
+- Integração com OpenWeatherMap API, com fallback automático para wttr.in
+
+### Preview em Tempo Real
+- Monitore o que está sendo exibido diretamente na interface
 - VU meter de áudio em dBFS com peak hold e indicador de clip
 - Fader de volume calibrado em dB (−10 dB a +3 dB)
-- Recuperação silenciosa de clipes com erro — avança automaticamente sem intervenção do operador
 
-### Biblioteca
-- Navegação por pasta com carregamento de thumbnails gerados localmente
-- Arrastar clipes da biblioteca diretamente para o roteiro
-- Duração extraída automaticamente dos metadados de cada arquivo
+### Acesso Remoto
+- Opere de qualquer máquina da rede via navegador (`http://<IP>:18000`)
+- Ou use o **PlayLine-Client.exe** — aplicativo leve sem necessidade de instalar o servidor
 
 ---
 
@@ -42,22 +51,38 @@ O sistema foi projetado para ser operado sem conhecimento técnico aprofundado, 
 PlayLine adota uma **arquitetura orientada a eventos** com três processos isolados — uma falha na interface não interrompe o sinal ao ar.
 
 ```
-┌──────────────────┐        WebSocket         ┌───────────────────────┐
-│  Painel Web      │  ◄──────────────────────► │  Playlist Engine      │
-│  HTML / CSS / JS │    eventos assíncronos     │  Python + FastAPI     │
-│  (navegador)     │                            │  localhost:8000       │
-└──────────────────┘                            └───────────┬───────────┘
-                                                            │ IPC / TCP
-                                                            ▼
-                                               ┌───────────────────────┐
-                                               │  MPV Daemon           │
-                                               │  Processo independente│
-                                               │  localhost:6600       │
-                                               └───────────┬───────────┘
-                                                           │ HDMI
-                                                           ▼
-                                               TV / Switcher de hardware
+┌─────────────────────────────────────────┐
+│             Interface de Usuário        │
+│                                         │
+│  ┌─────────────────┐  ┌──────────────┐  │
+│  │  PlayLine.exe   │  │  Navegador   │  │
+│  │  (pywebview)    │  │  qualquer    │  │
+│  └────────┬────────┘  └──────┬───────┘  │
+└───────────┼──────────────────┼──────────┘
+            │    HTTP / WS     │
+            ▼                  ▼
+┌───────────────────────────────────────────┐
+│           Servidor  —  FastAPI            │
+│           Python 3 · localhost:18000      │
+│                                           │
+│  Playlist Engine · WebSocket · REST API  │
+└───────────────────┬───────────────────────┘
+                    │ IPC / TCP
+                    ▼
+     ┌──────────────────────────────┐
+     │        MPV Daemon            │
+     │  Processo independente       │
+     │  localhost:6600              │
+     └──────────────┬───────────────┘
+                    │ HDMI
+                    ▼
+         TV / Switcher de hardware
 ```
+
+**Modos de acesso à interface:**
+- **PlayLine.exe** — abre a interface automaticamente via pywebview (janela nativa, sem precisar abrir o navegador)
+- **Navegador** — acesse `http://<IP>:18000` de qualquer dispositivo na mesma rede
+- **PlayLine-Client.exe** — aplicativo leve para máquinas remotas; conecta ao servidor pelo IP
 
 **Fluxo típico:**
 1. Operador clica "Próximo" no painel
@@ -75,13 +100,14 @@ PlayLine adota uma **arquitetura orientada a eventos** com três processos isola
 | Camada | Tecnologia |
 |---|---|
 | Motor de vídeo | MPV + python-mpv |
-| Backend | Python 3.11 + FastAPI |
+| Backend | Python 3.13 + FastAPI |
+| Interface nativa | pywebview (WebView2) |
 | Comunicação em tempo real | WebSocket (RFC 6455) |
 | Renderização de overlays | Pillow → BGRA → MPV overlay-add |
 | Temperatura | OpenWeatherMap API / wttr.in (fallback) |
 | Interface | HTML + CSS + JavaScript — sem framework de build |
-| Roteiro | JSON sincronizado em tempo real |
-| Plataforma | Windows (principal) |
+| Distribuição | PyInstaller — sem instalação de Python |
+| Plataforma | Windows 10 / 11 |
 
 ---
 
@@ -95,6 +121,14 @@ PlayLine é desenvolvido como Trabalho de Conclusão de Curso (TCC) do curso de 
 - **Ano:** 2026
 
 A motivação central é a democratização da infraestrutura de *broadcasting* para emissoras de pequeno porte, onde a televisão linear ainda é o principal meio de acesso à informação para parcela significativa da população.
+
+---
+
+## Contato e Suporte
+
+- 📧 **playline.suporte@gmail.com**
+- 🌐 **[henrique-noronha.github.io/PlayLine](https://henrique-noronha.github.io/PlayLine/)**
+- 🐛 **[Issues no GitHub](https://github.com/henrique-noronha/PlayLine/issues)**
 
 ---
 
