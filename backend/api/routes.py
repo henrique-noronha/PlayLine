@@ -157,7 +157,7 @@ async def get_logo_slot(slot: int):
 
 def _ffmpeg_bin() -> str:
     if getattr(sys, "frozen", False):
-        local = Path(sys.executable).parent / "ffmpeg.exe"
+        local = Path(sys._MEIPASS) / "ffmpeg.exe"
         if local.is_file():
             return str(local)
     return "ffmpeg"

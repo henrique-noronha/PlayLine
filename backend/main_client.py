@@ -80,7 +80,7 @@ frm.addEventListener('submit', async e => {{
             await window.pywebview.api.save_ip(ip);
             msg.style.color = '#4ade80';
             msg.textContent = 'Conectado! Carregando…';
-            window.location.href = 'http://' + ip + ':8000';
+            window.location.href = 'http://' + ip + ':18000';
         }} else {{
             msg.style.color = '#ef4444';
             msg.textContent = 'Não foi possível conectar. Verifique o IP e tente novamente.';
@@ -106,7 +106,7 @@ class _Api:
 
     def test_connection(self, ip: str) -> bool:
         try:
-            s = socket.create_connection((ip.strip(), 8000), timeout=3)
+            s = socket.create_connection((ip.strip(), 18000), timeout=3)
             s.close()
             return True
         except Exception:
@@ -126,7 +126,132 @@ class _Api:
 
 
 if __name__ == "__main__":
+    def _unblock_meipass():
+        if not getattr(sys, 'frozen', False):
+            return
+        import ctypes
+        k32 = ctypes.windll.kernel32
+        for base in (Path(sys._MEIPASS), Path(sys.executable).parent):
+            try:
+                for f in base.rglob('*'):
+                    if f.is_file():
+                        k32.DeleteFileW(str(f) + ':Zone.Identifier')
+            except Exception:
+                pass
+
+    _unblock_meipass()
+
     import webview
+
+    def _check_client_dependencies():
+        import ctypes, subprocess, tempfile, urllib.request, winreg
+        from pathlib import Path as _Path
+
+        MB_OK, MB_OKCANCEL = 0x00, 0x01
+        MB_ICONERROR, MB_ICONWARN, MB_ICONINFO = 0x10, 0x30, 0x40
+        IDOK = 1
+
+        def _msgbox(msg, title="PlayLine", style=MB_OK | MB_ICONINFO):
+            return ctypes.windll.user32.MessageBoxW(0, msg, title, style)
+
+        def _is_admin():
+            try:
+                return ctypes.windll.shell32.IsUserAnAdmin() != 0
+            except Exception:
+                return False
+
+        def _dotnet_ok():
+            try:
+                key = winreg.OpenKey(
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full",
+                )
+                val, _ = winreg.QueryValueEx(key, "Release")
+                winreg.CloseKey(key)
+                return val >= 528040  # .NET 4.8+
+            except Exception:
+                return False
+
+        def _webview2_ok():
+            guid = "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+            for hive in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
+                for sub in (
+                    rf"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{guid}",
+                    rf"SOFTWARE\Microsoft\EdgeUpdate\Clients\{guid}",
+                ):
+                    try:
+                        winreg.OpenKey(hive, sub)
+                        return True
+                    except Exception:
+                        pass
+            return False
+
+        missing = []
+        if not _dotnet_ok():
+            missing.append((".NET Framework 4.8",
+                "https://go.microsoft.com/fwlink/?LinkId=2085155",
+                "ndp48-web.exe", ["/passive", "/norestart"]))
+        if not _webview2_ok():
+            missing.append(("WebView2 Runtime",
+                "https://go.microsoft.com/fwlink/p/?LinkId=2124703",
+                "webview2setup.exe", ["/silent", "/install"]))
+
+        if not missing:
+            return
+
+        if not _is_admin():
+            _msgbox(
+                "O PlayLine Client precisa instalar componentes obrigatórios da Microsoft.\n\n"
+                "Clique em OK para continuar — o Windows pedirá permissão de administrador.",
+                "PlayLine Client — Permissão necessária",
+                MB_OK | MB_ICONWARN,
+            )
+            params = " ".join(f'"{a}"' for a in sys.argv)
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, params, None, 1)
+            sys.exit(0)
+
+        names = "\n".join(f"• {n}" for n, *_ in missing)
+        res = _msgbox(
+            f"O PlayLine Client precisa dos seguintes componentes:\n\n{names}"
+            f"\n\nTodos são gratuitos e fornecidos pela Microsoft."
+            f"\n\nClique em OK para instalar automaticamente agora.",
+            "PlayLine Client — Instalação necessária",
+            MB_OKCANCEL | MB_ICONWARN,
+        )
+        if res != IDOK:
+            sys.exit(0)
+
+        tmp = _Path(tempfile.gettempdir())
+        errors = []
+        needs_reboot = False
+
+        for name, url, fname, flags in missing:
+            dest = tmp / fname
+            try:
+                urllib.request.urlretrieve(url, dest)
+                proc = subprocess.run([str(dest)] + flags)
+                if proc.returncode in (1641, 3010):
+                    needs_reboot = True
+                elif proc.returncode != 0:
+                    errors.append(f"{name}: código {proc.returncode}")
+            except Exception as e:
+                errors.append(f"{name}: {e}")
+
+        if errors:
+            _msgbox("Erro durante a instalação:\n\n" + "\n".join(errors),
+                    "PlayLine Client — Erro", MB_OK | MB_ICONERROR)
+            sys.exit(1)
+
+        if needs_reboot:
+            _msgbox("Instalação concluída!\n\nReinicie o Windows e abra o PlayLine Client novamente.",
+                    "PlayLine Client", MB_OK | MB_ICONINFO)
+            sys.exit(0)
+
+        _msgbox("Instalação concluída!\n\nAbra o PlayLine Client novamente para usar.",
+                "PlayLine Client", MB_OK | MB_ICONINFO)
+        sys.exit(0)
+
+    _check_client_dependencies()
 
     api = _Api()
     window = webview.create_window(
@@ -137,4 +262,16 @@ if __name__ == "__main__":
         height=500,
         min_size=(400, 400),
     )
-    webview.start()
+    try:
+        webview.start()
+    except Exception as e:
+        import ctypes
+        ctypes.windll.user32.MessageBoxW(
+            0,
+            "Não foi possível iniciar o PlayLine Client.\n\n"
+            "Verifique se .NET Framework 4.8 e WebView2 Runtime estão instalados.\n\n"
+            f"Detalhe: {type(e).__name__}: {e}",
+            "PlayLine Client — Erro de inicialização",
+            0x10,
+        )
+        sys.exit(1)
