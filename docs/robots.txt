@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://henrique-noronha.github.io/PlayLine/sitemap.xml
