@@ -50,34 +50,7 @@
 
 PlayLine adota uma **arquitetura orientada a eventos** com três processos isolados — uma falha na interface não interrompe o sinal ao ar.
 
-```
-┌─────────────────────────────────────────┐
-│             Interface de Usuário        │
-│                                         │
-│  ┌─────────────────┐  ┌──────────────┐  │
-│  │  PlayLine.exe   │  │  Navegador   │  │
-│  │  (pywebview)    │  │  qualquer    │  │
-│  └────────┬────────┘  └──────┬───────┘  │
-└───────────┼──────────────────┼──────────┘
-            │    HTTP / WS     │
-            ▼                  ▼
-┌───────────────────────────────────────────┐
-│           Servidor  —  FastAPI            │
-│           Python 3 · localhost:18000      │
-│                                           │
-│  Playlist Engine · WebSocket · REST API  │
-└───────────────────┬───────────────────────┘
-                    │ IPC / TCP
-                    ▼
-     ┌──────────────────────────────┐
-     │        MPV Daemon            │
-     │  Processo independente       │
-     │  localhost:6600              │
-     └──────────────┬───────────────┘
-                    │ HDMI
-                    ▼
-         TV / Switcher de hardware
-```
+![Arquitetura do PlayLine](images/Arquitetura.png)
 
 **Modos de acesso à interface:**
 - **PlayLine.exe** — abre a interface automaticamente via pywebview (janela nativa, sem precisar abrir o navegador)
