@@ -28,7 +28,7 @@ function updateScheduleSelectionUI() {
     btnMenu = document.createElement("button");
     btnMenu.id = "btn-schedule-menu";
     btnMenu.title = "Opções do roteiro";
-    btnMenu.textContent = "···";
+    btnMenu.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="currentColor"><circle cx="1.5" cy="1.5" r="1.5"/><rect x="4.5" y="0.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="6.5" r="1.5"/><rect x="4.5" y="5.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="11.5" r="1.5"/><rect x="4.5" y="10.5" width="10.5" height="2" rx="1"/></svg>';
 
     const dropdown = document.createElement("div");
     dropdown.id = "schedule-menu-dropdown";
@@ -123,7 +123,19 @@ function thumbToStorage(path, url) {
 
 // Carrega apenas os metadados do vídeo para obter a duração quando ela não está definida.
 // Chamado sempre que um item pode ter duration === 0, independente do cache de thumbnail.
+// Placeholder SVG para itens de live stream
+const _YT_THUMB = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="112" height="63">' +
+  '<rect width="112" height="63" fill="#111827"/>' +
+  '<rect x="16" y="16" width="80" height="31" rx="4" fill="#dc2626"/>' +
+  '<text x="56" y="37" font-family="Arial,sans-serif" font-size="11" font-weight="bold" ' +
+  'fill="white" text-anchor="middle">&#9654; AO VIVO</text>' +
+  '</svg>'
+);
+
 function ensureDuration(path) {
+  // Itens de URL (live streams) não têm duração via /media
+  if (!path || path.startsWith("http")) return;
   // Retorna apenas se TODAS as ocorrências do path já têm duração
   if (!state.schedule.some(it => it.path === path && !(it.duration > 0))) return;
   if (durLoading.has(path)) return;  // já carregando; handler atualizará todas
@@ -263,9 +275,13 @@ function calcStartTimes() {
   const idx = state.currentIndex;
   if (idx < 0 || !state.playing || !state.currentItemStartTime) return times;
 
-  times[idx] = new Date(state.currentItemStartTime);  // ms timestamp → Date
+  times[idx] = new Date(state.currentItemStartTime);
+
+  // Para de calcular ao encontrar um live stream — duração indeterminada
   for (let i = idx + 1; i < n; i++) {
-    times[i] = new Date(times[i - 1].getTime() + (state.schedule[i - 1].duration || 0) * 1000);
+    const prev = state.schedule[i - 1];
+    if (prev.live) break;
+    times[i] = new Date(times[i - 1].getTime() + (prev.duration || 0) * 1000);
   }
   for (let i = idx - 1; i >= 0; i--) {
     times[i] = new Date(times[i + 1].getTime() - (state.schedule[i].duration || 0) * 1000);
@@ -275,7 +291,13 @@ function calcStartTimes() {
 
 function calcRemaining() {
   if (!state.playing || state.currentIndex < 0) return 0;
-  const total = state.schedule.slice(state.currentIndex).reduce((s, it) => s + (it.duration || 0), 0);
+  // Live stream em reprodução: sem como saber o tempo restante
+  const currentItem = state.schedule[state.currentIndex];
+  if (currentItem?.live) return 0;
+  const total = state.schedule.slice(state.currentIndex).reduce((s, it) => {
+    if (it.live) return s; // para de somar ao encontrar um live
+    return s + (it.duration || 0);
+  }, 0);
   if (!state.currentItemStartTime) return total;
   const pausedMs = (state.totalPausedMs || 0) + (state.pausedAt ? Date.now() - state.pausedAt : 0);
   const elapsed = Math.max(0, (Date.now() - state.currentItemStartTime - pausedMs) / 1000);
@@ -397,7 +419,7 @@ function renderSchedule() {
       <div class="item-time">
         <span class="item-start" data-idx="${i}">${fmtTime(startTimes[i])}</span>
         <span class="item-date ${isToday(startTimes[i]) ? "" : "future"}" data-idx="${i}">${fmtDate(startTimes[i])}</span>
-        <span class="item-dur"  data-idx="${i}">${item.duration > 0 ? fmt(item.duration) : "—"}</span>
+        <span class="item-dur${item.live ? ' yt-live-dur' : ''}" data-idx="${i}">${item.live ? 'ao vivo' : (item.duration > 0 ? fmt(item.duration) : "—")}</span>
       </div>
       <div class="item-actions">
         ${!isLocked ? `<button class="btn-clip-overlay${item.clip_overlays ? ' configured' : ''}" title="Automação de overlays" data-idx="${i}">⚙</button>` : ''}
@@ -410,12 +432,22 @@ function renderSchedule() {
 
     if (item.path) {
       const imgEl = row.querySelector(".item-thumb");
-      imgEl.addEventListener("error", () => row.classList.add("invalid"), { once: true });
-      ensureDuration(item.path);  // sempre, independente do cache de thumbnail
-      if (domThumbs[item.path]) {
-        imgEl.src = domThumbs[item.path];
+      if (item.live) {
+        imgEl.src = _YT_THUMB;
+        imgEl.style.cursor = "pointer";
+        imgEl.title = "Clique para visualizar a live";
+        imgEl.addEventListener("click", e => {
+          e.stopPropagation();
+          if (typeof openYtPreview === "function") openYtPreview(item.path, imgEl);
+        });
       } else {
-        generateThumb(item.path, imgEl);
+        imgEl.addEventListener("error", () => row.classList.add("invalid"), { once: true });
+        ensureDuration(item.path);
+        if (domThumbs[item.path]) {
+          imgEl.src = domThumbs[item.path];
+        } else {
+          generateThumb(item.path, imgEl);
+        }
       }
     }
 

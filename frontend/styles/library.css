@@ -54,7 +54,7 @@
 /* ── Menu ··· da biblioteca ── */
 #lib-menu-wrap { position: relative; }
 
-#btn-lib-menu { letter-spacing: 1px; font-size: 13px; padding: 4px 7px; line-height: 1; }
+#btn-lib-menu { padding: 0; }
 
 #lib-menu-dropdown {
   display: none;

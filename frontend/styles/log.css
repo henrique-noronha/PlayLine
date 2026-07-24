@@ -1,4 +1,159 @@
-/* ── Card do log (rodapé full-width) ── */
+/* ── Rodapé: log + YouTube lado a lado, mesma largura ── */
+.bottom-row {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.bottom-row .log-card,
+.youtube-card {
+  flex: 1;
+  min-width: 0;
+}
+
+/* YouTube card — sempre compacto (só header, igual ao log colapsado) */
+.youtube-card .log-header { margin-bottom: 0; }
+
+#btn-yt-open {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+#btn-yt-open:hover { background: var(--surface2); }
+
+/* ── Modal YouTube Live ── */
+.yt-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.yt-modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 420px;
+  max-width: calc(100vw - 40px);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.yt-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.yt-modal-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: .02em;
+}
+
+.yt-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: background .15s, color .15s;
+}
+.yt-modal-close:hover { background: var(--surface2); color: var(--text); }
+
+.yt-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.yt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.yt-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.yt-url-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-size: 13px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color .15s;
+  width: 100%;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+.yt-url-input:focus { border-color: var(--accent); }
+.yt-url-input::placeholder { color: var(--muted); opacity: .5; }
+
+.yt-status {
+  font-size: 12px;
+  min-height: 16px;
+  line-height: 1.4;
+}
+.yt-status-loading { color: var(--muted); }
+.yt-status-success { color: var(--success); }
+.yt-status-error   { color: var(--danger); }
+
+.yt-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.yt-btn-cancel {
+  padding: 8px 18px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  transition: background .15s;
+}
+.yt-btn-cancel:hover { background: var(--surface2); }
+
+.btn-yt-add {
+  background: #dc2626;
+  border: none;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 18px;
+  transition: background .15s;
+  letter-spacing: .02em;
+}
+.btn-yt-add:hover    { background: #b91c1c; }
+.btn-yt-add:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
+
+/* ── Card do log (standalone — sem bottom-row) ── */
 .log-card { grid-column: 1 / -1; }
 
 .log-header {
@@ -38,7 +193,7 @@
   background: #090b12;
   border-radius: 8px;
   padding: 12px 14px;
-  height: 180px;
+  height: 90px;
   overflow-y: auto;
   font-family: 'Consolas', 'Courier New', monospace;
   font-size: 12px;

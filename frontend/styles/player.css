@@ -24,10 +24,11 @@
   border: none;
 }
 
-/* Quando o canvas MPV está recebendo frames, os overlays do browser são ocultados
-   pois já estão renderizados na imagem capturada do MPV */
+/* Quando o canvas MPV está recebendo frames, overlays do browser e mensagens de erro
+   são ocultados — o preview real vem do MPV, não do elemento <video> */
 .player-wrap.mpv-live .logo-overlay,
-.player-wrap.mpv-live #text-preview-overlay {
+.player-wrap.mpv-live #text-preview-overlay,
+.player-wrap.mpv-live #preview-unavailable {
   display: none !important;
 }
 
@@ -55,6 +56,37 @@
   font-size: 13px;
   text-align: center;
   z-index: 5;
+}
+
+/* ── Indicador de live stream ── */
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  height: 20px;
+}
+
+.live-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  flex-shrink: 0;
+  animation: live-blink 1.2s ease-in-out infinite;
+}
+
+@keyframes live-blink {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 6px rgba(239,68,68,.8); }
+  50%       { opacity: 0.15; box-shadow: none; }
+}
+
+.live-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #ef4444;
+  letter-spacing: .12em;
+  text-transform: uppercase;
 }
 
 .now-playing-title {
@@ -548,4 +580,68 @@
   height: 72px;
   background: var(--border);
   flex-shrink: 0;
+}
+
+/* ── Cabeçalho do painel de controle com botão de opções ── */
+.controls-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.controls-card-head h2 { margin-bottom: 0; }
+
+#btn-controls-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+#btn-controls-menu:hover {
+  opacity: 1;
+  background: var(--border);
+  color: var(--text);
+}
+
+/* ── Dropdown de opções do painel de controle ── */
+#controls-menu-wrap { position: relative; }
+
+#controls-menu-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 190px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 0;
+  z-index: 300;
+  box-shadow: 0 6px 20px rgba(0,0,0,.5);
+}
+#controls-menu-dropdown.open { display: block; }
+
+.ctrl-menu-item {
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text);
+  transition: background .1s;
+  user-select: none;
+}
+.ctrl-menu-item:hover { background: var(--surface2); }
+.ctrl-menu-item--danger { color: var(--danger); }
+.ctrl-menu-item--danger:hover { background: rgba(239,68,68,.12); }
+.ctrl-menu-item--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
 }

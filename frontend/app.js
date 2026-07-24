@@ -10,6 +10,7 @@ const state = {
   currentItemStartTime: null,
   pausedAt: null,       // timestamp de quando pausou
   totalPausedMs: 0,     // soma de todos os tempos pausados no clipe atual
+  mpvAlive: true,       // false após mpv_closed, true após mpv_ready / now_playing
 };
 
 let _remainingTimer = null;
@@ -74,7 +75,14 @@ function handleEvent(ev) {
     case "state":
       applyState(ev);
       break;
+    case "mpv_closed":
+      state.mpvAlive = false;
+      break;
+    case "mpv_ready":
+      state.mpvAlive = true;
+      break;
     case "now_playing":
+      state.mpvAlive = true;
       _cancelPendingLoad();
       state.currentIndex = ev.index;
       state.playing = true;
@@ -85,7 +93,14 @@ function handleEvent(ev) {
       updateNowPlaying(ev.item);
       updateBadge("playing");
       highlightActive(ev.index);
-      loadVideo(ev.item.path);
+      if (ev.item.live) {
+        showLiveIndicator();
+        if (window._setPreviewStatus) window._setPreviewStatus("Carregando live do YouTube…");
+      } else {
+        hideLiveIndicator();
+        if (window._setPreviewStatus) window._setPreviewStatus(null);
+        loadVideo(ev.item.path);
+      }
       updateStartTimes();
       startRemainingTimer();
       updateButtons();
@@ -134,6 +149,7 @@ function handleEvent(ev) {
       updateButtons();
       highlightActive(-1);
       stopVideo();
+      if (window._setPreviewStatus) window._setPreviewStatus(null);
       updateStartTimes();
       break;
     case "playlist_end":
@@ -183,7 +199,7 @@ function applyState(s) {
     updateNowPlaying(null);
   }
 
-  if ((state.playing || state.paused) && s.current_item?.path && !video.src) {
+  if ((state.playing || state.paused) && s.current_item?.path && !video.src && !s.current_item.live) {
     // Adia o loadVideo até o primeiro evento "position" para usar #t=N na URL.
     // Fallback de 1.5s garante que o vídeo carregue mesmo que o evento demore.
     _pendingLoad        = { path: s.current_item.path, paused: state.paused };
