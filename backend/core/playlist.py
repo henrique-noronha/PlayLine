@@ -145,6 +145,7 @@ class PlaylistEngine:
         self._index = -1
         self._preloading = False
         self._history.close_entry("interrupted")
+        await self._broadcast({"event": "mpv_closed"})
         await self._broadcast({"event": "stopped"})
         logger.info("Playout parado (janela MPV fechada)")
 
@@ -207,12 +208,16 @@ class PlaylistEngine:
 
             self._preloading = False
 
-            # Pré-carrega o próximo vídeo na fila do MPV para transição sem flash
-            if index + 1 < len(self._items):
+            # Pré-carrega o próximo vídeo na fila do MPV para transição sem flash.
+            # Live streams não são pré-carregados (duração indeterminada), mas
+            # a URL YouTube é pré-resolvida em background para eliminar o delay do yt-dlp.
+            if not item.get("live") and index + 1 < len(self._items):
                 next_item = self._items[index + 1]
-                if next_item.get("path"):
+                if next_item.get("path") and not next_item.get("live"):
                     self._player.preload(next_item["path"])
                     self._preloading = True
+                elif next_item.get("live") and next_item.get("path"):
+                    self._player.prefetch_yt(next_item["path"])
 
             # Retoma posição do checkpoint se for a primeira reprodução após reinício
             cp = self._read_checkpoint()

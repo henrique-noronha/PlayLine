@@ -307,6 +307,47 @@ async def rename_library_folder(body: dict):
     return {"renamed": {"old": old, "new": new}}
 
 
+@router.get("/api/youtube/info")
+async def youtube_info(url: str):
+    """Valida URL do YouTube e retorna título e flag is_live."""
+    import asyncio
+    url = (url or "").strip()
+    try:
+        from core.youtube_resolver import is_youtube_url, get_info
+    except ImportError:
+        try:
+            from ..core.youtube_resolver import is_youtube_url, get_info
+        except ImportError:
+            raise HTTPException(status_code=501, detail="yt-dlp não disponível")
+    if not url or not is_youtube_url(url):
+        raise HTTPException(status_code=400, detail="URL do YouTube inválida")
+    loop = asyncio.get_running_loop()
+    info = await loop.run_in_executor(None, get_info, url)
+    if not info.get("valid"):
+        raise HTTPException(status_code=422, detail=info.get("error", "Não foi possível obter informações"))
+    return info
+
+
+@router.post("/api/mpv/quit")
+async def quit_mpv():
+    """Encerra o player MPV (daemon continua ativo). Bloqueado durante reprodução."""
+    if _playlist_engine is None:
+        raise HTTPException(status_code=503, detail="Servidor não inicializado")
+    if _playlist_engine._running:
+        raise HTTPException(status_code=409, detail="Pare a reprodução antes de encerrar o player")
+    _playlist_engine._player.quit_mpv()
+    return {"ok": True}
+
+
+@router.post("/api/mpv/init")
+async def init_mpv():
+    """Inicializa (ou reinicializa) o player MPV sem reproduzir nada."""
+    if _playlist_engine is None:
+        raise HTTPException(status_code=503, detail="Servidor não inicializado")
+    _playlist_engine._player.init_mpv()
+    return {"ok": True}
+
+
 @router.delete("/api/library/folder")
 async def delete_library_folder(subfolder: str):
     """Remove uma subpasta vazia da Biblioteca."""
