@@ -29,7 +29,22 @@
 
 
 #schedule-menu-wrap { position: relative; }
-#btn-schedule-menu { letter-spacing: 1px; font-size: 13px; padding: 4px 7px; line-height: 1; }
+#btn-schedule-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  color: var(--muted);
+  opacity: 0.6;
+}
+#btn-schedule-menu:hover {
+  background: var(--border);
+  color: var(--text);
+  opacity: 1;
+}
 
 #schedule-menu-dropdown {
   display: none;
@@ -76,6 +91,56 @@
   background: rgba(79, 142, 247, 0.04);
 }
 
+/* ── Preview de live do YouTube ── */
+#yt-preview-modal {
+  position: fixed;
+  z-index: 600;
+  width: 360px;
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 36px rgba(0,0,0,.75);
+}
+
+.yt-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 10px;
+  height: 26px;
+  background: #0f1117;
+  border-bottom: 1px solid var(--border);
+}
+
+.yt-preview-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ef4444;
+  letter-spacing: .04em;
+}
+
+#yt-preview-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity .12s;
+}
+#yt-preview-close:hover { opacity: 1; }
+
+#yt-preview-iframe {
+  display: block;
+  width: 360px;
+  height: 203px;
+  border: 0;
+}
+
 /* ── Item do roteiro ── */
 .schedule-item {
   display: grid;
@@ -103,6 +168,8 @@
 .schedule-item.invalid              { border-color: var(--danger); }
 .schedule-item.invalid .item-title  { color: var(--danger); }
 .schedule-item.invalid .item-dur    { color: var(--danger); }
+
+.yt-live-dur { color: #dc2626; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
 
 .schedule-item input         { pointer-events: none; cursor: grab; user-select: none; }
 .schedule-item.editing input { pointer-events: auto; cursor: text; user-select: text; }
