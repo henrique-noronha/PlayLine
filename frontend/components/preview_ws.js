@@ -13,8 +13,8 @@
   let _ws         = null;
   let _lastFrame  = 0;
   let _staleTimer = null;
+  let _statusMsg  = null;   // mensagem personalizada exibida no lugar de "Aguardando…"
 
-  // Desenha mensagem de "sem sinal" no canvas preto
   function _drawNoSignal() {
     const W = canvas.width  || 400;
     const H = canvas.height || 225;
@@ -24,7 +24,7 @@
     ctx.font = "13px 'Segoe UI', Arial, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("Aguardando sinal de vídeo…", W / 2, H / 2);
+    ctx.fillText(_statusMsg || "Aguardando sinal de vídeo…", W / 2, H / 2);
   }
 
   function _setLive(active) {
@@ -33,6 +33,12 @@
     wrap.classList.toggle("mpv-live", active);
     if (!active && was) _drawNoSignal();
   }
+
+  // Expõe para app.js definir mensagem de carregamento de live
+  window._setPreviewStatus = function (msg) {
+    _statusMsg = msg || null;
+    _drawNoSignal();
+  };
 
   function _drawFrame(blob) {
     const url = URL.createObjectURL(blob);
@@ -44,6 +50,7 @@
     img.onerror = () => URL.revokeObjectURL(url);
     img.src = url;
 
+    _statusMsg  = null;   // limpa mensagem de carregamento quando o primeiro frame chega
     _lastFrame = Date.now();
     _setLive(true);
 

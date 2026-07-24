@@ -35,12 +35,16 @@
           <div id="text-preview-overlay" class="text-preview-overlay" style="display:none"></div>
         </div>
         <div class="now-playing-title" id="np-title">—</div>
-        <div class="progress-wrap">
+        <div class="progress-wrap" id="progress-wrap">
           <span id="pos">0:00</span>
           <div class="progress-bar">
             <div class="progress-fill" id="progress-fill"></div>
           </div>
           <span id="dur">0:00</span>
+        </div>
+        <div class="live-indicator" id="live-indicator" style="display:none">
+          <span class="live-dot"></span>
+          <span class="live-label">AO VIVO</span>
         </div>
         <div class="state-badge" id="state-badge">parado</div>
       </section>
@@ -52,7 +56,7 @@
             <button id="btn-lib-search" title="Pesquisar vídeo"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
             <button id="btn-lib-refresh" title="Atualizar biblioteca">↺</button>
             <div id="lib-menu-wrap">
-              <button id="btn-lib-menu" title="Opções da biblioteca">···</button>
+              <button id="btn-lib-menu" title="Opções da biblioteca"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="currentColor"><circle cx="1.5" cy="1.5" r="1.5"/><rect x="4.5" y="0.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="6.5" r="1.5"/><rect x="4.5" y="5.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="11.5" r="1.5"/><rect x="4.5" y="10.5" width="10.5" height="2" rx="1"/></svg></button>
               <div id="lib-menu-dropdown">
                 <div class="lib-menu-item" id="lib-menu-new-folder">+ Nova pasta</div>
                 <div class="lib-menu-separator"></div>
@@ -76,7 +80,15 @@
     <div class="right-col">
       
       <section class="card controls-card">
-        <h2>Painel de Controle</h2>
+        <div class="controls-card-head">
+          <h2>Painel de Controle</h2>
+          <div id="controls-menu-wrap">
+            <button id="btn-controls-menu" title="Opções"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="currentColor"><circle cx="1.5" cy="1.5" r="1.5"/><rect x="4.5" y="0.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="6.5" r="1.5"/><rect x="4.5" y="5.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="11.5" r="1.5"/><rect x="4.5" y="10.5" width="10.5" height="2" rx="1"/></svg></button>
+            <div id="controls-menu-dropdown">
+              <div class="ctrl-menu-item ctrl-menu-item--danger" id="ctrl-menu-quit-mpv">⏻ Encerrar player MPV</div>
+            </div>
+          </div>
+        </div>
         <div class="control-stats">
           <div class="stat-block">
             <div class="stat-label">Tempo restante</div>
@@ -242,17 +254,50 @@
 
     </div>
 
-    <section class="card log-card collapsed" id="log-section">
-      <div class="log-header">
-        <h2>Log de eventos</h2>
-        <div class="log-actions">
-          <button id="btn-clear-log">Limpar</button>
-          <button id="btn-toggle-log" title="Expandir/Recolher">▲</button>
+    <div class="bottom-row">
+      <section class="card log-card collapsed" id="log-section">
+        <div class="log-header">
+          <h2>Log de eventos</h2>
+          <div class="log-actions">
+            <button id="btn-clear-log">Limpar</button>
+            <button id="btn-toggle-log" title="Expandir/Recolher">▲</button>
+          </div>
         </div>
-      </div>
-      <div class="log" id="log"></div>
-    </section>
+        <div class="log" id="log"></div>
+      </section>
+
+      <section class="card youtube-card" id="youtube-live-card">
+        <div class="log-header">
+          <h2>Live do YouTube</h2>
+          <div class="log-actions">
+            <button id="btn-yt-open">+ Adicionar</button>
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
+
+  <!-- Modal YouTube Live -->
+  <div id="yt-modal" class="yt-modal-backdrop" style="display:none">
+    <div class="yt-modal-box">
+      <div class="yt-modal-header">
+        <h3>Adicionar Live do YouTube</h3>
+        <button id="yt-modal-close" class="yt-modal-close">✕</button>
+      </div>
+      <div class="yt-modal-body">
+        <div class="yt-field">
+          <label class="yt-label" for="yt-url-input">URL da live</label>
+          <input type="text" id="yt-url-input" class="yt-url-input"
+                 placeholder="https://youtube.com/watch?v=…" autocomplete="off" />
+        </div>
+        <div id="yt-status" class="yt-status"></div>
+      </div>
+      <div class="yt-modal-actions">
+        <button id="btn-yt-cancel" class="yt-btn-cancel">Cancelar</button>
+        <button id="btn-yt-add" class="btn-yt-add">Adicionar ao roteiro</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal de Histórico -->
   <div id="history-modal" class="history-backdrop" style="display:none">
@@ -285,7 +330,7 @@
     </div>
   </div>
 
-  <div id="confirm-modal" class="confirm-modal-backdrop" style="display:none">
+<div id="confirm-modal" class="confirm-modal-backdrop" style="display:none">
     <div class="confirm-modal-box">
       <p id="confirm-modal-text"></p>
       <div class="confirm-modal-actions">
@@ -304,5 +349,19 @@
   <script src="/static/components/text_overlay.js"></script>
   <script src="/static/app.js"></script>
   <script src="/static/components/preview_ws.js"></script>
+  <script src="/static/components/youtube_live.js"></script>
+  <!-- Preview de live do YouTube -->
+  <div id="yt-preview-modal" style="display:none">
+    <div class="yt-preview-header">
+      <span class="yt-preview-label">▶ Ao vivo</span>
+      <button id="yt-preview-close">✕</button>
+    </div>
+    <iframe id="yt-preview-iframe" frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen></iframe>
+  </div>
+
+  <script src="/static/components/controls_menu.js"></script>
+  <script src="/static/components/yt_preview.js"></script>
 </body>
 </html>

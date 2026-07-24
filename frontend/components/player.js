@@ -64,7 +64,22 @@ function stopVideo() {
   video.removeAttribute("src");
   video.load();
   resetProgress();
+  hideLiveIndicator();
   document.querySelectorAll(".logo-overlay").forEach(el => el.style.display = "none");
+}
+
+function showLiveIndicator() {
+  // Limpa o elemento <video> para impedir que syncPosition atualize a barra
+  video.removeAttribute("src");
+  video.load();
+  resetProgress();
+  document.getElementById("progress-wrap").style.display = "none";
+  document.getElementById("live-indicator").style.display = "flex";
+}
+
+function hideLiveIndicator() {
+  document.getElementById("progress-wrap").style.display = "";
+  document.getElementById("live-indicator").style.display = "none";
 }
 
 // Threshold alto: drift normal de playback (1-2s de buffering) nunca dispara resync.
@@ -127,5 +142,9 @@ video.addEventListener("ended", () => {
 video.addEventListener("error", () => {
   const code = video.error ? video.error.code : "?";
   log(`Erro no preview (código ${code})`, "error");
-  _showUnavailable();
+  // Só mostra mensagem se o canvas MPV não estiver recebendo frames
+  const wrap = video.closest(".player-wrap");
+  if (!wrap?.classList.contains("mpv-live")) {
+    _showUnavailable();
+  }
 });
