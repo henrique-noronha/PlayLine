@@ -1,50 +1,11 @@
 [
   {
-    "id": "item-1784568540242",
-    "title": "MOMENTO SAUDE -  OBSERVE O RESULTADO",
-    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4",
-    "duration": 104,
-    "clip_overlays": {
-      "logo1": {
-        "active": false,
-        "filename": "LogoPlayLineBlack.png",
-        "corner": "tl"
-      },
-      "logo2": {
-        "active": false,
-        "filename": "",
-        "corner": "br"
-      },
-      "text": {
-        "active": false,
-        "show_time": true,
-        "show_temp": true
-      }
-    }
-  },
-  {
-    "id": "item-1784721317010",
-    "title": "A CASA É SUA 91 BL 2",
-    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 2.mp4",
-    "duration": 566
-  },
-  {
-    "id": "item-1784554828753",
-    "title": "DIGA NÃO 02",
-    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\DIGA NÃO 02.mp4",
-    "duration": 54
-  },
-  {
-    "id": "item-1784721318792",
-    "title": "A CASA É SUA 91 BL 3",
-    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 3.mp4",
-    "duration": 679
-  },
-  {
-    "id": "item-1784721325749",
-    "title": "MPE EM AÇÃO 61 BL 1",
-    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\MPE EM AÇÃO 61 BL 1.mp4",
-    "duration": 334
+    "id": "item-1784905628186",
+    "type": "youtube_live",
+    "live": true,
+    "title": "AO VIVO: HUGO CALDERANO E BRUNA TAKAHASHI NO WTT STAR CONTENDER | TÊNIS DE MESA 2026-07-24 12:07",
+    "path": "https://www.youtube.com/watch?v=CU1HQT2bY-s",
+    "duration": 0
   },
   {
     "id": "item-1784721337463",

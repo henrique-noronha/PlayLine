@@ -338,5 +338,285 @@
     "duration_played": 10,
     "end_reason": "stopped",
     "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "MOMENTO SAUDE -  OBSERVE O RESULTADO",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4",
+    "started_at": "10:20:19",
+    "ended_at": "10:22:03",
+    "duration_played": 105,
+    "end_reason": "completed",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "CORINTHIANS BATE O REMO, DANILO FICA NO BOTAFOGO, FIM DO 1º TURNO E MAIS! | GERAL CAZÉTV 2026-07-24 10:20",
+    "path": "https://www.youtube.com/watch?v=pJjTBripdRU",
+    "started_at": "10:22:03",
+    "ended_at": "10:24:12",
+    "duration_played": 129,
+    "end_reason": "skipped",
+    "had_pause": true
+  },
+  {
+    "date": "2026-07-24",
+    "title": "A CASA É SUA 91 BL 2",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 2.mp4",
+    "started_at": "10:24:12",
+    "ended_at": "10:24:21",
+    "duration_played": 9,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "DIGA NÃO 02",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\DIGA NÃO 02.mp4",
+    "started_at": "10:24:21",
+    "ended_at": "10:24:30",
+    "duration_played": 9,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "DIGA NÃO 02",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\DIGA NÃO 02.mp4",
+    "started_at": "10:39:24",
+    "ended_at": "10:40:19",
+    "duration_played": 55,
+    "end_reason": "completed",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "CORINTHIANS BATE O REMO, DANILO FICA NO BOTAFOGO, FIM DO 1º TURNO E MAIS! | GERAL CAZÉTV 2026-07-24 10:39",
+    "path": "https://www.youtube.com/watch?v=pJjTBripdRU",
+    "started_at": "10:40:19",
+    "ended_at": "10:41:21",
+    "duration_played": 62,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "TV ASSEMBLEIA 2026",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\TV ASSEMBLEIA 2026.mp4",
+    "started_at": "10:41:21",
+    "ended_at": "10:41:31",
+    "duration_played": 9,
+    "end_reason": "completed",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "TESOUROS TO IN CONCERT",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\TESOUROS TO IN CONCERT.mp4",
+    "started_at": "10:41:31",
+    "ended_at": "10:41:39",
+    "duration_played": 8,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "TESOUROS TO IN CONCERT",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\TESOUROS TO IN CONCERT.mp4",
+    "started_at": "10:45:12",
+    "ended_at": "10:45:36",
+    "duration_played": 25,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "CORINTHIANS BATE O REMO, DANILO FICA NO BOTAFOGO, FIM DO 1º TURNO E MAIS! | GERAL CAZÉTV 2026-07-24 10:45",
+    "path": "https://www.youtube.com/watch?v=pJjTBripdRU",
+    "started_at": "10:45:36",
+    "ended_at": "10:46:13",
+    "duration_played": 37,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "TV ASSEMBLEIA 2026",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\TV ASSEMBLEIA 2026.mp4",
+    "started_at": "10:46:13",
+    "ended_at": "10:46:21",
+    "duration_played": 8,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "TV ASSEMBLEIA 2026",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\TV ASSEMBLEIA 2026.mp4",
+    "started_at": "10:46:37",
+    "ended_at": "10:46:46",
+    "duration_played": 10,
+    "end_reason": "completed",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "CORINTHIANS BATE O REMO, DANILO FICA NO BOTAFOGO, FIM DO 1º TURNO E MAIS! | GERAL CAZÉTV 2026-07-24 10:46",
+    "path": "https://www.youtube.com/watch?v=pJjTBripdRU",
+    "started_at": "10:46:46",
+    "ended_at": "10:46:56",
+    "duration_played": 10,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "A CASA É SUA 91 BL 3",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\A CASA É SUA 91 BL 3.mp4",
+    "started_at": "11:01:06",
+    "ended_at": "11:01:21",
+    "duration_played": 15,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "TV ASSEMBLEIA 2026",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\TV ASSEMBLEIA 2026.mp4",
+    "started_at": "11:01:21",
+    "ended_at": "11:01:30",
+    "duration_played": 9,
+    "end_reason": "completed",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "CORINTHIANS BATE O REMO, DANILO FICA NO BOTAFOGO, FIM DO 1º TURNO E MAIS! | GERAL CAZÉTV 2026-07-24 11:01",
+    "path": "https://www.youtube.com/watch?v=pJjTBripdRU",
+    "started_at": "11:01:30",
+    "ended_at": "11:01:48",
+    "duration_played": 18,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "TV ASSEMBLEIA 2026",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\TV ASSEMBLEIA 2026.mp4",
+    "started_at": "11:10:35",
+    "ended_at": "11:10:45",
+    "duration_played": 10,
+    "end_reason": "completed",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "CORINTHIANS BATE O REMO, DANILO FICA NO BOTAFOGO, FIM DO 1º TURNO E MAIS! | GERAL CAZÉTV 2026-07-24 11:10",
+    "path": "https://www.youtube.com/watch?v=pJjTBripdRU",
+    "started_at": "11:10:45",
+    "ended_at": "11:10:59",
+    "duration_played": 14,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "MPE EM AÇÃO 61 BL 1",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\MPE EM AÇÃO 61 BL 1.mp4",
+    "started_at": "11:27:50",
+    "ended_at": "11:28:01",
+    "duration_played": 11,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "MPE EM AÇÃO 61 BL 1",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\MPE EM AÇÃO 61 BL 1.mp4",
+    "started_at": "11:32:39",
+    "ended_at": "11:32:43",
+    "duration_played": 4,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "MPE EM AÇÃO 61 BL 1",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\MPE EM AÇÃO 61 BL 1.mp4",
+    "started_at": "11:32:46",
+    "ended_at": "11:32:57",
+    "duration_played": 11,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "MPE EM AÇÃO 61 BL 1",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\MPE EM AÇÃO 61 BL 1.mp4",
+    "started_at": "11:33:18",
+    "ended_at": "11:33:21",
+    "duration_played": 4,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "MPE EM AÇÃO 61 BL 1",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\MPE EM AÇÃO 61 BL 1.mp4",
+    "started_at": "11:40:27",
+    "ended_at": "11:40:38",
+    "duration_played": 11,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "MPE EM AÇÃO 61 BL 1",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\MPE EM AÇÃO 61 BL 1.mp4",
+    "started_at": "11:56:30",
+    "ended_at": "11:56:50",
+    "duration_played": 20,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "MPE EM AÇÃO 61 BL 1",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\MPE EM AÇÃO 61 BL 1.mp4",
+    "started_at": "12:06:51",
+    "ended_at": "12:07:58",
+    "duration_played": 67,
+    "end_reason": "stopped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "MPE EM AÇÃO 61 BL 1",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Programas\\MPE EM AÇÃO 61 BL 1.mp4",
+    "started_at": "12:09:48",
+    "ended_at": "12:10:18",
+    "duration_played": 30,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "TV ASSEMBLEIA 2026",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\TV ASSEMBLEIA 2026.mp4",
+    "started_at": "12:10:18",
+    "ended_at": "12:10:20",
+    "duration_played": 2,
+    "end_reason": "skipped",
+    "had_pause": false
+  },
+  {
+    "date": "2026-07-24",
+    "title": "AO VIVO: HUGO CALDERANO E BRUNA TAKAHASHI NO WTT STAR CONTENDER | TÊNIS DE MESA 2026-07-24 12:07",
+    "path": "https://www.youtube.com/watch?v=CU1HQT2bY-s",
+    "started_at": "12:10:20",
+    "ended_at": "12:11:14",
+    "duration_played": 55,
+    "end_reason": "stopped",
+    "had_pause": false
   }
 ]

@@ -27,6 +27,7 @@ import logging
 import os
 import sys
 import threading
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -59,6 +60,19 @@ _TEXT_OVERLAY_DEFAULTS = {
 HOST = "127.0.0.1"
 PORT = 6600
 
+
+def _is_youtube_url(url: str) -> bool:
+    return "youtube.com" in url or "youtu.be" in url
+
+
+def _resolve_yt_stream(url: str) -> str:
+    """Resolve URL do YouTube para URL HLS direta. Bloqueia — chamar via executor."""
+    try:
+        from core.youtube_resolver import get_stream_url
+    except ImportError:
+        from ..core.youtube_resolver import get_stream_url
+    return get_stream_url(url)
+
 try:
     LOGOS_DIR.mkdir(parents=True, exist_ok=True)
 except Exception:
@@ -85,6 +99,7 @@ class MPVDaemon:
         self._logo_lock = threading.Lock()
         self._text_overlay: dict = self._load_text_overlay()
         self._text_overlay_lock = threading.Lock()
+        self._yt_cache: dict = {}   # {original_url: (resolved_url, monotonic_ts)}
 
     # ── Inicialização do MPV ──────────────────────────────────────────────────
 
@@ -106,6 +121,7 @@ class MPVDaemon:
             hr_seek="yes",
             keep_open=False,
             idle=True,
+            force_window="immediate",   # janela permanece aberta (tela preta) ao parar ou aguardar live
             title="PlayLine",
             log_handler=self._mpv_log,
             loglevel="warn",
@@ -124,6 +140,12 @@ class MPVDaemon:
 
         self._mpv = mpv.MPV(**mpv_kwargs)
         self._mpv.volume = self._volume   # restaura volume ao reinicializar
+
+        # Com force_window=immediate a janela abre antes de qualquer clipe;
+        # posiciona no monitor correto logo ao inicializar.
+        if has_secondary:
+            threading.Thread(target=self._move_to_tv, daemon=True).start()
+
         self._mpv.observe_property("time-pos", self._on_time_pos)
         try:
             self._mpv.observe_property("osd-width", self._on_osd_resize)
@@ -304,21 +326,70 @@ class MPVDaemon:
 
         if action == "play":
             path = cmd.get("path", "")
+            original_path = path
             if not path:
                 return
             if self._mpv_dead or self._mpv is None:
                 logger.info("Reinicializando MPV para reprodução...")
                 self._init_mpv()
             if self._mpv:
+                if _is_youtube_url(path):
+                    cached = self._yt_cache.get(original_path)
+                    if cached and (time.monotonic() - cached[1]) < 14400:
+                        path = cached[0]
+                        logger.info("YouTube URL resolvida via cache: %s", original_path)
+                    else:
+                        if cached:
+                            del self._yt_cache[original_path]
+                        try:
+                            path = await asyncio.get_event_loop().run_in_executor(
+                                None, _resolve_yt_stream, original_path
+                            )
+                            logger.info("YouTube stream resolvido: %s", original_path)
+                        except Exception as exc:
+                            logger.error("Falha ao resolver YouTube URL: %s", exc)
+                            await self._broadcast({"event": "end-file", "reason": "error"})
+                            return
                 self._mpv.command("loadfile", path, "replace")
-                self._write_checkpoint(path)
-                logger.info("play: %s", path)
+                self._write_checkpoint(original_path)
+                logger.info("play: %s", original_path)
 
         elif action == "preload":
             path = cmd.get("path", "")
             if path and self._mpv and not self._mpv_dead:
                 self._mpv.command("loadfile", path, "append")
                 logger.info("preload: %s", path)
+
+        elif action == "prefetch_yt":
+            url = cmd.get("path", "")
+            if url and _is_youtube_url(url):
+                cached = self._yt_cache.get(url)
+                if not cached or (time.monotonic() - cached[1]) >= 14400:
+                    asyncio.ensure_future(self._prefetch_yt_bg(url))
+                    logger.info("prefetch_yt solicitado: %s", url)
+
+        elif action == "init_mpv":
+            if self._mpv_dead or self._mpv is None:
+                logger.info("Reinicializando MPV via init_mpv")
+                self._init_mpv()
+            await self._broadcast({"event": "mpv_ready"})
+
+        elif action == "quit_mpv":
+            if self._mpv and not self._mpv_dead:
+                self._mpv_dead = True
+                mpv_ref  = self._mpv
+                self._mpv = None
+                await self._broadcast({"event": "mpv_closed"})
+
+                def _terminate():
+                    try:
+                        # terminate() chama mpv_terminate_destroy(), fechando a janela Win32
+                        mpv_ref.terminate()
+                        logger.info("MPV encerrado via terminate()")
+                    except Exception as exc:
+                        logger.warning("quit_mpv terminate: %s", exc)
+
+                threading.Thread(target=_terminate, daemon=True).start()
 
         elif action == "pause":
             if self._mpv and not self._mpv_dead:
@@ -458,6 +529,17 @@ class MPVDaemon:
             logger.warning("[text_overlay] falha ao salvar: %s", exc)
 
     # ── Tarefas assíncronas ───────────────────────────────────────────────────
+
+    async def _prefetch_yt_bg(self, url: str):
+        """Resolve URL do YouTube em background e guarda no cache para uso imediato."""
+        try:
+            resolved = await asyncio.get_event_loop().run_in_executor(
+                None, _resolve_yt_stream, url
+            )
+            self._yt_cache[url] = (resolved, time.monotonic())
+            logger.info("YouTube URL pré-resolvida (cache pronto): %s", url)
+        except Exception as exc:
+            logger.warning("Falha no prefetch de YouTube URL: %s", exc)
 
     async def _checkpoint_task(self):
         # Primeiros dois flushes em 1s e 2s para cobrir crashes logo no início do clipe

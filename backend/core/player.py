@@ -177,6 +177,18 @@ class Player:
         self._send({"action": "preload", "path": path})
         logger.info("Pré-carregando: %s", path)
 
+    def prefetch_yt(self, path: str):
+        self._send({"action": "prefetch_yt", "path": path})
+        logger.info("Pré-buscando URL YouTube: %s", path)
+
+    def quit_mpv(self):
+        self._send({"action": "quit_mpv"})
+        logger.info("Encerrando player MPV")
+
+    def init_mpv(self):
+        self._send({"action": "init_mpv"})
+        logger.info("Inicializando player MPV")
+
     def pause(self):
         self._send({"action": "pause"})
 
