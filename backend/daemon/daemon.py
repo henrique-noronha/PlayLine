@@ -31,6 +31,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
+
 from . import checkpoint, monitor, overlay, osd_text, preview, protocol, weather
 
 # Garante que libmpv-2.dll seja encontrada (em sys._MEIPASS quando empacotado)
@@ -99,7 +100,37 @@ class MPVDaemon:
         self._logo_lock = threading.Lock()
         self._text_overlay: dict = self._load_text_overlay()
         self._text_overlay_lock = threading.Lock()
-        self._yt_cache: dict = {}   # {original_url: (resolved_url, monotonic_ts)}
+        self._yt_cache: dict     = {}   # {original_url: (resolved_url, monotonic_ts)}
+        self._yt_resolving: dict = {}   # {original_url: asyncio.Task} — resolução em andamento
+        self._yt_appended: dict  = {}   # {original_url: (hls_url, monotonic_ts)} — appendado na fila MPV
+        self._vu_task: Optional[asyncio.Task] = None
+
+    # ── Medição de nível de áudio via Windows Core Audio ────────────────────
+
+    def _stop_vu(self):
+        if self._vu_task and not self._vu_task.done():
+            self._vu_task.cancel()
+        self._vu_task = None
+
+    async def _audio_level_task(self):
+        """Lê o pico da saída de áudio padrão via IAudioMeterInformation e transmite.
+
+        Chama get_peak_db() diretamente (sem executor): a chamada COM é sub-milissegundo
+        e os objetos COM devem ser usados na thread onde foram criados (evento loop).
+        """
+        from . import win_audio_meter
+        try:
+            while True:
+                await asyncio.sleep(0.08)
+                db = win_audio_meter.get_peak_db()
+                if db is not None:
+                    await self._broadcast({"event": "audio_level", "db": db})
+        except asyncio.CancelledError:
+            pass
+        except Exception as exc:
+            logger.warning("audio_level_task encerrada: %s", exc)
+        finally:
+            self._vu_task = None
 
     # ── Inicialização do MPV ──────────────────────────────────────────────────
 
@@ -183,6 +214,7 @@ class MPVDaemon:
             logger.info("MPV encerrado — reinit ocorrerá no próximo play")
             self._broadcast_sync({"event": "mpv_closed"})
 
+        self._yt_appended.clear()
         logger.info("MPV inicializado")
 
     def _move_to_tv(self):
@@ -327,6 +359,8 @@ class MPVDaemon:
         if action == "play":
             path = cmd.get("path", "")
             original_path = path
+            start_time = cmd.get("start_time")
+            end_time   = cmd.get("end_time")
             if not path:
                 return
             if self._mpv_dead or self._mpv is None:
@@ -338,21 +372,57 @@ class MPVDaemon:
                     if cached and (time.monotonic() - cached[1]) < 14400:
                         path = cached[0]
                         logger.info("YouTube URL resolvida via cache: %s", original_path)
+                    elif original_path in self._yt_resolving:
+                        logger.info("Aguardando prefetch em andamento para: %s", original_path)
+                        try:
+                            path = await self._yt_resolving[original_path]
+                        except Exception as exc:
+                            logger.error("Prefetch falhou: %s", exc)
+                            await self._broadcast({"event": "end-file", "reason": "error"})
+                            return
                     else:
                         if cached:
                             del self._yt_cache[original_path]
+                        task = asyncio.ensure_future(self._prefetch_yt_bg(original_path))
+                        self._yt_resolving[original_path] = task
                         try:
-                            path = await asyncio.get_event_loop().run_in_executor(
-                                None, _resolve_yt_stream, original_path
-                            )
-                            logger.info("YouTube stream resolvido: %s", original_path)
+                            t0 = time.monotonic()
+                            path = await task
+                            logger.info("YouTube stream resolvido em %.2fs: %s",
+                                        time.monotonic() - t0, original_path)
                         except Exception as exc:
                             logger.error("Falha ao resolver YouTube URL: %s", exc)
                             await self._broadcast({"event": "end-file", "reason": "error"})
                             return
-                self._mpv.command("loadfile", path, "replace")
+                    # Verifica se MPV já transitou automaticamente para o HLS appendado
+                    appended = self._yt_appended.pop(original_path, None)
+                    if appended and appended[0] == path and (time.monotonic() - appended[1]) < 300:
+                        try:
+                            cur = self._mpv.path
+                        except Exception:
+                            cur = None
+                        if cur == path:
+                            self._mpv.pause = False
+                            self._write_checkpoint(original_path)
+                            logger.info("play (MPV já em HLS, sem loadfile): %s", original_path)
+                            self._stop_vu()
+                            self._vu_task = asyncio.ensure_future(self._audio_level_task())
+                            return
+                opts_parts = []
+                if not _is_youtube_url(original_path):
+                    if start_time: opts_parts.append(f"start={start_time}")
+                    if end_time:   opts_parts.append(f"end={end_time}")
+                if opts_parts:
+                    self._mpv.command("loadfile", path, "replace", 0, ",".join(opts_parts))
+                else:
+                    self._mpv.command("loadfile", path, "replace")
+                self._mpv.pause = False
                 self._write_checkpoint(original_path)
-                logger.info("play: %s", original_path)
+                logger.info("play: %s%s", original_path,
+                            f" [trim {start_time}–{end_time}]" if opts_parts else "")
+                self._stop_vu()
+                if _is_youtube_url(original_path):
+                    self._vu_task = asyncio.ensure_future(self._audio_level_task())
 
         elif action == "preload":
             path = cmd.get("path", "")
@@ -364,8 +434,10 @@ class MPVDaemon:
             url = cmd.get("path", "")
             if url and _is_youtube_url(url):
                 cached = self._yt_cache.get(url)
-                if not cached or (time.monotonic() - cached[1]) >= 14400:
-                    asyncio.ensure_future(self._prefetch_yt_bg(url))
+                already_fresh = cached and (time.monotonic() - cached[1]) < 14400
+                if not already_fresh and url not in self._yt_resolving:
+                    task = asyncio.ensure_future(self._prefetch_yt_bg(url))
+                    self._yt_resolving[url] = task
                     logger.info("prefetch_yt solicitado: %s", url)
 
         elif action == "init_mpv":
@@ -401,6 +473,7 @@ class MPVDaemon:
 
         elif action == "stop":
             if self._mpv and not self._mpv_dead:
+                self._stop_vu()
                 self._mpv.command("stop")
                 for slot in (1, 2, 3):
                     try:
@@ -530,16 +603,39 @@ class MPVDaemon:
 
     # ── Tarefas assíncronas ───────────────────────────────────────────────────
 
-    async def _prefetch_yt_bg(self, url: str):
-        """Resolve URL do YouTube em background e guarda no cache para uso imediato."""
+    def _try_append_hls(self, original_url: str, hls_url: str):
+        """Appenda HLS na fila do MPV para pré-bufferizar enquanto o clipe atual toca."""
+        if not self._mpv or self._mpv_dead:
+            return
         try:
+            current = self._mpv.path
+        except Exception:
+            return
+        if current is None:
+            return
+        # Não appenda se MPV já está em live (evita live→live com append desnecessário)
+        if "googlevideo" in current or _is_youtube_url(current):
+            return
+        self._mpv.command("loadfile", hls_url, "append")
+        self._yt_appended[original_url] = (hls_url, time.monotonic())
+        logger.info("HLS appendado para pré-bufferização: %s", original_url)
+
+    async def _prefetch_yt_bg(self, url: str) -> str:
+        try:
+            t0 = time.monotonic()
             resolved = await asyncio.get_event_loop().run_in_executor(
                 None, _resolve_yt_stream, url
             )
+            elapsed = time.monotonic() - t0
             self._yt_cache[url] = (resolved, time.monotonic())
-            logger.info("YouTube URL pré-resolvida (cache pronto): %s", url)
+            logger.info("YouTube URL pré-resolvida em %.2fs: %s", elapsed, url)
+            self._try_append_hls(url, resolved)
+            return resolved
         except Exception as exc:
             logger.warning("Falha no prefetch de YouTube URL: %s", exc)
+            raise
+        finally:
+            self._yt_resolving.pop(url, None)
 
     async def _checkpoint_task(self):
         # Primeiros dois flushes em 1s e 2s para cobrir crashes logo no início do clipe

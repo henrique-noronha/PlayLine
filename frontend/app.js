@@ -75,6 +75,9 @@ function handleEvent(ev) {
     case "state":
       applyState(ev);
       break;
+    case "audio_level":
+      _vuBackendDb = typeof ev.db === "number" ? ev.db : null;
+      break;
     case "mpv_closed":
       state.mpvAlive = false;
       break;
@@ -136,6 +139,7 @@ function handleEvent(ev) {
       video.play().catch(() => {});
       break;
     case "stopped":
+      _vuBackendDb = null;
       _cancelPendingLoad();
       state.playing = false;
       state.paused = false;
@@ -492,6 +496,8 @@ function _sendLogo(slot) {
 
 // ── VU Meter ─────────────────────────────────────────────────────────────────
 
+let _vuBackendDb = null;  // nível fornecido pelo daemon (live streams)
+
 const VU_MIN  = -40;   // dBFS mínimo do meter
 const VU_MAX  =  3;    // dBFS máximo (iguala o slider)
 const VU_SEGS = 30;    // nº de segmentos LED
@@ -549,14 +555,20 @@ function _vuFrame() {
     canvas.width = canvas.offsetWidth;
   }
 
-  if (!_vuReady || !_vuAnalyser) { _vuDraw(VU_MIN); return; }
-
-  _vuAnalyser.getFloatTimeDomainData(_vuBuf);
-  let sum = 0;
-  for (let i = 0; i < _vuBuf.length; i++) sum += _vuBuf[i] * _vuBuf[i];
-  const rms = Math.sqrt(sum / _vuBuf.length);
-  const sigDb = 20 * Math.log10(Math.max(rms, 1e-10));
-  const outDb = _muted ? VU_MIN : Math.min(VU_MAX, sigDb + _volDb);
+  let outDb;
+  if (_vuBackendDb !== null) {
+    outDb = _muted ? VU_MIN : Math.min(VU_MAX, _vuBackendDb + _volDb);
+  } else if (!_vuReady || !_vuAnalyser) {
+    _vuDraw(VU_MIN);
+    return;
+  } else {
+    _vuAnalyser.getFloatTimeDomainData(_vuBuf);
+    let sum = 0;
+    for (let i = 0; i < _vuBuf.length; i++) sum += _vuBuf[i] * _vuBuf[i];
+    const rms = Math.sqrt(sum / _vuBuf.length);
+    const sigDb = 20 * Math.log10(Math.max(rms, 1e-10));
+    outDb = _muted ? VU_MIN : Math.min(VU_MAX, sigDb + _volDb);
+  }
 
   const now = performance.now();
   if (outDb > _vuPeakDb) { _vuPeakDb = outDb; _vuPeakTil = now + VU_HOLD; }

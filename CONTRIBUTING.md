@@ -65,5 +65,5 @@ Abra uma Issue no GitHub descrevendo:
 CONTATO
 
   PlayLine — Henrique Noronha Fernandes
-  henriquenoronha020@gmail.com
+  playline.suporte@gmail.com
   https://github.com/henrique-noronha/playline
