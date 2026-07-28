@@ -41,6 +41,7 @@ class PlaylistEngine:
         except (FileNotFoundError, json.JSONDecodeError) as exc:
             logger.error("Falha ao carregar roteiro: %s", exc)
             self._items = []
+        self._maybe_prefetch_yt()
         return self._items
 
     def save_schedule(self, items: list[dict], from_ui: bool = False):
@@ -65,9 +66,19 @@ class PlaylistEngine:
             json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8"
         )
         logger.info("Roteiro salvo: %d itens", len(items))
+        self._maybe_prefetch_yt()
 
     def get_schedule(self) -> list[dict]:
         return self._items
+
+    def _maybe_prefetch_yt(self):
+        """Pré-resolve todas as URLs YouTube live do roteiro.
+        O daemon deduplica: ignora URLs já em cache ou com resolução em andamento.
+        """
+        for item in self._items:
+            if item.get("live") and item.get("path"):
+                self._player.prefetch_yt(item["path"])
+                logger.debug("Prefetch YouTube: %s", item["path"])
 
     def _read_checkpoint(self) -> Optional[dict]:
         try:
@@ -204,24 +215,34 @@ class PlaylistEngine:
                 # Não chama player.play() para não interromper a reprodução
                 logger.info("MPV já está em transição para: %s", item["path"])
             else:
-                self._player.play(item["path"])
+                self._player.play(
+                    item["path"],
+                    start_time=item.get("start_time"),
+                    end_time=item.get("end_time"),
+                )
 
             self._preloading = False
 
             # Pré-carrega o próximo vídeo na fila do MPV para transição sem flash.
-            # Live streams não são pré-carregados (duração indeterminada), mas
-            # a URL YouTube é pré-resolvida em background para eliminar o delay do yt-dlp.
-            if not item.get("live") and index + 1 < len(self._items):
+            # Live streams e clipes com corte não são pré-carregados.
+            # A URL YouTube é pré-resolvida em background para eliminar o delay do yt-dlp.
+            if index + 1 < len(self._items):
                 next_item = self._items[index + 1]
-                if next_item.get("path") and not next_item.get("live"):
+                item_has_trim = item.get("start_time") or item.get("end_time")
+                next_has_trim = next_item.get("start_time") or next_item.get("end_time")
+                if (not item.get("live") and next_item.get("path")
+                        and not next_item.get("live")
+                        and not item_has_trim and not next_has_trim):
                     self._player.preload(next_item["path"])
                     self._preloading = True
                 elif next_item.get("live") and next_item.get("path"):
+                    # Prefetch para qualquer → live (cobre regular→live e live→live)
                     self._player.prefetch_yt(next_item["path"])
 
-            # Retoma posição do checkpoint se for a primeira reprodução após reinício
+            # Retoma posição do checkpoint se for a primeira reprodução após reinício.
+            # Pula se o clipe tem start_time explícito (posição já definida pelo trim).
             cp = self._read_checkpoint()
-            if cp and cp.get("path") == item["path"]:
+            if cp and cp.get("path") == item["path"] and not item.get("start_time"):
                 pos = cp.get("position", 0.0)
                 if pos > 2.0:
                     asyncio.ensure_future(self._deferred_seek(pos, item["path"]))

@@ -1,0 +1,116 @@
+2026-07-28 09:37:22,243 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-28 09:37:22,280 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-28 09:37:22,367 INFO: MPV inicializado
+2026-07-28 09:37:22,367 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 20576
+2026-07-28 09:37:22,426 INFO: Cliente conectado: ('127.0.0.1', 59494)
+2026-07-28 09:37:22,439 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:37:22,724 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=xf9Ejt4OmWQ url=https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:37:23,043 WARNING: InnerTube playabilityStatus=LOGIN_REQUIRED (Faça login para confirmar que você não é um bot)
+2026-07-28 09:37:23,043 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.32s — caindo no yt-dlp
+2026-07-28 09:37:25,025 INFO: [DIAGNÓSTICO] yt-dlp concluído em 1.98s
+2026-07-28 09:37:25,026 INFO: YouTube URL pré-resolvida em 2.59s: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:37:25,026 INFO: HLS pré-bufferizado em MPV pausado: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:37:28,373 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-28 09:38:20,199 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 09:38:20,310 INFO: end-file reason=stop
+2026-07-28 09:38:29,456 INFO: end-file reason=eof
+2026-07-28 09:38:29,536 INFO: HLS (cache) pré-bufferizado em MPV pausado: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:38:29,537 INFO: HLS pré-bufferizado: iniciando sem delay: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:38:40,339 INFO: end-file reason=stop
+2026-07-28 09:44:27,850 INFO: Cliente desconectado: ('127.0.0.1', 59494)
+2026-07-28 09:44:54,785 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-28 09:44:54,808 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-28 09:44:54,905 INFO: MPV inicializado
+2026-07-28 09:44:54,906 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 2864
+2026-07-28 09:44:54,956 INFO: Cliente conectado: ('127.0.0.1', 54998)
+2026-07-28 09:44:54,957 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:44:55,205 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=xf9Ejt4OmWQ url=https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:44:55,527 WARNING: InnerTube playabilityStatus=LOGIN_REQUIRED (Faça login para confirmar que você não é um bot)
+2026-07-28 09:44:55,527 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.32s — caindo no yt-dlp
+2026-07-28 09:44:57,600 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.07s
+2026-07-28 09:44:57,600 INFO: YouTube URL pré-resolvida em 2.64s: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:44:57,610 INFO: Relay ffmpeg iniciado (porta=61768): https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:45:35,882 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 09:45:35,883 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 09:45:35,953 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-28 09:45:45,368 INFO: end-file reason=eof
+2026-07-28 09:45:54,267 INFO: end-file reason=eof
+2026-07-28 09:45:54,285 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:45:54,285 INFO: Relay ffmpeg usado (porta=61768, idade=56.7s): https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:45:54,287 INFO: play: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:46:20,846 INFO: end-file reason=stop
+2026-07-28 09:46:59,159 INFO: Cliente desconectado: ('127.0.0.1', 54998)
+2026-07-28 09:53:21,528 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-28 09:53:21,558 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-28 09:53:21,660 INFO: MPV inicializado
+2026-07-28 09:53:21,661 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 2144
+2026-07-28 09:53:22,018 INFO: Cliente conectado: ('127.0.0.1', 54973)
+2026-07-28 09:53:22,020 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:53:22,275 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=xf9Ejt4OmWQ url=https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:53:22,564 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-07-28 09:53:22,825 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-07-28 09:53:22,825 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.55s — caindo no yt-dlp
+2026-07-28 09:53:24,839 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.01s
+2026-07-28 09:53:24,840 INFO: YouTube URL pré-resolvida em 2.82s: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:53:24,845 INFO: Relay ffmpeg iniciado (porta=50569): https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:53:52,546 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 09:53:52,547 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 09:53:52,561 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-28 09:54:02,077 INFO: end-file reason=eof
+2026-07-28 09:54:10,978 INFO: end-file reason=eof
+2026-07-28 09:54:10,996 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:54:10,996 INFO: Relay ffmpeg usado (porta=50569, idade=46.2s): https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:54:11,006 INFO: play: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 09:54:29,917 INFO: end-file reason=stop
+2026-07-28 09:55:22,655 INFO: Cliente desconectado: ('127.0.0.1', 54973)
+2026-07-28 10:01:52,538 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-28 10:01:52,561 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-28 10:01:52,661 INFO: MPV inicializado
+2026-07-28 10:01:52,662 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 19944
+2026-07-28 10:01:52,676 INFO: Cliente conectado: ('127.0.0.1', 49283)
+2026-07-28 10:01:52,691 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:01:52,940 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=xf9Ejt4OmWQ url=https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:01:53,380 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-07-28 10:01:53,640 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-07-28 10:01:53,640 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.70s — caindo no yt-dlp
+2026-07-28 10:01:55,989 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.35s
+2026-07-28 10:01:55,989 INFO: YouTube URL pré-resolvida em 3.30s: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:02:28,324 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 10:02:28,325 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 10:02:28,378 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-28 10:02:37,653 INFO: end-file reason=eof
+2026-07-28 10:02:46,717 INFO: end-file reason=eof
+2026-07-28 10:02:46,733 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:02:46,806 INFO: play: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:03:06,704 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 10:03:06,773 INFO: end-file reason=stop
+2026-07-28 10:03:15,873 INFO: end-file reason=eof
+2026-07-28 10:03:15,904 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 10:03:15,905 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 10:03:24,864 INFO: end-file reason=eof
+2026-07-28 10:03:33,745 INFO: end-file reason=eof
+2026-07-28 10:03:33,871 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:03:33,873 INFO: play: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:03:39,420 INFO: end-file reason=stop
+2026-07-28 10:03:47,555 INFO: Cliente desconectado: ('127.0.0.1', 49283)
+2026-07-28 10:24:03,947 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-28 10:24:04,225 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-28 10:24:04,350 INFO: MPV inicializado
+2026-07-28 10:24:04,351 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 21668
+2026-07-28 10:24:04,487 INFO: Cliente conectado: ('127.0.0.1', 55408)
+2026-07-28 10:24:04,496 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:24:04,907 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=xf9Ejt4OmWQ url=https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:24:05,226 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-07-28 10:24:05,472 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-07-28 10:24:05,473 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.57s — caindo no yt-dlp
+2026-07-28 10:24:07,802 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.33s
+2026-07-28 10:24:07,802 INFO: YouTube URL pré-resolvida em 3.31s: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:24:51,459 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 10:24:51,459 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-07-28 10:24:51,579 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-28 10:25:01,134 INFO: end-file reason=eof
+2026-07-28 10:25:10,187 INFO: end-file reason=eof
+2026-07-28 10:25:10,202 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:25:10,215 INFO: play: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
+2026-07-28 10:25:56,556 INFO: end-file reason=stop
+2026-07-28 10:29:32,621 INFO: Cliente desconectado: ('127.0.0.1', 55408)

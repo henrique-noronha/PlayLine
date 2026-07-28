@@ -169,8 +169,11 @@ class Player:
 
     # API pública                                                          #
 
-    def play(self, path: str):
-        self._send({"action": "play", "path": path})
+    def play(self, path: str, start_time=None, end_time=None):
+        msg: dict = {"action": "play", "path": path}
+        if start_time: msg["start_time"] = start_time
+        if end_time:   msg["end_time"]   = end_time
+        self._send(msg)
         logger.info("Reproduzindo: %s", path)
 
     def preload(self, path: str):

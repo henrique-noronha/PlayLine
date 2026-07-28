@@ -21,6 +21,37 @@ let selectedScheduleIds = new Set();
 
 const THUMB_PREFIX = "playline_thumb:";
 
+function parseTime(str) {
+  if (!str || !str.trim()) return null;
+  const parts = str.trim().split(":").map(Number);
+  if (parts.some(isNaN)) return null;
+  if (parts.length === 1) return parts[0];
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  return parts[0] * 3600 + parts[1] * 60 + (parts[2] || 0);
+}
+
+function fmtSec(secs) {
+  if (secs == null || secs < 0) return "";
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = Math.floor(secs % 60);
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+function effectiveDuration(item) {
+  const dur = item.duration || 0;
+  if (!dur || item.live) return dur;
+  const start = item.start_time > 0 ? item.start_time : 0;
+  const end   = item.end_time   > 0 ? item.end_time   : dur;
+  return Math.max(0, end - start);
+}
+
+function hasTrim(item) {
+  return !item.live && (item.start_time > 0 ||
+    (item.end_time > 0 && item.end_time < (item.duration || Infinity)));
+}
+
 function updateScheduleSelectionUI() {
   // Menu "···" com opções do roteiro
   let btnMenu = document.getElementById("btn-schedule-menu");
@@ -281,10 +312,10 @@ function calcStartTimes() {
   for (let i = idx + 1; i < n; i++) {
     const prev = state.schedule[i - 1];
     if (prev.live) break;
-    times[i] = new Date(times[i - 1].getTime() + (prev.duration || 0) * 1000);
+    times[i] = new Date(times[i - 1].getTime() + effectiveDuration(prev) * 1000);
   }
   for (let i = idx - 1; i >= 0; i--) {
-    times[i] = new Date(times[i + 1].getTime() - (state.schedule[i].duration || 0) * 1000);
+    times[i] = new Date(times[i + 1].getTime() - effectiveDuration(state.schedule[i]) * 1000);
   }
   return times;
 }
@@ -296,7 +327,7 @@ function calcRemaining() {
   if (currentItem?.live) return 0;
   const total = state.schedule.slice(state.currentIndex).reduce((s, it) => {
     if (it.live) return s; // para de somar ao encontrar um live
-    return s + (it.duration || 0);
+    return s + effectiveDuration(it);
   }, 0);
   if (!state.currentItemStartTime) return total;
   const pausedMs = (state.totalPausedMs || 0) + (state.pausedAt ? Date.now() - state.pausedAt : 0);
@@ -404,7 +435,8 @@ function renderSchedule() {
     row.className = "schedule-item"
       + (i === state.currentIndex ? " active" : "")
       + (isLocked ? " locked" : "")
-      + (item.clip_overlays ? " has-clip-overlays" : "");
+      + (item.clip_overlays ? " has-clip-overlays" : "")
+      + (hasTrim(item) ? " has-trim" : "");
     row.dataset.index = i;
     row.setAttribute("draggable", isLocked ? "false" : "true");
 
@@ -419,7 +451,7 @@ function renderSchedule() {
       <div class="item-time">
         <span class="item-start" data-idx="${i}">${fmtTime(startTimes[i])}</span>
         <span class="item-date ${isToday(startTimes[i]) ? "" : "future"}" data-idx="${i}">${fmtDate(startTimes[i])}</span>
-        <span class="item-dur${item.live ? ' yt-live-dur' : ''}" data-idx="${i}">${item.live ? 'ao vivo' : (item.duration > 0 ? fmt(item.duration) : "—")}</span>
+        <span class="item-dur${item.live ? ' yt-live-dur' : ''}${hasTrim(item) ? ' trim-active' : ''}" data-idx="${i}">${item.live ? 'ao vivo' : (item.duration > 0 ? (hasTrim(item) ? ('✂ ' + fmt(effectiveDuration(item))) : fmt(item.duration)) : '—')}</span>
       </div>
       <div class="item-actions">
         ${!isLocked ? `<button class="btn-clip-overlay${item.clip_overlays ? ' configured' : ''}" title="Automação de overlays" data-idx="${i}">⚙</button>` : ''}
@@ -475,7 +507,7 @@ function renderSchedule() {
 
     row.querySelector(".btn-clip-overlay")?.addEventListener("click", e => {
       e.stopPropagation();
-      openClipOverlayPanel(item, i, e.currentTarget);
+      openGearMenu(item, i, e.currentTarget);
     });
 
     row.querySelector(".btn-delete").addEventListener("click", e => {
@@ -785,6 +817,199 @@ function openClipOverlayPanel(item, idx, anchorEl) {
   const rect = anchorEl.getBoundingClientRect();
   let left = rect.left - W - 6;
   let top  = rect.top;
+  if (left < 4) left = rect.right + 6;
+  if (top + H > window.innerHeight - 8) top = window.innerHeight - H - 8;
+  if (top < 4) top = 4;
+  el.style.left = left + "px";
+  el.style.top  = top  + "px";
+}
+
+// ── Gear menu (dropdown do botão ⚙) ──────────────────────────────────────────
+
+let _gd = null;
+let _gdItem = null, _gdIdx = null, _gdAnchor = null;
+
+function _closeGd() {
+  if (_gd) _gd.style.display = "none";
+  _gdItem = null; _gdIdx = null; _gdAnchor = null;
+}
+
+function _getOrCreateGd() {
+  if (_gd) return _gd;
+  const el = document.createElement("div");
+  el.id = "gear-dropdown";
+  el.className = "gear-dropdown";
+  el.style.display = "none";
+  el.innerHTML = `
+    <div class="gear-item" id="gd-overlays">⊡ Automação de overlays</div>
+    <div class="gear-sep"></div>
+    <div class="gear-item" id="gd-trim">✂ Recorte de clipe</div>
+  `;
+  document.body.appendChild(el);
+  _gd = el;
+  el.addEventListener("click", e => e.stopPropagation());
+  document.addEventListener("click", _closeGd);
+
+  el.querySelector("#gd-overlays").addEventListener("click", () => {
+    const item = _gdItem, idx = _gdIdx, anchor = _gdAnchor;
+    _closeGd();
+    if (idx !== null) openClipOverlayPanel(item, idx, anchor);
+  });
+  el.querySelector("#gd-trim").addEventListener("click", () => {
+    if (el.querySelector("#gd-trim").classList.contains("disabled")) return;
+    const item = _gdItem, idx = _gdIdx, anchor = _gdAnchor;
+    _closeGd();
+    if (idx !== null) openClipTrimPanel(item, idx, anchor);
+  });
+  return el;
+}
+
+function openGearMenu(item, idx, anchorEl) {
+  const el = _getOrCreateGd();
+  _gdItem = item; _gdIdx = idx; _gdAnchor = anchorEl;
+  el.querySelector("#gd-overlays").classList.toggle("active", !!item.clip_overlays);
+  el.querySelector("#gd-trim").classList.toggle("active", hasTrim(item));
+  el.querySelector("#gd-trim").classList.toggle("disabled", !!item.live);
+  el.style.display = "block";
+  const W = el.offsetWidth, H = el.offsetHeight;
+  const rect = anchorEl.getBoundingClientRect();
+  let left = rect.left - W - 6, top = rect.top;
+  if (left < 4) left = rect.right + 6;
+  if (top + H > window.innerHeight - 8) top = window.innerHeight - H - 8;
+  if (top < 4) top = 4;
+  el.style.left = left + "px";
+  el.style.top  = top  + "px";
+}
+
+// ── Popup de recorte de clipe ─────────────────────────────────────────────────
+
+let _ct = null;
+let _ctIdx = null;
+
+function _closeCt() {
+  if (_ct) _ct.style.display = "none";
+  _ctIdx = null;
+}
+
+function _ctGetOrCreate() {
+  if (_ct) return _ct;
+  const el = document.createElement("div");
+  el.id = "ct-popup";
+  el.className = "ct-popup";
+  el.style.display = "none";
+  el.innerHTML = `
+    <div class="ct-header">
+      <span>✂ Recorte de clipe</span>
+      <button id="ct-close" class="ct-close-btn">✕</button>
+    </div>
+    <div class="ct-body">
+      <div class="ct-row">
+        <label class="ct-lbl">Início</label>
+        <input id="ct-start-inp" class="ct-inp" type="text" placeholder="0:00" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="ct-row">
+        <label class="ct-lbl">Fim</label>
+        <input id="ct-end-inp" class="ct-inp" type="text" placeholder="duração total" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="ct-dur-row">
+        <span class="ct-dur-lbl">Duração efetiva</span>
+        <span id="ct-eff-dur" class="ct-eff-dur">—</span>
+      </div>
+      <button id="ct-clear-btn" class="ct-clear-btn">Limpar recorte</button>
+    </div>
+  `;
+  document.body.appendChild(el);
+  _ct = el;
+  el.addEventListener("click", e => e.stopPropagation());
+  document.addEventListener("click", _closeCt);
+  el.querySelector("#ct-close").addEventListener("click", _closeCt);
+
+  const startInp = el.querySelector("#ct-start-inp");
+  const endInp   = el.querySelector("#ct-end-inp");
+  const effDur   = el.querySelector("#ct-eff-dur");
+
+  function calcEff() {
+    if (_ctIdx === null) return null;
+    const item = state.schedule[_ctIdx];
+    if (!item || !item.duration) return null;
+    const s  = parseTime(startInp.value);
+    const e2 = parseTime(endInp.value);
+    const st = s  != null && s  > 0 ? s  : 0;
+    const en = e2 != null && e2 > 0 ? e2 : item.duration;
+    return Math.max(0, en - st);
+  }
+
+  function refreshEffDur() {
+    const eff = calcEff();
+    effDur.textContent = eff != null ? fmt(eff) : "—";
+  }
+
+  function commit() {
+    if (_ctIdx === null) return;
+    const item = state.schedule[_ctIdx];
+    if (!item) return;
+    const s  = parseTime(startInp.value);
+    const e2 = parseTime(endInp.value);
+    if (s != null && s > 0) item.start_time = s; else delete item.start_time;
+    if (e2 != null && e2 > 0 && e2 < (item.duration || Infinity)) item.end_time = e2;
+    else delete item.end_time;
+    _ctMarkRow(_ctIdx);
+    updateStartTimes();
+    syncOrderToServer();
+  }
+
+  startInp.addEventListener("change", () => { commit(); refreshEffDur(); });
+  endInp.addEventListener("change",   () => { commit(); refreshEffDur(); });
+  startInp.addEventListener("input", refreshEffDur);
+  endInp.addEventListener("input",   refreshEffDur);
+
+  el.querySelector("#ct-clear-btn").addEventListener("click", () => {
+    if (_ctIdx === null) return;
+    const item = state.schedule[_ctIdx];
+    if (!item) return;
+    delete item.start_time; delete item.end_time;
+    startInp.value = ""; endInp.value = "";
+    effDur.textContent = item.duration > 0 ? fmt(item.duration) : "—";
+    _ctMarkRow(_ctIdx);
+    updateStartTimes();
+    syncOrderToServer();
+  });
+
+  return el;
+}
+
+function _ctMarkRow(idx) {
+  const row  = document.querySelector(`.schedule-item[data-index="${idx}"]`);
+  const item = idx !== null ? state.schedule[idx] : null;
+  if (!row || !item) return;
+  const trimOn = hasTrim(item);
+  row.classList.toggle("has-trim", trimOn);
+  const durEl = row.querySelector(`.item-dur[data-idx="${idx}"]`);
+  if (durEl && item.duration > 0 && !item.live) {
+    durEl.className = `item-dur${trimOn ? ' trim-active' : ''}`;
+    durEl.textContent = trimOn ? ('✂ ' + fmt(effectiveDuration(item))) : fmt(item.duration);
+  }
+  // Atualiza indicador no gear menu caso ainda esteja aberto
+  if (_gd && _gdIdx === idx) {
+    _gd.querySelector("#gd-trim").classList.toggle("active", trimOn);
+  }
+}
+
+function openClipTrimPanel(item, idx, anchorEl) {
+  const el = _ctGetOrCreate();
+  _ctIdx = idx;
+  const startInp = el.querySelector("#ct-start-inp");
+  const endInp   = el.querySelector("#ct-end-inp");
+  const effDur   = el.querySelector("#ct-eff-dur");
+  startInp.value = item.start_time > 0 ? fmtSec(item.start_time) : "";
+  endInp.value   = item.end_time   > 0 ? fmtSec(item.end_time)   : "";
+  endInp.placeholder = item.duration > 0 ? fmtSec(item.duration) : "duração total";
+  const eff = effectiveDuration(item);
+  effDur.textContent = item.duration > 0 ? fmt(eff) : "—";
+  el.style.display = "block";
+  const W = 224, H = el.offsetHeight;
+  const rect = anchorEl.getBoundingClientRect();
+  let left = rect.left - W - 6, top = rect.top;
   if (left < 4) left = rect.right + 6;
   if (top + H > window.innerHeight - 8) top = window.innerHeight - H - 8;
   if (top < 4) top = 4;
