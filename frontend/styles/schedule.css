@@ -62,12 +62,17 @@
 #schedule-menu-dropdown.open { display: block; }
 
 .sch-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 14px;
   font-size: 13px;
   cursor: pointer;
   color: var(--text);
   transition: background .1s;
+  user-select: none;
 }
+.sch-menu-item svg { flex-shrink: 0; opacity: .75; }
 .sch-menu-item:hover { background: var(--surface2); }
 .sch-menu-separator { height: 1px; background: var(--border); margin: 4px 0; }
 #sch-menu-clear { color: var(--danger); }
@@ -193,6 +198,19 @@
   font-size: 14px;
   text-align: center;
   line-height: 1;
+  user-select: none;
+}
+
+@media (pointer: coarse) {
+  .item-drag {
+    font-size: 18px;
+    padding: 6px 6px;
+  }
+
+  .schedule-item {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+  }
 }
 
 .item-index {
@@ -610,6 +628,7 @@
   transition: border-color .15s;
 }
 .ct-inp:focus { border-color: var(--accent); }
+.ct-inp.ct-inp-error { border-color: var(--danger); box-shadow: 0 0 0 2px rgba(239,68,68,.15); }
 .ct-inp::placeholder { color: var(--muted); opacity: 0.55; }
 
 .ct-dur-row {
@@ -641,3 +660,4 @@
   color: var(--text);
   border-color: var(--muted);
 }
+

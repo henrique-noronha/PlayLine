@@ -5,6 +5,14 @@ let currentLibFiles   = [];
 let _libCurrentFolder = "";
 let _libSearchQuery   = "";
 
+const _isTouch = window.matchMedia("(pointer: coarse)").matches;
+
+const _AUDIO_EXTS = new Set([".mp3", ".wav", ".aac", ".m4a"]);
+function _isAudio(path) {
+  const ext = path.slice(path.lastIndexOf(".")).toLowerCase();
+  return _AUDIO_EXTS.has(ext);
+}
+
 // ── Abas de subpastas ────────────────────────────────────────────────────────
 
 async function loadLibraryFolders() {
@@ -139,29 +147,57 @@ async function loadLibraryFiles(subfolder) {
       const item = document.createElement("div");
       item.className = "lib-item";
       item.setAttribute("draggable", "true");
-      item.innerHTML = `<img class="lib-thumb" draggable="false" src="" alt="" /><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span>`;
+      const audio = _isAudio(file.path);
+      item.innerHTML = audio
+        ? `<div class="lib-audio-thumb">♪</div><span class="lib-audio-badge">áudio</span><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span><button class="lib-add-btn" title="Adicionar ao roteiro">+</button>`
+        : `<img class="lib-thumb" draggable="false" src="" alt="" /><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span><button class="lib-add-btn" title="Adicionar ao roteiro">+</button>`;
       list.appendChild(item);
 
-      generateThumb(file.path, item.querySelector(".lib-thumb"));
+      if (!audio) generateThumb(file.path, item.querySelector(".lib-thumb"));
 
       const durSpan = item.querySelector(".lib-dur");
       const dv = document.createElement("video");
       dv.muted = true; dv.preload = "metadata";
       dv.addEventListener("loadedmetadata", () => { durSpan.textContent = fmt(Math.round(dv.duration)); dv.src = ""; }, { once: true });
-      dv.addEventListener("error",          () => { dv.src = ""; }, { once: true });
+      dv.addEventListener("error", () => { dv.src = ""; }, { once: true });
       dv.src = "/media?path=" + encodeURIComponent(file.path);
 
+      // Botão "+" — adiciona direto ao roteiro (visível só em touch via CSS)
+      item.querySelector(".lib-add-btn").addEventListener("click", e => {
+        e.stopPropagation();
+        const now = Date.now();
+        state.schedule.push({ id: `item-${now}`, title: file.name, path: file.path, duration: 0 });
+        renderSchedule();
+        syncOrderToServer();
+        item.classList.add("lib-added");
+        setTimeout(() => item.classList.remove("lib-added"), 700);
+        if (audio) showToast("♪ Arquivo de áudio — sem imagem no roteiro", "warn");
+      });
+
       item.addEventListener("click", e => {
-        if (!(e.ctrlKey || e.metaKey)) return;
-        e.preventDefault();
-        if (selectedLibPaths.has(file.path)) {
-          selectedLibPaths.delete(file.path);
-          item.classList.remove("selected");
+        if (_isTouch) {
+          // Touch: toque simples alterna seleção (sem precisar de Ctrl)
+          if (selectedLibPaths.has(file.path)) {
+            selectedLibPaths.delete(file.path);
+            item.classList.remove("selected");
+          } else {
+            selectedLibPaths.add(file.path);
+            item.classList.add("selected");
+          }
+          _updateLibSelectionUI();
         } else {
-          selectedLibPaths.add(file.path);
-          item.classList.add("selected");
+          // Desktop: requer Ctrl/Meta
+          if (!(e.ctrlKey || e.metaKey)) return;
+          e.preventDefault();
+          if (selectedLibPaths.has(file.path)) {
+            selectedLibPaths.delete(file.path);
+            item.classList.remove("selected");
+          } else {
+            selectedLibPaths.add(file.path);
+            item.classList.add("selected");
+          }
+          _updateLibSelectionUI();
         }
-        _updateLibSelectionUI();
       });
 
       item.addEventListener("dragstart", e => {
@@ -207,6 +243,8 @@ function _ensureSelBar(list) {
     });
     renderSchedule();
     syncOrderToServer();
+    const audioCount = toAdd.filter(f => _isAudio(f.path)).length;
+    if (audioCount > 0) showToast(`♪ ${audioCount} arquivo${audioCount > 1 ? "s" : ""} de áudio adicionado${audioCount > 1 ? "s" : ""} — sem imagem no roteiro`, "warn");
     selectedLibPaths.clear();
     document.querySelectorAll(".lib-item.selected").forEach(el => el.classList.remove("selected"));
     _updateLibSelectionUI();

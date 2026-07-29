@@ -20,6 +20,7 @@ let libDragFile = null;
 let selectedScheduleIds = new Set();
 
 const THUMB_PREFIX = "playline_thumb:";
+const invalidPaths = new Set();
 
 function parseTime(str) {
   if (!str || !str.trim()) return null;
@@ -64,11 +65,11 @@ function updateScheduleSelectionUI() {
     const dropdown = document.createElement("div");
     dropdown.id = "schedule-menu-dropdown";
     dropdown.innerHTML = `
-      <div class="sch-menu-item" id="sch-menu-duplicate">⎘ Duplicar roteiro</div>
+      <div class="sch-menu-item" id="sch-menu-duplicate"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Duplicar roteiro</div>
       <div class="sch-menu-separator"></div>
-      <div class="sch-menu-item" id="sch-menu-history">📋 Histórico</div>
+      <div class="sch-menu-item" id="sch-menu-history"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Histórico</div>
       <div class="sch-menu-separator"></div>
-      <div class="sch-menu-item" id="sch-menu-clear">🗑 Limpar roteiro</div>
+      <div class="sch-menu-item" id="sch-menu-clear"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Limpar roteiro</div>
     `;
 
     const wrap = document.createElement("div");
@@ -208,8 +209,7 @@ function generateThumb(path, imgEl) {
   if (entry) {
     if (entry.state === "done")    { imgEl.src = entry.url; return; }
     if (entry.state === "loading") { entry.pending.push(imgEl); return; }
-    // error — não tenta de novo; marca o item como inválido
-    imgEl.closest(".lib-item, .schedule-item")?.classList.add("invalid");
+    // error — não tenta de novo; thumbnail indisponível mas arquivo pode ser válido
     return;
   }
 
@@ -218,7 +218,7 @@ function generateThumb(path, imgEl) {
   if (stored) {
     if (stored === "__error__") {
       thumbCache[path] = { state: "error", url: "", pending: [] };
-      imgEl.closest(".lib-item, .schedule-item")?.classList.add("invalid");
+      // thumbnail indisponível mas não invalida o item
       return;
     }
     thumbCache[path] = { state: "done", url: stored, pending: [] };
@@ -275,9 +275,9 @@ function generateThumb(path, imgEl) {
       })
       .catch(() => {
         cache.state = "error";
-        cache.pending.forEach(el => {
-          el.closest(".lib-item, .schedule-item")?.classList.add("invalid");
-        });
+        // Browser + ffmpeg falharam → arquivo genuinamente ilegível
+        invalidPaths.add(path);
+        cache.pending.forEach(el => el.closest(".lib-item, .schedule-item")?.classList.add("invalid"));
         cache.pending = [];
         thumbToStorage(path, "__error__");
       });
@@ -387,11 +387,16 @@ async function syncOrderToServer() {
   }
 }
 
+const _AUDIO_EXTS_PL = new Set([".mp3", ".wav", ".aac", ".m4a"]);
+
 function addFromLibrary(file, atIndex) {
   const newItem = { id: `item-${Date.now()}`, title: file.name, path: file.path, duration: 0 };
   state.schedule.splice(atIndex, 0, newItem);
   renderSchedule();
   syncOrderToServer();
+  const ext = file.path.slice(file.path.lastIndexOf(".")).toLowerCase();
+  if (_AUDIO_EXTS_PL.has(ext) && typeof showToast === "function")
+    showToast("♪ Arquivo de áudio — sem imagem no roteiro", "warn");
 }
 
 // Renderização                                                         //
@@ -436,7 +441,8 @@ function renderSchedule() {
       + (i === state.currentIndex ? " active" : "")
       + (isLocked ? " locked" : "")
       + (item.clip_overlays ? " has-clip-overlays" : "")
-      + (hasTrim(item) ? " has-trim" : "");
+      + (hasTrim(item) ? " has-trim" : "")
+      + (item.path && invalidPaths.has(item.path) ? " invalid" : "");
     row.dataset.index = i;
     row.setAttribute("draggable", isLocked ? "false" : "true");
 
@@ -473,7 +479,7 @@ function renderSchedule() {
           if (typeof openYtPreview === "function") openYtPreview(item.path, imgEl);
         });
       } else {
-        imgEl.addEventListener("error", () => row.classList.add("invalid"), { once: true });
+        imgEl.addEventListener("error", () => { imgEl.style.visibility = "hidden"; }, { once: true });
         ensureDuration(item.path);
         if (domThumbs[item.path]) {
           imgEl.src = domThumbs[item.path];
@@ -618,6 +624,7 @@ function initDnD(list) {
       renderSchedule();
       syncOrderToServer();
     });
+
   });
 
 }
@@ -942,17 +949,44 @@ function _ctGetOrCreate() {
   function refreshEffDur() {
     const eff = calcEff();
     effDur.textContent = eff != null ? fmt(eff) : "—";
+
+    if (_ctIdx === null) return;
+    const item = state.schedule[_ctIdx];
+    if (!item || !item.duration) return;
+    const dur = item.duration;
+    const s  = parseTime(startInp.value);
+    const e2 = parseTime(endInp.value);
+    const sErr  = s  != null && (s  < 0 || s  >= dur);
+    const eErr  = e2 != null && (e2 <= 0 || e2 >  dur);
+    const st = s  != null && s  > 0 ? s  : 0;
+    const en = e2 != null && e2 > 0 ? e2 : dur;
+    const crossErr = !sErr && !eErr && st >= en;
+    startInp.classList.toggle("ct-inp-error", sErr || crossErr);
+    endInp.classList.toggle("ct-inp-error",   eErr || crossErr);
   }
 
   function commit() {
     if (_ctIdx === null) return;
     const item = state.schedule[_ctIdx];
-    if (!item) return;
-    const s  = parseTime(startInp.value);
-    const e2 = parseTime(endInp.value);
-    if (s != null && s > 0) item.start_time = s; else delete item.start_time;
-    if (e2 != null && e2 > 0 && e2 < (item.duration || Infinity)) item.end_time = e2;
-    else delete item.end_time;
+    if (!item || !item.duration) return;
+    const dur = item.duration;
+
+    let s  = parseTime(startInp.value);
+    let e2 = parseTime(endInp.value);
+
+    // Clampa ao intervalo válido e escreve de volta no campo
+    if (s  != null) { s  = Math.max(0, Math.min(s,  dur)); startInp.value = s  > 0   ? fmtSec(s)  : ""; }
+    if (e2 != null) { e2 = Math.max(0, Math.min(e2, dur)); endInp.value   = e2 < dur ? fmtSec(e2) : ""; }
+
+    const st = s  != null && s  > 0 ? s  : 0;
+    const en = e2 != null && e2 > 0 ? e2 : dur;
+    if (st >= en) return; // configuração inválida: não salva
+
+    startInp.classList.remove("ct-inp-error");
+    endInp.classList.remove("ct-inp-error");
+
+    if (s  != null && s  > 0)   item.start_time = s;  else delete item.start_time;
+    if (e2 != null && e2 < dur) item.end_time   = e2; else delete item.end_time;
     _ctMarkRow(_ctIdx);
     updateStartTimes();
     syncOrderToServer();

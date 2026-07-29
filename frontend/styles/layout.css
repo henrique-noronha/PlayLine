@@ -51,11 +51,9 @@ header {
 /* ── Grid principal ── */
 main {
   display: grid;
-  grid-template-columns: 420px 1fr;
+  grid-template-columns: clamp(380px, 26%, 520px) 1fr;
   gap: 16px;
-  padding: 20px 24px;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 20px clamp(16px, 2vw, 40px);
   align-items: stretch;
 }
 
@@ -97,3 +95,4 @@ main {
   margin-bottom: 14px;
 }
 .library-header h2, .schedule-header h2 { margin-bottom: 0; }
+
