@@ -256,7 +256,7 @@ function _fmtDb(db) {
 }
 
 // Clamp ao novo range caso localStorage tenha valor antigo fora de -10..+3
-_volDb = Math.max(-10, Math.min(3, _volDb));
+_volDb = Math.max(-20, Math.min(6, _volDb));
 _volSlider.value = _volDb;
 _volDisplay.textContent = _fmtDb(_volDb);
 _updateFaderFill(_volSlider);
@@ -396,9 +396,19 @@ function _updatePosSelector(slot) {
   if (!selector) return;
   const corner = _logoState[slot].corner;
 
-  selector.querySelectorAll(".pos-zone").forEach(z =>
-    z.classList.toggle("active", z.dataset.corner === corner)
-  );
+  // Posições ocupadas pela outra logo e pelo texto
+  const blocked = new Set();
+  const other = slot === 1 ? 2 : 1;
+  if (_logoState[other]?.active) blocked.add(_logoState[other].corner);
+  if (typeof _textState !== "undefined" && _textState?.active) blocked.add(_textState.corner);
+
+  selector.querySelectorAll(".pos-zone").forEach(z => {
+    const c = z.dataset.corner;
+    const isBlocked = blocked.has(c);
+    z.classList.toggle("active",  c === corner && !isBlocked);
+    z.classList.toggle("blocked", isBlocked);
+    z.style.pointerEvents = isBlocked ? "none" : "";
+  });
 
   const ind = selector.querySelector(".pos-indicator");
   if (!ind) return;
@@ -428,6 +438,7 @@ function initLogoUI() {
         s.corner = zone.dataset.corner;
         localStorage.setItem(`playline_logo${slot}_corner`, s.corner);
         _updatePosSelector(slot);
+        _updatePosSelector(slot === 1 ? 2 : 1);
         if (s.active) {
           _sendLogo(slot);
           _updateLogoOverlay(slot, s.corner, s.active);
@@ -449,6 +460,7 @@ function initLogoUI() {
         toggle.classList.toggle("active", s.active);
         _sendLogo(slot);
         _updateLogoOverlay(slot, s.corner, s.active);
+        _updatePosSelector(slot === 1 ? 2 : 1);
         if (typeof _updateTextPosSelector === "function") _updateTextPosSelector();
       });
     }
@@ -499,7 +511,7 @@ function _sendLogo(slot) {
 let _vuBackendDb = null;  // nível fornecido pelo daemon (live streams)
 
 const VU_MIN  = -40;   // dBFS mínimo do meter
-const VU_MAX  =  3;    // dBFS máximo (iguala o slider)
+const VU_MAX  =  6;    // dBFS máximo (iguala o slider)
 const VU_SEGS = 30;    // nº de segmentos LED
 const VU_HOLD = 1500;  // ms de peak hold antes do decay
 const VU_DCY  = 0.3;   // dB/frame de decay do peak
@@ -514,10 +526,25 @@ let _vuClipTil   = 0;
 
 function _vuSegColor(i) {
   const p = i / VU_SEGS;
-  if (p < 0.63) return { on: "#22c55e", dim: "rgba(34,197,94,.09)"  };
-  if (p < 0.80) return { on: "#f59e0b", dim: "rgba(245,158,11,.09)" };
-  if (p < 0.92) return { on: "#f97316", dim: "rgba(249,115,22,.09)" };
-  return             { on: "#ef4444", dim: "rgba(239,68,68,.11)"  };
+  if (p < 0.63) return { on: "#22c55e", glow: "rgba(34,197,94,.8)",  dim: "rgba(34,197,94,.07)"  };
+  if (p < 0.80) return { on: "#f59e0b", glow: "rgba(245,158,11,.8)", dim: "rgba(245,158,11,.07)" };
+  if (p < 0.92) return { on: "#f97316", glow: "rgba(249,115,22,.8)", dim: "rgba(249,115,22,.07)" };
+  return             { on: "#ef4444", glow: "rgba(239,68,68,.9)",  dim: "rgba(239,68,68,.09)"  };
+}
+
+function _vuLed(gfx, x, y, w, h, r) {
+  gfx.beginPath();
+  if (gfx.roundRect) { gfx.roundRect(x, y, w, h, r); }
+  else {
+    const c = Math.min(r, w / 2, h / 2);
+    gfx.moveTo(x + c, y);
+    gfx.arcTo(x + w, y, x + w, y + h, c);
+    gfx.arcTo(x + w, y + h, x, y + h, c);
+    gfx.arcTo(x, y + h, x, y, c);
+    gfx.arcTo(x, y, x + w, y, c);
+    gfx.closePath();
+  }
+  gfx.fill();
 }
 
 function _vuDraw(db) {
@@ -525,7 +552,12 @@ function _vuDraw(db) {
   if (!canvas || canvas.width === 0) return;
   const W = canvas.width, H = canvas.height;
   const gfx = canvas.getContext("2d");
-  const segW = Math.max(1, Math.floor((W - VU_SEGS + 1) / VU_SEGS));
+
+  const gap  = 2;
+  const r    = 2;
+  const segW = Math.max(2, Math.floor((W - (VU_SEGS - 1) * gap) / VU_SEGS));
+  const segH = H - 2;
+  const y    = 1;
 
   const active  = Math.max(0, Math.min(VU_SEGS,
     Math.round((db - VU_MIN) / (VU_MAX - VU_MIN) * VU_SEGS)));
@@ -535,16 +567,30 @@ function _vuDraw(db) {
   gfx.clearRect(0, 0, W, H);
 
   for (let i = 0; i < VU_SEGS; i++) {
-    const c = _vuSegColor(i);
-    gfx.fillStyle = i < active ? c.on : c.dim;
-    gfx.fillRect(i * (segW + 1), 0, segW, H);
+    const c  = _vuSegColor(i);
+    const x  = i * (segW + gap);
+    const lit = i < active;
+    if (lit) {
+      gfx.shadowBlur  = 7;
+      gfx.shadowColor = c.glow;
+      gfx.fillStyle   = c.on;
+    } else {
+      gfx.shadowBlur = 0;
+      gfx.fillStyle  = c.dim;
+    }
+    _vuLed(gfx, x, y, segW, segH, r);
   }
 
-  // Peak hold — tick branco, vermelho se em clip
+  // Peak hold
   if (_vuPeakDb > VU_MIN + 2) {
-    gfx.fillStyle = _vuPeakDb >= 0 ? "#ef4444" : "rgba(255,255,255,.85)";
-    gfx.fillRect(peakSeg * (segW + 1), 0, segW, H);
+    const peakColor = _vuPeakDb >= 0 ? "#ef4444" : "rgba(255,255,255,.9)";
+    gfx.shadowBlur  = 10;
+    gfx.shadowColor = peakColor;
+    gfx.fillStyle   = peakColor;
+    _vuLed(gfx, peakSeg * (segW + gap), y, segW, segH, r);
   }
+
+  gfx.shadowBlur = 0;
 }
 
 function _vuFrame() {
@@ -557,7 +603,8 @@ function _vuFrame() {
 
   let outDb;
   if (_vuBackendDb !== null) {
-    outDb = _muted ? VU_MIN : Math.min(VU_MAX, _vuBackendDb + _volDb);
+    // _vuBackendDb já é o nível real pós-volume do Windows Core Audio — não somar _volDb
+    outDb = _muted ? VU_MIN : Math.min(VU_MAX, _vuBackendDb);
   } else if (!_vuReady || !_vuAnalyser) {
     _vuDraw(VU_MIN);
     return;

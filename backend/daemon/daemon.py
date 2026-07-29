@@ -157,7 +157,7 @@ class MPVDaemon:
             log_handler=self._mpv_log,
             loglevel="warn",
             prefetch_playlist=True,
-            volume_max=150,   # permite até ~+3.5 dB (141 = +3 dB)
+            volume_max=200,   # permite até +6 dB (200 = +6 dB)
         )
 
         if has_secondary:
@@ -520,7 +520,7 @@ class MPVDaemon:
             threading.Thread(target=_update, daemon=True).start()
 
         elif action == "set_volume":
-            vol = max(0, min(150, int(cmd.get("volume", 100))))
+            vol = max(0, min(200, int(cmd.get("volume", 100))))
             self._volume = float(vol)   # persiste para reaplicar no reinit
             if self._mpv and not self._mpv_dead:
                 try:

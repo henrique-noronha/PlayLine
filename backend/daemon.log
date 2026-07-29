@@ -114,3 +114,1019 @@
 2026-07-28 10:25:10,215 INFO: play: https://www.youtube.com/watch?v=xf9Ejt4OmWQ
 2026-07-28 10:25:56,556 INFO: end-file reason=stop
 2026-07-28 10:29:32,621 INFO: Cliente desconectado: ('127.0.0.1', 55408)
+2026-07-28 10:40:28,852 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-28 10:40:28,875 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-28 10:40:28,981 INFO: MPV inicializado
+2026-07-28 10:40:28,982 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 12460
+2026-07-28 10:40:29,015 INFO: Cliente conectado: ('127.0.0.1', 53170)
+2026-07-28 10:41:28,778 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4
+2026-07-28 10:41:28,848 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-28 10:41:34,695 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4 [trim 60–None]
+2026-07-28 10:41:34,721 INFO: end-file reason=stop
+2026-07-28 10:41:46,157 INFO: end-file reason=stop
+2026-07-28 10:42:08,097 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4 [trim 60–None]
+2026-07-28 10:42:10,582 INFO: end-file reason=stop
+2026-07-28 10:42:10,582 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\MPE EM AÇÃO 61 BL 3.mp4 [trim 450–480]
+2026-07-28 10:42:40,594 INFO: end-file reason=eof
+2026-07-28 10:42:40,616 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-28 10:42:43,598 INFO: end-file reason=stop
+2026-07-28 10:55:12,413 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-28 10:55:12,414 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-07-28 10:55:24,963 INFO: [weather] OWM: 35.0°C (Palmas, BR)
+2026-07-28 10:55:25,053 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:26,071 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:27,086 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:28,125 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:29,158 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:30,176 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:31,189 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:32,226 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:33,242 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:34,257 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:35,294 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:36,307 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:37,320 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:38,359 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:39,376 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:40,388 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:41,423 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:42,439 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:43,454 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:44,489 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:45,504 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:46,520 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:47,558 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:48,572 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:49,587 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:50,617 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:51,633 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:52,644 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:53,690 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:54,704 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:55,719 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:56,734 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:57,745 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:58,764 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:55:59,788 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:00,805 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:01,842 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:02,859 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:03,873 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:04,886 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:05,919 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:06,935 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:07,948 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:08,989 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:10,008 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:11,023 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:12,046 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:13,084 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:14,099 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:15,117 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:16,133 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:17,148 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:18,161 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:19,174 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:20,216 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:21,250 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:22,269 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:23,281 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:24,298 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:25,312 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:26,332 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:27,348 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:28,363 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:29,376 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:30,388 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:31,401 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:32,412 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:33,427 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:34,482 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:35,500 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:36,514 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:37,530 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:38,547 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:39,563 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:40,577 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:41,593 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:42,607 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:43,638 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:44,653 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:45,667 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:46,683 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:47,716 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:48,730 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:49,745 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:50,773 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:51,814 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:52,827 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:53,840 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:54,856 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:55,869 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:56,885 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:57,896 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:58,910 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:56:59,946 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:00,960 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:01,971 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:02,996 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:04,009 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:05,024 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:06,037 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:07,049 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:08,061 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:09,075 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:10,109 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:11,130 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:12,146 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:13,163 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:14,178 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:15,191 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:16,203 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:17,219 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:18,235 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:19,249 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:20,269 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:21,287 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:22,298 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:23,311 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:24,323 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:25,340 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:26,356 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:27,373 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:28,400 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:29,415 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:30,429 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:31,451 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:32,463 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:33,476 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:34,487 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:35,511 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:36,526 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:37,537 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:38,573 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:39,587 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:40,599 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:41,614 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:42,628 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:43,642 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:44,656 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:45,673 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:46,706 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:47,721 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:48,736 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:49,748 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:50,760 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:51,805 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:52,818 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:53,840 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:54,853 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:55,868 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:56,881 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:57,892 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:58,911 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:57:59,925 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:00,941 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:01,955 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:02,968 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:03,981 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:04,995 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:06,007 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:07,492 INFO: [weather] OWM: 23.2°C (Curitiba, BR)
+2026-07-28 10:58:07,495 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:08,508 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:09,545 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:10,578 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:11,592 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 10:58:12,603 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-28 11:09:33,449 INFO: end-file reason=stop
+2026-07-28 11:09:42,445 INFO: MPV encerrado via terminate()
+2026-07-28 11:17:05,195 INFO: Cliente desconectado: ('127.0.0.1', 53170)
+2026-07-28 11:17:40,262 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-28 11:17:40,285 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-28 11:17:41,589 INFO: MPV inicializado
+2026-07-28 11:17:41,590 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 7188
+2026-07-28 11:17:41,726 INFO: Cliente conectado: ('127.0.0.1', 64097)
+2026-07-28 11:18:24,435 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-28 11:18:24,436 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-07-28 11:18:24,520 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-28 11:20:02,043 INFO: end-file reason=stop
+2026-07-28 11:23:07,696 INFO: Cliente desconectado: ('127.0.0.1', 64097)
+2026-07-28 11:23:13,127 INFO: Cliente conectado: ('127.0.0.1', 55909)
+2026-07-28 11:27:23,133 INFO: Cliente desconectado: ('127.0.0.1', 55909)
+2026-07-28 11:27:31,972 INFO: Cliente conectado: ('127.0.0.1', 53435)
+2026-07-28 11:27:57,300 INFO: Cliente desconectado: ('127.0.0.1', 53435)
+2026-07-28 11:28:01,692 INFO: Cliente conectado: ('127.0.0.1', 61814)
+2026-07-28 11:31:15,331 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-28 11:31:15,331 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-07-28 11:33:00,345 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=bl active=True
+2026-07-28 11:33:00,346 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-28 11:33:00,346 INFO: [overlay] dimensões OSD: 380x213
+2026-07-28 11:33:00,346 INFO: [overlay] slot=1 active=False filename=''
+2026-07-28 11:33:00,346 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-28 11:33:00,350 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:00,364 INFO: [overlay] slot=2 OK pos=(15,174) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:06,401 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=bl active=True
+2026-07-28 11:33:06,402 INFO: [set_logo] estado: {1: {'corner': 'bl', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-28 11:33:06,402 INFO: [overlay] dimensões OSD: 380x213
+2026-07-28 11:33:06,402 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-28 11:33:06,404 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:06,408 INFO: [overlay] slot=1 OK pos=(15,174) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:06,408 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-28 11:33:06,410 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:06,412 INFO: [overlay] slot=2 OK pos=(15,174) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:07,949 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=bl active=True
+2026-07-28 11:33:07,949 INFO: [set_logo] estado: {1: {'corner': 'bl', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-28 11:33:07,950 INFO: [overlay] dimensões OSD: 380x213
+2026-07-28 11:33:07,950 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-28 11:33:07,951 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:07,953 INFO: [overlay] slot=1 OK pos=(15,174) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:07,953 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-28 11:33:07,957 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:07,960 INFO: [overlay] slot=2 OK pos=(15,174) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:09,453 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=bl active=False
+2026-07-28 11:33:09,454 INFO: [set_logo] estado: {1: {'corner': 'bl', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-28 11:33:09,469 INFO: [overlay] dimensões OSD: 380x213
+2026-07-28 11:33:09,469 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-28 11:33:09,470 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-28 11:33:09,472 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:09,477 INFO: [overlay] slot=2 OK pos=(15,174) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:12,353 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=br active=True
+2026-07-28 11:33:12,354 INFO: [set_logo] estado: {1: {'corner': 'bl', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-28 11:33:12,355 INFO: [overlay] dimensões OSD: 380x213
+2026-07-28 11:33:12,355 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-28 11:33:12,355 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-28 11:33:12,357 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:12,359 INFO: [overlay] slot=2 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:14,210 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=tr active=True
+2026-07-28 11:33:14,211 INFO: [set_logo] estado: {1: {'corner': 'bl', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tr', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-28 11:33:14,235 INFO: [overlay] dimensões OSD: 380x213
+2026-07-28 11:33:14,235 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-28 11:33:14,235 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-28 11:33:14,239 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:14,245 INFO: [overlay] slot=2 OK pos=(345,10) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:14,892 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=tl active=True
+2026-07-28 11:33:14,893 INFO: [set_logo] estado: {1: {'corner': 'bl', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-28 11:33:14,893 INFO: [overlay] dimensões OSD: 380x213
+2026-07-28 11:33:14,893 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-28 11:33:14,893 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-28 11:33:14,895 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:14,898 INFO: [overlay] slot=2 OK pos=(15,10) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:15,296 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=bl active=True
+2026-07-28 11:33:15,296 INFO: [set_logo] estado: {1: {'corner': 'bl', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-28 11:33:15,301 INFO: [overlay] dimensões OSD: 380x213
+2026-07-28 11:33:15,301 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-28 11:33:15,302 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-28 11:33:15,303 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:15,309 INFO: [overlay] slot=2 OK pos=(15,174) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:15,711 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=br active=True
+2026-07-28 11:33:15,711 INFO: [set_logo] estado: {1: {'corner': 'bl', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-28 11:33:15,712 INFO: [overlay] dimensões OSD: 380x213
+2026-07-28 11:33:15,712 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-28 11:33:15,712 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-28 11:33:15,714 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-28 11:33:15,717 INFO: [overlay] slot=2 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-28 11:33:16,334 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=br active=False
+2026-07-28 11:33:16,335 INFO: [set_logo] estado: {1: {'corner': 'bl', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}}
+2026-07-28 11:33:16,335 INFO: [overlay] dimensões OSD: 380x213
+2026-07-28 11:33:16,335 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-28 11:33:16,335 INFO: [overlay] slot=2 active=False filename='FavPlayline.png'
+2026-07-28 11:33:16,335 INFO: [overlay] nenhum overlay aplicado
+2026-07-28 11:33:19,517 INFO: end-file reason=stop
+2026-07-28 11:34:34,739 INFO: Cliente desconectado: ('127.0.0.1', 61814)
+2026-07-28 11:34:38,523 INFO: Cliente conectado: ('127.0.0.1', 54928)
+2026-07-28 11:35:34,368 INFO: Cliente desconectado: ('127.0.0.1', 54928)
+2026-07-28 11:35:38,719 INFO: Cliente conectado: ('127.0.0.1', 53338)
+2026-07-28 11:36:16,037 INFO: Cliente desconectado: ('127.0.0.1', 53338)
+2026-07-28 11:36:23,014 INFO: Cliente conectado: ('127.0.0.1', 62252)
+2026-07-28 11:52:20,503 INFO: Cliente desconectado: ('127.0.0.1', 62252)
+2026-07-28 12:19:41,130 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-28 12:19:41,163 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-28 12:19:41,260 INFO: MPV inicializado
+2026-07-28 12:19:41,260 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 21212
+2026-07-28 12:19:41,299 INFO: Cliente conectado: ('127.0.0.1', 63579)
+2026-07-28 12:19:58,504 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-28 12:19:58,504 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-07-28 12:19:58,538 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-28 12:20:30,918 INFO: end-file reason=stop
+2026-07-28 12:25:06,233 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=ocVghlvNayM
+2026-07-28 12:25:06,572 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=ocVghlvNayM url=https://www.youtube.com/watch?v=ocVghlvNayM
+2026-07-28 12:25:06,854 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-07-28 12:25:07,108 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-07-28 12:25:07,109 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.54s — caindo no yt-dlp
+2026-07-28 12:25:08,693 INFO: [DIAGNÓSTICO] yt-dlp concluído em 1.58s
+2026-07-28 12:25:08,693 INFO: YouTube URL pré-resolvida em 2.46s: https://www.youtube.com/watch?v=ocVghlvNayM
+2026-07-28 12:25:15,077 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=ocVghlvNayM
+2026-07-28 12:25:15,078 INFO: play: https://www.youtube.com/watch?v=ocVghlvNayM
+2026-07-28 12:25:38,317 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-28 12:25:38,326 INFO: end-file reason=stop
+2026-07-28 12:25:39,859 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=ocVghlvNayM
+2026-07-28 12:25:39,860 INFO: play: https://www.youtube.com/watch?v=ocVghlvNayM
+2026-07-28 12:25:39,877 INFO: end-file reason=stop
+2026-07-28 12:26:08,497 INFO: end-file reason=stop
+2026-07-28 12:47:23,057 INFO: Cliente desconectado: ('127.0.0.1', 63579)
+2026-07-29 08:36:07,836 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 08:36:08,223 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 08:36:08,391 INFO: MPV inicializado
+2026-07-29 08:36:08,391 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 23444
+2026-07-29 08:36:09,105 INFO: Cliente conectado: ('127.0.0.1', 58073)
+2026-07-29 08:36:09,131 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=ocVghlvNayM
+2026-07-29 08:36:09,836 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=ocVghlvNayM url=https://www.youtube.com/watch?v=ocVghlvNayM
+2026-07-29 08:36:10,145 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-07-29 08:36:10,384 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-07-29 08:36:10,384 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.55s — caindo no yt-dlp
+2026-07-29 08:36:11,821 INFO: [DIAGNÓSTICO] yt-dlp concluído em 1.44s
+2026-07-29 08:36:11,821 INFO: YouTube URL pré-resolvida em 2.69s: https://www.youtube.com/watch?v=ocVghlvNayM
+2026-07-29 08:39:07,565 INFO: Cliente desconectado: ('127.0.0.1', 58073)
+2026-07-29 08:40:52,899 INFO: Cliente conectado: ('127.0.0.1', 52413)
+2026-07-29 09:18:23,147 INFO: Cliente desconectado: ('127.0.0.1', 52413)
+2026-07-29 09:24:08,442 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 09:24:08,466 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 09:24:08,565 INFO: MPV inicializado
+2026-07-29 09:24:08,565 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 17508
+2026-07-29 09:24:08,608 INFO: Cliente conectado: ('127.0.0.1', 50662)
+2026-07-29 09:28:13,664 INFO: Cliente desconectado: ('127.0.0.1', 50662)
+2026-07-29 09:28:17,879 INFO: Cliente conectado: ('127.0.0.1', 60542)
+2026-07-29 09:30:40,538 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4 [trim 40–120]
+2026-07-29 09:30:40,552 INFO: [set_logo] slot=1 filename='' corner=br active=False
+2026-07-29 09:30:40,552 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 09:30:40,553 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:30:40,553 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 09:30:40,553 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=bl active=True
+2026-07-29 09:30:40,553 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 09:30:40,553 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:30:40,554 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:30:40,554 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:30:40,555 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 09:30:40,555 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:30:40,598 INFO: [set_logo] slot=1 filename='' corner=br active=False
+2026-07-29 09:30:40,598 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:30:40,598 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=bl active=True
+2026-07-29 09:30:40,599 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:30:40,600 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:30:40,600 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:30:40,600 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 09:30:40,601 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 09:30:40,601 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:30:40,601 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:30:40,656 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-29 09:30:40,739 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:30:40,742 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:30:40,744 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:30:40,894 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:30:40,894 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:30:40,895 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:30:41,551 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:30:41,551 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 09:30:41,551 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:30:41,580 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:30:41,667 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:32:02,067 INFO: end-file reason=eof
+2026-07-29 09:32:02,088 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-07-29 09:32:02,088 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 09:32:02,098 INFO: [set_logo] slot=1 filename='' corner=br active=False
+2026-07-29 09:32:02,099 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:32:02,101 INFO: [set_logo] slot=2 filename='' corner=bl active=False
+2026-07-29 09:32:02,101 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:32:02,149 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:32:02,150 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:32:02,150 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 09:32:02,150 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 09:32:02,151 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:32:02,151 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:32:02,151 INFO: [set_logo] slot=1 filename='' corner=br active=False
+2026-07-29 09:32:02,152 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:32:02,152 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:32:02,153 INFO: [set_logo] slot=2 filename='' corner=bl active=False
+2026-07-29 09:32:02,154 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:32:02,180 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:32:02,262 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:32:02,283 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:32:02,283 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 09:32:02,283 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:32:02,283 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:32:02,285 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:32:02,286 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 09:32:02,286 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:32:02,286 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:32:02,600 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:32:02,601 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 09:32:02,601 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:32:02,601 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:32:14,894 INFO: end-file reason=stop
+2026-07-29 09:35:46,994 INFO: Cliente desconectado: ('127.0.0.1', 60542)
+2026-07-29 09:35:51,254 INFO: Cliente conectado: ('127.0.0.1', 60388)
+2026-07-29 09:37:41,978 INFO: Cliente desconectado: ('127.0.0.1', 60388)
+2026-07-29 09:41:08,526 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 09:41:08,552 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 09:41:08,661 INFO: MPV inicializado
+2026-07-29 09:41:08,661 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 14740
+2026-07-29 09:41:08,682 INFO: Cliente conectado: ('127.0.0.1', 59959)
+2026-07-29 09:41:29,391 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-07-29 09:41:29,392 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Sessões\teste_corrompido.mp4
+2026-07-29 09:41:29,409 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-29 09:41:31,623 INFO: end-file reason=stop
+2026-07-29 09:41:31,624 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Sessões\teste_corrompido.mp4
+2026-07-29 09:41:31,625 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 09:41:31,639 INFO: end-file reason=error
+2026-07-29 09:41:31,712 INFO: end-file reason=stop
+2026-07-29 09:41:31,713 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 09:41:31,714 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 02.mp4
+2026-07-29 09:41:34,175 INFO: end-file reason=stop
+2026-07-29 09:43:41,372 INFO: Cliente desconectado: ('127.0.0.1', 59959)
+2026-07-29 09:43:59,810 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 09:43:59,834 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 09:44:00,286 INFO: MPV inicializado
+2026-07-29 09:44:00,286 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 24960
+2026-07-29 09:44:00,483 INFO: Cliente conectado: ('127.0.0.1', 64745)
+2026-07-29 09:45:17,684 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=True
+2026-07-29 09:45:17,684 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 09:45:17,684 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:45:17,684 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:45:17,739 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:45:17,756 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:45:17,756 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 09:45:23,709 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=False
+2026-07-29 09:45:23,710 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 09:45:23,710 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:45:23,710 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-29 09:45:23,710 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 09:45:23,711 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:47:50,575 INFO: Cliente desconectado: ('127.0.0.1', 64745)
+2026-07-29 09:47:54,524 INFO: Cliente conectado: ('127.0.0.1', 50063)
+2026-07-29 09:48:05,970 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 02.mp4
+2026-07-29 09:48:05,970 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 09:48:06,057 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-29 09:48:12,852 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=True
+2026-07-29 09:48:12,852 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 09:48:12,873 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:12,873 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:48:12,876 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:48:12,881 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:48:12,881 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 09:48:14,357 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=False
+2026-07-29 09:48:14,357 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 09:48:14,373 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:14,373 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-29 09:48:14,373 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 09:48:14,373 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:48:14,763 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=True
+2026-07-29 09:48:14,763 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 09:48:14,782 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:14,782 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:48:14,786 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:48:14,790 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:48:14,792 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 09:48:17,819 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=bl active=True
+2026-07-29 09:48:17,819 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 09:48:17,848 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:17,849 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:48:17,854 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:48:17,860 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:48:17,860 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 09:48:17,867 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 09:48:17,881 INFO: [overlay] slot=2 OK pos=(15,174) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 09:48:18,556 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=bl active=False
+2026-07-29 09:48:18,556 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 09:48:18,557 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:18,557 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:48:18,559 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:48:18,562 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:48:18,562 INFO: [overlay] slot=2 active=False filename='LogoPlayLineBlack.png'
+2026-07-29 09:48:19,001 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=bl active=True
+2026-07-29 09:48:19,002 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 09:48:19,003 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:19,003 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:48:19,004 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:48:19,008 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:48:19,008 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 09:48:19,017 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 09:48:19,034 INFO: [overlay] slot=2 OK pos=(15,174) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 09:48:19,519 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=bl active=False
+2026-07-29 09:48:19,519 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 09:48:19,520 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:19,520 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:48:19,521 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:48:19,525 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:48:19,526 INFO: [overlay] slot=2 active=False filename='LogoPlayLineBlack.png'
+2026-07-29 09:48:19,855 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=bl active=True
+2026-07-29 09:48:19,855 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 09:48:19,863 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:19,863 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:48:19,866 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:48:19,869 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:48:19,869 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 09:48:19,876 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 09:48:19,892 INFO: [overlay] slot=2 OK pos=(15,174) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 09:48:20,339 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=bl active=False
+2026-07-29 09:48:20,339 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 09:48:20,340 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:20,340 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:48:20,343 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:48:20,346 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:48:20,346 INFO: [overlay] slot=2 active=False filename='LogoPlayLineBlack.png'
+2026-07-29 09:48:20,723 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=bl active=True
+2026-07-29 09:48:20,723 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 09:48:20,724 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:20,724 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:48:20,726 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:48:20,728 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:48:20,728 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 09:48:20,734 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 09:48:20,746 INFO: [overlay] slot=2 OK pos=(15,174) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 09:48:21,543 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=False
+2026-07-29 09:48:21,544 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 09:48:21,544 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:21,545 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-29 09:48:21,545 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 09:48:21,552 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 09:48:21,571 INFO: [overlay] slot=2 OK pos=(15,174) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 09:48:22,281 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=bl active=False
+2026-07-29 09:48:22,281 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 09:48:22,282 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:22,283 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-29 09:48:22,283 INFO: [overlay] slot=2 active=False filename='LogoPlayLineBlack.png'
+2026-07-29 09:48:22,283 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:48:23,301 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=bl active=True
+2026-07-29 09:48:23,301 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 09:48:23,302 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:48:23,302 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-29 09:48:23,302 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 09:48:23,308 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 09:48:23,325 INFO: [overlay] slot=2 OK pos=(15,174) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 09:48:29,894 INFO: end-file reason=stop
+2026-07-29 09:48:54,815 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 09:48:54,842 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 09:48:55,073 INFO: MPV inicializado
+2026-07-29 09:48:55,073 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 15348
+2026-07-29 09:48:55,445 INFO: Cliente conectado: ('127.0.0.1', 64244)
+2026-07-29 09:49:05,082 INFO: Cliente desconectado: ('127.0.0.1', 64244)
+2026-07-29 09:49:41,549 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 09:49:41,570 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 09:49:41,659 INFO: MPV inicializado
+2026-07-29 09:49:41,659 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 7104
+2026-07-29 09:49:41,726 INFO: Cliente conectado: ('127.0.0.1', 57329)
+2026-07-29 09:49:56,427 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 02.mp4
+2026-07-29 09:49:56,430 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 09:49:56,451 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-29 09:50:00,473 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=True
+2026-07-29 09:50:00,473 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 09:50:00,501 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:00,502 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:00,506 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:00,513 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:00,514 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 09:50:07,305 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=False
+2026-07-29 09:50:07,305 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 09:50:07,306 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:07,306 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-29 09:50:07,307 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 09:50:07,307 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:50:08,922 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=True
+2026-07-29 09:50:08,922 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 09:50:08,922 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:08,922 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:08,925 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:08,927 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:08,928 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 09:50:11,719 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=br active=True
+2026-07-29 09:50:11,719 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-29 09:50:11,719 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:11,719 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:11,721 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:11,725 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:11,726 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-29 09:50:11,727 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:11,730 INFO: [overlay] slot=2 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:13,320 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=br active=False
+2026-07-29 09:50:13,320 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}}
+2026-07-29 09:50:13,338 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:13,339 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:13,343 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:13,349 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:13,349 INFO: [overlay] slot=2 active=False filename='FavPlayline.png'
+2026-07-29 09:50:15,753 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=br active=True
+2026-07-29 09:50:15,753 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}}
+2026-07-29 09:50:15,754 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:15,754 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:15,757 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:15,763 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:15,763 INFO: [overlay] slot=2 active=True filename='FavPlayline.png'
+2026-07-29 09:50:15,766 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:15,770 INFO: [overlay] slot=2 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:16,535 INFO: [set_logo] slot=2 filename='FavPlayline.png' corner=br active=False
+2026-07-29 09:50:16,536 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}}
+2026-07-29 09:50:16,536 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:16,537 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:16,540 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:16,544 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:16,544 INFO: [overlay] slot=2 active=False filename='FavPlayline.png'
+2026-07-29 09:50:19,031 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=br active=True
+2026-07-29 09:50:19,032 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'br', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:19,038 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:19,038 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:19,042 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:19,047 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:19,047 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:50:19,077 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:50:19,094 INFO: [overlay] slot=2 OK pos=(315,174) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:50:20,320 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=br active=False
+2026-07-29 09:50:20,320 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'br', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:20,327 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:20,328 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:20,330 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:20,335 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:20,335 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:50:23,744 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tr active=True
+2026-07-29 09:50:23,744 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tr', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:23,744 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:23,744 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:23,747 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:23,750 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:23,750 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:50:23,777 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:50:23,789 INFO: [overlay] slot=2 OK pos=(315,10) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:50:24,541 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tr active=False
+2026-07-29 09:50:24,541 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tr', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:24,541 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:24,541 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:24,543 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:24,546 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:24,547 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:50:25,252 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tr active=True
+2026-07-29 09:50:25,253 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tr', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:25,253 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:25,253 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:25,256 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:25,258 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:25,258 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:50:25,285 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:50:25,304 INFO: [overlay] slot=2 OK pos=(315,10) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:50:26,363 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tr active=False
+2026-07-29 09:50:26,364 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tr', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:26,364 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:26,364 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:26,366 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:26,369 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:26,369 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:50:26,840 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tr active=True
+2026-07-29 09:50:26,840 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tr', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:26,841 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:26,841 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:26,842 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:26,844 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:26,844 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:50:26,873 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:50:26,888 INFO: [overlay] slot=2 OK pos=(315,10) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:50:27,660 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tr active=False
+2026-07-29 09:50:27,661 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tr', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:27,662 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:27,662 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:27,666 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:27,669 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:27,670 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:50:28,397 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tr active=True
+2026-07-29 09:50:28,398 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tr', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:28,398 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:28,399 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:28,401 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:28,405 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:28,406 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:50:28,435 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:50:28,441 INFO: [overlay] slot=2 OK pos=(315,10) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:50:29,181 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tr active=False
+2026-07-29 09:50:29,182 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tr', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:29,182 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:29,182 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:29,183 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:29,186 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:29,186 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:50:31,489 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tl active=True
+2026-07-29 09:50:31,490 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:31,490 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:31,490 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:31,491 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:31,494 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:31,494 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:50:31,524 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:50:31,530 INFO: [overlay] slot=2 OK pos=(15,10) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:50:35,219 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tl active=False
+2026-07-29 09:50:35,220 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:35,225 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:35,225 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:35,228 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:35,233 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:35,234 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:50:37,442 INFO: [weather] OWM: 20.2°C (Curitiba, BR)
+2026-07-29 09:50:37,512 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:38,531 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:39,565 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:40,593 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:41,611 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:42,652 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:43,671 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:44,686 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:45,700 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:46,718 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:47,751 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:48,786 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:49,804 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:50,821 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:51,253 INFO: end-file reason=eof
+2026-07-29 09:50:51,311 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4
+2026-07-29 09:50:51,762 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:51,763 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:51,767 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:51,770 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:51,773 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:51,773 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:50:51,840 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:52,288 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tl active=True
+2026-07-29 09:50:52,288 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:50:52,289 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:50:52,289 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:50:52,290 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:50:52,294 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:50:52,295 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:50:52,324 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:50:52,329 INFO: [overlay] slot=2 OK pos=(15,10) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:50:52,876 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:53,925 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:54,940 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:55,957 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:56,972 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:57,988 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:50:59,003 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:00,021 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:01,039 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:02,054 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:03,094 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:04,108 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:05,123 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:06,157 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:07,177 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:08,193 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:09,207 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:10,223 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:11,244 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:12,262 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:13,305 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:14,320 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:15,339 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:16,371 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:17,389 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:18,408 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:19,436 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:20,454 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:21,468 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:22,479 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:23,492 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:24,423 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tl active=False
+2026-07-29 09:51:24,424 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:51:24,433 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:51:24,433 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:51:24,435 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:51:24,441 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:51:24,441 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:51:24,537 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:25,569 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:26,588 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:27,636 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:28,096 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tl active=True
+2026-07-29 09:51:28,097 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:51:28,100 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:51:28,100 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:51:28,102 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:51:28,106 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:51:28,106 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:51:28,132 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:51:28,137 INFO: [overlay] slot=2 OK pos=(15,10) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:51:28,654 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:29,673 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:30,688 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:31,703 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:32,717 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:33,734 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:34,765 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:34,871 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tl active=False
+2026-07-29 09:51:34,872 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:51:34,872 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:51:34,872 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:51:34,874 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:51:34,876 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:51:34,876 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:51:35,724 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tl active=True
+2026-07-29 09:51:35,724 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:51:35,732 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:51:35,732 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:51:35,734 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:51:35,740 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:51:35,741 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-29 09:51:35,762 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-29 09:51:35,767 INFO: [overlay] slot=2 OK pos=(15,10) 50x29 arquivo=LogoPlayLineD.png
+2026-07-29 09:51:35,778 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:36,800 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:37,815 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:38,829 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:39,841 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:40,857 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:41,873 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:42,415 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=tl active=False
+2026-07-29 09:51:42,416 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:51:42,416 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:51:42,416 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:51:42,418 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:51:42,420 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:51:42,420 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:51:42,888 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:43,353 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=False
+2026-07-29 09:51:43,353 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:51:43,354 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:51:43,354 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-29 09:51:43,354 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:51:43,354 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:51:43,903 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(15,183) margin_y=14
+2026-07-29 09:51:45,416 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=True
+2026-07-29 09:51:45,417 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:51:45,418 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:51:45,418 INFO: [overlay] slot=1 active=True filename='FavPlayline.png'
+2026-07-29 09:51:45,420 INFO: [overlay] FavPlayline.png → 20x29
+2026-07-29 09:51:45,423 INFO: [overlay] slot=1 OK pos=(345,174) 20x29 arquivo=FavPlayline.png
+2026-07-29 09:51:45,423 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:51:46,853 INFO: [set_logo] slot=1 filename='FavPlayline.png' corner=br active=False
+2026-07-29 09:51:46,854 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': 'FavPlayline.png'}, 2: {'corner': 'tl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-07-29 09:51:46,854 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 09:51:46,854 INFO: [overlay] slot=1 active=False filename='FavPlayline.png'
+2026-07-29 09:51:46,854 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-07-29 09:51:46,854 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 09:53:14,998 INFO: end-file reason=stop
+2026-07-29 09:53:28,206 INFO: Cliente desconectado: ('127.0.0.1', 57329)
+2026-07-29 11:14:11,160 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 11:14:11,625 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 11:14:11,861 INFO: MPV inicializado
+2026-07-29 11:14:11,863 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 25712
+2026-07-29 11:14:12,596 INFO: Cliente conectado: ('127.0.0.1', 60295)
+2026-07-29 11:14:59,129 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\Amélie Le Cat - La fumée dorée [On Work].mp3
+2026-07-29 11:14:59,129 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 11:14:59,229 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-29 11:15:38,536 INFO: end-file reason=stop
+2026-07-29 11:18:39,675 INFO: Cliente desconectado: ('127.0.0.1', 60295)
+2026-07-29 11:19:52,832 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 11:19:52,853 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 11:19:52,943 INFO: MPV inicializado
+2026-07-29 11:19:52,944 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 19540
+2026-07-29 11:19:53,011 INFO: Cliente conectado: ('127.0.0.1', 55653)
+2026-07-29 11:21:12,259 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 11:21:12,337 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-29 11:21:14,547 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\ChillOut (Áudio)\Kako Martinez, Ashley Robertson - Nights of feeling [On Work].mp3 [trim 180–240]
+2026-07-29 11:21:14,547 INFO: end-file reason=stop
+2026-07-29 11:21:50,680 INFO: end-file reason=stop
+2026-07-29 11:30:51,009 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4
+2026-07-29 11:30:51,010 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\20 PROCURAR AJUDA É CORAGEM.mp4
+2026-07-29 11:31:21,547 INFO: end-file reason=stop
+2026-07-29 11:31:21,548 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\20 PROCURAR AJUDA É CORAGEM.mp4
+2026-07-29 11:31:21,549 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 02.mp4
+2026-07-29 11:31:23,402 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 02.mp4
+2026-07-29 11:31:23,429 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 05.mp4
+2026-07-29 11:31:23,430 INFO: end-file reason=stop
+2026-07-29 11:31:33,326 INFO: end-file reason=stop
+2026-07-29 11:32:50,132 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 02.mp4
+2026-07-29 11:32:50,140 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 05.mp4
+2026-07-29 11:33:02,411 INFO: end-file reason=stop
+2026-07-29 11:37:12,007 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 02.mp4
+2026-07-29 11:37:12,008 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 05.mp4
+2026-07-29 11:37:41,363 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 05.mp4
+2026-07-29 11:37:41,398 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - ESPERANÇA.mp4
+2026-07-29 11:37:41,399 INFO: end-file reason=stop
+2026-07-29 11:37:58,041 INFO: end-file reason=stop
+2026-07-29 11:44:05,417 INFO: Cliente desconectado: ('127.0.0.1', 55653)
+2026-07-29 11:44:40,727 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 11:44:40,752 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 11:44:40,853 INFO: MPV inicializado
+2026-07-29 11:44:40,854 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 16888
+2026-07-29 11:44:40,868 INFO: Cliente conectado: ('127.0.0.1', 52041)
+2026-07-29 11:44:54,119 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 05.mp4
+2026-07-29 11:44:54,120 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - ESPERANÇA.mp4
+2026-07-29 11:44:54,140 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-29 11:45:18,625 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - ESPERANÇA.mp4
+2026-07-29 11:45:18,625 INFO: end-file reason=stop
+2026-07-29 11:45:18,626 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PODCAST MOMENTO SAUDE EP - 47 BL2.mp4
+2026-07-29 11:45:19,504 INFO: end-file reason=stop
+2026-07-29 11:45:19,504 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PODCAST MOMENTO SAUDE EP - 47 BL2.mp4
+2026-07-29 11:45:19,505 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-07-29 11:45:20,198 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-07-29 11:45:20,222 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 11:45:20,223 INFO: end-file reason=stop
+2026-07-29 11:45:47,378 INFO: end-file reason=stop
+2026-07-29 11:46:03,042 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-07-29 11:46:03,111 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 11:46:35,394 INFO: end-file reason=stop
+2026-07-29 12:10:21,226 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=tr active=True
+2026-07-29 12:10:21,228 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'tr', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 12:10:21,228 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 12:10:21,228 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 12:10:21,228 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 12:10:21,238 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 12:10:21,254 INFO: [overlay] slot=2 OK pos=(258,10) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 12:10:26,532 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=tr active=False
+2026-07-29 12:10:26,533 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'tr', 'active': False, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 12:10:26,533 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 12:10:26,533 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 12:10:26,533 INFO: [overlay] slot=2 active=False filename='LogoPlayLineBlack.png'
+2026-07-29 12:10:26,533 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 12:10:27,152 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=tr active=True
+2026-07-29 12:10:27,153 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'tr', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 12:10:27,153 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 12:10:27,153 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 12:10:27,153 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 12:10:27,160 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 12:10:27,175 INFO: [overlay] slot=2 OK pos=(258,10) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 12:10:27,495 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=tr active=False
+2026-07-29 12:10:27,495 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'tr', 'active': False, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 12:10:27,495 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 12:10:27,495 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 12:10:27,496 INFO: [overlay] slot=2 active=False filename='LogoPlayLineBlack.png'
+2026-07-29 12:10:27,496 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 12:10:28,026 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=tr active=True
+2026-07-29 12:10:28,027 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'tr', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 12:10:28,027 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 12:10:28,027 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 12:10:28,027 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 12:10:28,033 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 12:10:28,047 INFO: [overlay] slot=2 OK pos=(258,10) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 12:10:28,464 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=tr active=False
+2026-07-29 12:10:28,465 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'tr', 'active': False, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 12:10:28,465 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 12:10:28,465 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 12:10:28,465 INFO: [overlay] slot=2 active=False filename='LogoPlayLineBlack.png'
+2026-07-29 12:10:28,465 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 12:10:29,420 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=tr active=True
+2026-07-29 12:10:29,421 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'tr', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 12:10:29,421 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 12:10:29,421 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 12:10:29,421 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 12:10:29,428 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 12:10:29,442 INFO: [overlay] slot=2 OK pos=(258,10) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 12:10:29,888 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=tr active=False
+2026-07-29 12:10:29,888 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'tr', 'active': False, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 12:10:29,889 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 12:10:29,889 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 12:10:29,889 INFO: [overlay] slot=2 active=False filename='LogoPlayLineBlack.png'
+2026-07-29 12:10:29,889 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 12:10:30,702 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=tr active=True
+2026-07-29 12:10:30,703 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'tr', 'active': True, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 12:10:30,703 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 12:10:30,703 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 12:10:30,703 INFO: [overlay] slot=2 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 12:10:30,709 INFO: [overlay] LogoPlayLineBlack.png → 107x29
+2026-07-29 12:10:30,724 INFO: [overlay] slot=2 OK pos=(258,10) 107x29 arquivo=LogoPlayLineBlack.png
+2026-07-29 12:10:31,324 INFO: [set_logo] slot=2 filename='LogoPlayLineBlack.png' corner=tr active=False
+2026-07-29 12:10:31,324 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'tr', 'active': False, 'filename': 'LogoPlayLineBlack.png'}}
+2026-07-29 12:10:31,325 INFO: [overlay] dimensões OSD: 380x213
+2026-07-29 12:10:31,325 INFO: [overlay] slot=1 active=False filename=''
+2026-07-29 12:10:31,325 INFO: [overlay] slot=2 active=False filename='LogoPlayLineBlack.png'
+2026-07-29 12:10:31,325 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 12:16:56,755 INFO: Cliente desconectado: ('127.0.0.1', 52041)
+2026-07-29 12:17:11,469 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 12:17:11,494 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 12:17:11,599 INFO: MPV inicializado
+2026-07-29 12:17:11,600 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 23736
+2026-07-29 12:17:12,099 INFO: Cliente conectado: ('127.0.0.1', 64798)
+2026-07-29 12:20:55,926 INFO: Cliente desconectado: ('127.0.0.1', 64798)
+2026-07-29 12:25:03,464 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 12:25:03,484 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 12:25:03,620 INFO: MPV inicializado
+2026-07-29 12:25:03,621 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 21300
+2026-07-29 12:25:03,638 INFO: Cliente conectado: ('127.0.0.1', 62037)
+2026-07-29 12:26:31,432 INFO: Cliente desconectado: ('127.0.0.1', 62037)
+2026-07-29 12:26:40,972 INFO: Cliente conectado: ('127.0.0.1', 59208)
+2026-07-29 12:26:51,610 INFO: Cliente desconectado: ('127.0.0.1', 59208)
+2026-07-29 12:28:45,516 INFO: Cliente conectado: ('127.0.0.1', 54296)
+2026-07-29 12:29:25,799 INFO: Cliente desconectado: ('127.0.0.1', 54296)
+2026-07-29 12:29:39,334 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 12:29:39,360 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 12:29:39,464 INFO: MPV inicializado
+2026-07-29 12:29:39,465 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 9732
+2026-07-29 12:29:39,489 INFO: Cliente conectado: ('127.0.0.1', 53558)
+2026-07-29 12:38:26,274 INFO: Cliente desconectado: ('127.0.0.1', 53558)
+2026-07-29 12:38:40,369 INFO: Cliente conectado: ('127.0.0.1', 55590)
+2026-07-29 12:39:49,676 INFO: MPV encerrado via terminate()
+2026-07-29 12:39:54,253 INFO: Reinicializando MPV via init_mpv
+2026-07-29 12:39:54,254 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-29 12:39:54,363 INFO: MPV inicializado
+2026-07-29 12:40:01,109 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-07-29 12:40:01,110 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 12:40:01,211 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-29 12:40:03,923 INFO: end-file reason=stop
+2026-07-29 12:42:51,672 INFO: Cliente desconectado: ('127.0.0.1', 55590)
+2026-07-29 12:42:56,174 INFO: Cliente conectado: ('127.0.0.1', 65130)
+2026-07-29 12:45:23,128 INFO: Cliente desconectado: ('127.0.0.1', 65130)
+2026-07-29 12:45:30,814 INFO: Cliente conectado: ('127.0.0.1', 56283)
+2026-07-29 12:49:52,439 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-07-29 12:49:52,440 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 12:50:44,944 INFO: end-file reason=eof
+2026-07-29 12:50:44,993 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-07-29 12:53:37,533 INFO: end-file reason=eof
+2026-07-29 12:53:37,577 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 12:54:29,958 INFO: end-file reason=eof
+2026-07-29 12:55:08,678 INFO: Cliente desconectado: ('127.0.0.1', 56283)

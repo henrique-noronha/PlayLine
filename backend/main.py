@@ -469,13 +469,28 @@ if __name__ == "__main__":
             _logo_html = f'<img src="data:image/png;base64,{_b64}" style="max-width:280px;max-height:140px;object-fit:contain" />'
             break
 
-    _splash = f"""<!DOCTYPE html><html><body style="margin:0;background:#111827;
-        display:flex;flex-direction:column;align-items:center;justify-content:center;
-        height:100vh;gap:24px">
-        {_logo_html}
-        <p style="color:#6b7280;font-family:'Segoe UI',sans-serif;font-size:13px;margin:0">
-            Iniciando servidor…
-        </p></body></html>"""
+    _splash = f"""<!DOCTYPE html><html><head><style>
+*{{box-sizing:border-box;margin:0;padding:0}}
+body{{background:#111827;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;height:100vh;gap:28px;
+  font-family:'Segoe UI',system-ui,sans-serif}}
+.loader{{display:flex;gap:10px;align-items:center}}
+.dot{{width:10px;height:10px;border-radius:50%;background:#4f8ef7;
+  box-shadow:0 0 8px rgba(79,142,247,.5);animation:wave 1.4s ease infinite}}
+.dot:nth-child(1){{animation-delay:0s}}
+.dot:nth-child(2){{animation-delay:.18s}}
+.dot:nth-child(3){{animation-delay:.36s}}
+.dot:nth-child(4){{animation-delay:.54s}}
+@keyframes wave{{0%,100%{{transform:translateY(0);opacity:1}}50%{{transform:translateY(-10px);opacity:.3}}}}
+.lbl{{font-size:11px;color:#4b5563;letter-spacing:.1em;text-transform:uppercase}}
+</style></head><body>
+{_logo_html}
+<div class="loader">
+  <div class="dot"></div><div class="dot"></div>
+  <div class="dot"></div><div class="dot"></div>
+</div>
+<span class="lbl">Iniciando servidor…</span>
+</body></html>"""
 
     def _check_playline_running(port: int) -> bool:
         import urllib.request, json

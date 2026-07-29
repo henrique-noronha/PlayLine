@@ -24,3 +24,15 @@ function setConnStatus(status) {
 document.getElementById("btn-clear-log").addEventListener("click", () => {
   document.getElementById("log").innerHTML = "";
 });
+
+function showToast(msg, type = "warn") {
+  const el = document.createElement("div");
+  el.className = `pl-toast pl-toast-${type}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add("pl-toast-visible"));
+  setTimeout(() => {
+    el.classList.remove("pl-toast-visible");
+    el.addEventListener("transitionend", () => el.remove(), { once: true });
+  }, 4000);
+}

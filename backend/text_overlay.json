@@ -1,8 +1,8 @@
 {
-  "active": true,
+  "active": false,
   "show_time": true,
   "show_temp": true,
-  "corner": "bl",
-  "city": "Palmas,TO",
+  "corner": "br",
+  "city": "Curitiba,PR",
   "manual_temp": ""
 }

@@ -67,7 +67,7 @@ PlayLine/
 ## Backend — Módulos
 
 ### `main.py`
-- Inicia FastAPI na porta **8000** (127.0.0.1)
+- Inicia FastAPI na porta **18000** (127.0.0.1)
 - `lifespan`: cria `Player` e `PlaylistEngine`, carrega schedule, chama `restore_after_crash()`
 - Monta frontend como estático em `/static`
 - `ConnectionManager`: broadcast de eventos JSON para todos os clientes WS conectados
