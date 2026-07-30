@@ -142,6 +142,7 @@ class MPVDaemon:
 
         geo = monitor.secondary_monitor_geometry()
         has_secondary = bool(geo)
+        self._has_secondary = has_secondary
 
         mpv_kwargs = dict(
             ytdl=False,
@@ -176,6 +177,8 @@ class MPVDaemon:
         # posiciona no monitor correto logo ao inicializar.
         if has_secondary:
             threading.Thread(target=self._move_to_tv, daemon=True).start()
+        else:
+            threading.Thread(target=self._send_to_back, daemon=True).start()
 
         self._mpv.observe_property("time-pos", self._on_time_pos)
         try:
@@ -186,7 +189,8 @@ class MPVDaemon:
         @self._mpv.event_callback("file-loaded")
         def _file_loaded(event):
             if not self._window_positioned:
-                threading.Thread(target=self._move_to_tv, daemon=True).start()
+                target = self._move_to_tv if self._has_secondary else self._send_to_back
+                threading.Thread(target=target, daemon=True).start()
             with self._logo_lock:
                 has_active = any(d["active"] for d in self._logo.values())
             if has_active:
@@ -219,6 +223,10 @@ class MPVDaemon:
 
     def _move_to_tv(self):
         monitor.move_window_to_secondary("PlayLine")
+        self._window_positioned = True
+
+    def _send_to_back(self):
+        monitor.send_window_to_back("PlayLine")
         self._window_positioned = True
 
     def _mpv_log(self, level, component, message):

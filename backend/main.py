@@ -14,7 +14,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, Request, WebSocket
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -22,6 +22,7 @@ from core.player import Player
 from core.playlist import PlaylistEngine
 from api.routes import router as http_router, setup as setup_routes
 from api.websocket import router as ws_router, setup as setup_ws
+from db import init_db, migrate_from_json
 
 _log_handlers = [logging.StreamHandler()]
 if getattr(sys, "frozen", False):
@@ -37,8 +38,10 @@ logger = logging.getLogger(__name__)
 
 if getattr(sys, 'frozen', False):
     FRONTEND_DIR = Path(sys._MEIPASS) / "frontend"
+    _DATA_DIR    = Path(sys.executable).parent
 else:
     FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
+    _DATA_DIR    = Path(__file__).parent
 
 
 # Gerenciadores de conexões WebSocket
@@ -144,6 +147,9 @@ async def lifespan(app: FastAPI):
         except Exception:
             return
         asyncio.run_coroutine_threadsafe(preview_manager.broadcast(data), loop)
+
+    init_db()
+    migrate_from_json(_DATA_DIR)
 
     player_instance = Player(
         on_end_file=_on_end,
@@ -282,6 +288,16 @@ async def login_submit(request: Request):
     return HTMLResponse(_build_login_html(error=True), status_code=401)
 
 
+@app.post("/api/logout")
+async def logout(request: Request):
+    """Invalida a sessão atual — o cookie continua no browser mas o token não é mais aceito."""
+    token = request.cookies.get("playline_session", "")
+    _SESSIONS.discard(token)
+    resp = JSONResponse({"ok": True})
+    resp.delete_cookie("playline_session")
+    return resp
+
+
 @app.get("/")
 async def index():
     return FileResponse(str(FRONTEND_DIR / "index.html"))
@@ -298,17 +314,25 @@ def _run_server(port: int = 18000):
     )
 
 
+_SPLASH_MIN_SECONDS = 4
+
+
 def _wait_and_navigate(window, port: int = 18000):
     import socket
+    start = time.time()
+    server_ready = False
     for _ in range(60):
         time.sleep(0.5)
-        try:
-            s = socket.create_connection(("localhost", port), timeout=1)
-            s.close()
+        if not server_ready:
+            try:
+                s = socket.create_connection(("localhost", port), timeout=1)
+                s.close()
+                server_ready = True
+            except Exception:
+                pass
+        if server_ready and (time.time() - start) >= _SPLASH_MIN_SECONDS:
             window.load_url(f"http://localhost:{port}")
             return
-        except Exception:
-            pass
 
 
 if __name__ == "__main__":
@@ -483,6 +507,8 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
 .dot:nth-child(4){{animation-delay:.54s}}
 @keyframes wave{{0%,100%{{transform:translateY(0);opacity:1}}50%{{transform:translateY(-10px);opacity:.3}}}}
 .lbl{{font-size:11px;color:#4b5563;letter-spacing:.1em;text-transform:uppercase}}
+.credits{{position:fixed;bottom:18px;left:0;right:0;text-align:center;
+  font-size:10px;color:#374151;letter-spacing:.06em}}
 </style></head><body>
 {_logo_html}
 <div class="loader">
@@ -490,6 +516,7 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
   <div class="dot"></div><div class="dot"></div>
 </div>
 <span class="lbl">Iniciando servidor…</span>
+<span class="credits">Desenvolvido por Henrique Noronha Fernandes</span>
 </body></html>"""
 
     def _check_playline_running(port: int) -> bool:
@@ -523,6 +550,84 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
     _WIN_W, _WIN_H = 1440, 860
     _cx, _cy = _center(_WIN_W, _WIN_H)
 
+    def _is_remote_session() -> bool:
+        """Detecta sessão RDP/remota — SM_REMOTESESSION = 0x1000."""
+        try:
+            import ctypes
+            return bool(ctypes.windll.user32.GetSystemMetrics(0x1000))
+        except Exception:
+            return False
+
+    _closing_confirmed = False  # True quando o fechamento é intencional (via API)
+
+    class _PyWebViewAPI:
+        """Métodos Python expostos ao JavaScript via window.pywebview.api.*"""
+        def close_interface_only(self):
+            """Fecha a janela; daemon e servidor continuam rodando."""
+            global _closing_confirmed
+            _closing_confirmed = True
+            if _window:
+                _window.destroy()
+
+        def close_all(self):
+            """Para o player, encerra o processo do daemon e fecha a janela PyWebView."""
+            global _closing_confirmed
+            # 1. Para a engine de playlist
+            try:
+                import asyncio
+                import api.routes as _routes
+                eng = _routes._playlist_engine
+                if eng and eng._loop and eng._loop.is_running():
+                    asyncio.run_coroutine_threadsafe(eng.stop(), eng._loop)
+            except Exception:
+                pass
+            # 2. Encerra o processo do daemon via porta 6600
+            try:
+                import subprocess as _sp
+                r = _sp.run(
+                    ['netstat', '-ano'],
+                    capture_output=True, text=True, timeout=5,
+                    creationflags=0x08000000,  # CREATE_NO_WINDOW
+                )
+                for line in r.stdout.splitlines():
+                    if ':6600' in line and 'LISTENING' in line:
+                        pid = int(line.strip().split()[-1])
+                        _sp.run(
+                            ['taskkill', '/F', '/PID', str(pid)],
+                            capture_output=True, timeout=5,
+                            creationflags=0x08000000,
+                        )
+                        break
+            except Exception:
+                pass
+            # 3. Invalida a sessão para exigir autenticação no próximo acesso
+            _SESSIONS.clear()
+            # 4. Fecha a janela
+            _closing_confirmed = True
+            if _window:
+                _window.destroy()
+
+    _pywebview_api = _PyWebViewAPI()
+    _window = None  # preenchido abaixo
+
+    def _on_closing():
+        """Intercepta o botão X — exibe diálogo customizado (exceto em sessão remota).
+
+        evaluate_js não pode ser chamado de dentro do closing handler (mesmo thread da UI →
+        deadlock com WebView2). Lançamos um thread separado e retornamos False imediatamente.
+        """
+        if _closing_confirmed or _is_remote_session():
+            return  # permite fechar normalmente
+        def _deferred():
+            time.sleep(0.05)
+            if _window:
+                try:
+                    _window.evaluate_js("window._showCloseDialog && window._showCloseDialog()")
+                except Exception:
+                    pass
+        threading.Thread(target=_deferred, daemon=True).start()
+        return False  # cancela o fechamento padrão
+
     def _start_webview(func=None):
         import ctypes
         try:
@@ -551,7 +656,9 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
             x=_cx,
             y=_cy,
             min_size=(960, 600),
+            js_api=_pywebview_api,
         )
+        _window.events.closing += _on_closing
         _start_webview()
     else:
         _PORT = _find_free_port(18000)
@@ -564,7 +671,9 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
             x=_cx,
             y=_cy,
             min_size=(960, 600),
+            js_api=_pywebview_api,
         )
+        _window.events.closing += _on_closing
         _start_webview(
             lambda: threading.Thread(target=_wait_and_navigate, args=(_window, _PORT), daemon=True).start()
         )

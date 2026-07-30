@@ -23,10 +23,20 @@
     const h = Math.floor(secs / 3600);
     const m = Math.floor((secs % 3600) / 60);
     const s = secs % 60;
-    if (h > 0) return `${h}h ${String(m).padStart(2,"0")}m ${String(s).padStart(2,"0")}s`;
-    if (m > 0) return `${m}m ${String(s).padStart(2,"0")}s`;
+    if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`;
+    if (m > 0) return `${m}m ${String(s).padStart(2, "0")}s`;
     return `${s}s`;
   }
+
+  function _esc(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  // ── Aba: Registro ──────────────────────────────────────────────────────
 
   async function _load(date) {
     const tbody = document.getElementById("hist-tbody");
@@ -60,14 +70,6 @@
     }
   }
 
-  function _esc(str) {
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
-
   function _setDate(date) {
     _currentDate = date;
     document.getElementById("hist-date-label").textContent = _fmtDate(date);
@@ -75,8 +77,61 @@
     _load(date);
   }
 
+  // ── Aba: Estatísticas ──────────────────────────────────────────────────
+
+  async function _loadStats() {
+    const tbody  = document.getElementById("hist-stats-tbody");
+    const empty  = document.getElementById("hist-stats-empty");
+    const totals = document.getElementById("hist-stats-totals");
+    tbody.innerHTML = `<tr><td colspan="4" class="hist-loading">Carregando…</td></tr>`;
+    empty.style.display = "none";
+    totals.innerHTML = "";
+
+    try {
+      const res = await fetch("/api/history/stats");
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+
+      totals.innerHTML = `
+        <div class="hist-stat-card"><span class="hist-stat-val">${data.total_plays}</span><span class="hist-stat-lbl">Exibições totais</span></div>
+        <div class="hist-stat-card"><span class="hist-stat-val">${data.total_hours}h</span><span class="hist-stat-lbl">Horas exibidas</span></div>
+        <div class="hist-stat-card"><span class="hist-stat-val">${data.total_days}</span><span class="hist-stat-lbl">Dias com exibição</span></div>
+      `;
+
+      tbody.innerHTML = "";
+      if (!data.top_clips.length) {
+        empty.style.display = "block";
+        return;
+      }
+      data.top_clips.forEach((c, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="hist-rank">${i + 1}</td>
+          <td class="hist-title" title="${_esc(c.path || "")}">${_esc(c.title || c.path || "—")}</td>
+          <td class="hist-dur">${c.play_count}×</td>
+          <td class="hist-dur">${_fmtDuration(c.total_seconds)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (_) {
+      tbody.innerHTML = `<tr><td colspan="4" class="hist-loading">Erro ao carregar estatísticas.</td></tr>`;
+    }
+  }
+
+  // ── Abas ───────────────────────────────────────────────────────────────
+
+  function _switchTab(tab) {
+    document.querySelectorAll(".hist-tab").forEach(b => b.classList.toggle("hist-tab-active", b.dataset.tab === tab));
+    document.getElementById("hist-panel-log").style.display   = tab === "log"   ? "" : "none";
+    document.getElementById("hist-panel-stats").style.display = tab === "stats" ? "" : "none";
+    if (tab === "stats") _loadStats();
+  }
+
+  // ── API pública ────────────────────────────────────────────────────────
+
   function openHistoryModal() {
     document.getElementById("history-modal").style.display = "flex";
+    _switchTab("log");
     _setDate(_todayStr());
   }
 
@@ -95,6 +150,9 @@
     document.getElementById("hist-next-day").addEventListener("click", () => {
       const next = _shiftDate(_currentDate, 1);
       if (next <= _todayStr()) _setDate(next);
+    });
+    document.querySelectorAll(".hist-tab").forEach(btn => {
+      btn.addEventListener("click", () => _switchTab(btn.dataset.tab));
     });
   });
 

@@ -93,3 +93,55 @@ def move_window_to_secondary(window_title: str) -> None:
         left, top, width, height,
         0x0010 | 0x0040,
     )
+
+
+def send_window_to_back(window_title: str) -> None:
+    """Envia a janela para HWND_BOTTOM (atrás de todas as outras).
+
+    Filtra por PID do processo atual para evitar ambiguidade quando PyWebView e MPV
+    compartilham o mesmo título "PlayLine" — apenas a janela MPV pertence ao daemon.
+    """
+    import ctypes
+    import ctypes.wintypes
+
+    current_pid = ctypes.windll.kernel32.GetCurrentProcessId()
+    found_hwnd = None
+
+    WNDENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.wintypes.HWND, ctypes.wintypes.LPARAM)
+
+    def _cb(hwnd, _lparam):
+        nonlocal found_hwnd
+        if not ctypes.windll.user32.IsWindowVisible(hwnd):
+            return True
+        pid = ctypes.c_ulong(0)
+        ctypes.windll.user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+        if pid.value != current_pid:
+            return True
+        length = ctypes.windll.user32.GetWindowTextLengthW(hwnd)
+        if length == 0:
+            return True
+        buf = ctypes.create_unicode_buffer(length + 1)
+        ctypes.windll.user32.GetWindowTextW(hwnd, buf, length + 1)
+        if buf.value == window_title:
+            found_hwnd = hwnd
+            return False
+        return True
+
+    for _ in range(30):
+        found_hwnd = None
+        ctypes.windll.user32.EnumWindows(WNDENUMPROC(_cb), 0)
+        if found_hwnd:
+            break
+        time.sleep(0.1)
+
+    if not found_hwnd:
+        logger.warning("Janela '%s' não encontrada no processo atual", window_title)
+        return
+
+    # HWND_BOTTOM=1, SWP_NOSIZE=0x0001, SWP_NOMOVE=0x0002, SWP_NOACTIVATE=0x0010
+    ctypes.windll.user32.SetWindowPos(
+        found_hwnd, ctypes.c_int(1),
+        0, 0, 0, 0,
+        0x0001 | 0x0002 | 0x0010,
+    )
+    logger.info("Janela '%s' enviada para o fundo (HWND_BOTTOM)", window_title)

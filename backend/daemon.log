@@ -1130,3 +1130,254 @@
 2026-07-29 12:53:37,577 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
 2026-07-29 12:54:29,958 INFO: end-file reason=eof
 2026-07-29 12:55:08,678 INFO: Cliente desconectado: ('127.0.0.1', 56283)
+2026-07-29 23:13:17,471 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-29 23:13:17,748 INFO: MPV geometry: 1536x960+-1920+-286
+2026-07-29 23:13:17,894 INFO: Posicionando 'PlayLine' no monitor secundário: 1536x960+-1920+-286
+2026-07-29 23:13:17,894 INFO: MPV inicializado
+2026-07-29 23:13:17,895 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 15648
+2026-07-29 23:13:18,145 INFO: Cliente conectado: ('127.0.0.1', 62013)
+2026-07-29 23:14:55,601 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-29 23:14:55,602 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-07-29 23:15:09,908 INFO: [set_logo] slot=1 filename='LogoPlayLineBlack.png' corner=br active=True
+2026-07-29 23:15:09,908 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': True, 'filename': 'LogoPlayLineBlack.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 23:15:09,908 INFO: [overlay] dimensões OSD: 1536x960
+2026-07-29 23:15:09,909 INFO: [overlay] slot=1 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 23:15:09,922 INFO: [overlay] LogoPlayLineBlack.png → 460x123
+2026-07-29 23:15:10,007 INFO: [overlay] slot=1 OK pos=(1015,789) 460x123 arquivo=LogoPlayLineBlack.png
+2026-07-29 23:15:10,007 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 23:15:12,082 INFO: [set_logo] slot=1 filename='LogoPlayLineBlack.png' corner=tr active=True
+2026-07-29 23:15:12,083 INFO: [set_logo] estado: {1: {'corner': 'tr', 'active': True, 'filename': 'LogoPlayLineBlack.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 23:15:12,084 INFO: [overlay] dimensões OSD: 1536x960
+2026-07-29 23:15:12,085 INFO: [overlay] slot=1 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 23:15:12,098 INFO: [overlay] LogoPlayLineBlack.png → 460x123
+2026-07-29 23:15:12,138 INFO: [overlay] slot=1 OK pos=(1015,48) 460x123 arquivo=LogoPlayLineBlack.png
+2026-07-29 23:15:12,138 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 23:15:12,797 INFO: [set_logo] slot=1 filename='LogoPlayLineBlack.png' corner=tl active=True
+2026-07-29 23:15:12,798 INFO: [set_logo] estado: {1: {'corner': 'tl', 'active': True, 'filename': 'LogoPlayLineBlack.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 23:15:12,798 INFO: [overlay] dimensões OSD: 1536x960
+2026-07-29 23:15:12,798 INFO: [overlay] slot=1 active=True filename='LogoPlayLineBlack.png'
+2026-07-29 23:15:12,807 INFO: [overlay] LogoPlayLineBlack.png → 460x123
+2026-07-29 23:15:12,848 INFO: [overlay] slot=1 OK pos=(61,48) 460x123 arquivo=LogoPlayLineBlack.png
+2026-07-29 23:15:12,849 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 23:15:14,859 INFO: [set_logo] slot=1 filename='LogoPlayLineBlack.png' corner=tl active=False
+2026-07-29 23:15:14,860 INFO: [set_logo] estado: {1: {'corner': 'tl', 'active': False, 'filename': 'LogoPlayLineBlack.png'}, 2: {'corner': 'bl', 'active': False, 'filename': ''}}
+2026-07-29 23:15:14,862 INFO: [overlay] dimensões OSD: 1536x960
+2026-07-29 23:15:14,862 INFO: [overlay] slot=1 active=False filename='LogoPlayLineBlack.png'
+2026-07-29 23:15:14,862 INFO: [overlay] slot=2 active=False filename=''
+2026-07-29 23:15:14,862 INFO: [overlay] nenhum overlay aplicado
+2026-07-29 23:15:19,272 INFO: [weather] OWM: 12.7°C (Curitiba, BR)
+2026-07-29 23:15:19,316 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:20,370 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:21,404 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:22,426 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:23,462 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:24,486 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:25,509 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:26,531 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:27,549 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:28,568 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:29,613 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:31,166 INFO: [weather] OWM: 28.1°C (Palmas, BR)
+2026-07-29 23:15:31,175 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:32,212 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:33,235 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:34,259 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:35,283 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:36,318 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:37,345 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:38,374 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:39,429 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:40,462 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:41,491 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:42,518 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:43,544 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:44,568 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:45,590 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:46,629 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:47,661 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:48,689 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:49,718 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:50,768 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:51,794 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:52,811 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:53,831 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:54,850 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:55,874 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:56,903 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:57,922 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:58,947 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:15:59,978 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:01,013 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:02,037 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:03,058 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:04,087 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:05,111 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:06,129 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:07,154 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:08,175 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:09,220 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:10,254 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:11,280 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:12,317 INFO: [osd_text] osd=1536x960 font=19 bmp=133x37 pos=(1342,856) margin_y=67
+2026-07-29 23:16:34,286 INFO: end-file reason=stop
+2026-07-29 23:25:37,495 INFO: Cliente desconectado: ('127.0.0.1', 62013)
+2026-07-30 08:51:14,096 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 08:51:14,411 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 08:51:14,572 INFO: MPV inicializado
+2026-07-30 08:51:14,574 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 10636
+2026-07-30 08:51:14,664 INFO: Cliente conectado: ('127.0.0.1', 59238)
+2026-07-30 08:51:53,682 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-30 08:51:53,682 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-07-30 08:51:53,803 INFO: Monitor secundário não encontrado — janela permanece no principal
+2026-07-30 08:52:03,804 INFO: end-file reason=stop
+2026-07-30 08:52:03,805 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-07-30 08:52:03,805 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 1 .mp4
+2026-07-30 08:52:11,198 INFO: end-file reason=stop
+2026-07-30 08:52:11,199 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 1 .mp4
+2026-07-30 08:52:11,199 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 2.mp4
+2026-07-30 08:52:14,117 INFO: end-file reason=stop
+2026-07-30 08:52:14,117 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 2.mp4
+2026-07-30 08:52:14,118 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4
+2026-07-30 08:52:14,629 INFO: end-file reason=stop
+2026-07-30 08:52:14,630 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4
+2026-07-30 08:52:14,631 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 3.mp4
+2026-07-30 08:52:15,019 INFO: end-file reason=stop
+2026-07-30 08:52:15,020 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 3.mp4
+2026-07-30 08:52:15,020 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\MPE EM AÇÃO 61 BL 2.mp4
+2026-07-30 08:52:15,350 INFO: end-file reason=stop
+2026-07-30 08:52:15,351 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\MPE EM AÇÃO 61 BL 2.mp4
+2026-07-30 08:52:15,351 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\MPE EM AÇÃO 61 BL 3.mp4
+2026-07-30 08:52:15,635 INFO: end-file reason=stop
+2026-07-30 08:52:15,635 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\MPE EM AÇÃO 61 BL 3.mp4
+2026-07-30 08:52:15,635 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4
+2026-07-30 08:52:15,953 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4
+2026-07-30 08:52:15,965 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-30 08:52:15,966 INFO: end-file reason=stop
+2026-07-30 08:52:19,958 INFO: end-file reason=stop
+2026-07-30 08:54:46,595 INFO: Cliente desconectado: ('127.0.0.1', 59238)
+2026-07-30 08:55:06,818 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 08:55:06,841 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 08:55:06,946 INFO: MPV inicializado
+2026-07-30 08:55:06,947 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 17384
+2026-07-30 08:55:06,978 INFO: Cliente conectado: ('127.0.0.1', 58680)
+2026-07-30 08:55:45,330 INFO: Cliente desconectado: ('127.0.0.1', 58680)
+2026-07-30 08:56:23,571 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 08:56:23,606 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 08:56:23,717 INFO: MPV inicializado
+2026-07-30 08:56:23,718 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 10728
+2026-07-30 08:56:24,141 INFO: Cliente conectado: ('127.0.0.1', 61807)
+2026-07-30 09:02:35,754 INFO: Cliente desconectado: ('127.0.0.1', 61807)
+2026-07-30 09:08:41,767 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 09:08:41,790 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 09:08:41,887 INFO: MPV inicializado
+2026-07-30 09:08:41,887 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 24124
+2026-07-30 09:08:41,915 INFO: Cliente conectado: ('127.0.0.1', 60637)
+2026-07-30 09:12:00,799 INFO: Cliente desconectado: ('127.0.0.1', 60637)
+2026-07-30 09:12:06,631 INFO: Cliente conectado: ('127.0.0.1', 53829)
+2026-07-30 09:12:55,792 INFO: MPV encerrado via terminate()
+2026-07-30 09:20:39,191 INFO: Cliente desconectado: ('127.0.0.1', 53829)
+2026-07-30 11:47:18,893 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 11:47:19,249 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 11:47:19,406 INFO: MPV inicializado
+2026-07-30 11:47:19,406 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 11308
+2026-07-30 11:47:19,470 INFO: Cliente conectado: ('127.0.0.1', 55410)
+2026-07-30 11:48:01,578 INFO: Cliente desconectado: ('127.0.0.1', 55410)
+2026-07-30 11:54:09,833 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 11:54:10,184 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 11:54:10,315 INFO: MPV inicializado
+2026-07-30 11:54:10,316 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 1372
+2026-07-30 11:54:10,317 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 11:54:10,355 INFO: Cliente conectado: ('127.0.0.1', 49678)
+2026-07-30 11:54:41,884 INFO: Cliente desconectado: ('127.0.0.1', 49678)
+2026-07-30 11:59:12,550 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 11:59:12,570 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 11:59:12,655 INFO: MPV inicializado
+2026-07-30 11:59:12,656 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 9012
+2026-07-30 11:59:12,657 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 11:59:12,727 INFO: Cliente conectado: ('127.0.0.1', 54793)
+2026-07-30 11:59:31,775 INFO: Cliente desconectado: ('127.0.0.1', 54793)
+2026-07-30 12:03:02,664 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 12:03:02,686 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 12:03:02,775 INFO: MPV inicializado
+2026-07-30 12:03:02,776 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 10796
+2026-07-30 12:03:02,777 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 12:03:02,843 INFO: Cliente conectado: ('127.0.0.1', 64296)
+2026-07-30 12:03:17,535 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4
+2026-07-30 12:03:17,535 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-30 12:04:34,844 INFO: end-file reason=eof
+2026-07-30 12:04:34,968 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PODCAST MOMENTO SAUDE EP - 47 BL1.mp4
+2026-07-30 12:05:07,264 INFO: Cliente desconectado: ('127.0.0.1', 64296)
+2026-07-30 12:06:22,218 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 12:06:22,245 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 12:06:22,355 INFO: MPV inicializado
+2026-07-30 12:06:22,356 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 14484
+2026-07-30 12:06:22,358 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 12:06:22,362 INFO: Cliente conectado: ('127.0.0.1', 64868)
+2026-07-30 12:06:53,157 INFO: Cliente desconectado: ('127.0.0.1', 64868)
+2026-07-30 12:07:38,681 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 12:07:38,703 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 12:07:38,792 INFO: MPV inicializado
+2026-07-30 12:07:38,792 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 17212
+2026-07-30 12:07:38,793 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 12:07:38,847 INFO: Cliente conectado: ('127.0.0.1', 62293)
+2026-07-30 12:07:49,230 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-30 12:07:49,231 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PODCAST MOMENTO SAUDE EP - 47 BL1.mp4
+2026-07-30 12:07:59,299 INFO: end-file reason=stop
+2026-07-30 12:13:18,410 INFO: Cliente desconectado: ('127.0.0.1', 62293)
+2026-07-30 12:13:27,945 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 12:13:27,969 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 12:13:28,069 INFO: MPV inicializado
+2026-07-30 12:13:28,069 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 20816
+2026-07-30 12:13:28,070 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 12:13:28,112 INFO: Cliente conectado: ('127.0.0.1', 55904)
+2026-07-30 12:13:51,461 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-30 12:13:51,461 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PODCAST MOMENTO SAUDE EP - 47 BL1.mp4
+2026-07-30 12:13:59,139 INFO: end-file reason=stop
+2026-07-30 12:14:09,336 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-30 12:14:09,336 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PODCAST MOMENTO SAUDE EP - 47 BL1.mp4
+2026-07-30 12:14:11,892 INFO: end-file reason=stop
+2026-07-30 12:15:54,161 INFO: Cliente desconectado: ('127.0.0.1', 55904)
+2026-07-30 12:16:37,057 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 12:16:37,083 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 12:16:37,196 INFO: MPV inicializado
+2026-07-30 12:16:37,197 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 5692
+2026-07-30 12:16:37,198 INFO: Cliente conectado: ('127.0.0.1', 60347)
+2026-07-30 12:16:37,198 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 12:16:46,749 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PARLAMENTO BRASIL MAIO 2.mp4
+2026-07-30 12:16:46,750 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PODCAST MOMENTO SAUDE EP - 47 BL1.mp4
+2026-07-30 12:16:54,598 INFO: Cliente desconectado: ('127.0.0.1', 60347)
+2026-07-30 12:16:58,820 INFO: Cliente conectado: ('127.0.0.1', 59297)
+2026-07-30 12:17:14,993 INFO: end-file reason=stop
+2026-07-30 12:17:15,005 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PODCAST MOMENTO SAUDE EP - 47 BL1.mp4
+2026-07-30 12:17:19,445 INFO: end-file reason=stop
+2026-07-30 12:17:21,904 INFO: Cliente desconectado: ('127.0.0.1', 59297)
+2026-07-30 12:20:59,581 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 12:20:59,602 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 12:20:59,712 INFO: MPV inicializado
+2026-07-30 12:20:59,713 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 15044
+2026-07-30 12:20:59,714 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 12:20:59,743 INFO: Cliente conectado: ('127.0.0.1', 56326)
+2026-07-30 12:21:17,411 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PODCAST MOMENTO SAUDE EP - 47 BL1.mp4
+2026-07-30 12:21:17,411 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4
+2026-07-30 12:21:25,320 INFO: end-file reason=stop
+2026-07-30 12:21:36,233 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 12:21:36,252 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 12:21:36,345 INFO: MPV inicializado
+2026-07-30 12:21:36,345 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 18848
+2026-07-30 12:21:36,347 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 12:21:36,415 INFO: Cliente conectado: ('127.0.0.1', 55357)
+2026-07-30 12:26:10,421 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 12:26:10,446 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 12:26:10,547 INFO: MPV inicializado
+2026-07-30 12:26:10,548 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 5568
+2026-07-30 12:26:10,549 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 12:26:10,557 INFO: Cliente conectado: ('127.0.0.1', 49343)
+2026-07-30 12:26:25,489 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\PODCAST MOMENTO SAUDE EP - 47 BL1.mp4
+2026-07-30 12:26:25,490 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4
+2026-07-30 12:26:33,675 INFO: end-file reason=stop
+2026-07-30 12:26:46,978 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-30 12:26:46,998 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-30 12:26:47,089 INFO: MPV inicializado
+2026-07-30 12:26:47,090 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 16596
+2026-07-30 12:26:47,091 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-30 12:26:47,162 INFO: Cliente conectado: ('127.0.0.1', 62803)

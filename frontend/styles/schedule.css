@@ -530,6 +530,69 @@
   padding: 24px !important; font-size: 13px;
 }
 
+/* ── Abas do histórico ── */
+.hist-tabs {
+  display: flex; gap: 4px;
+}
+.hist-tab {
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.hist-tab:hover { background: var(--surface2); color: var(--text); }
+.hist-tab-active { background: var(--surface2); color: var(--accent); border-color: var(--accent); }
+
+/* ── Painéis das abas ocupam o espaço restante e permitem scroll interno ── */
+#hist-panel-log,
+#hist-panel-stats {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Nav de data (agora dentro do painel log) ── */
+#hist-panel-log .history-nav {
+  padding: 10px 18px 0;
+  flex-shrink: 0;
+}
+
+/* ── Cards de totais ── */
+.hist-stats-totals {
+  display: flex; gap: 12px;
+  padding: 14px 18px 10px;
+  flex-shrink: 0;
+}
+.hist-stat-card {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.hist-stat-val {
+  font-size: 22px; font-weight: 700;
+  color: var(--text); font-variant-numeric: tabular-nums;
+}
+.hist-stat-lbl {
+  font-size: 10px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .06em;
+}
+
+/* ── Coluna de ranking ── */
+.hist-rank {
+  width: 32px; text-align: center;
+  color: var(--muted) !important;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Gear dropdown ── */
 .gear-dropdown {
   position: fixed;
