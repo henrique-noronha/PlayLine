@@ -94,8 +94,6 @@
                 </div>
               </div>
               <div class="ctrl-menu-item" id="ctrl-menu-zoom-reset"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Redefinir zoom</div>
-              <div class="ctrl-menu-sep"></div>
-              <div class="ctrl-menu-item ctrl-menu-item--danger" id="ctrl-menu-quit-mpv">⏻ Encerrar player MPV</div>
             </div>
           </div>
         </div>
@@ -315,28 +313,55 @@
     <div class="history-box">
       <div class="history-header">
         <h3>Histórico de exibição</h3>
+        <div class="hist-tabs">
+          <button class="hist-tab hist-tab-active" data-tab="log">Registro</button>
+          <button class="hist-tab" data-tab="stats">Estatísticas</button>
+        </div>
+        <button id="hist-close" title="Fechar">✕</button>
+      </div>
+
+      <!-- Aba: Registro por dia -->
+      <div id="hist-panel-log">
         <div class="history-nav">
           <button id="hist-prev-day" title="Dia anterior">&#8249;</button>
           <span id="hist-date-label"></span>
           <button id="hist-next-day" title="Próximo dia">&#8250;</button>
         </div>
-        <button id="hist-close" title="Fechar">✕</button>
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Entrada</th>
+                <th>Saída</th>
+                <th>Título</th>
+                <th>Duração</th>
+                <th>Status</th>
+                <th>Pause</th>
+              </tr>
+            </thead>
+            <tbody id="hist-tbody"></tbody>
+          </table>
+          <div id="hist-empty" class="hist-empty" style="display:none">Nenhum registro para esta data.</div>
+        </div>
       </div>
-      <div class="history-table-wrap">
-        <table class="history-table">
-          <thead>
-            <tr>
-              <th>Entrada</th>
-              <th>Saída</th>
-              <th>Título</th>
-              <th>Duração</th>
-              <th>Status</th>
-              <th>Pause</th>
-            </tr>
-          </thead>
-          <tbody id="hist-tbody"></tbody>
-        </table>
-        <div id="hist-empty" class="hist-empty" style="display:none">Nenhum registro para esta data.</div>
+
+      <!-- Aba: Estatísticas -->
+      <div id="hist-panel-stats" style="display:none">
+        <div class="hist-stats-totals" id="hist-stats-totals"></div>
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Título</th>
+                <th>Exibições</th>
+                <th>Tempo total</th>
+              </tr>
+            </thead>
+            <tbody id="hist-stats-tbody"></tbody>
+          </table>
+          <div id="hist-stats-empty" class="hist-empty" style="display:none">Nenhum dado ainda.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -377,5 +402,31 @@
 
   <script src="/static/components/controls_menu.js"></script>
   <script src="/static/components/yt_preview.js"></script>
+
+  <!-- Diálogo de fechamento da interface -->
+  <div id="close-dialog-overlay" class="close-dlg-overlay" style="display:none">
+    <div class="close-dlg-box">
+      <h3 class="close-dlg-title">Fechar PlayLine</h3>
+      <p class="close-dlg-sub">O que deseja fazer?</p>
+      <div class="close-dlg-actions">
+        <button id="close-dlg-interface" class="close-dlg-btn close-dlg-neutral">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="3" y="3" width="14" height="14" rx="2"/>
+            <path d="M7 10h6M13 7l3 3-3 3"/>
+          </svg>
+          Fechar somente a interface
+        </button>
+        <button id="close-dlg-all" class="close-dlg-btn close-dlg-warn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v10"/>
+            <path d="M6.3 5.3A8 8 0 1 0 17.7 5.3"/>
+          </svg>
+          Fechar interface e player
+        </button>
+        <button id="close-dlg-cancel" class="close-dlg-btn close-dlg-cancel">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <script src="/static/components/close_dialog.js"></script>
 </body>
 </html>

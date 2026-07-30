@@ -2,20 +2,14 @@
 Playlist Engine — gerencia a fila de reprodução e responde a eventos do Player.
 """
 
-import json
 import logging
 import asyncio
-import sys
-from pathlib import Path
 from typing import Callable, Optional
 
+from db import get_conn
 from .history import HistoryManager
 
 logger = logging.getLogger(__name__)
-
-_DATA_DIR = Path(sys.executable).parent if getattr(sys, 'frozen', False) else Path(__file__).parent.parent
-SCHEDULE_PATH   = _DATA_DIR / "schedule.json"
-CHECKPOINT_PATH = _DATA_DIR / "checkpoint.json"
 
 
 class PlaylistEngine:
@@ -36,9 +30,16 @@ class PlaylistEngine:
  
     def load_schedule(self) -> list[dict]:
         try:
-            self._items = json.loads(SCHEDULE_PATH.read_text(encoding="utf-8"))
+            conn = get_conn()
+            rows = conn.execute("SELECT * FROM schedule ORDER BY position").fetchall()
+            conn.close()
+            self._items = []
+            for r in rows:
+                item = dict(r)
+                item["live"] = bool(item["live"])
+                self._items.append(item)
             logger.info("Roteiro carregado: %d itens", len(self._items))
-        except (FileNotFoundError, json.JSONDecodeError) as exc:
+        except Exception as exc:
             logger.error("Falha ao carregar roteiro: %s", exc)
             self._items = []
         self._maybe_prefetch_yt()
@@ -62,9 +63,20 @@ class PlaylistEngine:
                     self._preloading = False
                     logger.debug("Pré-carregamento cancelado — próximo item alterado externamente")
         self._items = items
-        SCHEDULE_PATH.write_text(
-            json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        try:
+            with get_conn() as conn:
+                conn.execute("DELETE FROM schedule")
+                if items:
+                    conn.executemany(
+                        "INSERT INTO schedule (position,id,title,path,live,start_time,end_time,duration)"
+                        " VALUES (?,?,?,?,?,?,?,?)",
+                        [(i, it.get("id", ""), it.get("title", ""), it.get("path", ""),
+                          1 if it.get("live") else 0,
+                          it.get("start_time"), it.get("end_time"), it.get("duration"))
+                         for i, it in enumerate(items)],
+                    )
+        except Exception as exc:
+            logger.error("Falha ao salvar roteiro: %s", exc)
         logger.info("Roteiro salvo: %d itens", len(items))
         self._maybe_prefetch_yt()
 
@@ -82,7 +94,10 @@ class PlaylistEngine:
 
     def _read_checkpoint(self) -> Optional[dict]:
         try:
-            return json.loads(CHECKPOINT_PATH.read_text(encoding="utf-8"))
+            conn = get_conn()
+            row = conn.execute("SELECT path, position FROM checkpoint WHERE id=1").fetchone()
+            conn.close()
+            return dict(row) if row else None
         except Exception:
             return None
 

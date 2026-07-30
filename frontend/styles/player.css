@@ -150,10 +150,12 @@
 .audio-controls {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 8px;
   min-width: 0;
   padding-right: 16px;
   border-right: 1px solid var(--border);
+  align-self: stretch;
 }
 
 .audio-label {
@@ -379,6 +381,7 @@
   gap: 14px;
   padding-left: 16px;
   border-left: 1px solid var(--border);
+  align-self: stretch;
 }
 
 .logo-ctrl {
@@ -705,3 +708,78 @@
   text-align: center;
 }
 
+
+/* ── Diálogo de fechamento ─────────────────────────────────────────────── */
+.close-dlg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.close-dlg-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px 32px 24px;
+  min-width: 340px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+.close-dlg-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+.close-dlg-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+.close-dlg-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.close-dlg-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 7px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: opacity .12s, background .12s;
+}
+.close-dlg-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.close-dlg-btn:hover { opacity: .85; }
+.close-dlg-neutral {
+  background: var(--surface3, #2a2f3a);
+  color: var(--text);
+}
+.close-dlg-warn {
+  background: rgba(234,88,12,.18);
+  color: #fb923c;
+  border: 1px solid rgba(234,88,12,.35);
+}
+.close-dlg-cancel {
+  background: transparent;
+  color: var(--muted);
+  justify-content: center;
+  font-size: 12px;
+  padding: 8px;
+}

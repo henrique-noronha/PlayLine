@@ -1558,5 +1558,15 @@
     "duration_played": 52,
     "end_reason": "completed",
     "had_pause": false
+  },
+  {
+    "date": "2026-07-29",
+    "title": "AV. CÔNEGO JOÃO LIMA",
+    "path": "C:\\Users\\HENRIQUE NORONHA\\Documents\\PlayLine\\Biblioteca\\Comerciais\\AV. CÔNEGO JOÃO LIMA.mp4",
+    "started_at": "23:14:55",
+    "ended_at": "23:16:34",
+    "duration_played": 99,
+    "end_reason": "stopped",
+    "had_pause": false
   }
 ]

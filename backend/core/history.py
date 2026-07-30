@@ -1,21 +1,12 @@
 """Registro de histórico de exibição do PlayLine."""
 
-import json
 import logging
 import threading
 from datetime import datetime
-from pathlib import Path
-import sys
+
+from db import get_conn
 
 logger = logging.getLogger(__name__)
-
-_HISTORY_PATH: Path = (
-    Path(sys.executable).parent / "history.json"
-    if getattr(sys, "frozen", False)
-    else Path(__file__).parent.parent / "history.json"
-)
-
-_MAX_ENTRIES = 50_000
 
 _REASON_LABEL = {
     "completed":   "Concluído",
@@ -36,15 +27,12 @@ class HistoryManager:
         now = datetime.now()
         with self._lock:
             self._current = {
-                "date":            now.strftime("%Y-%m-%d"),
-                "title":           title,
-                "path":            path,
-                "started_at":      now.strftime("%H:%M:%S"),
-                "_started_ts":     now.timestamp(),
-                "ended_at":        None,
-                "duration_played": 0,
-                "end_reason":      None,
-                "had_pause":       False,
+                "date":        now.strftime("%Y-%m-%d"),
+                "title":       title,
+                "path":        path,
+                "started_at":  now.strftime("%H:%M:%S"),
+                "_started_ts": now.timestamp(),
+                "had_pause":   False,
             }
 
     def close_entry(self, reason: str) -> None:
@@ -55,41 +43,91 @@ class HistoryManager:
             self._current = None
 
         now = datetime.now()
-        entry["ended_at"]        = now.strftime("%H:%M:%S")
-        entry["duration_played"] = max(0, round(now.timestamp() - entry.pop("_started_ts")))
-        entry["end_reason"]      = reason
-        self._append(entry)
+        duration = max(0, round(now.timestamp() - entry.pop("_started_ts")))
+        try:
+            with get_conn() as conn:
+                conn.execute(
+                    "INSERT INTO history"
+                    " (date,title,path,started_at,ended_at,duration_played,end_reason,had_pause)"
+                    " VALUES (?,?,?,?,?,?,?,?)",
+                    (entry["date"], entry["title"], entry["path"], entry["started_at"],
+                     now.strftime("%H:%M:%S"), duration, reason,
+                     1 if entry["had_pause"] else 0),
+                )
+        except Exception as exc:
+            logger.error("[history] Erro ao salvar: %s", exc)
 
     def mark_pause(self) -> None:
         with self._lock:
             if self._current:
                 self._current["had_pause"] = True
 
-    def _append(self, entry: dict) -> None:
-        try:
-            try:
-                entries = json.loads(_HISTORY_PATH.read_text(encoding="utf-8"))
-            except (FileNotFoundError, json.JSONDecodeError):
-                entries = []
-            entries.append(entry)
-            if len(entries) > _MAX_ENTRIES:
-                entries = entries[-_MAX_ENTRIES:]
-            _HISTORY_PATH.write_text(
-                json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8"
-            )
-        except Exception as exc:
-            logger.error("[history] Erro ao salvar: %s", exc)
-
     def get_history(self, date: str | None = None, limit: int = 200) -> list[dict]:
         try:
-            entries = json.loads(_HISTORY_PATH.read_text(encoding="utf-8"))
-        except (FileNotFoundError, json.JSONDecodeError):
+            conn = get_conn()
+            if date:
+                rows = conn.execute(
+                    "SELECT * FROM history WHERE date=? ORDER BY id DESC LIMIT ?",
+                    (date, limit),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT * FROM history ORDER BY id DESC LIMIT ?", (limit,)
+                ).fetchall()
+            conn.close()
+            result = []
+            for r in rows:
+                e = dict(r)
+                e["had_pause"] = bool(e["had_pause"])
+                e["end_reason_label"] = _REASON_LABEL.get(
+                    e.get("end_reason", ""), e.get("end_reason", "—")
+                )
+                result.append(e)
+            return result
+        except Exception as exc:
+            logger.error("[history] Erro ao consultar: %s", exc)
             return []
-        if date:
-            entries = [e for e in entries if e.get("date") == date]
-        entries = list(reversed(entries[-limit:]))
-        for e in entries:
-            e["end_reason_label"] = _REASON_LABEL.get(
-                e.get("end_reason", ""), e.get("end_reason", "—")
-            )
-        return entries
+
+    def get_stats(self) -> dict:
+        """Retorna estatísticas agregadas: top clipes, totais e atividade por data."""
+        try:
+            conn = get_conn()
+
+            top = conn.execute("""
+                SELECT path, title,
+                       COUNT(*)                        AS play_count,
+                       SUM(duration_played)            AS total_seconds,
+                       ROUND(SUM(duration_played)/3600.0, 2) AS total_hours
+                FROM   history
+                GROUP  BY path
+                ORDER  BY play_count DESC
+            """).fetchall()
+
+            totals = conn.execute("""
+                SELECT COUNT(*)                             AS total_plays,
+                       ROUND(SUM(duration_played)/3600.0,2) AS total_hours,
+                       COUNT(DISTINCT date)                 AS total_days
+                FROM   history
+            """).fetchone()
+
+            by_date = conn.execute("""
+                SELECT date,
+                       COUNT(*)            AS plays,
+                       SUM(duration_played) AS seconds
+                FROM   history
+                GROUP  BY date
+                ORDER  BY date DESC
+                LIMIT  30
+            """).fetchall()
+
+            conn.close()
+            return {
+                "top_clips":   [dict(r) for r in top],
+                "total_plays": totals["total_plays"] or 0,
+                "total_hours": totals["total_hours"] or 0.0,
+                "total_days":  totals["total_days"] or 0,
+                "by_date":     [dict(r) for r in by_date],
+            }
+        except Exception as exc:
+            logger.error("[history] Erro ao obter stats: %s", exc)
+            return {"top_clips": [], "total_plays": 0, "total_hours": 0.0, "total_days": 0, "by_date": []}

@@ -49,9 +49,23 @@ def setup(playlist_engine, manager):
     _manager = manager
 
 
+@router.post("/api/stop")
+async def stop_playback():
+    """Para a reprodução atual e para a engine de playlist."""
+    if _playlist_engine is None:
+        raise HTTPException(status_code=503, detail="Servidor não inicializado")
+    await _playlist_engine.stop()
+    return {"ok": True}
+
+
 @router.get("/api/history")
 async def get_history(date: str = "", limit: int = 200):
     return {"entries": _playlist_engine._history.get_history(date or None, limit)}
+
+
+@router.get("/api/history/stats")
+async def get_history_stats():
+    return _playlist_engine._history.get_stats()
 
 
 @router.get("/api/schedule")
