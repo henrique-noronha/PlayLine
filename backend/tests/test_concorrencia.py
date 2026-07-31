@@ -4,7 +4,7 @@ import threading
 from unittest.mock import MagicMock, AsyncMock
 
 import pytest
-from db import get_conn
+from core.db import get_conn
 from core.playlist import PlaylistEngine
 
 
@@ -112,7 +112,7 @@ def test_checkpoint_escrita_concorrente(monkeypatch):
     from daemon import checkpoint
     from pathlib import Path
 
-    import db
+    import core.db as db
     monkeypatch.setattr(checkpoint, "_DB_PATH", db.DB_PATH)
 
     barrier = threading.Barrier(2)

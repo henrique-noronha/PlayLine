@@ -4,7 +4,7 @@ import logging
 import threading
 from datetime import datetime
 
-from db import get_conn
+from .db import get_conn
 
 logger = logging.getLogger(__name__)
 

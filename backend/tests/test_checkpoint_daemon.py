@@ -2,7 +2,7 @@
 
 from pathlib import Path
 import pytest
-import db
+import core.db as db
 from daemon import checkpoint
 
 

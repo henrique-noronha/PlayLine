@@ -1732,3 +1732,4 @@
 2026-07-31 12:33:24,362 INFO: [overlay] LogoPlayLineD.png → 50x29
 2026-07-31 12:33:24,366 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
 2026-07-31 12:34:01,618 INFO: end-file reason=stop
+2026-07-31 12:40:12,549 INFO: Cliente desconectado: ('127.0.0.1', 49714)

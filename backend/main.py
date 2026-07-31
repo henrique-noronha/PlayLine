@@ -22,7 +22,7 @@ from core.player import Player
 from core.playlist import PlaylistEngine
 from api.routes import router as http_router, setup as setup_routes
 from api.websocket import router as ws_router, setup as setup_ws
-from db import init_db, migrate_from_json
+from core.db import init_db, migrate_from_json
 
 _log_handlers = [logging.StreamHandler()]
 if getattr(sys, "frozen", False):

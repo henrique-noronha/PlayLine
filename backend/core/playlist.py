@@ -6,7 +6,7 @@ import logging
 import asyncio
 from typing import Callable, Optional
 
-from db import get_conn
+from .db import get_conn
 from .history import HistoryManager
 
 logger = logging.getLogger(__name__)

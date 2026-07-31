@@ -1,8 +1,8 @@
 """Testes para db.py — inicialização e migração de JSON."""
 
 import json
-import db
-from db import get_conn, migrate_from_json
+import core.db as db
+from core.db import get_conn, migrate_from_json
 
 
 def test_tabelas_criadas():

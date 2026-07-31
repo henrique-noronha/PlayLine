@@ -2,7 +2,7 @@
 
 import pytest
 from unittest.mock import MagicMock, AsyncMock
-from db import get_conn
+from core.db import get_conn
 from core.playlist import PlaylistEngine
 
 

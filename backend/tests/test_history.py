@@ -1,7 +1,7 @@
 """Testes para HistoryManager — registro e estatísticas."""
 
 import pytest
-from db import get_conn
+from core.db import get_conn
 from core.history import HistoryManager
 
 
