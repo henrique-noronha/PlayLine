@@ -53,6 +53,13 @@ def init_db() -> None:
                 end_reason      TEXT,
                 had_pause       INTEGER NOT NULL DEFAULT 0
             );
+
+            CREATE TABLE IF NOT EXISTS saved_schedules (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                title      TEXT    NOT NULL,
+                created_at TEXT    NOT NULL,
+                items      TEXT    NOT NULL
+            );
         """)
     logger.info("[db] Banco inicializado: %s", DB_PATH)
 
