@@ -1711,3 +1711,24 @@
 2026-07-31 12:04:54,256 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 1 .mp4
 2026-07-31 12:04:54,256 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
 2026-07-31 12:05:38,499 INFO: end-file reason=stop
+2026-07-31 12:28:29,188 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-31 12:28:29,210 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-31 12:28:29,313 INFO: MPV inicializado
+2026-07-31 12:28:29,314 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 24636
+2026-07-31 12:28:29,316 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-31 12:28:29,363 INFO: Cliente conectado: ('127.0.0.1', 49714)
+2026-07-31 12:32:45,668 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=bl active=True
+2026-07-31 12:32:45,669 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-07-31 12:32:45,669 INFO: [overlay] dimensões OSD: 380x213
+2026-07-31 12:32:45,669 INFO: [overlay] slot=1 active=False filename=''
+2026-07-31 12:32:45,669 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-31 12:32:45,775 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-31 12:32:45,791 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
+2026-07-31 12:33:23,594 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 1 .mp4
+2026-07-31 12:33:23,597 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-07-31 12:33:24,338 INFO: [overlay] dimensões OSD: 380x213
+2026-07-31 12:33:24,338 INFO: [overlay] slot=1 active=False filename=''
+2026-07-31 12:33:24,338 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-31 12:33:24,362 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-31 12:33:24,366 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
+2026-07-31 12:34:01,618 INFO: end-file reason=stop

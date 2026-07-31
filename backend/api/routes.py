@@ -10,7 +10,6 @@ from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse, Response
-from core import saved_schedules as _saved_scheds
 
 # Mesmo caminho usado pelo mpv_daemon — sem espaços para compatibilidade com lavfi
 _LOGO_WORK_DIR = Path(os.environ.get("PUBLIC", r"C:\Users\Public")) / "pltmp"
@@ -48,46 +47,6 @@ def setup(playlist_engine, manager):
     global _playlist_engine, _manager
     _playlist_engine = playlist_engine
     _manager = manager
-
-
-@router.get("/api/saved-schedules")
-async def list_saved_schedules():
-    return {"schedules": _saved_scheds.list_saved()}
-
-
-@router.post("/api/saved-schedules")
-async def create_saved_schedule(body: dict):
-    title = (body.get("title") or "").strip()
-    items = body.get("items") or []
-    if not title:
-        raise HTTPException(status_code=400, detail="Título obrigatório")
-    if not items:
-        raise HTTPException(status_code=400, detail="Roteiro vazio")
-    new_id = _saved_scheds.save(title, items)
-    return {"id": new_id}
-
-
-@router.get("/api/saved-schedules/{schedule_id}/items")
-async def get_saved_schedule_items(schedule_id: int):
-    items = _saved_scheds.get_items(schedule_id)
-    if items is None:
-        raise HTTPException(status_code=404, detail="Roteiro não encontrado")
-    return {"items": items}
-
-
-@router.delete("/api/saved-schedules/{schedule_id}")
-async def delete_saved_schedule(schedule_id: int):
-    if not _saved_scheds.delete(schedule_id):
-        raise HTTPException(status_code=404, detail="Roteiro não encontrado")
-    return {"ok": True}
-
-
-@router.post("/api/validate-paths")
-async def validate_paths(body: dict):
-    """Verifica quais caminhos de arquivo não existem mais."""
-    paths = body.get("paths") or []
-    missing = [p for p in paths if p and not Path(p).is_file()]
-    return {"missing": missing}
 
 
 @router.post("/api/stop")
