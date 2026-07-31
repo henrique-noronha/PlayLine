@@ -21,9 +21,14 @@
 ### Roteiro de Programação
 - Monte a grade arrastando vídeos da biblioteca
 - Reordene, remova e controle cada item com precisão
+- Defina **ponto de entrada e saída** de cada clipe sem precisar editar o arquivo original
 - Cálculo em tempo real de horário de início, tempo restante e previsão do próximo clipe
-- Histórico de exibição registrado diretamente no roteiro
 - Recuperação automática de clipes com erro — avança sem intervenção do operador
+
+### YouTube
+- Insira vídeos ou transmissões ao vivo do YouTube diretamente no roteiro
+- Resolução automática da URL de stream via yt-dlp — sem download, reprodução direta
+- Suporte a streams HLS (ao vivo) com reconexão automática em caso de falha
 
 ### Sobreposição de Logos
 - Até 2 logotipos simultâneos em qualquer canto da tela
@@ -34,6 +39,11 @@
 - Bloco de hora, temperatura e cidade sobrepostos ao vídeo em tempo real
 - Seleção de 30 cidades brasileiras ou entrada manual
 - Integração com OpenWeatherMap API, com fallback automático para wttr.in
+
+### Histórico e Estatísticas
+- Registro automático de cada exibição com data, hora e duração
+- Aba **Registro**: listagem cronológica filtrável por data
+- Aba **Estatísticas**: clipes mais exibidos (ranking completo), total de horas transmitidas e histórico de exibição por dia (30 dias)
 
 ### Preview em Tempo Real
 - Monitore o que está sendo exibido diretamente na interface
@@ -74,6 +84,8 @@ PlayLine adota uma **arquitetura orientada a eventos** com três processos isola
 |---|---|
 | Motor de vídeo | MPV + python-mpv |
 | Backend | Python 3.13 + FastAPI |
+| Persistência | SQLite (WAL mode) — roteiro, checkpoint e histórico |
+| YouTube | yt-dlp — resolução de stream sem download |
 | Interface nativa | pywebview (WebView2) |
 | Comunicação em tempo real | WebSocket (RFC 6455) |
 | Renderização de overlays | Pillow → BGRA → MPV overlay-add |

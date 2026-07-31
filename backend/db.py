@@ -58,7 +58,7 @@ def init_db() -> None:
 
 
 def migrate_from_json(data_dir: Path) -> None:
-    """Importa dados legados de JSON para SQLite e renomeia os originais como .bak."""
+    """Importa dados legados de JSON para SQLite e remove os arquivos originais."""
     import json
 
     conn = get_conn()
@@ -78,7 +78,7 @@ def migrate_from_json(data_dir: Path) -> None:
                               it.get("start_time"), it.get("end_time"), it.get("duration"))
                              for i, it in enumerate(items)],
                         )
-                sched.rename(sched.with_suffix(".json.bak"))
+                sched.unlink()
                 logger.info("[db] schedule.json migrado (%d itens)", len(items))
             except Exception as exc:
                 logger.warning("[db] Falha ao migrar schedule: %s", exc)
@@ -94,7 +94,7 @@ def migrate_from_json(data_dir: Path) -> None:
                             "INSERT OR REPLACE INTO checkpoint (id, path, position) VALUES (1,?,?)",
                             (cp.get("path", ""), cp.get("position", 0.0)),
                         )
-                cp_file.rename(cp_file.with_suffix(".json.bak"))
+                cp_file.unlink()
                 logger.info("[db] checkpoint.json migrado")
             except Exception as exc:
                 logger.warning("[db] Falha ao migrar checkpoint: %s", exc)
@@ -116,7 +116,7 @@ def migrate_from_json(data_dir: Path) -> None:
                               1 if e.get("had_pause") else 0)
                              for e in entries],
                         )
-                hist.rename(hist.with_suffix(".json.bak"))
+                hist.unlink()
                 logger.info("[db] history.json migrado (%d entradas)", len(entries))
             except Exception as exc:
                 logger.warning("[db] Falha ao migrar history: %s", exc)
