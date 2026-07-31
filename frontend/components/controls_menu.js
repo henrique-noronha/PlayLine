@@ -74,4 +74,9 @@
     if (e.key === "Escape") closeDropdown();
   });
 
+  document.getElementById("ctrl-menu-history").addEventListener("click", () => {
+    closeDropdown();
+    openHistoryModal();
+  });
+
 })();

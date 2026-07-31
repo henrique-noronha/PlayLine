@@ -10,6 +10,9 @@ backend/ffmpeg.exe
 # Dados de runtime — gerados automaticamente pela aplicação
 backend/schedule.json
 backend/history.json
+*.db
+*.db-shm
+*.db-wal
 
 # Build
 backend/build/

@@ -60,7 +60,7 @@
           <td class="hist-time">${e.ended_at || "—"}</td>
           <td class="hist-title" title="${_esc(e.path || "")}">${_esc(e.title || "—")}</td>
           <td class="hist-dur">${_fmtDuration(e.duration_played)}</td>
-          <td><span class="hist-badge">${_esc(e.end_reason_label || e.end_reason || "—")}</span></td>
+          <td><span class="hist-badge${e.end_reason === 'error' ? ' hist-badge--error' : ''}">${_esc(e.end_reason_label || e.end_reason || "—")}</span></td>
           <td class="hist-pause">${e.had_pause ? "Sim" : "—"}</td>
         `;
         tbody.appendChild(tr);

@@ -85,6 +85,7 @@ function handleEvent(ev) {
       state.mpvAlive = true;
       break;
     case "now_playing":
+      window._netMonitor?.onNowPlaying(ev.item);
       state.mpvAlive = true;
       _cancelPendingLoad();
       state.currentIndex = ev.index;
@@ -99,6 +100,11 @@ function handleEvent(ev) {
       if (ev.item.live) {
         showLiveIndicator();
         if (window._setPreviewStatus) window._setPreviewStatus("Carregando live do YouTube…");
+      } else if (ev.item.type === "youtube_live") {
+        // Vídeo do YouTube (não ao vivo): barra de progresso via eventos MPV
+        hideLiveIndicator();
+        if (window._setPreviewStatus) window._setPreviewStatus(null);
+        setYtVideoMode(ev.item.duration || 0);
       } else {
         hideLiveIndicator();
         if (window._setPreviewStatus) window._setPreviewStatus(null);
@@ -139,6 +145,7 @@ function handleEvent(ev) {
       video.play().catch(() => {});
       break;
     case "stopped":
+      window._netMonitor?.onStopped();
       _vuBackendDb = null;
       _cancelPendingLoad();
       state.playing = false;
@@ -157,6 +164,7 @@ function handleEvent(ev) {
       updateStartTimes();
       break;
     case "playlist_end":
+      window._netMonitor?.onStopped();
       _cancelPendingLoad();
       state.playing = false;
       state.currentItemStartTime = null;
@@ -176,13 +184,19 @@ function handleEvent(ev) {
       break;
     case "schedule_updated":
       state.schedule = ev.items ?? [];
-      renderSchedule();
+      if (!window._schedDragging) renderSchedule();
       break;
     case "logo_list":
       updateLogoDropdowns(ev.files);
       break;
     case "text_overlay_state":
       if (!_clipOverrideActive && typeof applyTextOverlayState === "function") applyTextOverlayState(ev);
+      break;
+    case "stream_reconnecting":
+      window._netMonitor?.onReconnecting(ev);
+      break;
+    case "stream_reconnect_failed":
+      window._netMonitor?.onReconnectFailed();
       break;
   }
 }
@@ -203,11 +217,17 @@ function applyState(s) {
     updateNowPlaying(null);
   }
 
-  if ((state.playing || state.paused) && s.current_item?.path && !video.src && !s.current_item.live) {
-    // Adia o loadVideo até o primeiro evento "position" para usar #t=N na URL.
-    // Fallback de 1.5s garante que o vídeo carregue mesmo que o evento demore.
-    _pendingLoad        = { path: s.current_item.path, paused: state.paused };
-    _pendingLoadTimeout = setTimeout(() => _commitPendingLoad(0), 1500);
+  const _ci = s.current_item;
+  if ((state.playing || state.paused) && _ci?.path && !video.src && !_ci.live) {
+    if (_ci.type === "youtube_live") {
+      // Vídeo YouTube: barra de progresso via eventos MPV; não carrega no elemento <video>
+      setYtVideoMode(_ci.duration || 0);
+    } else {
+      // Adia o loadVideo até o primeiro evento "position" para usar #t=N na URL.
+      // Fallback de 1.5s garante que o vídeo carregue mesmo que o evento demore.
+      _pendingLoad        = { path: _ci.path, paused: state.paused };
+      _pendingLoadTimeout = setTimeout(() => _commitPendingLoad(0), 1500);
+    }
   }
 
   if (state.playing && !state.paused) {
