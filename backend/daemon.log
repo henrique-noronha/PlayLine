@@ -1387,3 +1387,9 @@
 2026-07-31 08:36:57,502 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 4812
 2026-07-31 08:36:57,503 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
 2026-07-31 08:36:57,942 INFO: Cliente conectado: ('127.0.0.1', 60547)
+2026-07-31 09:05:43,277 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-31 09:05:43,590 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-31 09:05:43,706 INFO: MPV inicializado
+2026-07-31 09:05:43,706 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 13348
+2026-07-31 09:05:43,707 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-31 09:05:43,854 INFO: Cliente conectado: ('127.0.0.1', 65421)
