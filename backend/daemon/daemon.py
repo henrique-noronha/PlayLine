@@ -74,6 +74,67 @@ def _resolve_yt_stream(url: str) -> str:
         from ..core.youtube_resolver import get_stream_url
     return get_stream_url(url)
 
+
+def _create_standby_image(path: Path) -> None:
+    """Gera standby.png com Pillow. Chamado uma vez na inicialização do daemon."""
+    if path.exists():
+        return
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+
+        W, H = 1280, 720
+        BG   = (13, 17, 23)       # quase-preto azulado
+        FG   = (226, 232, 240)    # branco suave
+        MUTED = (100, 116, 139)   # cinza
+
+        img  = Image.new("RGB", (W, H), color=BG)
+        draw = ImageDraw.Draw(img)
+
+        # Barra de topo
+        draw.rectangle([0, 0, W, 4], fill=(245, 158, 11))
+
+        # Tenta fontes do sistema (Windows → Linux)
+        font_big = font_small = None
+        for fp in [
+            r"C:\Windows\Fonts\segoeui.ttf",
+            r"C:\Windows\Fonts\arial.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        ]:
+            if Path(fp).exists():
+                try:
+                    font_big   = ImageFont.truetype(fp, 72)
+                    font_small = ImageFont.truetype(fp, 28)
+                    break
+                except Exception:
+                    pass
+        if font_big is None:
+            font_big = font_small = ImageFont.load_default()
+
+        # Texto principal
+        title = "Problemas técnicos"
+        tb = draw.textbbox((0, 0), title, font=font_big)
+        tw, th = tb[2] - tb[0], tb[3] - tb[1]
+        draw.text(((W - tw) / 2, (H - th) / 2 - 30), title, fill=FG, font=font_big)
+
+        # Subtexto
+        sub = "Voltamos em instantes"
+        sb = draw.textbbox((0, 0), sub, font=font_small)
+        sw = sb[2] - sb[0]
+        draw.text(((W - sw) / 2, (H + th) / 2 + 4), sub, fill=MUTED, font=font_small)
+
+        # Rodapé com marca
+        brand = "PlayLine"
+        bb = draw.textbbox((0, 0), brand, font=font_small)
+        bw = bb[2] - bb[0]
+        draw.text(((W - bw) / 2, H - 48), brand, fill=(50, 60, 80), font=font_small)
+
+        img.save(str(path))
+        logger.info("Standby PNG criado: %s", path)
+    except Exception as exc:
+        logger.warning("Não foi possível criar standby.png: %s", exc)
+
+
 try:
     LOGOS_DIR.mkdir(parents=True, exist_ok=True)
 except Exception:
@@ -104,6 +165,8 @@ class MPVDaemon:
         self._yt_resolving: dict = {}   # {original_url: asyncio.Task} — resolução em andamento
         self._yt_appended: dict  = {}   # {original_url: (hls_url, monotonic_ts)} — appendado na fila MPV
         self._vu_task: Optional[asyncio.Task] = None
+        self._standby_path: Path = _DATA_DIR / "standby.png"
+        _create_standby_image(self._standby_path)
 
     # ── Medição de nível de áudio via Windows Core Audio ────────────────────
 
@@ -158,7 +221,8 @@ class MPVDaemon:
             log_handler=self._mpv_log,
             loglevel="warn",
             prefetch_playlist=True,
-            volume_max=200,   # permite até +6 dB (200 = +6 dB)
+            volume_max=200,             # permite até +6 dB (200 = +6 dB)
+            image_display_duration=86400,  # standby.png exibido por 24h (efetivamente infinito)
         )
 
         if has_secondary:
@@ -376,6 +440,9 @@ class MPVDaemon:
                 self._init_mpv()
             if self._mpv:
                 if _is_youtube_url(path):
+                    if cmd.get("force_resolve"):
+                        self._yt_cache.pop(original_path, None)
+                        logger.info("force_resolve: cache limpo para %s", original_path)
                     cached = self._yt_cache.get(original_path)
                     if cached and (time.monotonic() - cached[1]) < 14400:
                         path = cached[0]
@@ -431,6 +498,17 @@ class MPVDaemon:
                 self._stop_vu()
                 if _is_youtube_url(original_path):
                     self._vu_task = asyncio.ensure_future(self._audio_level_task())
+
+        elif action == "play_standby":
+            if self._mpv and not self._mpv_dead:
+                sp = str(self._standby_path)
+                if self._standby_path.exists():
+                    self._mpv.command("loadfile", sp, "replace")
+                    self._mpv.pause = False
+                    self._stop_vu()
+                    logger.info("Standby ativado: %s", sp)
+                else:
+                    logger.warning("play_standby: arquivo não encontrado (%s)", sp)
 
         elif action == "preload":
             path = cmd.get("path", "")

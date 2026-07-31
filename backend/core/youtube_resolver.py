@@ -43,9 +43,10 @@ def get_info(url: str) -> dict:
         with _yt_dlp.YoutubeDL(opts) as ydl:
             info = ydl.extract_info(url, download=False)
             return {
-                "title": info.get("title") or "Live do YouTube",
-                "is_live": bool(info.get("is_live")),
-                "valid": True,
+                "title":    info.get("title") or "Live do YouTube",
+                "is_live":  bool(info.get("is_live")),
+                "duration": info.get("duration") or 0,  # 0 para lives
+                "valid":    True,
             }
     except Exception as exc:
         logger.warning("get_info falhou: %s", exc)

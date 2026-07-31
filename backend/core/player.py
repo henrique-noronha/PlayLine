@@ -169,12 +169,17 @@ class Player:
 
     # API pública                                                          #
 
-    def play(self, path: str, start_time=None, end_time=None):
+    def play(self, path: str, start_time=None, end_time=None, force_resolve: bool = False):
         msg: dict = {"action": "play", "path": path}
-        if start_time: msg["start_time"] = start_time
-        if end_time:   msg["end_time"]   = end_time
+        if start_time:    msg["start_time"]    = start_time
+        if end_time:      msg["end_time"]      = end_time
+        if force_resolve: msg["force_resolve"] = True
         self._send(msg)
-        logger.info("Reproduzindo: %s", path)
+        logger.info("Reproduzindo: %s%s", path, " [force_resolve]" if force_resolve else "")
+
+    def play_standby(self):
+        self._send({"action": "play_standby"})
+        logger.info("Ativando standby")
 
     def preload(self, path: str):
         self._send({"action": "preload", "path": path})

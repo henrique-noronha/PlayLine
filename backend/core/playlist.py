@@ -25,6 +25,7 @@ class PlaylistEngine:
         self._skip_end_file: int = 0  # end-files a ignorar após substituição manual de vídeo
         self._preloading: bool = False  # True quando próximo vídeo já está na fila do MPV
         self._history = HistoryManager()
+        self._stream_retry_count: int = 0  # tentativas de reconexão do stream atual
 
     # Roteiro                                                              #
  
@@ -135,6 +136,9 @@ class PlaylistEngine:
     def set_event_loop(self, loop: asyncio.AbstractEventLoop):
         self._loop = loop
 
+    _STREAM_MAX_RETRIES = 2
+    _STREAM_RETRY_DELAY = 6  # segundos entre tentativas de reconexão
+
     def on_end_file(self, reason: str):
         """Chamado pelo Player (thread de leitura TCP) quando um arquivo termina."""
         if reason == "stop":
@@ -147,22 +151,84 @@ class PlaylistEngine:
             if self._loop:
                 asyncio.run_coroutine_threadsafe(self._on_mpv_closed(), self._loop)
             return
+
+        # ── Retry de stream (URL HTTP = YouTube/live) ────────────────────────
         if reason == "error":
-            self._preloading = False  # erro: não confia no estado da playlist interna
+            current_path = self._items[0].get("path") if self._items else None
+            if (current_path and current_path.startswith("http")
+                    and self._stream_retry_count < self._STREAM_MAX_RETRIES):
+                self._preloading = False
+                self._stream_retry_count += 1
+                if self._stream_retry_count == 1:
+                    self._history.close_entry("error")
+                logger.warning("Stream com erro — retry %d/%d: %s",
+                               self._stream_retry_count, self._STREAM_MAX_RETRIES, current_path)
+                # Ativa o slate de standby imediatamente (evita tela preta)
+                self._player.play_standby()
+                if self._running and self._loop:
+                    asyncio.run_coroutine_threadsafe(
+                        self._do_stream_retry(current_path, self._stream_retry_count,
+                                              self._advance_seq),
+                        self._loop,
+                    )
+                return
+
+        # ── Tratamento normal de fim de arquivo ──────────────────────────────
+        was_retrying = self._stream_retry_count > 0
+        if reason == "error":
+            self._preloading = False
+            self._stream_retry_count = 0
             self._history.close_entry("error")
             logger.warning("Arquivo com erro — avançando automaticamente")
         elif reason == "eof":
+            self._stream_retry_count = 0
             self._history.close_entry("completed")
+
         if self._skip_end_file > 0:
             self._skip_end_file -= 1
             logger.debug("end-file ignorado (substituição por avanço manual)")
             return
-        if self._running:
-            if self._loop:
-                seq = self._advance_seq
+        if self._running and self._loop:
+            seq = self._advance_seq
+            if was_retrying and reason == "error":
+                asyncio.run_coroutine_threadsafe(
+                    self._advance_stream_failed(seq), self._loop
+                )
+            else:
                 asyncio.run_coroutine_threadsafe(
                     self._advance(expected_seq=seq), self._loop
                 )
+
+    async def _do_stream_retry(self, path: str, attempt: int, seq: int):
+        """Aguarda STREAM_RETRY_DELAY s e tenta reproduzir novamente com URL re-resolvida."""
+        if self._advance_seq != seq or not self._running:
+            self._stream_retry_count = 0
+            return
+
+        await self._broadcast({
+            "event":        "stream_reconnecting",
+            "attempt":      attempt,
+            "max_attempts": self._STREAM_MAX_RETRIES,
+            "retry_in_ms":  self._STREAM_RETRY_DELAY * 1000,
+        })
+
+        await asyncio.sleep(self._STREAM_RETRY_DELAY)
+
+        if self._advance_seq != seq or not self._running:
+            self._stream_retry_count = 0
+            return
+
+        # Re-abre entrada no histórico para a tentativa
+        item  = self._items[0] if self._items else {}
+        title = item.get("title") or path.split("/")[-1]
+        self._history.open_entry(title, path)
+        self._player.play(path, force_resolve=True)
+        logger.info("Retry stream tentativa %d/%d: %s", attempt, self._STREAM_MAX_RETRIES, path)
+
+    async def _advance_stream_failed(self, seq: int):
+        """Emite stream_reconnect_failed e avança para o próximo item."""
+        await self._broadcast({"event": "stream_reconnect_failed"})
+        await self._advance(expected_seq=seq)
 
     async def _on_mpv_closed(self):
         self._advance_seq += 1  # invalida qualquer avanço pendente
@@ -218,6 +284,7 @@ class PlaylistEngine:
     async def play_index(self, index: int):
         if not (0 <= index < len(self._items)):
             return
+        self._stream_retry_count = 0
         self._index = index
         self._running = True
         self._paused = False
