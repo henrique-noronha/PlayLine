@@ -31,7 +31,7 @@
 
     btn.disabled = true;
     btn.textContent = "Verificando…";
-    setStatus("Obtendo informações da live…", "loading");
+    setStatus("Obtendo informações…", "loading");
 
     try {
       const res = await fetch("/api/youtube/info?url=" + encodeURIComponent(url));
@@ -44,10 +44,10 @@
       const newItem = {
         id:       "item-" + Date.now(),
         type:     "youtube_live",
-        live:     true,
-        title:    info.title || "Live do YouTube",
+        live:     info.is_live,
+        title:    info.title || "Vídeo do YouTube",
         path:     url,
-        duration: 0,
+        duration: info.is_live ? 0 : (info.duration || 0),
       };
 
       state.schedule.push(newItem);

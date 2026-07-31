@@ -21,6 +21,16 @@ let selectedScheduleIds = new Set();
 
 const THUMB_PREFIX = "playline_thumb:";
 const invalidPaths = new Set();
+window._markPathInvalid = path => invalidPaths.add(path);
+window._clearPathError  = path => {
+  if (!invalidPaths.has(path)) return false;
+  invalidPaths.delete(path);
+  if (thumbCache[path]) {
+    delete thumbCache[path];
+    try { localStorage.removeItem(THUMB_PREFIX + path); } catch (_) {}
+  }
+  return true;
+};
 
 function parseTime(str) {
   if (!str || !str.trim()) return null;
@@ -66,8 +76,8 @@ function updateScheduleSelectionUI() {
     dropdown.id = "schedule-menu-dropdown";
     dropdown.innerHTML = `
       <div class="sch-menu-item" id="sch-menu-duplicate"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Duplicar roteiro</div>
-      <div class="sch-menu-separator"></div>
-      <div class="sch-menu-item" id="sch-menu-history"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Histórico</div>
+      <div class="sch-menu-item" id="sch-menu-save"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Salvar roteiro</div>
+      <div class="sch-menu-item" id="sch-menu-load"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>Roteiros salvos</div>
       <div class="sch-menu-separator"></div>
       <div class="sch-menu-item" id="sch-menu-clear"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Limpar roteiro</div>
     `;
@@ -84,11 +94,6 @@ function updateScheduleSelectionUI() {
     });
     document.addEventListener("click", () => dropdown.classList.remove("open"));
 
-    document.getElementById("sch-menu-history").addEventListener("click", () => {
-      dropdown.classList.remove("open");
-      openHistoryModal();
-    });
-
     document.getElementById("sch-menu-duplicate").addEventListener("click", () => {
       dropdown.classList.remove("open");
       if (!state.schedule.length) return;
@@ -100,6 +105,17 @@ function updateScheduleSelectionUI() {
       state.schedule = [...state.schedule, ...copies];
       renderSchedule();
       syncOrderToServer();
+    });
+
+    document.getElementById("sch-menu-save").addEventListener("click", () => {
+      dropdown.classList.remove("open");
+      if (!state.schedule.length) return;
+      openSaveSchedModal();
+    });
+
+    document.getElementById("sch-menu-load").addEventListener("click", () => {
+      dropdown.classList.remove("open");
+      openSavedSchedsModal();
     });
 
     document.getElementById("sch-menu-clear").addEventListener("click", () => {
@@ -116,6 +132,7 @@ function updateScheduleSelectionUI() {
         selectedScheduleIds.clear();
         renderSchedule();
         syncOrderToServer();
+        showToast("Roteiro limpo", "info");
       });
     });
   }
@@ -156,12 +173,22 @@ function thumbToStorage(path, url) {
 // Carrega apenas os metadados do vídeo para obter a duração quando ela não está definida.
 // Chamado sempre que um item pode ter duration === 0, independente do cache de thumbnail.
 // Placeholder SVG para itens de live stream
-const _YT_THUMB = 'data:image/svg+xml,' + encodeURIComponent(
+const _YT_LIVE_THUMB = 'data:image/svg+xml,' + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="112" height="63">' +
   '<rect width="112" height="63" fill="#111827"/>' +
   '<rect x="16" y="16" width="80" height="31" rx="4" fill="#dc2626"/>' +
   '<text x="56" y="37" font-family="Arial,sans-serif" font-size="11" font-weight="bold" ' +
-  'fill="white" text-anchor="middle">&#9654; AO VIVO</text>' +
+  'fill="white" text-anchor="middle">&#9679; LIVE</text>' +
+  '</svg>'
+);
+
+// Placeholder SVG para vídeos do YouTube (não-live)
+const _YT_THUMB = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="112" height="63">' +
+  '<rect width="112" height="63" fill="#111827"/>' +
+  '<rect x="16" y="16" width="80" height="31" rx="4" fill="#cc0000"/>' +
+  '<text x="56" y="37" font-family="Arial,sans-serif" font-size="11" font-weight="bold" ' +
+  'fill="white" text-anchor="middle">Youtube</text>' +
   '</svg>'
 );
 
@@ -427,6 +454,7 @@ function renderSchedule() {
     empty.textContent = "Arraste vídeos da biblioteca para começar o roteiro";
     list.appendChild(empty);
     initDnD(list);
+    _refreshLibSchedBadges();
     return;
   }
 
@@ -471,9 +499,17 @@ function renderSchedule() {
     if (item.path) {
       const imgEl = row.querySelector(".item-thumb");
       if (item.live) {
-        imgEl.src = _YT_THUMB;
+        imgEl.src = _YT_LIVE_THUMB;
         imgEl.style.cursor = "pointer";
         imgEl.title = "Clique para visualizar a live";
+        imgEl.addEventListener("click", e => {
+          e.stopPropagation();
+          if (typeof openYtPreview === "function") openYtPreview(item.path, imgEl);
+        });
+      } else if (item.type === "youtube_live") {
+        imgEl.src = _YT_THUMB;
+        imgEl.style.cursor = "pointer";
+        imgEl.title = "Clique para pré-visualizar o vídeo";
         imgEl.addEventListener("click", e => {
           e.stopPropagation();
           if (typeof openYtPreview === "function") openYtPreview(item.path, imgEl);
@@ -513,7 +549,11 @@ function renderSchedule() {
 
     row.querySelector(".btn-clip-overlay")?.addEventListener("click", e => {
       e.stopPropagation();
-      openGearMenu(item, i, e.currentTarget);
+      if (_gd && _gd.style.display !== "none" && _gdIdx === i) {
+        _closeGd();
+      } else {
+        openGearMenu(item, i, e.currentTarget);
+      }
     });
 
     row.querySelector(".btn-delete").addEventListener("click", e => {
@@ -576,7 +616,19 @@ function renderSchedule() {
   initDnD(list);
   updateStartTimes();
   updateScheduleSelectionUI();
+  _refreshLibSchedBadges();
 }
+
+function _refreshLibSchedBadges() {
+  const counts = new Map();
+  state.schedule.forEach(it => { if (it.path) counts.set(it.path, (counts.get(it.path) || 0) + 1); });
+  document.querySelectorAll(".lib-sched-badge").forEach(badge => {
+    const n = counts.get(badge.dataset.path) || 0;
+    badge.textContent = n > 0 ? String(n) : "";
+    badge.style.display = n > 0 ? "inline-block" : "none";
+  });
+}
+window._refreshLibSchedBadges = _refreshLibSchedBadges;
 
 // Drag & Drop                                                          
 
@@ -588,45 +640,15 @@ function initDnD(list) {
       document.querySelectorAll(".schedule-item.editing").forEach(r => r.classList.remove("editing"));
       dragSrcIdx = i;
       e.dataTransfer.effectAllowed = "move";
+      window._schedDragging = true;
       setTimeout(() => row.classList.add("dragging"), 0);
     });
     row.addEventListener("dragend", () => {
+      window._schedDragging = false;
       row.classList.remove("dragging");
-      list.querySelectorAll(".schedule-item").forEach(el => el.classList.remove("drag-over"));
-      list.classList.remove("drag-over");
+      list.querySelector(".drop-indicator")?.remove();
     });
-    row.addEventListener("dragover", e => {
-      if (state.playing && i <= state.currentIndex) return; // não aceita drop sobre/antes do clipe em execução
-      e.preventDefault();
-      e.dataTransfer.dropEffect = libDragFile ? "copy" : "move";
-      list.querySelectorAll(".schedule-item").forEach(el => el.classList.remove("drag-over"));
-      list.classList.remove("drag-over");
-      row.classList.add("drag-over");
-    });
-    row.addEventListener("dragleave", () => row.classList.remove("drag-over"));
-    row.addEventListener("drop", e => {
-      if (state.playing && i <= state.currentIndex) return; // bloqueia drop sobre/antes do clipe em execução
-      e.preventDefault();
-      row.classList.remove("drag-over");
-      const libRaw = e.dataTransfer.getData("library-file");
-      if (libRaw) {
-        addFromLibrary(JSON.parse(libRaw), i);
-        libDragFile = null;
-        return;
-      }
-      if (dragSrcIdx === null || dragSrcIdx === i) return;
-      if (state.playing && dragSrcIdx === state.currentIndex) return; // não move o clipe em execução
-      const currentId = state.currentIndex >= 0 ? state.schedule[state.currentIndex]?.id : null;
-      const [moved] = state.schedule.splice(dragSrcIdx, 1);
-      state.schedule.splice(i, 0, moved);
-      if (currentId) state.currentIndex = state.schedule.findIndex(it => it.id === currentId);
-      dragSrcIdx = null;
-      renderSchedule();
-      syncOrderToServer();
-    });
-
   });
-
 }
 
 // ── Popup de overlay por clipe ────────────────────────────────────────────────
@@ -922,7 +944,10 @@ function _ctGetOrCreate() {
         <span class="ct-dur-lbl">Duração efetiva</span>
         <span id="ct-eff-dur" class="ct-eff-dur">—</span>
       </div>
-      <button id="ct-clear-btn" class="ct-clear-btn">Limpar recorte</button>
+      <div class="ct-footer-row">
+        <button id="ct-clear-btn" class="ct-clear-btn">Limpar</button>
+        <button id="ct-ok-btn" class="ct-ok-btn">OK</button>
+      </div>
     </div>
   `;
   document.body.appendChild(el);
@@ -992,10 +1017,13 @@ function _ctGetOrCreate() {
     syncOrderToServer();
   }
 
-  startInp.addEventListener("change", () => { commit(); refreshEffDur(); });
-  endInp.addEventListener("change",   () => { commit(); refreshEffDur(); });
   startInp.addEventListener("input", refreshEffDur);
   endInp.addEventListener("input",   refreshEffDur);
+
+  function commitAndClose() { commit(); _closeCt(); }
+  el.querySelector("#ct-ok-btn").addEventListener("click", commitAndClose);
+  startInp.addEventListener("keydown", e => { if (e.key === "Enter") commitAndClose(); });
+  endInp.addEventListener("keydown",   e => { if (e.key === "Enter") commitAndClose(); });
 
   el.querySelector("#ct-clear-btn").addEventListener("click", () => {
     if (_ctIdx === null) return;
@@ -1056,27 +1084,98 @@ function openClipTrimPanel(item, idx, anchorEl) {
 // Drop na área vazia do roteiro — registrado uma única vez (não dentro de initDnD)
 (function setupListDrop() {
   const list = document.getElementById("schedule-list");
+  let _dropIdx = null;
+  let _indEl   = null;
+
+  function _getInd() {
+    if (!_indEl || !_indEl.isConnected) {
+      _indEl = document.createElement("div");
+      _indEl.className = "drop-indicator";
+      list.appendChild(_indEl);
+    }
+    return _indEl;
+  }
+
+  function _hideInd() {
+    _indEl?.remove();
+    _indEl = null;
+  }
+
+  function _calcIdx(clientY) {
+    const rows = list.querySelectorAll(".schedule-item");
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i].getBoundingClientRect();
+      if (clientY < r.top + r.height / 2) return i;
+    }
+    return rows.length;
+  }
+
+  function _placeInd(idx) {
+    const rows = [...list.querySelectorAll(".schedule-item")];
+    const ind  = _getInd();
+    const lTop = list.getBoundingClientRect().top;
+    if (rows.length === 0) {
+      ind.style.top = "4px";
+    } else if (idx >= rows.length) {
+      const r = rows[rows.length - 1].getBoundingClientRect();
+      ind.style.top = (r.bottom - lTop + list.scrollTop) + "px";
+    } else {
+      const r = rows[idx].getBoundingClientRect();
+      ind.style.top = (r.top - lTop + list.scrollTop) + "px";
+    }
+  }
 
   list.addEventListener("dragover", e => {
-    if (e.target.closest(".schedule-item")) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = libDragFile ? "copy" : "move";
-    list.classList.add("drag-over");
+    _dropIdx = _calcIdx(e.clientY);
+    if (state.playing && _dropIdx <= state.currentIndex) { _hideInd(); return; }
+    _placeInd(_dropIdx);
   });
 
   list.addEventListener("dragleave", e => {
-    if (!list.contains(e.relatedTarget)) list.classList.remove("drag-over");
+    if (!list.contains(e.relatedTarget)) _hideInd();
   });
 
   list.addEventListener("drop", e => {
-    if (e.target.closest(".schedule-item")) return;
     e.preventDefault();
-    list.classList.remove("drag-over");
+    _hideInd();
+    const idx = _dropIdx ?? state.schedule.length;
+    _dropIdx = null;
+    if (state.playing && idx <= state.currentIndex) return;
+
+    const multiRaw = e.dataTransfer.getData("library-files-multi");
+    if (multiRaw) {
+      const files = JSON.parse(multiRaw);
+      const now = Date.now();
+      files.forEach((f, j) => state.schedule.splice(idx + j, 0, {
+        id: `item-${now + j}`, title: f.name, path: f.path, duration: 0,
+      }));
+      libDragFile = null;
+      renderSchedule();
+      syncOrderToServer();
+      return;
+    }
+
     const libRaw = e.dataTransfer.getData("library-file");
     if (libRaw) {
-      addFromLibrary(JSON.parse(libRaw), state.schedule.length);
+      addFromLibrary(JSON.parse(libRaw), idx);
       libDragFile = null;
+      return;
     }
+
+    // Reordenação
+    if (dragSrcIdx === null) return;
+    if (state.playing && dragSrcIdx === state.currentIndex) return;
+    const insertAt = idx > dragSrcIdx ? idx - 1 : idx;
+    if (dragSrcIdx === insertAt) { dragSrcIdx = null; return; }
+    const currentId = state.currentIndex >= 0 ? state.schedule[state.currentIndex]?.id : null;
+    const [moved] = state.schedule.splice(dragSrcIdx, 1);
+    state.schedule.splice(insertAt, 0, moved);
+    if (currentId) state.currentIndex = state.schedule.findIndex(it => it.id === currentId);
+    dragSrcIdx = null;
+    renderSchedule();
+    syncOrderToServer();
   });
 
   document.addEventListener("click", e => {

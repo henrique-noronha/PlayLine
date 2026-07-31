@@ -4,6 +4,7 @@ const video = document.getElementById("player-video");
 let _lastMpvPos = null;
 let _syncPending = false;
 let _lastSyncAt  = 0;      // performance.now() do último seek de sincronização
+let _ytVideoDuration = 0;  // duração manual para vídeos YouTube (MPV não expõe via HTML5)
 
 function fmt(secs) {
   if (secs == null || isNaN(secs)) return "00:00:00";
@@ -35,9 +36,19 @@ function _hideUnavailable() {
   if (el) el.style.display = "none";
 }
 
+// Modo YouTube: usa eventos de posição do MPV para atualizar a barra de progresso,
+// já que o browser não consegue carregar a URL do YouTube diretamente.
+function setYtVideoMode(duration) {
+  _ytVideoDuration = duration || 0;
+  video.removeAttribute("src");
+  video.load();
+  resetProgress();
+}
+
 // startAt > 1: appends #t=N so the browser opens the file at that second natively,
 // avoiding a post-load manual seek (which freezes while buffering).
 function loadVideo(path, startAt = 0) {
+  _ytVideoDuration = 0;
   _lastMpvPos = startAt > 1 ? startAt : null;
   _syncPending = false;
   _lastSyncAt  = 0;
@@ -59,6 +70,7 @@ function _restoreLogoOverlays() {
 }
 
 function stopVideo() {
+  _ytVideoDuration = 0;
   _lastMpvPos = null;
   _hideUnavailable();
   video.removeAttribute("src");
@@ -69,6 +81,7 @@ function stopVideo() {
 }
 
 function showLiveIndicator() {
+  _ytVideoDuration = 0;
   // Limpa o elemento <video> para impedir que syncPosition atualize a barra
   video.removeAttribute("src");
   video.load();
@@ -89,6 +102,14 @@ const _SYNC_COOLDOWN_MS  = 6000; // ms mínimos entre dois resyncs consecutivos
 
 function syncPosition(pos) {
   _lastMpvPos = pos;
+  // Modo YouTube: atualiza barra diretamente via posição do MPV
+  if (_ytVideoDuration > 0) {
+    document.getElementById("pos").textContent = fmt(pos);
+    document.getElementById("dur").textContent = fmt(_ytVideoDuration);
+    const pct = Math.min((pos / _ytVideoDuration) * 100, 100);
+    document.getElementById("progress-fill").style.width = pct + "%";
+    return;
+  }
   if (!video.src || isNaN(video.duration) || video.duration === 0) return;
   if (_syncPending) return;
   if (performance.now() - _lastSyncAt < _SYNC_COOLDOWN_MS) return;

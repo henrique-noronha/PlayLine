@@ -208,13 +208,38 @@
 }
 .lib-sel-bar button:hover { background: var(--accent); color: #fff; }
 
+.lib-thumb-wrap {
+  position: relative;
+  width: 56px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
 .lib-thumb {
   width: 56px;
   height: 32px;
   object-fit: cover;
   border-radius: 3px;
   background: var(--surface);
-  flex-shrink: 0;
+}
+
+.lib-sched-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  border-radius: 7px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  display: none;
+  pointer-events: none;
+  box-sizing: border-box;
 }
 
 .lib-name {
@@ -239,7 +264,6 @@
 .lib-audio-thumb {
   width: 56px;
   height: 32px;
-  flex-shrink: 0;
   border-radius: 3px;
   background: var(--surface);
   display: flex;

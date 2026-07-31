@@ -39,7 +39,7 @@ function _renderFolderTabs(subfolders) {
 
   el.appendChild(_makeTab("Todos", ""));
   subfolders.forEach(sf => el.appendChild(_makeTab(sf, sf)));
-  _updateLibMenuState();
+
 }
 
 function _makeTab(label, folder) {
@@ -54,38 +54,12 @@ function _makeTab(label, folder) {
     if (si) si.value = "";
     document.querySelectorAll(".lib-folder-tab").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    _updateLibMenuState();
+  
     loadLibraryFiles(folder);
   });
   return btn;
 }
 
-function _toggleNewFolderForm() {
-  let form = document.getElementById("lib-new-folder-form");
-  if (form) { form.remove(); return; }
-
-  form = document.createElement("div");
-  form.id = "lib-new-folder-form";
-  form.className = "lib-new-folder-form";
-  form.innerHTML = `
-    <input id="lib-new-folder-input" class="lib-new-folder-input" type="text" placeholder="Nome da pasta" maxlength="40" />
-    <button id="lib-new-folder-ok" class="lib-new-folder-ok" title="Criar">✓</button>
-    <button id="lib-new-folder-cancel" class="lib-new-folder-cancel" title="Cancelar">✕</button>
-  `;
-
-  const container = document.getElementById("lib-folders").parentElement;
-  document.getElementById("lib-folders").after(form);
-
-  const inp = form.querySelector("#lib-new-folder-input");
-  inp.focus();
-
-  form.querySelector("#lib-new-folder-cancel").addEventListener("click", () => form.remove());
-  form.querySelector("#lib-new-folder-ok").addEventListener("click",    () => _createFolder(inp.value));
-  inp.addEventListener("keydown", e => {
-    if (e.key === "Enter")  _createFolder(inp.value);
-    if (e.key === "Escape") form.remove();
-  });
-}
 
 async function _createFolder(name) {
   name = name.trim();
@@ -107,11 +81,56 @@ async function _createFolder(name) {
     document.querySelectorAll(".lib-folder-tab").forEach(b => {
       b.classList.toggle("active", b.dataset.folder === name);
     });
-    _updateLibMenuState();
+  
     loadLibraryFiles(name);
   } catch (err) {
     log(`Erro ao criar pasta: ${err.message}`, "error");
   }
+}
+
+// ── Ghost de drag para seleção múltipla ──────────────────────────────────────
+
+function _setMultiDragImage(e, sourceItem, count) {
+  const W = 80, H = 60;
+  const ghost = document.createElement("div");
+  ghost.style.cssText = "position:fixed;top:-9999px;left:-9999px;pointer-events:none;";
+
+  const wrap = document.createElement("div");
+  wrap.style.cssText = `position:relative;width:${W + 8}px;height:${H + 8}px;`;
+
+  // Cartas empilhadas atrás
+  [{t:8,l:8,o:0.40},{t:4,l:4,o:0.65}].forEach(({t,l,o}) => {
+    const s = document.createElement("div");
+    s.style.cssText = `position:absolute;top:${t}px;left:${l}px;width:${W}px;height:${H}px;`
+      + `background:#4a4a5a;border-radius:7px;opacity:${o};`;
+    wrap.appendChild(s);
+  });
+
+  // Carta principal com thumbnail
+  const card = document.createElement("div");
+  card.style.cssText = `position:absolute;top:0;left:0;width:${W}px;height:${H}px;`
+    + `border-radius:7px;overflow:hidden;background:#1e1e2a;border:1.5px solid rgba(255,255,255,0.18);box-sizing:border-box;`;
+  const thumb = sourceItem.querySelector(".lib-thumb");
+  if (thumb && thumb.src && thumb.naturalWidth > 0) {
+    const img = document.createElement("img");
+    img.src = thumb.src;
+    img.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;";
+    card.appendChild(img);
+  }
+  wrap.appendChild(card);
+
+  // Badge com contagem
+  const badge = document.createElement("div");
+  badge.textContent = count;
+  badge.style.cssText = `position:absolute;top:-9px;left:${W - 14}px;min-width:22px;height:22px;padding:0 5px;`
+    + `background:#4a9eff;color:#fff;border-radius:11px;display:flex;align-items:center;`
+    + `justify-content:center;font-size:12px;font-weight:700;line-height:1;box-sizing:border-box;`;
+  wrap.appendChild(badge);
+
+  ghost.appendChild(wrap);
+  document.body.appendChild(ghost);
+  e.dataTransfer.setDragImage(wrap, W / 2, H / 2);
+  setTimeout(() => ghost.remove(), 0);
 }
 
 // ── Arquivos ─────────────────────────────────────────────────────────────────
@@ -129,7 +148,12 @@ async function loadLibraryFiles(subfolder) {
 
     selectedLibPaths.clear();
     currentLibFiles = data.files;
-    _updateLibMenuState();
+  
+
+    // Limpar erro de caminhos que voltaram a existir na biblioteca
+    let anyRestored = false;
+    currentLibFiles.forEach(f => { if (window._clearPathError?.(f.path)) anyRestored = true; });
+    if (anyRestored && typeof renderSchedule === "function") renderSchedule();
 
     if (!data.files.length) {
       list.innerHTML = subfolder
@@ -149,8 +173,8 @@ async function loadLibraryFiles(subfolder) {
       item.setAttribute("draggable", "true");
       const audio = _isAudio(file.path);
       item.innerHTML = audio
-        ? `<div class="lib-audio-thumb">♪</div><span class="lib-audio-badge">áudio</span><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span><button class="lib-add-btn" title="Adicionar ao roteiro">+</button>`
-        : `<img class="lib-thumb" draggable="false" src="" alt="" /><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span><button class="lib-add-btn" title="Adicionar ao roteiro">+</button>`;
+        ? `<div class="lib-thumb-wrap"><div class="lib-audio-thumb">♪</div><span class="lib-sched-badge" data-path="${esc(file.path)}"></span></div><span class="lib-audio-badge">áudio</span><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span><button class="lib-add-btn" title="Adicionar ao roteiro">+</button>`
+        : `<div class="lib-thumb-wrap"><img class="lib-thumb" draggable="false" src="" alt="" /><span class="lib-sched-badge" data-path="${esc(file.path)}"></span></div><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span><button class="lib-add-btn" title="Adicionar ao roteiro">+</button>`;
       list.appendChild(item);
 
       if (!audio) generateThumb(file.path, item.querySelector(".lib-thumb"));
@@ -186,8 +210,15 @@ async function loadLibraryFiles(subfolder) {
           }
           _updateLibSelectionUI();
         } else {
-          // Desktop: requer Ctrl/Meta
-          if (!(e.ctrlKey || e.metaKey)) return;
+          // Desktop: Ctrl/Meta alterna; clique simples limpa seleção
+          if (!(e.ctrlKey || e.metaKey)) {
+            if (selectedLibPaths.size > 0) {
+              selectedLibPaths.clear();
+              document.querySelectorAll(".lib-item.selected").forEach(el => el.classList.remove("selected"));
+              _updateLibSelectionUI();
+            }
+            return;
+          }
           e.preventDefault();
           if (selectedLibPaths.has(file.path)) {
             selectedLibPaths.delete(file.path);
@@ -205,12 +236,24 @@ async function loadLibraryFiles(subfolder) {
         dragSrcIdx  = null;
         e.dataTransfer.effectAllowed = "all";
         e.dataTransfer.setData("library-file", JSON.stringify(file));
-        setTimeout(() => item.classList.add("dragging"), 0);
+        if (selectedLibPaths.size > 1 && selectedLibPaths.has(file.path)) {
+          const multiFiles = currentLibFiles.filter(f => selectedLibPaths.has(f.path));
+          e.dataTransfer.setData("library-files-multi", JSON.stringify(multiFiles));
+          _setMultiDragImage(e, item, multiFiles.length);
+          setTimeout(() => {
+            document.querySelectorAll(".lib-item.selected").forEach(el => el.classList.add("dragging"));
+          }, 0);
+        } else {
+          setTimeout(() => item.classList.add("dragging"), 0);
+        }
       });
-      item.addEventListener("dragend", () => item.classList.remove("dragging"));
+      item.addEventListener("dragend", () => {
+        document.querySelectorAll(".lib-item.dragging").forEach(el => el.classList.remove("dragging"));
+      });
     });
 
     _applyLibSearch();
+    window._refreshLibSchedBadges?.();
   } catch (err) {
     list.innerHTML = `<div class="empty">Erro: ${esc(err.message)}</div>`;
   }
@@ -268,19 +311,6 @@ function _updateLibSelectionUI() {
   }
 }
 
-// ── Menu ··· da biblioteca ────────────────────────────────────────────────────
-
-function _updateLibMenuState() {
-  const isSub = _libCurrentFolder !== "";
-  document.getElementById("lib-menu-rename-folder")?.classList.toggle("disabled", !isSub);
-  const canRemove = isSub && currentLibFiles.length === 0;
-  document.getElementById("lib-menu-remove-folder")?.classList.toggle("disabled", !canRemove);
-}
-
-function _closeLibMenu() {
-  document.getElementById("lib-menu-dropdown")?.classList.remove("open");
-}
-
 document.getElementById("btn-lib-refresh")?.addEventListener("click", loadLibraryFolders);
 
 document.getElementById("btn-lib-search")?.addEventListener("click", () => {
@@ -301,93 +331,3 @@ document.getElementById("lib-search-input")?.addEventListener("input", e => {
   _libSearchQuery = e.target.value.toLowerCase().trim();
   _applyLibSearch();
 });
-
-document.getElementById("btn-lib-menu")?.addEventListener("click", e => {
-  e.stopPropagation();
-  document.getElementById("lib-menu-dropdown")?.classList.toggle("open");
-});
-
-document.addEventListener("click", _closeLibMenu);
-
-document.getElementById("lib-menu-new-folder")?.addEventListener("click", () => {
-  _closeLibMenu();
-  _toggleNewFolderForm();
-});
-
-document.getElementById("lib-menu-rename-folder")?.addEventListener("click", () => {
-  _closeLibMenu();
-  if (_libCurrentFolder) _showRenameFolderForm(_libCurrentFolder);
-});
-
-document.getElementById("lib-menu-remove-folder")?.addEventListener("click", () => {
-  _closeLibMenu();
-  if (_libCurrentFolder) _confirmRemoveFolder(_libCurrentFolder);
-});
-
-function _showRenameFolderForm(currentName) {
-  document.getElementById("lib-new-folder-form")?.remove();
-
-  const form = document.createElement("div");
-  form.id = "lib-new-folder-form";
-  form.className = "lib-new-folder-form";
-  form.innerHTML = `
-    <input id="lib-new-folder-input" class="lib-new-folder-input" type="text" placeholder="Novo nome" maxlength="40" value="${esc(currentName)}" />
-    <button id="lib-new-folder-ok" class="lib-new-folder-ok" title="Renomear">✓</button>
-    <button id="lib-new-folder-cancel" class="lib-new-folder-cancel" title="Cancelar">✕</button>
-  `;
-
-  document.getElementById("lib-folders").after(form);
-  const inp = form.querySelector("#lib-new-folder-input");
-  inp.focus();
-  inp.select();
-
-  form.querySelector("#lib-new-folder-cancel").addEventListener("click", () => form.remove());
-  form.querySelector("#lib-new-folder-ok").addEventListener("click", () => _renameFolder(currentName, inp.value));
-  inp.addEventListener("keydown", e => {
-    if (e.key === "Enter")  _renameFolder(currentName, inp.value);
-    if (e.key === "Escape") form.remove();
-  });
-}
-
-async function _renameFolder(oldName, newName) {
-  newName = newName.trim();
-  if (!newName || newName === oldName) { document.getElementById("lib-new-folder-form")?.remove(); return; }
-  try {
-    const res = await fetch("/api/library/folder", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ old: oldName, new: newName }),
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      log(`Erro ao renomear pasta: ${err.detail}`, "error");
-      return;
-    }
-    document.getElementById("lib-new-folder-form")?.remove();
-    _libCurrentFolder = newName;
-    await loadLibraryFolders();
-    document.querySelectorAll(".lib-folder-tab").forEach(b => {
-      b.classList.toggle("active", b.dataset.folder === newName);
-    });
-    loadLibraryFiles(newName);
-  } catch (err) {
-    log(`Erro ao renomear pasta: ${err.message}`, "error");
-  }
-}
-
-async function _confirmRemoveFolder(name) {
-  showConfirm(`Remover a pasta "${name}"? (Ela precisa estar vazia.)`, async () => {
-    try {
-      const res = await fetch(`/api/library/folder?subfolder=${encodeURIComponent(name)}`, { method: "DELETE" });
-      if (!res.ok) {
-        const err = await res.json();
-        log(`Erro ao remover pasta: ${err.detail}`, "error");
-        return;
-      }
-      _libCurrentFolder = "";
-      await loadLibraryFolders();
-    } catch (err) {
-      log(`Erro ao remover pasta: ${err.message}`, "error");
-    }
-  });
-}

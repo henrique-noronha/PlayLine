@@ -47,6 +47,10 @@
           <span class="live-label">AO VIVO</span>
         </div>
         <div class="state-badge" id="state-badge">parado</div>
+        <div id="reconnect-banner" style="display:none">
+          <span class="reconnect-dot"></span>
+          <span id="reconnect-banner-text">Reconectando...</span>
+        </div>
       </section>
 
       <section class="card library-card">
@@ -55,15 +59,6 @@
           <div class="lib-header-actions">
             <button id="btn-lib-search" title="Pesquisar vídeo"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
             <button id="btn-lib-refresh" title="Atualizar biblioteca">↺</button>
-            <div id="lib-menu-wrap">
-              <button id="btn-lib-menu" title="Opções da biblioteca"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="currentColor"><circle cx="1.5" cy="1.5" r="1.5"/><rect x="4.5" y="0.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="6.5" r="1.5"/><rect x="4.5" y="5.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="11.5" r="1.5"/><rect x="4.5" y="10.5" width="10.5" height="2" rx="1"/></svg></button>
-              <div id="lib-menu-dropdown">
-                <div class="lib-menu-item" id="lib-menu-new-folder"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>Nova pasta</div>
-                <div class="lib-menu-separator"></div>
-                <div class="lib-menu-item" id="lib-menu-rename-folder"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Renomear pasta</div>
-                <div class="lib-menu-item lib-menu-danger" id="lib-menu-remove-folder"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6c0 0-2.5 1-10 1S2 6 2 6"/><path d="M4 6l1.5 13A2 2 0 0 0 7.5 21h9a2 2 0 0 0 2-1.84L20 6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Remover pasta</div>
-              </div>
-            </div>
           </div>
         </div>
         <div class="lib-folders" id="lib-folders"></div>
@@ -94,6 +89,8 @@
                 </div>
               </div>
               <div class="ctrl-menu-item" id="ctrl-menu-zoom-reset"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Redefinir zoom</div>
+              <div class="ctrl-menu-sep"></div>
+              <div class="ctrl-menu-item" id="ctrl-menu-history"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Histórico</div>
             </div>
           </div>
         </div>
@@ -277,7 +274,7 @@
 
       <section class="card youtube-card" id="youtube-live-card">
         <div class="log-header">
-          <h2>Live do YouTube</h2>
+          <h2>Vídeo/Live do Youtube</h2>
           <div class="log-actions">
             <button id="btn-yt-open">+ Adicionar</button>
           </div>
@@ -290,12 +287,12 @@
   <div id="yt-modal" class="yt-modal-backdrop" style="display:none">
     <div class="yt-modal-box">
       <div class="yt-modal-header">
-        <h3>Adicionar Live do YouTube</h3>
+        <h3>Adicionar Vídeo/Live do YouTube</h3>
         <button id="yt-modal-close" class="yt-modal-close">✕</button>
       </div>
       <div class="yt-modal-body">
         <div class="yt-field">
-          <label class="yt-label" for="yt-url-input">URL da live</label>
+          <label class="yt-label" for="yt-url-input">URL do vídeo / live</label>
           <input type="text" id="yt-url-input" class="yt-url-input"
                  placeholder="https://youtube.com/watch?v=…" autocomplete="off" />
         </div>
@@ -366,6 +363,30 @@
     </div>
   </div>
 
+<!-- Modal: salvar roteiro -->
+<div id="save-sched-modal" class="sv-sched-backdrop" style="display:none">
+  <div class="sv-sched-box">
+    <h3 class="sv-sched-title">Salvar roteiro</h3>
+    <p class="sv-sched-sub">Dê um nome para identificar este roteiro depois.</p>
+    <input id="save-sched-input" class="sv-sched-input" type="text" maxlength="80" placeholder="Ex.: Roteiro da Tarde" autocomplete="off" />
+    <div class="sv-sched-actions">
+      <button id="save-sched-cancel" class="sv-sched-btn sv-sched-cancel">Cancelar</button>
+      <button id="save-sched-ok" class="sv-sched-btn sv-sched-ok">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: roteiros salvos -->
+<div id="saved-scheds-modal" class="sv-sched-backdrop" style="display:none">
+  <div class="sv-sched-box sv-sched-box--list">
+    <div class="sv-sched-header">
+      <h3 class="sv-sched-title">Roteiros salvos</h3>
+      <button id="saved-scheds-close" class="sv-sched-close">✕</button>
+    </div>
+    <div id="saved-scheds-list" class="sv-scheds-list"></div>
+  </div>
+</div>
+
 <div id="confirm-modal" class="confirm-modal-backdrop" style="display:none">
     <div class="confirm-modal-box">
       <p id="confirm-modal-text"></p>
@@ -389,7 +410,7 @@
   <!-- Preview de live do YouTube -->
   <div id="yt-preview-modal" style="display:none">
     <div class="yt-preview-header">
-      <span class="yt-preview-label">▶ Ao vivo</span>
+      <span class="yt-preview-label">▶ Youtube</span>
       <div class="yt-preview-actions">
         <button id="yt-preview-mute" title="Ativar áudio">🔇</button>
         <button id="yt-preview-close">✕</button>
@@ -402,6 +423,7 @@
 
   <script src="/static/components/controls_menu.js"></script>
   <script src="/static/components/yt_preview.js"></script>
+  <script src="/static/components/saved_schedules.js"></script>
 
   <!-- Diálogo de fechamento da interface -->
   <div id="close-dialog-overlay" class="close-dlg-overlay" style="display:none">
@@ -428,5 +450,17 @@
     </div>
   </div>
   <script src="/static/components/close_dialog.js"></script>
+  <script src="/static/components/network_monitor.js"></script>
+
+  <!-- Popup de alerta de rede / reconexão -->
+  <div id="net-alert-popup" style="display:none">
+    <div class="net-alert-icon">⚠</div>
+    <div class="net-alert-body">
+      <div class="net-alert-title" id="net-alert-title">Stream interrompida</div>
+      <div class="net-alert-msg" id="net-alert-msg">Tentando reconectar...</div>
+      <div class="net-alert-countdown" id="net-alert-countdown"></div>
+    </div>
+    <button class="net-alert-close" id="net-alert-close" title="Fechar aviso">✕</button>
+  </div>
 </body>
 </html>

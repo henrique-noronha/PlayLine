@@ -89,6 +89,102 @@
   text-transform: uppercase;
 }
 
+/* ── Banner de reconexão (abaixo do player) ── */
+#reconnect-banner {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(245,158,11,.12);
+  border: 1px solid rgba(245,158,11,.35);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--warning, #f59e0b);
+}
+
+.reconnect-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--warning, #f59e0b);
+  flex-shrink: 0;
+  animation: reconnect-pulse 1s ease-in-out infinite;
+}
+
+@keyframes reconnect-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+/* ── Popup flutuante de alerta de rede ── */
+#net-alert-popup {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 1200;
+  display: none;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px 14px 14px;
+  max-width: 310px;
+  background: var(--surface2, #1e2030);
+  border: 1px solid rgba(245,158,11,.4);
+  border-left: 4px solid var(--warning, #f59e0b);
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.55);
+  animation: net-alert-in .22s ease;
+}
+
+@keyframes net-alert-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.net-alert-icon {
+  font-size: 17px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.net-alert-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.net-alert-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--warning, #f59e0b);
+  margin-bottom: 4px;
+}
+
+.net-alert-msg {
+  font-size: 12px;
+  color: var(--text, #e2e8f0);
+  line-height: 1.45;
+  margin-bottom: 3px;
+}
+
+.net-alert-countdown {
+  font-size: 11px;
+  color: var(--muted, #94a3b8);
+  font-variant-numeric: tabular-nums;
+  min-height: 14px;
+}
+
+.net-alert-close {
+  background: none;
+  border: none;
+  color: var(--muted, #94a3b8);
+  cursor: pointer;
+  padding: 0 0 0 4px;
+  font-size: 14px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.net-alert-close:hover { color: var(--text, #e2e8f0); }
+
 .now-playing-title {
   font-size: 20px;
   font-weight: 600;
