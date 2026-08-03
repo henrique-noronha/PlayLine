@@ -2032,3 +2032,67 @@
 2026-08-03 14:22:22,213 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
 2026-08-03 14:22:22,755 INFO: Decodificação ativa: d3d11va
 2026-08-03 14:24:11,566 INFO: end-file reason=stop
+2026-08-03 16:53:59,849 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 16:53:59,907 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 16:54:00,538 INFO: MPV inicializado
+2026-08-03 16:54:00,540 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 15812
+2026-08-03 16:54:00,541 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 16:54:01,283 INFO: Cliente conectado: ('127.0.0.1', 59069)
+2026-08-03 16:54:32,901 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 16:54:33,391 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=cY-IdqKqKJk url=https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 16:54:33,703 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:54:33,965 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:54:33,966 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.57s — caindo no yt-dlp
+2026-08-03 16:54:36,725 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.76s
+2026-08-03 16:54:36,726 INFO: YouTube URL pré-resolvida em 3.82s: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 16:54:56,039 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 16:54:56,059 INFO: play: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 16:54:58,778 INFO: Decodificação ativa: d3d11va
+2026-08-03 16:55:19,559 INFO: end-file reason=stop
+2026-08-03 17:04:11,378 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 17:04:11,402 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 17:04:12,279 INFO: MPV inicializado
+2026-08-03 17:04:12,280 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 7656
+2026-08-03 17:04:12,282 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 17:04:12,811 INFO: Cliente conectado: ('127.0.0.1', 62631)
+2026-08-03 17:04:12,814 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:04:13,115 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=cY-IdqKqKJk url=https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:04:13,416 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 17:04:13,721 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 17:04:13,721 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.61s — caindo no yt-dlp
+2026-08-03 17:04:15,799 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.08s
+2026-08-03 17:04:15,800 INFO: YouTube URL pré-resolvida em 2.99s: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:04:55,909 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 17:04:56,906 INFO: Decodificação ativa: d3d11va
+2026-08-03 17:04:58,656 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:04:58,667 INFO: end-file reason=stop
+2026-08-03 17:04:58,671 INFO: play: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:05:01,200 INFO: Decodificação ativa: d3d11va
+2026-08-03 17:05:34,699 INFO: end-file reason=eof
+2026-08-03 17:05:37,716 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:05:37,716 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=cY-IdqKqKJk url=https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:05:37,716 WARNING: InnerTube [ANDROID] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 17:05:37,717 WARNING: InnerTube [IOS] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 17:05:37,717 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.00s — caindo no yt-dlp
+2026-08-03 17:05:38,110 WARNING: Falha no prefetch de YouTube URL: ERROR: [youtube] cY-IdqKqKJk: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000002B15D6EBD90>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000002B15D6EBD90>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 17:05:38,110 ERROR: Falha ao resolver YouTube URL: ERROR: [youtube] cY-IdqKqKJk: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000002B15D6EBD90>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000002B15D6EBD90>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 17:05:44,121 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:05:44,121 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=cY-IdqKqKJk url=https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:05:44,123 WARNING: InnerTube [ANDROID] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 17:05:44,124 WARNING: InnerTube [IOS] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 17:05:44,124 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.00s — caindo no yt-dlp
+2026-08-03 17:05:44,441 WARNING: Falha no prefetch de YouTube URL: ERROR: [youtube] cY-IdqKqKJk: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000002B15D6E91D0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000002B15D6E91D0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 17:05:44,441 ERROR: Falha ao resolver YouTube URL: ERROR: [youtube] cY-IdqKqKJk: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000002B15D6E91D0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000002B15D6E91D0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 17:05:56,470 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:05:56,471 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=cY-IdqKqKJk url=https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:05:56,801 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 17:05:57,063 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 17:05:57,063 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.59s — caindo no yt-dlp
+2026-08-03 17:05:59,261 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.20s
+2026-08-03 17:05:59,261 INFO: YouTube URL pré-resolvida em 2.79s: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:05:59,262 INFO: YouTube stream resolvido em 2.79s: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:05:59,264 INFO: play: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-03 17:06:01,770 INFO: Decodificação ativa: d3d11va
+2026-08-03 17:06:09,078 INFO: [weather] OWM: 34.1°C (Palmas, BR)
+2026-08-03 17:06:09,106 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 17:06:12,763 INFO: end-file reason=stop

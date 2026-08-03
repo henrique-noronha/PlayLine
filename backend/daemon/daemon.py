@@ -223,6 +223,7 @@ class MPVDaemon:
             prefetch_playlist=True,
             volume_max=200,             # permite até +6 dB (200 = +6 dB)
             image_display_duration=86400,  # standby.png exibido por 24h (efetivamente infinito)
+            network_timeout=10,         # encerra stream morta em até 10s sem dados
             hwdec="auto-safe",          # decodificação por GPU quando disponível, software como fallback
             osc=False,                  # desativa controles na tela ao passar o mouse
         )
@@ -276,6 +277,7 @@ class MPVDaemon:
                 text_active = self._text_overlay.get("active", False)
             if text_active:
                 threading.Thread(target=self._apply_text_overlay_delayed, daemon=True).start()
+            self._broadcast_sync({"event": "file-loaded"})
 
         @self._mpv.event_callback("end-file")
         def _end_file(event):
