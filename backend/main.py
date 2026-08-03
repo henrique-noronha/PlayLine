@@ -354,6 +354,42 @@ if __name__ == "__main__":
 
     _unblock_meipass()
 
+    def _set_gpu_preference():
+        """Garante GPU de alto desempenho para o daemon MPV via registro do Windows.
+
+        Escrito antes de spawnar o daemon — o processo filho já nasce com a preferência correta.
+        Em dev, aplica ao Python do venv (sys.executable). Não requer administrador (HKCU).
+        """
+        try:
+            import winreg
+            key_path = r"SOFTWARE\Microsoft\DirectX\UserGpuPreferences"
+            base = Path(sys.executable).parent
+            targets = [
+                base / "PlayLine-daemon.exe",
+                Path(sys.executable),
+            ]
+            with winreg.CreateKeyEx(
+                winreg.HKEY_CURRENT_USER, key_path, 0,
+                winreg.KEY_READ | winreg.KEY_SET_VALUE,
+            ) as key:
+                for exe in targets:
+                    if not exe.exists():
+                        continue
+                    exe_str = str(exe)
+                    try:
+                        current, _ = winreg.QueryValueEx(key, exe_str)
+                        if "GpuPreference=2" in current:
+                            logger.info("GPU de alto desempenho já configurada para: %s", exe_str)
+                            continue
+                    except FileNotFoundError:
+                        pass
+                    winreg.SetValueEx(key, exe_str, 0, winreg.REG_SZ, "GpuPreference=2;")
+                    logger.info("GPU de alto desempenho configurada (novo): %s", exe_str)
+        except Exception as exc:
+            logger.warning("Não foi possível configurar preferência de GPU: %s", exc)
+
+    _set_gpu_preference()
+
     import webview
 
     def _check_dependencies():
