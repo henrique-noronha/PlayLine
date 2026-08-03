@@ -120,6 +120,24 @@
 .yt-status-success { color: var(--success); }
 .yt-status-error   { color: var(--danger); }
 
+.yt-net-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 8px 10px;
+  background: rgba(251,191,36,.08);
+  border: 1px solid rgba(251,191,36,.25);
+  border-radius: 7px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.yt-net-notice-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #d97706;
+}
+
 .yt-modal-actions {
   display: flex;
   gap: 10px;
@@ -139,7 +157,7 @@
 .yt-btn-cancel:hover { background: var(--surface2); }
 
 .btn-yt-add {
-  background: #dc2626;
+  background: var(--accent);
   border: none;
   border-radius: 7px;
   color: #fff;
@@ -150,7 +168,7 @@
   transition: background .15s;
   letter-spacing: .02em;
 }
-.btn-yt-add:hover    { background: #b91c1c; }
+.btn-yt-add:hover    { background: #3a7de8; }
 .btn-yt-add:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
 
 /* ── Card do log (standalone — sem bottom-row) ── */
@@ -205,12 +223,18 @@
 .log-entry .ev  { font-weight: 600; min-width: 120px; }
 .log-entry .msg { color: var(--muted); }
 
-.log-entry.ev-now_playing .ev  { color: var(--success); }
-.log-entry.ev-paused .ev       { color: var(--warning); }
-.log-entry.ev-resumed .ev      { color: var(--accent); }
-.log-entry.ev-stopped .ev      { color: var(--danger); }
-.log-entry.ev-playlist_end .ev { color: var(--accent2); }
-.log-entry.ev-error .ev        { color: var(--danger); }
+.log-entry.ev-now_playing .ev            { color: var(--success); }
+.log-entry.ev-paused .ev                 { color: var(--warning); }
+.log-entry.ev-resumed .ev               { color: var(--accent); }
+.log-entry.ev-stopped .ev               { color: var(--danger); }
+.log-entry.ev-playlist_end .ev          { color: var(--accent2); }
+.log-entry.ev-mpv_ready .ev             { color: var(--success); }
+.log-entry.ev-mpv_closed .ev            { color: var(--muted); }
+.log-entry.ev-stream_reconnecting .ev   { color: var(--warning); }
+.log-entry.ev-stream_reconnect_failed .ev { color: var(--danger); }
+.log-entry.ev-warn .ev                  { color: var(--warning); }
+.log-entry.ev-info .ev                  { color: var(--accent); }
+.log-entry.ev-error .ev                 { color: var(--danger); }
 
 /* ── Estado colapsado ── */
 .log-card.collapsed .log        { display: none; }

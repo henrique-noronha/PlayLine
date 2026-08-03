@@ -4,12 +4,28 @@ function esc(str) {
   return String(str ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
 
+const _LOG_LABELS = {
+  now_playing:            "reprodução",
+  paused:                 "pausa",
+  resumed:                "retomada",
+  stopped:                "parado",
+  playlist_end:           "roteiro",
+  mpv_ready:              "player",
+  mpv_closed:             "player",
+  stream_reconnecting:    "stream",
+  stream_reconnect_failed:"stream",
+  info:                   "info",
+  warn:                   "aviso",
+  error:                  "erro",
+};
+
 function log(msg, type) {
   const div = document.getElementById("log");
   const ts = new Date().toTimeString().slice(0, 8);
   const entry = document.createElement("div");
   entry.className = `log-entry ev-${type}`;
-  entry.innerHTML = `<span class="ts">${ts}</span><span class="ev">${type}</span><span class="msg">${esc(msg)}</span>`;
+  const label = _LOG_LABELS[type] ?? type;
+  entry.innerHTML = `<span class="ts">${ts}</span><span class="ev">${label}</span><span class="msg">${esc(msg)}</span>`;
   div.appendChild(entry);
   div.scrollTop = div.scrollHeight;
 }

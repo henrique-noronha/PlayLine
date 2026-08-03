@@ -1,6 +1,5 @@
 (function () {
   // ── Modal: salvar roteiro ──────────────────────────────────────────────
-
   const saveModal   = document.getElementById('save-sched-modal');
   const saveInput   = document.getElementById('save-sched-input');
   const saveOkBtn   = document.getElementById('save-sched-ok');
@@ -49,7 +48,6 @@
   });
 
   // ── Modal: roteiros salvos ─────────────────────────────────────────────
-
   const listModal  = document.getElementById('saved-scheds-modal');
   const listWrap   = document.getElementById('saved-scheds-list');
   const closeBtn   = document.getElementById('saved-scheds-close');
@@ -115,7 +113,6 @@
       const data = await res.json();
       const items = data.items;
 
-      // Detectar clipes ausentes da biblioteca
       const paths = items.map(it => it.path).filter(Boolean);
       let missingPaths = [];
       if (paths.length) {

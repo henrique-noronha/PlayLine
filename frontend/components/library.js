@@ -72,7 +72,7 @@ async function _createFolder(name) {
     });
     if (!res.ok) {
       const err = await res.json();
-      log(`Erro ao criar pasta: ${err.detail}`, "error");
+      log("Não foi possível criar a pasta na biblioteca", "error");
       return;
     }
     document.getElementById("lib-new-folder-form")?.remove();
@@ -84,7 +84,7 @@ async function _createFolder(name) {
   
     loadLibraryFiles(name);
   } catch (err) {
-    log(`Erro ao criar pasta: ${err.message}`, "error");
+    log("Não foi possível criar a pasta na biblioteca", "error");
   }
 }
 

@@ -14,6 +14,7 @@
   let _lastFrame  = 0;
   let _staleTimer = null;
   let _statusMsg  = null;   // mensagem personalizada exibida no lugar de "Aguardando…"
+  let _decoding   = false;  // true enquanto um frame está sendo decodificado
 
   function _drawNoSignal() {
     const W = canvas.width  || 400;
@@ -41,16 +42,7 @@
   };
 
   function _drawFrame(blob) {
-    const url = URL.createObjectURL(blob);
-    const img = new Image();
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      URL.revokeObjectURL(url);
-    };
-    img.onerror = () => URL.revokeObjectURL(url);
-    img.src = url;
-
-    _statusMsg  = null;   // limpa mensagem de carregamento quando o primeiro frame chega
+    _statusMsg = null;
     _lastFrame = Date.now();
     _setLive(true);
 
@@ -58,6 +50,22 @@
     _staleTimer = setTimeout(() => {
       if (Date.now() - _lastFrame >= STALE_MS) _setLive(false);
     }, STALE_MS + 150);
+
+    if (_decoding) return; // já decodificando — descarta frame recebido
+    _decoding = true;
+
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      _decoding = false;
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      _decoding = false;
+    };
+    img.src = url;
   }
 
   function connect() {

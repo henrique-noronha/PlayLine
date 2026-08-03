@@ -1733,3 +1733,236 @@
 2026-07-31 12:33:24,366 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
 2026-07-31 12:34:01,618 INFO: end-file reason=stop
 2026-07-31 12:40:12,549 INFO: Cliente desconectado: ('127.0.0.1', 49714)
+2026-07-31 12:50:16,229 INFO: [overlay] dimensões OSD: 199x34
+2026-07-31 12:50:16,229 INFO: [overlay] slot=1 active=False filename=''
+2026-07-31 12:50:16,229 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-31 12:50:16,247 INFO: [overlay] LogoPlayLineD.png → 7x4
+2026-07-31 12:50:16,256 INFO: [overlay] slot=2 OK pos=(7,26) 7x4 arquivo=LogoPlayLineD.png
+2026-07-31 12:50:16,626 INFO: [overlay] dimensões OSD: 380x213
+2026-07-31 12:50:16,626 INFO: [overlay] slot=1 active=False filename=''
+2026-07-31 12:50:16,626 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-07-31 12:50:16,644 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-07-31 12:50:16,646 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
+2026-07-31 12:50:32,465 INFO: Cliente conectado: ('127.0.0.1', 58575)
+2026-07-31 12:58:48,235 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-07-31 12:58:48,339 INFO: Standby PNG criado: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\standby.png
+2026-07-31 12:58:48,364 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-07-31 12:58:48,477 INFO: MPV inicializado
+2026-07-31 12:58:48,477 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 21480
+2026-07-31 12:58:48,478 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-07-31 12:58:48,905 INFO: Cliente conectado: ('127.0.0.1', 49770)
+2026-08-03 08:27:57,732 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 08:27:58,073 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 08:27:58,227 INFO: MPV inicializado
+2026-08-03 08:27:58,228 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 19652
+2026-08-03 08:27:58,228 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 08:27:58,314 INFO: Cliente conectado: ('127.0.0.1', 54959)
+2026-08-03 08:30:35,893 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 08:30:35,998 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 08:30:36,133 INFO: MPV inicializado
+2026-08-03 08:30:36,134 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 19652
+2026-08-03 08:30:36,135 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 08:30:36,372 INFO: Cliente conectado: ('127.0.0.1', 59646)
+2026-08-03 08:30:56,544 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 08:30:56,546 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 08:32:21,891 INFO: end-file reason=eof
+2026-08-03 08:32:21,995 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 08:33:18,483 INFO: end-file reason=stop
+2026-08-03 08:36:16,082 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 08:36:16,405 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 08:36:16,538 INFO: MPV inicializado
+2026-08-03 08:36:16,538 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 1960
+2026-08-03 08:36:16,539 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 08:36:16,677 INFO: Cliente conectado: ('127.0.0.1', 58264)
+2026-08-03 08:40:21,546 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 08:40:21,569 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 08:40:21,670 INFO: MPV inicializado
+2026-08-03 08:40:21,670 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 772
+2026-08-03 08:40:21,672 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 08:40:21,713 INFO: Cliente conectado: ('127.0.0.1', 62483)
+2026-08-03 08:46:36,776 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 08:46:36,798 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 08:46:36,888 INFO: MPV inicializado
+2026-08-03 08:46:36,889 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 18648
+2026-08-03 08:46:36,889 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 08:46:36,943 INFO: Cliente conectado: ('127.0.0.1', 61174)
+2026-08-03 08:47:03,493 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4
+2026-08-03 08:47:03,493 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
+2026-08-03 08:47:17,315 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=bl active=True
+2026-08-03 08:47:17,315 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': True, 'filename': 'LogoPlayLineD.png'}}
+2026-08-03 08:47:17,316 INFO: [overlay] dimensões OSD: 380x213
+2026-08-03 08:47:17,316 INFO: [overlay] slot=1 active=False filename=''
+2026-08-03 08:47:17,316 INFO: [overlay] slot=2 active=True filename='LogoPlayLineD.png'
+2026-08-03 08:47:17,343 INFO: [overlay] LogoPlayLineD.png → 50x29
+2026-08-03 08:47:17,367 INFO: [overlay] slot=2 OK pos=(15,174) 50x29 arquivo=LogoPlayLineD.png
+2026-08-03 08:47:24,812 INFO: [set_logo] slot=2 filename='LogoPlayLineD.png' corner=bl active=False
+2026-08-03 08:47:24,812 INFO: [set_logo] estado: {1: {'corner': 'br', 'active': False, 'filename': ''}, 2: {'corner': 'bl', 'active': False, 'filename': 'LogoPlayLineD.png'}}
+2026-08-03 08:47:24,813 INFO: [overlay] dimensões OSD: 380x213
+2026-08-03 08:47:24,813 INFO: [overlay] slot=1 active=False filename=''
+2026-08-03 08:47:24,813 INFO: [overlay] slot=2 active=False filename='LogoPlayLineD.png'
+2026-08-03 08:47:24,813 INFO: [overlay] nenhum overlay aplicado
+2026-08-03 08:47:54,433 INFO: end-file reason=stop
+2026-08-03 08:47:54,434 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
+2026-08-03 08:47:54,434 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-08-03 08:49:40,276 INFO: [weather] OWM: 28.6°C (Palmas, BR)
+2026-08-03 08:49:40,328 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 08:49:41,359 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 08:49:42,375 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 08:50:22,369 INFO: end-file reason=eof
+2026-08-03 08:50:22,413 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 2.mp4
+2026-08-03 08:50:31,242 INFO: end-file reason=eof
+2026-08-03 08:50:32,984 INFO: end-file reason=stop
+2026-08-03 09:23:19,292 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 09:23:19,315 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 09:23:19,425 INFO: MPV inicializado
+2026-08-03 09:23:19,426 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 21836
+2026-08-03 09:23:19,427 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 09:23:19,437 INFO: Cliente conectado: ('127.0.0.1', 51126)
+2026-08-03 09:42:17,899 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 09:42:17,954 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 09:42:18,079 INFO: MPV inicializado
+2026-08-03 09:42:18,079 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 15660
+2026-08-03 09:42:18,080 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 09:42:18,565 INFO: Cliente conectado: ('127.0.0.1', 57890)
+2026-08-03 09:43:23,170 INFO: [weather] OWM: 31.1°C (Palmas, BR)
+2026-08-03 09:43:23,240 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 09:43:24,259 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 09:43:25,283 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 09:43:26,306 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 09:43:27,330 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 09:43:28,348 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 09:43:29,370 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 09:43:34,629 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 09:43:34,630 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-08-03 09:43:53,856 INFO: end-file reason=stop
+2026-08-03 09:46:55,094 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 09:46:55,095 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-08-03 09:47:25,130 INFO: end-file reason=stop
+2026-08-03 09:49:16,407 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 09:49:16,429 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 09:49:16,522 INFO: MPV inicializado
+2026-08-03 09:49:16,523 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 3316
+2026-08-03 09:49:16,524 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 09:49:16,580 INFO: Cliente conectado: ('127.0.0.1', 64796)
+2026-08-03 09:49:30,918 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 09:49:30,919 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-08-03 09:49:42,446 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-08-03 09:49:42,470 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4
+2026-08-03 09:49:42,471 INFO: end-file reason=stop
+2026-08-03 09:49:44,784 INFO: end-file reason=stop
+2026-08-03 09:49:44,795 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4
+2026-08-03 09:49:44,829 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO - Copia.mp4
+2026-08-03 09:49:47,311 INFO: end-file reason=stop
+2026-08-03 09:49:47,323 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO - Copia.mp4
+2026-08-03 09:49:47,324 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TESOUROS TO BADINHO ARAÚJO.mp4
+2026-08-03 09:49:48,335 INFO: end-file reason=stop
+2026-08-03 09:49:48,352 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TESOUROS TO BADINHO ARAÚJO.mp4
+2026-08-03 09:49:48,355 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4
+2026-08-03 09:49:48,949 INFO: end-file reason=stop
+2026-08-03 09:49:48,961 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4
+2026-08-03 09:49:49,000 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-08-03 09:49:49,804 INFO: end-file reason=stop
+2026-08-03 09:49:49,804 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-08-03 09:49:49,805 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\20 PROCURAR AJUDA É CORAGEM.mp4
+2026-08-03 09:49:52,191 INFO: end-file reason=stop
+2026-08-03 09:49:52,192 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\20 PROCURAR AJUDA É CORAGEM.mp4
+2026-08-03 09:49:52,193 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - APRENDER A LIDAR COM O SOFRIMENTO.mp4
+2026-08-03 09:49:52,913 INFO: end-file reason=stop
+2026-08-03 09:49:52,924 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - APRENDER A LIDAR COM O SOFRIMENTO.mp4
+2026-08-03 09:49:52,926 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TESOUROS DO TOCANTINS ,  CANELA_.mp4
+2026-08-03 09:49:55,000 INFO: end-file reason=stop
+2026-08-03 09:49:55,014 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TESOUROS DO TOCANTINS ,  CANELA_.mp4
+2026-08-03 09:49:55,014 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
+2026-08-03 09:49:56,227 INFO: end-file reason=stop
+2026-08-03 09:49:56,236 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
+2026-08-03 09:49:56,239 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-08-03 09:50:03,821 INFO: end-file reason=stop
+2026-08-03 09:51:02,048 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 09:51:02,072 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 09:51:02,164 INFO: MPV inicializado
+2026-08-03 09:51:02,164 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 8416
+2026-08-03 09:51:02,166 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 09:51:02,219 INFO: Cliente conectado: ('127.0.0.1', 62021)
+2026-08-03 09:51:11,887 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
+2026-08-03 09:51:11,887 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-08-03 09:51:24,074 INFO: end-file reason=stop
+2026-08-03 09:51:26,035 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
+2026-08-03 09:51:26,036 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-08-03 09:51:30,634 INFO: end-file reason=stop
+2026-08-03 10:00:55,997 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 10:00:56,017 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 10:00:56,116 INFO: MPV inicializado
+2026-08-03 10:00:56,116 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 21832
+2026-08-03 10:00:56,117 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 10:00:56,179 INFO: Cliente conectado: ('127.0.0.1', 52432)
+2026-08-03 10:01:05,679 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
+2026-08-03 10:01:05,685 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-08-03 10:01:21,417 INFO: Cliente desconectado: ('127.0.0.1', 52432)
+2026-08-03 10:01:27,714 INFO: Cliente conectado: ('127.0.0.1', 55927)
+2026-08-03 10:01:50,841 INFO: end-file reason=stop
+2026-08-03 10:01:58,399 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 10:01:58,419 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 10:01:58,515 INFO: MPV inicializado
+2026-08-03 10:01:58,516 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 12744
+2026-08-03 10:01:58,516 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 10:01:58,569 INFO: Cliente conectado: ('127.0.0.1', 52503)
+2026-08-03 10:02:10,484 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
+2026-08-03 10:02:10,485 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-08-03 10:02:31,506 INFO: end-file reason=stop
+2026-08-03 10:07:28,405 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 10:07:28,428 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 10:07:28,526 INFO: MPV inicializado
+2026-08-03 10:07:28,528 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 21532
+2026-08-03 10:07:28,529 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 10:07:28,575 INFO: Cliente conectado: ('127.0.0.1', 52737)
+2026-08-03 10:07:48,741 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
+2026-08-03 10:07:48,742 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-08-03 10:07:58,291 INFO: Cliente desconectado: ('127.0.0.1', 52737)
+2026-08-03 10:08:02,462 INFO: Cliente conectado: ('127.0.0.1', 64084)
+2026-08-03 10:08:34,090 INFO: end-file reason=stop
+2026-08-03 10:14:26,425 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 10:14:26,447 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 10:14:26,547 INFO: MPV inicializado
+2026-08-03 10:14:26,547 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 19700
+2026-08-03 10:14:26,548 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 10:14:26,601 INFO: Cliente conectado: ('127.0.0.1', 62183)
+2026-08-03 10:14:44,674 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
+2026-08-03 10:14:44,676 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-08-03 10:14:52,105 INFO: Cliente desconectado: ('127.0.0.1', 62183)
+2026-08-03 10:14:56,161 INFO: Cliente conectado: ('127.0.0.1', 61784)
+2026-08-03 10:15:11,353 INFO: end-file reason=stop
+2026-08-03 10:15:11,355 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\21 TEA E NEURODIVERGÊNCIAS.mp4
+2026-08-03 10:15:11,356 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 02.mp4
+2026-08-03 10:15:15,141 INFO: end-file reason=stop
+2026-08-03 10:15:15,142 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 02.mp4
+2026-08-03 10:15:15,142 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4
+2026-08-03 10:15:16,508 INFO: end-file reason=stop
+2026-08-03 10:18:13,083 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 10:18:13,106 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 10:18:13,201 INFO: MPV inicializado
+2026-08-03 10:18:13,202 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 20224
+2026-08-03 10:18:13,202 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 10:18:13,257 INFO: Cliente conectado: ('127.0.0.1', 50114)
+2026-08-03 10:18:34,780 INFO: Cliente desconectado: ('127.0.0.1', 50114)
+2026-08-03 10:18:38,501 INFO: Cliente conectado: ('127.0.0.1', 58274)
+2026-08-03 10:22:50,278 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 10:22:50,302 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 10:22:50,397 INFO: MPV inicializado
+2026-08-03 10:22:50,397 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 11780
+2026-08-03 10:22:50,399 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 10:22:50,415 INFO: Cliente conectado: ('127.0.0.1', 60885)
+2026-08-03 10:24:40,325 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 02.mp4
+2026-08-03 10:24:40,325 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4
+2026-08-03 10:24:51,361 INFO: end-file reason=stop
+2026-08-03 10:24:51,362 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Sessões\218ª SESSÃO ORDINÁRIA DA 10ª LEGISLATURA - 23_06_2026.mp4
+2026-08-03 10:24:51,362 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4
+2026-08-03 10:25:00,262 INFO: end-file reason=stop
+2026-08-03 10:25:00,264 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Sessões\SESSÃO ORDINÁRIA 09 06 26.mp4
+2026-08-03 10:25:00,265 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4
+2026-08-03 10:25:52,926 INFO: end-file reason=stop
+2026-08-03 10:25:52,928 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4
+2026-08-03 10:25:52,929 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-08-03 10:26:35,806 INFO: end-file reason=stop
+2026-08-03 10:30:16,801 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 1 .mp4
+2026-08-03 10:30:16,867 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 10:32:10,637 INFO: end-file reason=stop

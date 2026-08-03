@@ -65,10 +65,33 @@ function stopRemainingTimer() {
 
 // Eventos do servidor                                                         
 
+function _logEvent(ev, type) {
+  switch (type) {
+    case "now_playing":
+      log(`Reproduzindo: ${ev.item?.title || '—'}`, "now_playing"); break;
+    case "paused":
+      log("Reprodução pausada", "paused"); break;
+    case "resumed":
+      log("Reprodução retomada", "resumed"); break;
+    case "stopped":
+      log("Reprodução encerrada", "stopped"); break;
+    case "playlist_end":
+      log("Fim do roteiro", "playlist_end"); break;
+    case "mpv_ready":
+      log("Player pronto", "mpv_ready"); break;
+    case "mpv_closed":
+      log("Player encerrado", "mpv_closed"); break;
+    case "stream_reconnecting":
+      log(`Reconectando stream… (tentativa ${ev.attempt ?? 1})`, "stream_reconnecting"); break;
+    case "stream_reconnect_failed":
+      log("Falha ao reconectar o stream", "stream_reconnect_failed"); break;
+  }
+}
+
 function handleEvent(ev) {
   const type = ev.event ?? "state";
   if (type !== "position") {
-    log(JSON.stringify(ev), type);
+    _logEvent(ev, type);
   }
 
   switch (type) {
@@ -226,7 +249,7 @@ function applyState(s) {
       // Adia o loadVideo até o primeiro evento "position" para usar #t=N na URL.
       // Fallback de 1.5s garante que o vídeo carregue mesmo que o evento demore.
       _pendingLoad        = { path: _ci.path, paused: state.paused };
-      _pendingLoadTimeout = setTimeout(() => _commitPendingLoad(0), 1500);
+      _pendingLoadTimeout = setTimeout(() => _commitPendingLoad(0), 5000);
     }
   }
 
@@ -255,6 +278,11 @@ const _volSlider  = document.getElementById("volume-slider");
 const _volDisplay = document.getElementById("volume-db");
 const _btnMute    = document.getElementById("btn-mute");
 let _muted = false;
+
+const _SVG_SPEAKER = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+const _SVG_MUTED   = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+const _SVG_PLAY    = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>';
+const _SVG_PAUSE   = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="4" height="18" rx="1"/><rect x="15" y="3" width="4" height="18" rx="1"/></svg>';
 let _volDb = parseFloat(localStorage.getItem("playline_volume_db") ?? "0");
 
 function _dbToMpvVol(db) {
@@ -288,7 +316,7 @@ _volSlider.addEventListener("input", () => {
   _updateFaderFill(_volSlider);
   if (_muted) {
     _muted = false;
-    _btnMute.textContent = "🔊";
+    _btnMute.innerHTML = _SVG_SPEAKER;
     _btnMute.classList.remove("muted");
   }
   send({ action: "set_volume", volume: _dbToMpvVol(_volDb) });
@@ -297,11 +325,11 @@ _volSlider.addEventListener("input", () => {
 _btnMute.addEventListener("click", () => {
   _muted = !_muted;
   if (_muted) {
-    _btnMute.textContent = "🔇";
+    _btnMute.innerHTML = _SVG_MUTED;
     _btnMute.classList.add("muted");
     send({ action: "set_volume", volume: 0 });
   } else {
-    _btnMute.textContent = "🔊";
+    _btnMute.innerHTML = _SVG_SPEAKER;
     _btnMute.classList.remove("muted");
     send({ action: "set_volume", volume: _dbToMpvVol(_volDb) });
   }
@@ -316,7 +344,7 @@ function updateButtons() {
   
   const btnPause = document.getElementById("btn-pause");
   btnPause.disabled    = stopped;
-  btnPause.textContent = paused ? "▶" : "⏸";
+  btnPause.innerHTML = paused ? _SVG_PLAY : _SVG_PAUSE;
   btnPause.title       = paused ? "Retomar" : "Pausar";
 }
 

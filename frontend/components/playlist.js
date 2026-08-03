@@ -410,7 +410,7 @@ async function syncOrderToServer() {
       body: JSON.stringify(state.schedule),
     });
   } catch (err) {
-    log(`Erro ao sincronizar ordem: ${err.message}`, "error");
+    log("Erro ao salvar a ordem do roteiro", "error");
   }
 }
 

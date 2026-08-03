@@ -20,7 +20,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from core.player import Player
 from core.playlist import PlaylistEngine
-from api.routes import router as http_router, setup as setup_routes
+from api.routes import router as http_router, setup as setup_routes, prewarm_thumbnails
 from api.websocket import router as ws_router, setup as setup_ws
 from core.db import init_db, migrate_from_json
 
@@ -167,6 +167,9 @@ async def lifespan(app: FastAPI):
 
     # Detecta se o daemon já estava reproduzindo algo (crash/reinício do servidor)
     await loop.run_in_executor(None, playlist_engine.restore_after_crash)
+
+    # Pré-aquece cache de thumbnails em background (aproveita o tempo da splash + login)
+    asyncio.create_task(prewarm_thumbnails())
 
     logger.info("Sistema de playout iniciado")
     yield

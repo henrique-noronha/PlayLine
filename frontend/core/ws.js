@@ -9,21 +9,21 @@ function connect() {
   state.ws.onopen = () => {
     state.connected = true;
     setConnStatus("connected");
-    log("conectado", "info");
+    log("Conectado ao servidor", "info");
   };
 
   state.ws.onclose = () => {
     state.connected = false;
     setConnStatus("disconnected");
-    log("conexão encerrada — reconectando em 3s…", "error");
+    log("Conexão perdida. Reconectando em 3s…", "error");
     setTimeout(connect, 3000);
   };
 
-  state.ws.onerror = () => log("erro de WebSocket", "error");
+  state.ws.onerror = () => log("Falha na conexão com o servidor", "error");
 
   state.ws.onmessage = (e) => {
     try { handleEvent(JSON.parse(e.data)); }
-    catch (err) { log(`parse error: ${err.message}`, "error"); }
+    catch (err) { log("Erro ao processar mensagem do servidor", "error"); }
   };
 }
 

@@ -27,6 +27,7 @@
   transition: background .15s;
 }
 .lib-header-actions button:hover { background: var(--border); }
+.lib-header-actions button svg { width: 14px; height: 14px; }
 
 /* ── Abas de subpastas ── */
 .lib-folders {

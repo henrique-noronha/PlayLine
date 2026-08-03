@@ -56,9 +56,8 @@ function loadVideo(path, startAt = 0) {
   _restoreLogoOverlays();
   const fragment = startAt > 1 ? `#t=${Math.floor(startAt)}` : '';
   const url = "/media?path=" + encodeURIComponent(path) + fragment;
-  log(`Carregando: ${url}`, "info");
   video.src = url;
-  video.play().catch(e => { if (e.name !== "AbortError") log(`Autoplay: ${e.message}`, "warn"); });
+  video.play().catch(e => { if (e.name !== "AbortError") log("Preview bloqueado pelo navegador", "warn"); });
 }
 
 function _restoreLogoOverlays() {
@@ -138,7 +137,6 @@ function updateBadge(status) {
 }
 
 video.addEventListener("loadedmetadata", () => {
-  log(`Metadados OK — duração: ${fmt(video.duration)}`, "info");
   // Sem seek manual aqui: quando loadVideo usa #t=N, o browser já inicia
   // na posição certa via range request nativo, sem freeze de buffering.
 });
@@ -156,13 +154,11 @@ video.addEventListener("timeupdate", () => {
   document.getElementById("progress-fill").style.width = pct + "%";
 });
 
-video.addEventListener("ended", () => {
-  log("Preview finalizado", "info");
-});
+video.addEventListener("ended", () => {});
 
 video.addEventListener("error", () => {
   const code = video.error ? video.error.code : "?";
-  log(`Erro no preview (código ${code})`, "error");
+  log("Não foi possível carregar o preview do vídeo", "error");
   // Só mostra mensagem se o canvas MPV não estiver recebendo frames
   const wrap = video.closest(".player-wrap");
   if (!wrap?.classList.contains("mpv-live")) {

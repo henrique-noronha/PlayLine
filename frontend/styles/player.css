@@ -284,6 +284,7 @@
   justify-content: center;
   transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
 }
+.btn-mute svg { width: 16px; height: 16px; }
 .btn-mute:hover { background: var(--border); color: var(--text); }
 .btn-mute.muted {
   background: #3b1111;
@@ -454,6 +455,7 @@
 
 .controls button:hover  { background: var(--border); }
 .controls button:active { transform: scale(.93); }
+.controls button svg { width: 22px; height: 22px; }
 
 #btn-play {
   background: var(--surface2);

@@ -58,7 +58,7 @@
           <h2>Biblioteca</h2>
           <div class="lib-header-actions">
             <button id="btn-lib-search" title="Pesquisar vídeo"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-            <button id="btn-lib-refresh" title="Atualizar biblioteca">↺</button>
+            <button id="btn-lib-refresh" title="Atualizar biblioteca"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
           </div>
         </div>
         <div class="lib-folders" id="lib-folders"></div>
@@ -115,7 +115,7 @@
           <div class="audio-controls">
             <span class="audio-label">Volume</span>
             <div class="audio-row">
-              <button id="btn-mute" class="btn-mute" title="Mudo">🔊</button>
+              <button id="btn-mute" class="btn-mute" title="Mudo"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
               <div class="audio-track-group">
                 <input type="range" id="volume-slider" min="-20" max="6" step="0.5" value="0" />
                 <!-- Escala compartilhada: left = calc(15px + (val+20)/26*(100%-30px)) -->
@@ -136,10 +136,10 @@
           </div>
 
           <div class="controls">
-            <button id="btn-stop"  title="Parar">⏹&#xFE0E;</button>
-            <button id="btn-play"  title="Play">▶&#xFE0E;</button>
-            <button id="btn-pause" title="Pausar">⏸&#xFE0E;</button>
-            <button id="btn-next"  title="Próximo">⏭&#xFE0E;</button>
+            <button id="btn-stop"  title="Parar"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></button>
+            <button id="btn-play"  title="Play"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></button>
+            <button id="btn-pause" title="Pausar"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="4" height="18" rx="1"/><rect x="15" y="3" width="4" height="18" rx="1"/></svg></button>
+            <button id="btn-next"  title="Próximo"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 16,12 5,21"/><rect x="18" y="3" width="3" height="18" rx="1"/></svg></button>
           </div>
 
           <div class="logo-controls-compact">
@@ -297,6 +297,10 @@
                  placeholder="https://youtube.com/watch?v=…" autocomplete="off" />
         </div>
         <div id="yt-status" class="yt-status"></div>
+        <div class="yt-net-notice">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="yt-net-notice-icon"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>A reprodução depende da sua conexão com a internet. Qualidade e estabilidade podem variar conforme a velocidade da rede.</span>
+        </div>
       </div>
       <div class="yt-modal-actions">
         <button id="btn-yt-cancel" class="yt-btn-cancel">Cancelar</button>
@@ -412,7 +416,7 @@
     <div class="yt-preview-header">
       <span class="yt-preview-label">▶ Youtube</span>
       <div class="yt-preview-actions">
-        <button id="yt-preview-mute" title="Ativar áudio">🔇</button>
+        <button id="yt-preview-mute" title="Ativar áudio"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button>
         <button id="yt-preview-close">✕</button>
       </div>
     </div>

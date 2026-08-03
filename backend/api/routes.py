@@ -1,5 +1,6 @@
 """Rotas HTTP do PlayLine."""
 
+import hashlib
 import io
 import mimetypes
 import logging
@@ -17,6 +18,12 @@ _LOGO_WORK_DIR = Path(os.environ.get("PUBLIC", r"C:\Users\Public")) / "pltmp"
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+_THUMB_CACHE_DIR: Path = (
+    Path(sys.executable).parent / "cache" / "thumbs"
+    if getattr(sys, "frozen", False)
+    else Path(__file__).parent.parent.parent / "cache" / "thumbs"
+)
 
 
 def _validate_path(path: str, allowed_exts: set) -> Path:
@@ -177,15 +184,17 @@ def _ffmpeg_bin() -> str:
     return "ffmpeg"
 
 
-@router.get("/api/thumbnail")
-async def get_thumbnail(path: str):
-    p = _validate_path(path, _MEDIA_EXTS)
-    if not p.is_file():
-        raise HTTPException(status_code=404)
+def _thumb_cache_file(path: str) -> Path:
+    key = hashlib.md5(path.encode()).hexdigest()
+    return _THUMB_CACHE_DIR / f"{key}.jpg"
+
+
+def _generate_thumb(path: str) -> bytes | None:
+    """Gera thumbnail via ffmpeg. Retorna bytes JPEG ou None em caso de falha."""
     try:
         result = subprocess.run(
             [
-                _ffmpeg_bin(), "-y", "-ss", "2", "-i", str(p),
+                _ffmpeg_bin(), "-y", "-ss", "2", "-i", path,
                 "-vframes", "1",
                 "-vf", "scale=112:63:force_original_aspect_ratio=decrease,pad=112:63:(ow-iw)/2:(oh-ih)/2:color=black",
                 "-f", "image2", "-vcodec", "mjpeg", "pipe:1",
@@ -194,12 +203,80 @@ async def get_thumbnail(path: str):
             timeout=15,
         )
         if result.returncode == 0 and result.stdout:
-            return Response(content=result.stdout, media_type="image/jpeg")
+            return result.stdout
     except FileNotFoundError:
-        pass  # ffmpeg não instalado
+        pass
     except Exception as exc:
         logger.warning("Thumbnail ffmpeg error: %s", exc)
+    return None
+
+
+@router.get("/api/thumbnail")
+async def get_thumbnail(path: str):
+    p = _validate_path(path, _MEDIA_EXTS)
+    if not p.is_file():
+        raise HTTPException(status_code=404)
+
+    cache_file = _thumb_cache_file(path)
+    _CACHE_HEADERS = {"Cache-Control": "public, max-age=604800, immutable"}
+    if cache_file.is_file():
+        return FileResponse(str(cache_file), media_type="image/jpeg", headers=_CACHE_HEADERS)
+
+    import asyncio
+    data = await asyncio.get_event_loop().run_in_executor(None, _generate_thumb, path)
+    if data:
+        try:
+            _THUMB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+            cache_file.write_bytes(data)
+        except Exception:
+            pass
+        return Response(content=data, media_type="image/jpeg", headers=_CACHE_HEADERS)
     raise HTTPException(status_code=404, detail="Thumbnail não disponível")
+
+
+async def prewarm_thumbnails() -> None:
+    """Gera thumbnails em cache para todos os arquivos da biblioteca durante o startup."""
+    import asyncio
+    await asyncio.sleep(1)  # aguarda o servidor estabilizar
+
+    loop = asyncio.get_event_loop()
+
+    def _collect():
+        files = []
+        try:
+            for f in _LIBRARY_BASE.rglob("*"):
+                if f.is_file() and f.suffix.lower() in _MEDIA_EXTS:
+                    files.append(f)
+        except Exception:
+            pass
+        return files
+
+    files = await loop.run_in_executor(None, _collect)
+    logger.info("[prewarm] %d arquivo(s) encontrado(s) na biblioteca", len(files))
+
+    warmed = 0
+    for f in files:
+        cache_file = _thumb_cache_file(str(f))
+        if cache_file.is_file():
+            continue
+
+        def _gen(src=f, dst=cache_file):
+            data = _generate_thumb(str(src))
+            if data:
+                try:
+                    _THUMB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+                    dst.write_bytes(data)
+                except Exception:
+                    pass
+                return True
+            return False
+
+        ok = await loop.run_in_executor(None, _gen)
+        if ok:
+            warmed += 1
+        await asyncio.sleep(0.05)  # ~20 por segundo — não bloqueia o event loop
+
+    logger.info("[prewarm] %d thumbnail(s) gerado(s) em cache", warmed)
 
 
 @router.get("/api/temperature")
@@ -360,6 +437,42 @@ async def init_mpv():
         raise HTTPException(status_code=503, detail="Servidor não inicializado")
     _playlist_engine._player.init_mpv()
     return {"ok": True}
+
+
+# ── Roteiros salvos ────────────────────────────────────────────────────────
+
+@router.get("/api/saved-schedules")
+async def list_saved_schedules():
+    from core import saved_schedules as ss
+    return {"schedules": ss.list_saved()}
+
+
+@router.post("/api/saved-schedules")
+async def create_saved_schedule(body: dict):
+    title = (body.get("title") or "").strip()
+    items = body.get("items") or []
+    if not title:
+        raise HTTPException(status_code=400, detail="Título obrigatório")
+    from core import saved_schedules as ss
+    new_id = ss.save(title, items)
+    return {"id": new_id}
+
+
+@router.delete("/api/saved-schedules/{schedule_id}")
+async def delete_saved_schedule(schedule_id: int):
+    from core import saved_schedules as ss
+    if not ss.delete(schedule_id):
+        raise HTTPException(status_code=404, detail="Roteiro não encontrado")
+    return {"ok": True}
+
+
+@router.get("/api/saved-schedules/{schedule_id}/items")
+async def get_saved_schedule_items(schedule_id: int):
+    from core import saved_schedules as ss
+    items = ss.get_items(schedule_id)
+    if items is None:
+        raise HTTPException(status_code=404, detail="Roteiro não encontrado")
+    return {"items": items}
 
 
 @router.delete("/api/library/folder")

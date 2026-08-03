@@ -7,18 +7,30 @@ __pycache__/
 backend/libmpv-2.dll
 backend/ffmpeg.exe
 
+# Cache de thumbnails — gerado automaticamente no startup
+cache/
+
 # Dados de runtime — gerados automaticamente pela aplicação
 backend/schedule.json
 backend/history.json
-*.db
-*.db-shm
-*.db-wal
+backend/playline.db
+backend/playline.db-wal
+backend/playline.db-shm
+backend/checkpoint.json
+backend/text_overlay.json
+backend/.playline_input.conf
+backend/standby.png
+
+# Logs
+backend/daemon.log
+backend/playline.log
+*.log
 
 # Build
 backend/build/
 backend/dist/
-backend/*.spec
-backend/FavPlayline.ico
+backend/specs/
+backend/assets/
 
 # Ambiente virtual
 .venv/
@@ -34,4 +46,5 @@ Biblioteca/
 *.exe
 *.docx
 *.pdf
+*.bak
 backend/.playline_server
