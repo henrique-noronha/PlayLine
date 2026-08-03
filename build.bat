@@ -77,6 +77,10 @@ copy /y "dist\PlayLine-daemon.exe" "dist\PlayLine\"
 if not exist "dist\PlayLine\logos" mkdir "dist\PlayLine\logos"
 if exist "logos" ( xcopy /e /i /y "logos\*" "dist\PlayLine\logos\" >nul 2>&1 )
 
+:: Copia imagens de standby (problemastecnicos.png etc.)
+if not exist "dist\PlayLine\images" mkdir "dist\PlayLine\images"
+if exist "images" ( xcopy /e /i /y "images\*" "dist\PlayLine\images\" >nul 2>&1 )
+
 :: Cria pasta Biblioteca vazia
 if not exist "dist\PlayLine\Biblioteca" mkdir "dist\PlayLine\Biblioteca"
 

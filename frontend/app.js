@@ -63,6 +63,47 @@ function stopRemainingTimer() {
   _remainingTimer = null;
 }
 
+// Estado de reconexão do stream — controla o banner abaixo do player.
+let _streamReconnecting = false;
+// true somente quando o ciclo de reconexão do MPV está ativo (stream_reconnecting recebido).
+// false quando o banner veio apenas do evento offline do browser (MPV ainda buffering).
+let _mpvReconnectActive = false;
+
+function _showReconnectStatus(msg) {
+  _streamReconnecting = true;
+  const banner = document.getElementById("reconnect-banner");
+  const text   = document.getElementById("reconnect-banner-text");
+  if (banner) banner.style.display = "flex";
+  if (text)   text.textContent = msg;
+}
+
+function _clearReconnectStatus() {
+  _streamReconnecting = false;
+  _mpvReconnectActive = false;
+  const banner = document.getElementById("reconnect-banner");
+  if (banner) banner.style.display = "none";
+}
+
+// Detecta queda de rede via evento do browser para mostrar aviso IMEDIATAMENTE,
+// sem esperar o MPV drenar o buffer (pode demorar vários segundos).
+window.addEventListener("offline", () => {
+  const item = state.schedule[state.currentIndex];
+  if (state.playing && item?.live) {
+    _showReconnectStatus("Sem conexão com a internet — aguardando rede");
+    updateBadge("reconnecting");
+  }
+});
+
+// Quando a rede volta: se o ciclo de reconexão do MPV ainda não iniciou
+// (MPV estava buffering quando a rede caiu e voltou), limpa o banner imediatamente.
+// Se o ciclo já iniciou (_mpvReconnectActive), mantém até o MPV confirmar (now_playing).
+window.addEventListener("online", () => {
+  if (_streamReconnecting && !_mpvReconnectActive) {
+    _clearReconnectStatus();
+    updateBadge("playing");
+  }
+});
+
 // Eventos do servidor                                                         
 
 function _logEvent(ev, type) {
@@ -108,6 +149,7 @@ function handleEvent(ev) {
       state.mpvAlive = true;
       break;
     case "now_playing":
+      _clearReconnectStatus();
       window._netMonitor?.onNowPlaying(ev.item);
       state.mpvAlive = true;
       _cancelPendingLoad();
@@ -168,6 +210,7 @@ function handleEvent(ev) {
       video.play().catch(() => {});
       break;
     case "stopped":
+      _clearReconnectStatus();
       window._netMonitor?.onStopped();
       _vuBackendDb = null;
       _cancelPendingLoad();
@@ -187,6 +230,7 @@ function handleEvent(ev) {
       updateStartTimes();
       break;
     case "playlist_end":
+      _clearReconnectStatus();
       window._netMonitor?.onStopped();
       _cancelPendingLoad();
       state.playing = false;
@@ -215,12 +259,36 @@ function handleEvent(ev) {
     case "text_overlay_state":
       if (!_clipOverrideActive && typeof applyTextOverlayState === "function") applyTextOverlayState(ev);
       break;
-    case "stream_reconnecting":
-      window._netMonitor?.onReconnecting(ev);
+    case "stream_reconnecting": {
+      const attempt = ev.attempt ?? 1;
+      const max     = ev.max_attempts ?? 5;
+      const delay   = ev.delay ?? 10;
+      _mpvReconnectActive = true;
+      let msg;
+      if (ev.no_internet) {
+        msg = `Sem internet — tentativa ${attempt}/${max} em ${delay}s`;
+      } else if (ev.never_played) {
+        msg = `Live indisponível ou não iniciada — tentativa ${attempt}/${max} em ${delay}s`;
+      } else {
+        msg = `Live caiu — tentativa de reconexão ${attempt}/${max} em ${delay}s`;
+      }
+      _showReconnectStatus(msg);
+      updateBadge("reconnecting");
       break;
-    case "stream_reconnect_failed":
-      window._netMonitor?.onReconnectFailed();
+    }
+    case "stream_reconnect_failed": {
+      _clearReconnectStatus();
+      let failMsg;
+      if (ev.no_internet) {
+        failMsg = "Sem conexão com a internet — verifique sua rede";
+      } else if (ev.never_played) {
+        failMsg = "Não foi possível carregar a live — verifique o link ou aguarde o início";
+      } else {
+        failMsg = "Falha ao reconectar a live após várias tentativas";
+      }
+      showToast(failMsg, "error");
       break;
+    }
   }
 }
 

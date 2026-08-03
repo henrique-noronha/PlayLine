@@ -279,6 +279,25 @@ async def prewarm_thumbnails() -> None:
     logger.info("[prewarm] %d thumbnail(s) gerado(s) em cache", warmed)
 
 
+_CITY_COORDS: dict[str, tuple[float, float]] = {
+    "Palmas,TO":                (-10.1838, -48.3336),
+    "Araguaína,TO":             ( -7.1932, -48.2019),
+    "Araguatins,TO":            ( -5.6529, -48.1162),
+    "Arapoema,TO":              ( -7.6575, -49.0641),
+    "Augustinópolis,TO":        ( -5.4662, -47.8898),
+    "Couto Magalhães,TO":       ( -8.3606, -49.1774),
+    "Dianópolis,TO":            (-11.6240, -46.8198),
+    "Gurupi,TO":                (-11.7279, -49.0680),
+    "Luzimangues,TO":           (-10.1736, -48.4599),
+    "Nazaré,TO":                ( -6.3733, -47.6633),
+    "Paraíso do Tocantins,TO":  (-10.1752, -48.8868),
+    "Porto Nacional,TO":        (-10.7020, -48.4111),
+    "Praia Norte,TO":           ( -5.3928, -47.8111),
+    "Sampaio,TO":               ( -5.3542, -47.8782),
+    "Tocantinópolis,TO":        ( -6.3281, -47.4218),
+}
+
+
 @router.get("/api/temperature")
 async def get_temperature(city: str = "Palmas,TO"):
     """Proxy para OpenWeatherMap — retorna temperatura como texto (ex: '24°C')."""
@@ -292,21 +311,23 @@ async def get_temperature(city: str = "Palmas,TO"):
     def _fetch():
         import logging
         log = logging.getLogger("api.routes")
-        owm_name = city.split(",")[0].strip()  # OWM: só cidade, sem estado
-        # Tenta OpenWeatherMap primeiro
+        coords = _CITY_COORDS.get(city)
         try:
-            url  = f"https://api.openweathermap.org/data/2.5/weather?q={quote(owm_name)},BR&appid={_API_KEY}&units=metric"
+            if coords:
+                lat, lon = coords
+                url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={_API_KEY}&units=metric"
+            else:
+                owm_name = city.split(",")[0].strip()
+                url = f"https://api.openweathermap.org/data/2.5/weather?q={quote(owm_name)},BR&appid={_API_KEY}&units=metric"
             with urlopen(url, timeout=5) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 temp = data.get("main", {}).get("temp")
                 if temp is not None:
-                    found   = data.get("name", "?")
-                    country = data.get("sys", {}).get("country", "?")
-                    log.info("[weather] OWM: %.1f°C (%s, %s)", temp, found, country)
-                    return f"{round(temp)}°C"
+                    corrected = round(temp - 1)
+                    log.info("[weather] OWM: %.1f°C → %d°C (corrigido) (%s)", temp, corrected, city)
+                    return f"{corrected}°C"
         except Exception as e:
             log.warning("[weather] OWM falhou: %s — tentando wttr.in", e)
-        # Fallback: wttr.in — usa cidade completa com estado para evitar ambiguidade
         try:
             url = f"https://wttr.in/{quote(city)}?format=%t"
             with urlopen(url, timeout=5) as resp:

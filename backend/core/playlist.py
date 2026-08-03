@@ -4,12 +4,32 @@ Playlist Engine — gerencia a fila de reprodução e responde a eventos do Play
 
 import logging
 import asyncio
+import socket
 from typing import Callable, Optional
 
 from .db import get_conn
 from .history import HistoryManager
 
 logger = logging.getLogger(__name__)
+
+_RECONNECT_MAX    = 5                    # tentativas antes de desistir
+_RECONNECT_DELAYS = [3, 6, 12, 20, 30]  # backoff exponencial (segundos por tentativa)
+
+
+def _has_internet(timeout: float = 1.5) -> bool:
+    """Testa conectividade real da máquina via TCP no DNS do Google (8.8.8.8:53)."""
+    try:
+        socket.create_connection(("8.8.8.8", 53), timeout=timeout).close()
+        return True
+    except OSError:
+        return False
+
+
+def _is_live_item(item: dict) -> bool:
+    if item.get("live"):
+        return True
+    path = (item.get("path") or "").lower()
+    return path.startswith(("rtmp://", "rtmps://", "rtsp://"))
 
 
 class PlaylistEngine:
@@ -25,6 +45,8 @@ class PlaylistEngine:
         self._skip_end_file: int = 0  # end-files a ignorar após substituição manual de vídeo
         self._preloading: bool = False  # True quando próximo vídeo já está na fila do MPV
         self._history = HistoryManager()
+        self._reconnect_attempt: int = 0
+        self._live_has_played: bool = False  # True após file-loaded confirmar a live atual
 
     # Roteiro                                                              #
  
@@ -135,6 +157,13 @@ class PlaylistEngine:
     def set_event_loop(self, loop: asyncio.AbstractEventLoop):
         self._loop = loop
 
+    def on_file_loaded(self):
+        """Chamado pelo Player quando MPV confirma que o arquivo carregou (file-loaded)."""
+        current = self._items[0] if self._items else {}
+        if _is_live_item(current):
+            self._live_has_played = True
+            logger.debug("[reconexão] file-loaded confirmado para live — never_played = False")
+
     def on_end_file(self, reason: str):
         """Chamado pelo Player (thread de leitura TCP) quando um arquivo termina."""
         if reason == "stop":
@@ -147,12 +176,29 @@ class PlaylistEngine:
             if self._loop:
                 asyncio.run_coroutine_threadsafe(self._on_mpv_closed(), self._loop)
             return
-        if reason == "error":
-            self._preloading = False  # erro: não confia no estado da playlist interna
-            self._history.close_entry("error")
-            logger.warning("Arquivo com erro — avançando automaticamente")
-        elif reason == "eof":
-            self._history.close_entry("completed")
+        if reason in ("error", "eof"):
+            self._preloading = False
+            current = self._items[0] if self._items else {}
+            if self._running and _is_live_item(current):
+                self._reconnect_attempt += 1
+                self._history.close_entry(reason)
+                if self._reconnect_attempt <= _RECONNECT_MAX:
+                    if self._loop:
+                        asyncio.run_coroutine_threadsafe(
+                            self._schedule_reconnect(), self._loop
+                        )
+                else:
+                    self._reconnect_attempt = 0
+                    if self._loop:
+                        asyncio.run_coroutine_threadsafe(
+                            self._on_reconnect_failed(), self._loop
+                        )
+                return
+            if reason == "error":
+                self._history.close_entry("error")
+                logger.warning("Arquivo com erro — avançando automaticamente")
+            else:
+                self._history.close_entry("completed")
         if self._skip_end_file > 0:
             self._skip_end_file -= 1
             logger.debug("end-file ignorado (substituição por avanço manual)")
@@ -175,6 +221,55 @@ class PlaylistEngine:
         await self._broadcast({"event": "stopped"})
         logger.info("Playout parado (janela MPV fechada)")
 
+    async def _schedule_reconnect(self):
+        attempt = self._reconnect_attempt
+        delay   = _RECONNECT_DELAYS[min(attempt - 1, len(_RECONNECT_DELAYS) - 1)]
+
+        # Testa conectividade real em executor para não bloquear o event loop
+        loop = asyncio.get_event_loop()
+        has_net     = await loop.run_in_executor(None, _has_internet)
+        no_internet = not has_net
+        never_played = not self._live_has_played
+
+        if no_internet:
+            label = "sem conexão com a internet"
+        elif never_played:
+            label = "live nunca carregou"
+        else:
+            label = "live caiu"
+
+        logger.info("[reconexão] tentativa %d/%d (%s) — aguardando %ds...",
+                    attempt, _RECONNECT_MAX, label, delay)
+
+        await self._broadcast({
+            "event": "stream_reconnecting",
+            "attempt": attempt,
+            "max_attempts": _RECONNECT_MAX,
+            "delay": delay,
+            "no_internet": no_internet,
+            "never_played": never_played,
+        })
+        await asyncio.sleep(delay)
+        if not self._running or not self._items:
+            return
+        if not _is_live_item(self._items[0]):
+            return
+        logger.info("[reconexão] tentando reproduzir novamente: %s", self._items[0].get("path"))
+        await self.play_index(0, force_resolve=True)
+
+    async def _on_reconnect_failed(self):
+        loop = asyncio.get_event_loop()
+        has_net     = await loop.run_in_executor(None, _has_internet)
+        no_internet = not has_net
+        never_played = not self._live_has_played
+        await self._broadcast({
+            "event": "stream_reconnect_failed",
+            "no_internet": no_internet,
+            "never_played": never_played,
+        })
+        logger.error("[reconexão] esgotadas %d tentativas — avançando", _RECONNECT_MAX)
+        await self._advance(expected_seq=self._advance_seq)
+
     async def _advance(self, expected_seq: int = -1):
         """
         Consome o clipe atual e avança para o próximo.
@@ -182,6 +277,7 @@ class PlaylistEngine:
         quando end-file natural e next/jump chegam simultaneamente).
         expected_seq = -1: avança incondicionalmente (next manual, jump).
         """
+        self._reconnect_attempt = 0
         if expected_seq >= 0 and expected_seq != self._advance_seq:
             logger.debug("_advance obsoleto (seq %d != %d) — ignorado", expected_seq, self._advance_seq)
             return
@@ -212,20 +308,24 @@ class PlaylistEngine:
 
     async def play(self):
         """Inicia pelo primeiro item do roteiro."""
+        self._reconnect_attempt = 0
         self._advance_seq += 1  # invalida qualquer end-file pendente
         await self.play_index(0)
 
-    async def play_index(self, index: int):
+    async def play_index(self, index: int, force_resolve: bool = False):
         if not (0 <= index < len(self._items)):
             return
         self._index = index
         self._running = True
         self._paused = False
         item = self._items[index]
+        # Reset "já tocou" ao iniciar uma live nova (não em tentativas de reconexão)
+        if _is_live_item(item) and not force_resolve:
+            self._live_has_played = False
 
         if item.get("path"):
             self._history.open_entry(item.get("title") or item["path"].split("\\")[-1], item["path"])
-            if self._preloading:
+            if self._preloading and not force_resolve:
                 # MPV já avançou para este vídeo via playlist interna (pré-carregado)
                 # Não chama player.play() para não interromper a reprodução
                 logger.info("MPV já está em transição para: %s", item["path"])
@@ -234,6 +334,7 @@ class PlaylistEngine:
                     item["path"],
                     start_time=item.get("start_time"),
                     end_time=item.get("end_time"),
+                    force_resolve=force_resolve,
                 )
 
             self._preloading = False
@@ -288,6 +389,8 @@ class PlaylistEngine:
             await self._broadcast({"event": "resumed"})
 
     async def stop(self):
+        self._reconnect_attempt = 0
+        self._live_has_played = False
         self._advance_seq += 1  # invalida qualquer end-file pendente
         self._running = False
         self._paused = False

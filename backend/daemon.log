@@ -2032,3 +2032,997 @@
 2026-08-03 14:22:22,213 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
 2026-08-03 14:22:22,755 INFO: Decodificação ativa: d3d11va
 2026-08-03 14:24:11,566 INFO: end-file reason=stop
+2026-08-03 14:44:09,898 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 14:44:09,922 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 14:44:10,356 INFO: MPV inicializado
+2026-08-03 14:44:10,357 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 5392
+2026-08-03 14:44:10,358 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 14:44:10,484 INFO: Cliente conectado: ('127.0.0.1', 55100)
+2026-08-03 14:44:30,923 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 1 .mp4
+2026-08-03 14:44:30,923 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 14:44:31,563 INFO: Decodificação ativa: d3d11va
+2026-08-03 14:44:38,124 INFO: [weather] OWM: 35.1°C → 34°C (corrigido) (Brejo Sêco, BR)
+2026-08-03 14:44:38,184 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:39,208 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:40,223 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:41,235 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:42,252 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:43,266 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:44,282 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:45,300 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:46,314 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:47,805 INFO: [weather] OWM: 36.4°C → 35°C (corrigido) (Araguaína, BR)
+2026-08-03 14:44:47,808 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:48,830 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:49,850 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:50,867 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:51,897 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:52,921 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:53,939 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:54,960 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:55,979 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:57,005 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:58,543 INFO: [weather] OWM: 37.7°C → 37°C (corrigido) (Bom Jesus, BR)
+2026-08-03 14:44:58,545 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:44:59,560 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:00,586 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:02,112 INFO: [weather] OWM: 36.4°C → 35°C (corrigido) (Araguaína, BR)
+2026-08-03 14:45:02,114 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:03,621 INFO: [weather] OWM: 35.1°C → 34°C (corrigido) (Brejo Sêco, BR)
+2026-08-03 14:45:03,623 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:04,641 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:05,669 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:06,685 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:07,702 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:08,727 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:09,770 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:10,787 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:11,803 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:12,835 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:13,852 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:14,867 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:15,883 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:16,901 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:17,918 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:18,933 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:19,950 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:20,970 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:21,990 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:23,007 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:24,025 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:25,067 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:26,089 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:27,107 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:28,133 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:29,166 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:30,187 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:31,233 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:32,273 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:33,299 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:34,313 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:35,331 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:36,348 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:37,364 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:38,399 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:39,413 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:40,427 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:41,464 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:42,478 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:43,490 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:44,531 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:45,542 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:46,557 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:47,570 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:48,595 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:49,613 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:50,629 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:51,640 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:52,656 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:53,670 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:54,686 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:55,700 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:56,728 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:57,763 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:58,780 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:45:59,795 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:00,827 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:01,860 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:02,894 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:03,928 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:04,962 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:05,978 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:06,993 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:08,009 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:09,043 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:10,061 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:11,094 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:12,109 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:13,121 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:14,134 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:15,148 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:16,161 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:17,209 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:18,225 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:19,242 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:20,258 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:21,275 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:22,291 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:23,304 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:24,317 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:25,336 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:26,374 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:27,389 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:28,407 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:29,424 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:30,441 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:31,348 INFO: end-file reason=stop
+2026-08-03 14:46:31,467 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:32,511 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:33,546 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:34,573 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:35,592 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:36,619 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:37,641 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:38,669 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:39,686 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:40,702 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:41,728 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:42,749 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:43,775 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:44,799 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:45,827 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:46,843 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:47,868 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:48,890 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:49,919 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:50,940 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:51,955 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:52,984 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:54,004 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:55,034 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:56,052 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:57,079 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:58,107 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:46:59,122 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:00,136 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:01,162 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:02,173 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:03,195 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:04,226 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:05,255 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:06,278 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:07,302 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:08,326 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:09,343 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:10,365 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:11,391 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:12,415 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:13,427 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:14,443 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:15,475 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:16,492 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:17,524 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:18,551 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:19,582 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:20,604 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:21,625 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:22,644 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:23,670 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:24,695 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:25,718 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:26,746 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:27,761 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:28,790 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:29,812 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:30,840 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:31,870 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:32,891 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:33,913 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:34,939 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:35,963 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:36,983 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:38,005 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:39,032 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:40,059 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:41,078 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:42,103 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:43,133 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:44,156 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:45,177 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:46,205 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:47,229 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:48,247 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:49,263 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:50,293 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:51,318 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:52,345 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:53,366 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:54,385 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:55,412 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:56,437 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:57,465 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:58,483 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:47:59,502 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:00,527 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:01,557 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:02,584 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:03,613 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:04,639 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:05,668 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:06,685 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:07,706 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:08,732 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:09,750 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:10,777 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:11,815 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:12,848 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:13,869 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:14,897 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:15,918 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:16,938 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:17,969 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:18,998 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:20,020 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:21,047 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:22,068 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:23,092 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:24,123 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:25,145 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:26,163 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:27,189 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:28,218 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:29,238 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:30,263 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:31,289 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:32,321 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:33,345 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:34,359 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:35,378 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:36,406 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:37,431 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:38,457 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:39,489 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:40,512 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:41,531 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:42,559 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:43,577 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:44,601 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:45,627 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:46,649 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:47,663 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:48,679 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:49,710 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:50,735 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:51,767 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:52,792 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:53,821 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:54,848 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:55,870 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:56,892 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:57,918 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:58,942 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:48:59,972 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:00,992 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:02,019 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:03,043 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:04,063 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:05,089 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:06,114 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:07,132 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:08,151 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:09,167 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:10,189 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:11,203 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:12,238 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:13,270 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:14,321 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:15,351 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:16,372 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:17,402 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:18,432 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:19,450 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:20,466 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:21,480 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:22,504 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:23,523 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:24,547 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:25,565 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:26,578 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:27,597 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:28,613 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:29,640 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:30,663 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:31,685 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:32,696 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:33,709 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:34,731 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:35,777 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:36,793 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:37,818 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:38,845 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:39,876 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:40,905 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:41,926 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:42,944 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:43,957 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:44,978 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:45,998 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:47,016 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:48,034 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:49,068 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:50,091 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:51,132 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:52,147 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:49:53,161 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-03 14:54:43,872 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 14:54:43,895 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 14:54:44,827 INFO: MPV inicializado
+2026-08-03 14:54:44,828 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 22120
+2026-08-03 14:54:44,829 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 14:54:45,013 INFO: [osd_text] osd=380x213 font=8 bmp=50x24 pos=(315,175) margin_y=14
+2026-08-03 14:54:45,334 INFO: Cliente conectado: ('127.0.0.1', 56348)
+2026-08-03 14:54:46,378 INFO: [weather] OWM: 35.1°C → 34°C (corrigido) (Brejo Sêco, BR)
+2026-08-03 14:54:46,381 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:47,394 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:48,411 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:49,436 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:50,454 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:51,469 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:52,486 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:53,514 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:54,544 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:55,584 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:55,683 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 1 .mp4
+2026-08-03 14:54:55,684 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 14:54:56,212 INFO: Decodificação ativa: d3d11va
+2026-08-03 14:54:56,217 INFO: [osd_text] osd=380x213 font=8 bmp=50x24 pos=(315,175) margin_y=14
+2026-08-03 14:54:56,620 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:57,636 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:58,676 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:54:59,701 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:00,726 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:01,746 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:02,767 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:03,784 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:04,801 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:05,815 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:06,833 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:07,858 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:08,893 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:09,907 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:10,924 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:11,936 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:12,952 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:13,983 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:14,999 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:16,014 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:17,033 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:18,056 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:19,132 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:20,165 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:21,198 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:22,217 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:23,235 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:24,249 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:25,263 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:26,290 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:27,332 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:28,353 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:29,378 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:30,394 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:31,410 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:32,429 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:33,446 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:34,464 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:35,480 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:36,496 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:37,513 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:38,529 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:39,546 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:40,566 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:41,596 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:42,617 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:43,638 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:44,657 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:45,672 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:46,729 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:47,762 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:48,780 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:50,237 INFO: [weather] OWM: 34.1°C → 33°C (corrigido) (Santa Luz, BR)
+2026-08-03 14:55:50,241 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:51,260 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:52,276 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:53,292 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:54,307 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:55,326 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:56,816 INFO: [weather] OWM: 35.1°C → 34°C (corrigido) (Porto Nacional, BR)
+2026-08-03 14:55:56,826 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:57,842 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:58,861 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:55:59,874 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:00,892 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:02,393 INFO: [weather] OWM: 37.2°C → 36°C (corrigido) (Augustinópolis, BR)
+2026-08-03 14:56:02,396 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:03,409 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:04,427 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:05,443 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:06,930 INFO: [weather] OWM: 37.3°C → 36°C (corrigido) (Porto Franco, BR)
+2026-08-03 14:56:06,934 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:07,950 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:09,508 INFO: [weather] OWM: 37.1°C → 36°C (corrigido) (Augustinópolis, BR)
+2026-08-03 14:56:09,518 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:10,541 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:11,573 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:12,587 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:13,623 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:15,155 INFO: [weather] OWM: 35.1°C → 34°C (corrigido) (Porto Nacional, BR)
+2026-08-03 14:56:15,188 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:16,201 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:17,223 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:18,712 INFO: [weather] OWM: 34.1°C → 33°C (corrigido) (Santa Luz, BR)
+2026-08-03 14:56:18,715 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:19,730 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:21,428 INFO: [weather] OWM: 36.5°C → 36°C (corrigido) (Angico, BR)
+2026-08-03 14:56:21,455 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:22,466 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:23,521 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 14:56:25,025 INFO: [weather] OWM: 34.5°C → 33°C (corrigido) (Gurupi, BR)
+2026-08-03 14:56:25,028 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:26,042 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:27,063 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:28,577 INFO: [weather] OWM: 31.5°C → 31°C (corrigido) (Riacho do Ouro, BR)
+2026-08-03 14:56:28,580 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:29,597 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:30,610 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:31,626 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:32,639 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:34,122 INFO: [weather] OWM: 37.2°C → 36°C (corrigido) (Santa Maria Velha, BR)
+2026-08-03 14:56:34,137 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:35,154 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:36,167 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:37,182 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:38,220 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:39,246 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:40,259 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:41,272 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:42,284 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:43,319 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:44,334 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:45,345 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:46,385 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:47,399 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:48,412 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:49,425 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:50,450 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:51,476 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:52,495 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:53,521 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:54,535 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:55,550 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:56,565 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:57,616 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:58,649 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:56:59,672 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:57:00,703 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:57:01,724 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:57:02,738 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:57:02,845 INFO: end-file reason=stop
+2026-08-03 14:57:03,756 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:57:04,778 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:57:05,797 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:57:06,816 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:57:07,842 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 14:57:08,870 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 15:07:55,115 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 15:07:55,139 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 15:07:56,043 INFO: MPV inicializado
+2026-08-03 15:07:56,044 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 20092
+2026-08-03 15:07:56,045 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 15:07:56,542 INFO: Cliente conectado: ('127.0.0.1', 59000)
+2026-08-03 15:08:50,399 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-08-03 15:08:51,018 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:08:59,963 INFO: end-file reason=eof
+2026-08-03 15:09:00,126 INFO: [standby] overlay aplicado (380x213)
+2026-08-03 15:09:07,785 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4
+2026-08-03 15:09:08,302 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:09:14,580 INFO: end-file reason=stop
+2026-08-03 15:14:05,962 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 15:14:05,989 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 15:14:07,016 INFO: MPV inicializado
+2026-08-03 15:14:07,017 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 22344
+2026-08-03 15:14:07,018 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 15:14:07,326 INFO: Cliente conectado: ('127.0.0.1', 56716)
+2026-08-03 15:17:47,892 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:17:48,293 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=agGrKF0MkeM url=https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:17:48,584 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:17:48,839 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:17:48,840 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.55s — caindo no yt-dlp
+2026-08-03 15:17:50,944 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.10s
+2026-08-03 15:17:50,944 INFO: YouTube URL pré-resolvida em 3.05s: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:17:51,213 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE - SOFRIMENTO MENTAL.mp4
+2026-08-03 15:17:52,057 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:19:08,644 INFO: end-file reason=eof
+2026-08-03 15:19:08,659 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:19:08,666 INFO: play: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:19:08,785 INFO: [standby] overlay aplicado (380x213)
+2026-08-03 15:19:11,094 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:19:23,086 INFO: end-file reason=stop
+2026-08-03 15:24:11,234 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 15:24:11,257 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 15:24:12,134 INFO: MPV inicializado
+2026-08-03 15:24:12,134 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 14176
+2026-08-03 15:24:12,136 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 15:24:12,687 INFO: Cliente conectado: ('127.0.0.1', 52039)
+2026-08-03 15:24:12,689 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:24:12,901 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=agGrKF0MkeM url=https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:24:13,184 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:24:13,446 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:24:13,446 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.55s — caindo no yt-dlp
+2026-08-03 15:24:15,574 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.13s
+2026-08-03 15:24:15,575 INFO: YouTube URL pré-resolvida em 2.89s: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:24:32,462 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-08-03 15:24:33,071 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:24:41,871 INFO: end-file reason=eof
+2026-08-03 15:24:41,903 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:24:41,908 INFO: play: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:24:44,579 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:25:25,984 INFO: end-file reason=stop
+2026-08-03 15:31:07,921 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 15:31:07,956 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 15:31:08,377 INFO: MPV inicializado
+2026-08-03 15:31:08,377 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 4088
+2026-08-03 15:31:08,379 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 15:31:08,467 INFO: Cliente conectado: ('127.0.0.1', 58002)
+2026-08-03 15:31:08,470 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:31:08,879 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=agGrKF0MkeM url=https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:31:09,237 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:31:09,518 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:31:09,518 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.64s — caindo no yt-dlp
+2026-08-03 15:31:12,084 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.57s
+2026-08-03 15:31:12,084 INFO: YouTube URL pré-resolvida em 3.61s: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:31:24,514 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:31:24,518 INFO: play: https://www.youtube.com/watch?v=agGrKF0MkeM
+2026-08-03 15:31:27,253 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:31:56,351 INFO: end-file reason=eof
+2026-08-03 15:31:56,499 INFO: [standby] overlay aplicado (380x213)
+2026-08-03 15:32:14,262 INFO: [weather] OWM: 36.7°C → 36°C (corrigido) (Santa Maria Velha, BR)
+2026-08-03 15:32:14,300 INFO: [osd_text] osd=380x213 font=8 bmp=68x25 pos=(297,174) margin_y=14
+2026-08-03 15:35:31,629 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 15:35:31,654 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 15:35:32,517 INFO: MPV inicializado
+2026-08-03 15:35:32,518 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 19360
+2026-08-03 15:35:32,520 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 15:35:33,086 INFO: Cliente conectado: ('127.0.0.1', 55421)
+2026-08-03 15:36:25,566 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=UXpso0fw8KI
+2026-08-03 15:36:25,874 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=UXpso0fw8KI url=https://www.youtube.com/watch?v=UXpso0fw8KI
+2026-08-03 15:36:26,203 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:36:26,481 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:36:26,481 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.61s — caindo no yt-dlp
+2026-08-03 15:36:28,621 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.14s
+2026-08-03 15:36:28,622 INFO: YouTube URL pré-resolvida em 3.06s: https://www.youtube.com/watch?v=UXpso0fw8KI
+2026-08-03 15:36:33,920 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-08-03 15:36:34,861 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:36:43,793 INFO: end-file reason=eof
+2026-08-03 15:36:43,832 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=UXpso0fw8KI
+2026-08-03 15:36:43,835 INFO: play: https://www.youtube.com/watch?v=UXpso0fw8KI
+2026-08-03 15:36:47,035 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:37:16,656 INFO: end-file reason=eof
+2026-08-03 15:37:16,805 INFO: [standby] overlay aplicado (380x213)
+2026-08-03 15:43:25,941 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 15:43:25,967 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 15:43:26,530 INFO: MPV inicializado
+2026-08-03 15:43:26,531 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 25984
+2026-08-03 15:43:26,532 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 15:43:26,599 INFO: Cliente conectado: ('127.0.0.1', 54255)
+2026-08-03 15:44:07,574 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:44:07,957 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:44:08,244 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:44:08,582 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:44:08,582 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.62s — caindo no yt-dlp
+2026-08-03 15:44:10,457 INFO: Aguardando prefetch em andamento para: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:44:10,895 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.31s
+2026-08-03 15:44:10,896 INFO: YouTube URL pré-resolvida em 3.32s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:44:10,902 INFO: play: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:44:14,540 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:44:58,298 INFO: end-file reason=eof
+2026-08-03 15:44:58,440 INFO: [standby] overlay aplicado (380x213)
+2026-08-03 15:45:08,308 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:45:08,309 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:45:08,907 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:45:09,404 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:45:09,405 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 1.10s — caindo no yt-dlp
+2026-08-03 15:45:11,948 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.54s
+2026-08-03 15:45:11,948 INFO: YouTube URL pré-resolvida em 3.64s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:45:11,949 INFO: YouTube stream resolvido em 3.64s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:45:11,952 INFO: play: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:45:15,271 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:45:22,678 INFO: end-file reason=stop
+2026-08-03 15:52:34,510 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 15:52:34,534 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 15:52:35,402 INFO: MPV inicializado
+2026-08-03 15:52:35,403 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 16320
+2026-08-03 15:52:35,405 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 15:52:35,974 INFO: Cliente conectado: ('127.0.0.1', 61169)
+2026-08-03 15:52:35,994 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:52:36,228 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:52:36,522 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:52:36,812 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:52:36,812 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.58s — caindo no yt-dlp
+2026-08-03 15:52:38,774 INFO: [DIAGNÓSTICO] yt-dlp concluído em 1.96s
+2026-08-03 15:52:38,774 INFO: YouTube URL pré-resolvida em 2.78s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:52:49,365 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:52:49,370 INFO: play: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:52:52,333 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:53:35,926 INFO: end-file reason=eof
+2026-08-03 15:53:36,051 INFO: [standby] overlay aplicado (380x213)
+2026-08-03 15:53:45,951 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:53:45,951 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:53:45,952 WARNING: InnerTube [ANDROID] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 15:53:45,952 WARNING: InnerTube [IOS] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 15:53:45,952 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.00s — caindo no yt-dlp
+2026-08-03 15:53:46,493 WARNING: Falha no prefetch de YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000002B3DEC93390>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000002B3DEC93390>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 15:53:46,493 ERROR: Falha ao resolver YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000002B3DEC93390>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000002B3DEC93390>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 15:53:56,502 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:53:56,503 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:53:56,503 WARNING: InnerTube [ANDROID] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 15:53:56,503 WARNING: InnerTube [IOS] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 15:53:56,503 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.00s — caindo no yt-dlp
+2026-08-03 15:53:56,874 WARNING: Falha no prefetch de YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000002B3DEBC5E50>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000002B3DEBC5E50>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 15:53:56,874 ERROR: Falha ao resolver YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000002B3DEBC5E50>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000002B3DEBC5E50>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 15:54:06,879 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:54:06,880 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:54:07,147 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:54:07,437 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 15:54:07,438 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.56s — caindo no yt-dlp
+2026-08-03 15:54:09,499 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.06s
+2026-08-03 15:54:09,500 INFO: YouTube URL pré-resolvida em 2.62s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:54:09,500 INFO: YouTube stream resolvido em 2.62s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:54:09,504 INFO: play: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 15:54:13,564 INFO: Decodificação ativa: d3d11va
+2026-08-03 15:56:11,409 INFO: end-file reason=stop
+2026-08-03 16:02:07,600 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 16:02:07,625 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 16:02:08,048 INFO: MPV inicializado
+2026-08-03 16:02:08,049 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 10352
+2026-08-03 16:02:08,050 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 16:02:08,258 INFO: Cliente conectado: ('127.0.0.1', 50456)
+2026-08-03 16:02:08,277 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:02:08,520 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:02:08,814 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:02:09,064 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:02:09,065 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.54s — caindo no yt-dlp
+2026-08-03 16:02:11,095 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.03s
+2026-08-03 16:02:11,096 INFO: YouTube URL pré-resolvida em 2.82s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:02:24,825 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:02:24,829 INFO: play: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:02:27,943 INFO: Decodificação ativa: d3d11va
+2026-08-03 16:02:56,127 INFO: end-file reason=eof
+2026-08-03 16:02:56,293 INFO: [standby] overlay aplicado (380x213)
+2026-08-03 16:03:06,158 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:06,158 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:06,159 WARNING: InnerTube [ANDROID] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:06,159 WARNING: InnerTube [IOS] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:06,159 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.00s — caindo no yt-dlp
+2026-08-03 16:03:06,560 WARNING: Falha no prefetch de YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061723ED0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061723ED0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:06,561 ERROR: Falha ao resolver YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061723ED0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061723ED0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:12,923 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:12,923 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:12,924 WARNING: InnerTube [ANDROID] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:12,924 WARNING: InnerTube [IOS] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:12,924 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.00s — caindo no yt-dlp
+2026-08-03 16:03:13,317 WARNING: Falha no prefetch de YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061720E10>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061720E10>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:13,317 ERROR: Task exception was never retrieved
+future: <Task finished name='Task-14' coro=<MPVDaemon._prefetch_yt_bg() done, defined at C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon\daemon.py:749> exception=DownloadError('ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061720E10>: Failed to resolve \'www.youtube.com\' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061720E10>: Failed to resolve \'www.youtube.com\' ([Errno 11001] getaddrinfo failed)"))')>
+Traceback (most recent call last):
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\util\connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\networking\_requests.py", line 324, in _send
+    requests_res = session.request(
+        method=request.method,
+    ...<6 lines>...
+        stream=True,
+    )
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\adapters.py", line 644, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\util\retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\util\util.py", line 39, in reraise
+    raise value
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connection.py", line 753, in connect
+    self.sock = sock = self._new_conn()
+                       ~~~~~~~~~~~~~~^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPSConnection object at 0x000001A061720E10>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\common.py", line 907, in _request_webpage
+    return self._downloader.urlopen(self._create_request(url_or_request, data, headers, query, extensions))
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\YoutubeDL.py", line 4305, in urlopen
+    return self._request_director.send(req)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\networking\common.py", line 117, in send
+    response = handler.send(request)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\networking\_helper.py", line 194, in wrapper
+    return func(self, *args, **kwargs)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\networking\common.py", line 359, in send
+    return self._send(request)
+           ~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\networking\_requests.py", line 352, in _send
+    raise TransportError(cause=e) from e
+yt_dlp.networking.exceptions.TransportError: <urllib3.connection.HTTPSConnection object at 0x000001A061720E10>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\YoutubeDL.py", line 1732, in wrapper
+    return func(self, *args, **kwargs)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\YoutubeDL.py", line 1867, in __extract_info
+    ie_result = ie.extract(url)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\common.py", line 765, in extract
+    ie_result = self._real_extract(url)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\youtube\_video.py", line 3922, in _real_extract
+    webpage, webpage_ytcfg, initial_data, is_premium_subscriber, player_responses, player_url = self._initial_extract(
+                                                                                                ~~~~~~~~~~~~~~~~~~~~~^
+        url, smuggled_data, webpage_url, self._webpage_client, video_id)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\youtube\_video.py", line 3903, in _initial_extract
+    initial_data = self._download_initial_data(video_id, webpage, webpage_client, webpage_ytcfg)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\youtube\_video.py", line 3881, in _download_initial_data
+    initial_data = self._extract_response(
+        item_id=video_id, ep='next', fatal=False,
+        ytcfg=webpage_ytcfg, query=query, check_get_keys='contents',
+        note='Downloading initial data API JSON', default_client=webpage_client)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\youtube\_base.py", line 1270, in _extract_response
+    next(main_retries)
+    ~~~~^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\utils\_utils.py", line 5300, in __iter__
+    self.error_callback(self.error, self.attempt, self.retries)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\common.py", line 4053, in _error_or_warning
+    RetryManager.report_retry(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        err, _count or int(fatal), _retries,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        info=self.to_screen, warn=self.report_warning, error=None if fatal else self.report_warning,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        sleep_func=self.get_param('retry_sleep_functions', {}).get('extractor'))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\utils\_utils.py", line 5308, in report_retry
+    raise e
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\youtube\_base.py", line 1260, in _extract_response
+    response = self._call_api(
+        ep=ep, fatal=True, headers=headers,
+        video_id=item_id, query=query, note=note,
+        context=self._extract_context(ytcfg, default_client),
+        api_hostname=api_hostname, default_client=default_client)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\youtube\_base.py", line 805, in _call_api
+    return self._download_json(
+           ~~~~~~~~~~~~~~~~~~~^
+        f'https://{self._select_api_hostname(api_hostname, default_client)}/youtubei/v1/{ep}',
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+            'prettyPrint': 'false',
+            ^^^^^^^^^^^^^^^^^^^^^^^
+        }, cndn=lambda _, v: v))
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\common.py", line 1148, in download_content
+    res = getattr(self, download_handle.__name__)(url_or_request, video_id, **kwargs)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\common.py", line 1106, in download_handle
+    res = self._download_webpage_handle(
+        url_or_request, video_id, note=note, errnote=errnote, fatal=fatal, encoding=encoding,
+        data=data, headers=headers, query=query, expected_status=expected_status,
+        impersonate=impersonate, require_impersonation=require_impersonation)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\common.py", line 971, in _download_webpage_handle
+    urlh = self._request_webpage(url_or_request, video_id, note, errnote, fatal, data=data,
+                                 headers=headers, query=query, expected_status=expected_status,
+                                 impersonate=impersonate, require_impersonation=require_impersonation)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\youtube\_base.py", line 783, in _request_webpage
+    response = super()._request_webpage(*args, **kwargs)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\extractor\common.py", line 920, in _request_webpage
+    raise ExtractorError(errmsg, cause=err, video_id=video_id)
+yt_dlp.utils.ExtractorError: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061720E10>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061720E10>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon\daemon.py", line 752, in _prefetch_yt_bg
+    resolved = await asyncio.get_event_loop().run_in_executor(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, _resolve_yt_stream, url
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon\daemon.py", line 88, in _resolve_yt_stream
+    return get_stream_url(url)
+  File "C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\core\youtube_resolver.py", line 212, in get_stream_url
+    result = _ytdlp_stream_url(url)
+  File "C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\core\youtube_resolver.py", line 172, in _ytdlp_stream_url
+    info = ydl.extract_info(url, download=False)
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\YoutubeDL.py", line 1721, in extract_info
+    return self.__extract_info(url, self.get_info_extractor(key), download, extra_info, process)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\YoutubeDL.py", line 1750, in wrapper
+    self.report_error(str(e), e.format_traceback())
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\YoutubeDL.py", line 1166, in report_error
+    self.trouble(f'{self._format_err("ERROR:", self.Styles.ERROR)} {message}', *args, **kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HENRIQUE NORONHA\AppData\Local\Programs\Python\Python313\Lib\site-packages\yt_dlp\YoutubeDL.py", line 1104, in trouble
+    raise DownloadError(message, exc_info)
+yt_dlp.utils.DownloadError: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061720E10>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061720E10>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:16,584 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:16,584 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:16,585 WARNING: InnerTube [ANDROID] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:16,585 WARNING: InnerTube [IOS] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:16,585 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.00s — caindo no yt-dlp
+2026-08-03 16:03:17,171 WARNING: Falha no prefetch de YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A0617234D0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A0617234D0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:17,171 ERROR: Falha ao resolver YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A0617234D0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A0617234D0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:27,179 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:27,179 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:27,180 WARNING: InnerTube [ANDROID] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:27,182 WARNING: InnerTube [IOS] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:27,182 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.00s — caindo no yt-dlp
+2026-08-03 16:03:27,787 WARNING: Falha no prefetch de YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061721BD0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061721BD0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:27,787 ERROR: Falha ao resolver YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061721BD0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061721BD0>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:37,797 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:37,798 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:37,798 WARNING: InnerTube [ANDROID] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:37,798 WARNING: InnerTube [IOS] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:37,798 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.00s — caindo no yt-dlp
+2026-08-03 16:03:38,136 WARNING: Falha no prefetch de YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061723D90>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061723D90>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:38,136 ERROR: Falha ao resolver YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061723D90>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061723D90>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:48,140 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:48,140 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:03:48,141 WARNING: InnerTube [ANDROID] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:48,141 WARNING: InnerTube [IOS] erro de rede: <urlopen error [Errno 11001] getaddrinfo failed>
+2026-08-03 16:03:48,141 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.00s — caindo no yt-dlp
+2026-08-03 16:03:48,453 WARNING: Falha no prefetch de YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061721450>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061721450>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:48,454 ERROR: Falha ao resolver YouTube URL: ERROR: [youtube] J7nSL80Mmaw: Unable to download API page: <urllib3.connection.HTTPSConnection object at 0x000001A061721450>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed) (caused by TransportError("<urllib3.connection.HTTPSConnection object at 0x000001A061721450>: Failed to resolve 'www.youtube.com' ([Errno 11001] getaddrinfo failed)"))
+2026-08-03 16:03:48,476 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 16:03:49,032 INFO: Decodificação ativa: d3d11va
+2026-08-03 16:04:12,028 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:04:12,031 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:04:12,325 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:04:12,606 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:04:12,607 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.58s — caindo no yt-dlp
+2026-08-03 16:04:14,417 INFO: [DIAGNÓSTICO] yt-dlp concluído em 1.81s
+2026-08-03 16:04:14,417 INFO: YouTube URL pré-resolvida em 2.39s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:04:14,417 INFO: HLS appendado para pré-bufferização: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:05:12,812 INFO: end-file reason=eof
+2026-08-03 16:05:12,826 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:05:12,826 INFO: play (MPV já em HLS, sem loadfile): https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:05:14,840 INFO: Decodificação ativa: d3d11va
+2026-08-03 16:05:34,603 INFO: end-file reason=stop
+2026-08-03 16:13:55,875 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 16:13:55,904 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 16:13:56,785 INFO: MPV inicializado
+2026-08-03 16:13:56,786 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 17944
+2026-08-03 16:13:56,787 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 16:13:57,205 INFO: Cliente conectado: ('127.0.0.1', 61983)
+2026-08-03 16:13:57,207 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:13:57,410 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:13:57,701 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:13:57,958 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:13:57,958 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.55s — caindo no yt-dlp
+2026-08-03 16:14:00,013 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.05s
+2026-08-03 16:14:00,013 INFO: YouTube URL pré-resolvida em 2.81s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:15:18,982 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\TV ASSEMBLEIA 2026.mp4
+2026-08-03 16:15:19,869 INFO: Decodificação ativa: d3d11va
+2026-08-03 16:15:28,791 INFO: end-file reason=eof
+2026-08-03 16:15:28,815 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:15:28,817 INFO: play: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:15:32,082 INFO: Decodificação ativa: d3d11va
+2026-08-03 16:16:23,180 INFO: end-file reason=stop
+2026-08-03 16:16:53,494 INFO: Cliente desconectado: ('127.0.0.1', 61983)
+2026-08-03 16:18:13,373 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 16:18:13,439 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 16:18:14,198 INFO: MPV inicializado
+2026-08-03 16:18:14,198 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 22176
+2026-08-03 16:18:14,199 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 16:18:14,818 INFO: Cliente conectado: ('127.0.0.1', 58801)
+2026-08-03 16:18:14,844 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:18:15,122 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:18:15,388 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:18:15,727 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:18:15,728 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.61s — caindo no yt-dlp
+2026-08-03 16:18:17,786 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.06s
+2026-08-03 16:18:17,787 INFO: YouTube URL pré-resolvida em 2.94s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:18:22,693 INFO: YouTube URL resolvida via cache: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:18:22,697 INFO: play: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:18:25,626 INFO: Decodificação ativa: d3d11va
+2026-08-03 16:19:20,119 INFO: end-file reason=eof
+2026-08-03 16:19:20,271 INFO: [standby] overlay aplicado (380x213)
+2026-08-03 16:19:23,188 INFO: force_resolve: cache limpo para https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:19:23,188 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=J7nSL80Mmaw url=https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:19:23,454 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:19:23,751 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-03 16:19:23,751 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.56s — caindo no yt-dlp
+2026-08-03 16:19:25,768 INFO: [DIAGNÓSTICO] yt-dlp concluído em 2.02s
+2026-08-03 16:19:25,769 INFO: YouTube URL pré-resolvida em 2.58s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:19:25,769 INFO: YouTube stream resolvido em 2.58s: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:19:25,772 INFO: play: https://www.youtube.com/watch?v=J7nSL80Mmaw
+2026-08-03 16:19:28,591 INFO: Decodificação ativa: d3d11va
+2026-08-03 16:19:44,066 INFO: [weather] OWM: 34.9°C → 34°C (corrigido) (Brejo Sêco, BR)
+2026-08-03 16:19:44,100 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:45,125 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:46,142 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:47,166 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:48,193 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:49,208 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:50,234 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:51,250 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:52,260 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:53,278 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:54,316 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:55,349 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:56,379 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:57,407 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:58,432 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:19:59,448 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:00,466 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:01,497 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:02,513 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:03,525 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:04,539 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:05,553 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:06,566 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:07,588 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:08,601 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:09,616 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:10,631 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:11,646 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:12,657 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:13,672 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:14,694 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:15,711 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:16,737 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:17,752 INFO: [osd_text] osd=380x213 font=8 bmp=68x24 pos=(297,175) margin_y=14
+2026-08-03 16:20:20,871 INFO: end-file reason=stop

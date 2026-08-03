@@ -26,6 +26,7 @@ import json
 import logging
 import os
 import sys
+import tempfile
 import threading
 import time
 from pathlib import Path
@@ -47,7 +48,9 @@ os.environ["PATH"] = _BACKEND_DIR + os.pathsep + os.environ.get("PATH", "")
 CHECKPOINT_PATH      = _DATA_DIR / "checkpoint.json"
 TEXT_OVERLAY_PATH    = _DATA_DIR / "text_overlay.json"
 LOGOS_DIR            = _DATA_DIR / "logos"
+IMAGES_DIR           = _DATA_DIR / "images"
 _INPUT_CONF_PATH     = _DATA_DIR / ".playline_input.conf"
+STANDBY_SLOT         = "4"
 
 _TEXT_OVERLAY_DEFAULTS = {
     "active":      False,
@@ -66,6 +69,16 @@ def _is_youtube_url(url: str) -> bool:
     return "youtube.com" in url or "youtu.be" in url
 
 
+def _is_stream_path(path: str) -> bool:
+    """True para URLs de rede (HLS, RTMP, YouTube resolvido) — False para arquivos locais."""
+    p = (path or "").lower().lstrip()
+    return (
+        p.startswith("http://") or p.startswith("https://") or
+        p.startswith("rtmp://") or p.startswith("rtmps://") or
+        p.startswith("rtsp://")
+    )
+
+
 def _resolve_yt_stream(url: str) -> str:
     """Resolve URL do YouTube para URL HLS direta. Bloqueia — chamar via executor."""
     try:
@@ -75,64 +88,43 @@ def _resolve_yt_stream(url: str) -> str:
     return get_stream_url(url)
 
 
-def _create_standby_image(path: Path) -> None:
-    """Gera standby.png com Pillow. Chamado uma vez na inicialização do daemon."""
-    if path.exists():
-        return
+def _render_standby_overlay(osd_w: int, osd_h: int) -> Optional[tuple]:
+    """Renderiza problemastecnicos.png em BGRA cover-fill para overlay-add."""
     try:
-        from PIL import Image, ImageDraw, ImageFont
+        from PIL import Image
+    except ImportError:
+        logger.warning("[standby] Pillow não instalado")
+        return None
 
-        W, H = 1280, 720
-        BG   = (13, 17, 23)       # quase-preto azulado
-        FG   = (226, 232, 240)    # branco suave
-        MUTED = (100, 116, 139)   # cinza
+    img_path = IMAGES_DIR / "problemastecnicos.png"
+    if not img_path.exists():
+        logger.warning("[standby] imagem não encontrada: %s", img_path)
+        return None
 
-        img  = Image.new("RGB", (W, H), color=BG)
-        draw = ImageDraw.Draw(img)
+    try:
+        src   = Image.open(str(img_path)).convert("RGBA")
+        ratio = max(osd_w / src.width, osd_h / src.height)
+        new_w = max(1, round(src.width  * ratio))
+        new_h = max(1, round(src.height * ratio))
+        src   = src.resize((new_w, new_h), Image.LANCZOS)
 
-        # Barra de topo
-        draw.rectangle([0, 0, W, 4], fill=(245, 158, 11))
-
-        # Tenta fontes do sistema (Windows → Linux)
-        font_big = font_small = None
-        for fp in [
-            r"C:\Windows\Fonts\segoeui.ttf",
-            r"C:\Windows\Fonts\arial.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-        ]:
-            if Path(fp).exists():
-                try:
-                    font_big   = ImageFont.truetype(fp, 72)
-                    font_small = ImageFont.truetype(fp, 28)
-                    break
-                except Exception:
-                    pass
-        if font_big is None:
-            font_big = font_small = ImageFont.load_default()
-
-        # Texto principal
-        title = "Problemas técnicos"
-        tb = draw.textbbox((0, 0), title, font=font_big)
-        tw, th = tb[2] - tb[0], tb[3] - tb[1]
-        draw.text(((W - tw) / 2, (H - th) / 2 - 30), title, fill=FG, font=font_big)
-
-        # Subtexto
-        sub = "Voltamos em instantes"
-        sb = draw.textbbox((0, 0), sub, font=font_small)
-        sw = sb[2] - sb[0]
-        draw.text(((W - sw) / 2, (H + th) / 2 + 4), sub, fill=MUTED, font=font_small)
-
-        # Rodapé com marca
-        brand = "PlayLine"
-        bb = draw.textbbox((0, 0), brand, font=font_small)
-        bw = bb[2] - bb[0]
-        draw.text(((W - bw) / 2, H - 48), brand, fill=(50, 60, 80), font=font_small)
-
-        img.save(str(path))
-        logger.info("Standby PNG criado: %s", path)
+        canvas = Image.new("RGBA", (osd_w, osd_h), (0, 0, 0, 255))
+        canvas.paste(src, ((osd_w - new_w) // 2, (osd_h - new_h) // 2))
     except Exception as exc:
-        logger.warning("Não foi possível criar standby.png: %s", exc)
+        logger.warning("[standby] falha ao carregar imagem: %s", exc)
+        return None
+
+    rgba = canvas.tobytes()
+    bgra = bytearray(len(rgba))
+    for i in range(0, len(rgba), 4):
+        r, g, b, a = rgba[i], rgba[i+1], rgba[i+2], rgba[i+3]
+        fa = a / 255.0
+        bgra[i]   = int(b * fa)
+        bgra[i+1] = int(g * fa)
+        bgra[i+2] = int(r * fa)
+        bgra[i+3] = a
+
+    return bytes(bgra), osd_w, osd_h
 
 
 try:
@@ -165,8 +157,7 @@ class MPVDaemon:
         self._yt_resolving: dict = {}   # {original_url: asyncio.Task} — resolução em andamento
         self._yt_appended: dict  = {}   # {original_url: (hls_url, monotonic_ts)} — appendado na fila MPV
         self._vu_task: Optional[asyncio.Task] = None
-        self._standby_path: Path = _DATA_DIR / "standby.png"
-        _create_standby_image(self._standby_path)
+        self._current_path: str = ""
 
     # ── Medição de nível de áudio via Windows Core Audio ────────────────────
 
@@ -222,9 +213,9 @@ class MPVDaemon:
             loglevel="warn",
             prefetch_playlist=True,
             volume_max=200,             # permite até +6 dB (200 = +6 dB)
-            image_display_duration=86400,  # standby.png exibido por 24h (efetivamente infinito)
             hwdec="auto-safe",          # decodificação por GPU quando disponível, software como fallback
             osc=False,                  # desativa controles na tela ao passar o mouse
+            network_timeout=10,         # desiste de stream morta em 10s (reduz freeze após queda de rede)
         )
 
         if has_secondary:
@@ -254,6 +245,11 @@ class MPVDaemon:
 
         @self._mpv.event_callback("file-loaded")
         def _file_loaded(event):
+            self._remove_standby_overlay()
+            try:
+                self._current_path = self._mpv.path or ""
+            except Exception:
+                pass
             if not self._window_positioned:
                 target = self._move_to_tv if self._has_secondary else self._send_to_back
                 threading.Thread(target=target, daemon=True).start()
@@ -276,6 +272,7 @@ class MPVDaemon:
                 text_active = self._text_overlay.get("active", False)
             if text_active:
                 threading.Thread(target=self._apply_text_overlay_delayed, daemon=True).start()
+            self._broadcast_sync({"event": "file-loaded"})
 
         @self._mpv.event_callback("end-file")
         def _end_file(event):
@@ -285,6 +282,8 @@ class MPVDaemon:
             logger.info("end-file reason=%s", reason)
             if reason != "stop":
                 checkpoint.clear(CHECKPOINT_PATH)
+            if reason in ("eof", "error") and _is_stream_path(self._current_path):
+                threading.Thread(target=self._apply_standby_overlay, daemon=True).start()
             self._broadcast_sync({"event": "end-file", "reason": reason})
 
         @self._mpv.event_callback("shutdown")
@@ -366,6 +365,43 @@ class MPVDaemon:
         if cfg.get("active"):
             manual = cfg.get("manual_temp", "").strip()
             osd_text.apply(self._mpv, cfg, manual or None)
+
+    # ── Standby overlay (problemastecnicos.png) ───────────────────────────────
+
+    def _apply_standby_overlay(self):
+        if not self._mpv or self._mpv_dead:
+            return
+        try:
+            osd_w = int(self._mpv.osd_width  or self._mpv.width  or 1920)
+            osd_h = int(self._mpv.osd_height or self._mpv.height or 1080)
+        except Exception:
+            osd_w, osd_h = 1920, 1080
+        result = _render_standby_overlay(osd_w, osd_h)
+        if result is None:
+            return
+        bgra_bytes, w, h = result
+        tmp = Path(tempfile.gettempdir()) / "playline_standby.bgra"
+        try:
+            tmp.write_bytes(bgra_bytes)
+        except Exception as exc:
+            logger.error("[standby] erro ao gravar: %s", exc)
+            return
+        try:
+            self._mpv.command(
+                "overlay-add", STANDBY_SLOT, "0", "0",
+                str(tmp), "0", "bgra", str(w), str(h), str(w * 4),
+            )
+            logger.info("[standby] overlay aplicado (%dx%d)", w, h)
+        except Exception as exc:
+            logger.warning("[standby] overlay-add falhou: %s", exc)
+
+    def _remove_standby_overlay(self):
+        if not self._mpv or self._mpv_dead:
+            return
+        try:
+            self._mpv.command("overlay-remove", STANDBY_SLOT)
+        except Exception:
+            pass
 
     # ── Checkpoint ───────────────────────────────────────────────────────────
 
@@ -513,15 +549,8 @@ class MPVDaemon:
                     self._vu_task = asyncio.ensure_future(self._audio_level_task())
 
         elif action == "play_standby":
-            if self._mpv and not self._mpv_dead:
-                sp = str(self._standby_path)
-                if self._standby_path.exists():
-                    self._mpv.command("loadfile", sp, "replace")
-                    self._mpv.pause = False
-                    self._stop_vu()
-                    logger.info("Standby ativado: %s", sp)
-                else:
-                    logger.warning("play_standby: arquivo não encontrado (%s)", sp)
+            threading.Thread(target=self._apply_standby_overlay, daemon=True).start()
+            logger.info("[standby] overlay ativado via play_standby")
 
         elif action == "preload":
             path = cmd.get("path", "")

@@ -231,8 +231,9 @@
   background: var(--surface2);
   color: var(--muted);
 }
-.state-badge.playing { background: #14532d; color: var(--success); }
-.state-badge.paused  { background: #451a03; color: var(--warning); }
+.state-badge.playing      { background: #14532d; color: var(--success); }
+.state-badge.paused       { background: #451a03; color: var(--warning); }
+.state-badge.reconnecting { background: #451a03; color: var(--warning); animation: reconnect-pulse 1.5s ease-in-out infinite; }
 
 /* ── Controles ── */
 .controls-row {

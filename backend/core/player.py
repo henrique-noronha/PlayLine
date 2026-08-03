@@ -22,12 +22,13 @@ logger = logging.getLogger(__name__)
 
 
 class Player:
-    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None, on_text_overlay_state: Optional[Callable[[dict], None]] = None, on_preview_frame: Optional[Callable[[str], None]] = None):
+    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None, on_text_overlay_state: Optional[Callable[[dict], None]] = None, on_preview_frame: Optional[Callable[[str], None]] = None, on_file_loaded: Optional[Callable[[], None]] = None):
         self._on_end_file = on_end_file
         self._on_position = on_position
         self._on_logo_list = on_logo_list
         self._on_text_overlay_state = on_text_overlay_state
         self._on_preview_frame = on_preview_frame
+        self._on_file_loaded = on_file_loaded
         self._sock: Optional[socket.socket] = None
         self._send_lock = threading.Lock()
         self._connected = False
@@ -120,6 +121,9 @@ class Player:
         event = msg.get("event")
         if event == "end-file":
             self._on_end_file(msg.get("reason", "eof"))
+        elif event == "file-loaded":
+            if self._on_file_loaded:
+                self._on_file_loaded()
         elif event == "mpv_closed":
             self._on_end_file("mpv_closed")
         elif event == "position":
@@ -169,10 +173,11 @@ class Player:
 
     # API pública                                                          #
 
-    def play(self, path: str, start_time=None, end_time=None):
+    def play(self, path: str, start_time=None, end_time=None, force_resolve: bool = False):
         msg: dict = {"action": "play", "path": path}
         if start_time: msg["start_time"] = start_time
         if end_time:   msg["end_time"]   = end_time
+        if force_resolve: msg["force_resolve"] = True
         self._send(msg)
         logger.info("Reproduzindo: %s", path)
 
