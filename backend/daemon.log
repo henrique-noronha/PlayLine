@@ -1966,3 +1966,12 @@
 2026-08-03 10:30:16,801 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 1 .mp4
 2026-08-03 10:30:16,867 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
 2026-08-03 10:32:10,637 INFO: end-file reason=stop
+2026-08-03 11:21:11,704 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-03 11:21:11,728 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-03 11:21:11,840 INFO: MPV inicializado
+2026-08-03 11:21:11,841 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 12740
+2026-08-03 11:21:11,842 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-03 11:21:11,873 INFO: Cliente conectado: ('127.0.0.1', 56692)
+2026-08-03 11:41:06,728 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 1 .mp4
+2026-08-03 11:41:06,729 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-03 11:41:43,204 INFO: end-file reason=stop
