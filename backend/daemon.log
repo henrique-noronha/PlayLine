@@ -2096,3 +2096,74 @@
 2026-08-03 17:06:09,078 INFO: [weather] OWM: 34.1°C (Palmas, BR)
 2026-08-03 17:06:09,106 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
 2026-08-03 17:06:12,763 INFO: end-file reason=stop
+2026-08-04 08:58:35,457 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-04 08:58:35,802 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-04 08:58:37,771 INFO: MPV inicializado
+2026-08-04 08:58:37,772 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 4304
+2026-08-04 08:58:37,773 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-04 08:58:38,115 INFO: Cliente conectado: ('127.0.0.1', 57116)
+2026-08-04 08:58:38,134 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 08:58:38,457 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=cY-IdqKqKJk url=https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 08:58:38,812 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-04 08:58:39,083 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-04 08:58:39,083 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.63s — caindo no yt-dlp
+2026-08-04 08:58:40,795 INFO: [DIAGNÓSTICO] yt-dlp concluído em 1.71s
+2026-08-04 08:58:40,795 INFO: YouTube URL pré-resolvida em 2.66s: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 08:58:50,653 INFO: Cliente desconectado: ('127.0.0.1', 57116)
+2026-08-04 08:58:54,937 INFO: Cliente conectado: ('127.0.0.1', 55359)
+2026-08-04 09:00:17,866 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-04 09:00:17,888 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-04 09:00:19,777 INFO: MPV inicializado
+2026-08-04 09:00:19,778 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 1720
+2026-08-04 09:00:19,779 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-04 09:00:19,850 INFO: Cliente conectado: ('127.0.0.1', 63388)
+2026-08-04 09:00:19,854 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:00:20,095 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=cY-IdqKqKJk url=https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:00:20,363 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-04 09:00:20,649 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-04 09:00:20,649 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.55s — caindo no yt-dlp
+2026-08-04 09:00:22,135 INFO: [DIAGNÓSTICO] yt-dlp concluído em 1.49s
+2026-08-04 09:00:22,135 INFO: YouTube URL pré-resolvida em 2.28s: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:00:34,553 INFO: Cliente desconectado: ('127.0.0.1', 63388)
+2026-08-04 09:00:38,111 INFO: Cliente conectado: ('127.0.0.1', 56093)
+2026-08-04 09:03:59,519 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-04 09:03:59,541 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-04 09:04:01,440 INFO: MPV inicializado
+2026-08-04 09:04:01,440 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 2776
+2026-08-04 09:04:01,441 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-04 09:04:01,494 INFO: Cliente conectado: ('127.0.0.1', 65029)
+2026-08-04 09:04:01,497 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:04:01,740 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=cY-IdqKqKJk url=https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:04:02,010 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-04 09:04:02,276 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-04 09:04:02,277 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.54s — caindo no yt-dlp
+2026-08-04 09:04:03,880 INFO: [DIAGNÓSTICO] yt-dlp concluído em 1.60s
+2026-08-04 09:04:03,880 INFO: YouTube URL pré-resolvida em 2.38s: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:04:28,367 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-04 09:04:28,390 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-04 09:04:30,284 INFO: MPV inicializado
+2026-08-04 09:04:30,284 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 14536
+2026-08-04 09:04:30,285 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-04 09:04:30,346 INFO: Cliente conectado: ('127.0.0.1', 50228)
+2026-08-04 09:04:30,349 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:04:30,595 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=cY-IdqKqKJk url=https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:04:30,883 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-04 09:04:31,127 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-04 09:04:31,128 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.53s — caindo no yt-dlp
+2026-08-04 09:04:32,501 INFO: [DIAGNÓSTICO] yt-dlp concluído em 1.37s
+2026-08-04 09:04:32,501 INFO: YouTube URL pré-resolvida em 2.15s: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:14:53,527 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-04 09:14:53,551 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-04 09:14:55,467 INFO: MPV inicializado
+2026-08-04 09:14:55,467 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 7312
+2026-08-04 09:14:55,469 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-04 09:14:55,512 INFO: Cliente conectado: ('127.0.0.1', 62171)
+2026-08-04 09:14:55,515 INFO: prefetch_yt solicitado: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:14:55,834 INFO: [DIAGNÓSTICO] Iniciando resolução — video_id=cY-IdqKqKJk url=https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:14:56,124 WARNING: InnerTube [ANDROID] erro de rede: HTTP Error 400: Bad Request
+2026-08-04 09:14:56,386 WARNING: InnerTube [IOS] erro de rede: HTTP Error 400: Bad Request
+2026-08-04 09:14:56,386 WARNING: [DIAGNÓSTICO] InnerTube retornou None em 0.55s — caindo no yt-dlp
+2026-08-04 09:14:58,065 INFO: [DIAGNÓSTICO] yt-dlp concluído em 1.68s
+2026-08-04 09:14:58,066 INFO: YouTube URL pré-resolvida em 2.55s: https://www.youtube.com/watch?v=cY-IdqKqKJk
+2026-08-04 09:15:12,717 INFO: Cliente desconectado: ('127.0.0.1', 62171)
+2026-08-04 09:15:17,791 INFO: Cliente conectado: ('127.0.0.1', 59152)

@@ -11,6 +11,7 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI, Request, WebSocket
@@ -188,7 +189,30 @@ async def lifespan(app: FastAPI):
 
 _AUTH_USER = os.environ.get("PLAYLINE_USER", "playline")
 _AUTH_PASS = os.environ.get("PLAYLINE_PASS", "playline")
-_SESSIONS: set[str] = set()
+_SESSION_TTL = 8 * 3600  # 8 horas
+
+_SESSIONS_FILE = _DATA_DIR / "sessions.json"
+
+
+def _load_sessions() -> dict[str, float]:
+    try:
+        if not _SESSIONS_FILE.exists():
+            return {}
+        data = json.loads(_SESSIONS_FILE.read_text(encoding="utf-8"))
+        now = time.time()
+        return {t: exp for t, exp in data.items() if isinstance(exp, (int, float)) and exp > now}
+    except Exception:
+        return {}
+
+
+def _save_sessions(sessions: dict[str, float]) -> None:
+    try:
+        _SESSIONS_FILE.write_text(json.dumps(sessions), encoding="utf-8")
+    except Exception as exc:
+        logger.warning("Não foi possível salvar sessões: %s", exc)
+
+
+_SESSIONS: dict[str, float] = _load_sessions()
 
 
 def _build_login_html(error: bool = False) -> str:
@@ -252,8 +276,13 @@ class _SessionAuth(BaseHTTPMiddleware):
         if request.url.path in ("/login", "/api/ping"):
             return await call_next(request)
         token = request.cookies.get("playline_session")
-        if token and token in _SESSIONS:
+        if token and _SESSIONS.get(token, 0) > time.time():
             return await call_next(request)
+        url_token = request.query_params.get("session_token")
+        if url_token and _SESSIONS.get(url_token, 0) > time.time():
+            resp = RedirectResponse(url=request.url.path, status_code=302)
+            resp.set_cookie("playline_session", url_token, httponly=True, samesite="lax", max_age=_SESSION_TTL)
+            return resp
         return RedirectResponse(url="/login", status_code=302)
 
 
@@ -289,9 +318,10 @@ async def login_submit(request: Request):
     form = await request.form()
     if form.get("username") == _AUTH_USER and form.get("password") == _AUTH_PASS:
         token = secrets.token_urlsafe(32)
-        _SESSIONS.add(token)
+        _SESSIONS[token] = time.time() + _SESSION_TTL
+        _save_sessions(_SESSIONS)
         resp = RedirectResponse(url="/", status_code=302)
-        resp.set_cookie("playline_session", token, httponly=True, samesite="lax")
+        resp.set_cookie("playline_session", token, httponly=True, samesite="lax", max_age=_SESSION_TTL)
         return resp
     return HTMLResponse(_build_login_html(error=True), status_code=401)
 
@@ -300,7 +330,8 @@ async def login_submit(request: Request):
 async def logout(request: Request):
     """Invalida a sessão atual — o cookie continua no browser mas o token não é mais aceito."""
     token = request.cookies.get("playline_session", "")
-    _SESSIONS.discard(token)
+    _SESSIONS.pop(token, None)
+    _save_sessions(_SESSIONS)
     resp = JSONResponse({"ok": True})
     resp.delete_cookie("playline_session")
     return resp
@@ -325,6 +356,22 @@ def _run_server(port: int = 18000):
 _SPLASH_MIN_SECONDS = 4
 
 
+def _get_autostart_token() -> Optional[str]:
+    """Lê o token válido mais recente direto do disco para auto-login na reabertura."""
+    try:
+        if not _SESSIONS_FILE.exists():
+            logger.info("Auto-login: sessions.json não encontrado em %s", _SESSIONS_FILE)
+            return None
+        data = json.loads(_SESSIONS_FILE.read_text(encoding="utf-8"))
+        now = time.time()
+        tok = next((t for t, exp in data.items() if isinstance(exp, (int, float)) and exp > now), None)
+        logger.info("Auto-login: %d sessões no arquivo, token válido: %s", len(data), bool(tok))
+        return tok
+    except Exception as exc:
+        logger.warning("Auto-login: erro ao ler sessions.json: %s", exc)
+        return None
+
+
 def _wait_and_navigate(window, port: int = 18000):
     import socket
     start = time.time()
@@ -339,7 +386,10 @@ def _wait_and_navigate(window, port: int = 18000):
             except Exception:
                 pass
         if server_ready and (time.time() - start) >= _SPLASH_MIN_SECONDS:
-            window.load_url(f"http://localhost:{port}")
+            _tok = _get_autostart_token()
+            _url = f"http://localhost:{port}/?session_token={_tok}" if _tok else f"http://localhost:{port}"
+            logger.info("Navegando para: %s", _url[:80])
+            window.load_url(_url)
             return
 
 
@@ -646,6 +696,7 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
                 pass
             # 3. Invalida a sessão para exigir autenticação no próximo acesso
             _SESSIONS.clear()
+            _save_sessions(_SESSIONS)
             # 4. Fecha a janela
             _closing_confirmed = True
             if _window:
@@ -692,9 +743,11 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
 
     if _check_playline_running(18000):
         _PORT = 18000
+        _tok = _get_autostart_token()
+        _start_url = f"http://localhost:{_PORT}/?session_token={_tok}" if _tok else f"http://localhost:{_PORT}"
         _window = webview.create_window(
             "PlayLine",
-            f"http://localhost:{_PORT}",
+            _start_url,
             width=_WIN_W,
             height=_WIN_H,
             x=_cx,
