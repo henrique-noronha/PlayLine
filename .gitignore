@@ -1,3 +1,6 @@
+# Claude Code — configurações locais do usuário (não compartilhar)
+.claude/settings.local.json
+
 # Python
 __pycache__/
 *.pyc

@@ -2167,3 +2167,11 @@
 2026-08-04 09:14:58,066 INFO: YouTube URL pré-resolvida em 2.55s: https://www.youtube.com/watch?v=cY-IdqKqKJk
 2026-08-04 09:15:12,717 INFO: Cliente desconectado: ('127.0.0.1', 62171)
 2026-08-04 09:15:17,791 INFO: Cliente conectado: ('127.0.0.1', 59152)
+2026-08-04 09:18:03,564 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-04 09:18:03,590 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-04 09:18:05,478 INFO: MPV inicializado
+2026-08-04 09:18:05,479 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 5856
+2026-08-04 09:18:05,479 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-04 09:18:05,549 INFO: Cliente conectado: ('127.0.0.1', 52878)
+2026-08-04 09:19:24,714 INFO: Cliente desconectado: ('127.0.0.1', 52878)
+2026-08-04 09:19:32,453 INFO: Cliente conectado: ('127.0.0.1', 58255)
