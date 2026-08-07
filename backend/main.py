@@ -717,7 +717,13 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
             time.sleep(0.05)
             if _window:
                 try:
-                    _window.evaluate_js("window._showCloseDialog && window._showCloseDialog()")
+                    _window.evaluate_js(
+                        "if (typeof window._showCloseDialog !== 'undefined') {"
+                        "  window._showCloseDialog();"
+                        "} else {"
+                        "  window.pywebview.api.close_all();"
+                        "}"
+                    )
                 except Exception:
                     pass
         threading.Thread(target=_deferred, daemon=True).start()
