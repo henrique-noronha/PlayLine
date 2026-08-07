@@ -2175,3 +2175,80 @@
 2026-08-04 09:18:05,549 INFO: Cliente conectado: ('127.0.0.1', 52878)
 2026-08-04 09:19:24,714 INFO: Cliente desconectado: ('127.0.0.1', 52878)
 2026-08-04 09:19:32,453 INFO: Cliente conectado: ('127.0.0.1', 58255)
+2026-08-04 12:46:32,656 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-04 12:46:32,712 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-04 12:46:34,859 INFO: MPV inicializado
+2026-08-04 12:46:34,860 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 21596
+2026-08-04 12:46:34,861 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-04 12:46:35,430 INFO: Cliente conectado: ('127.0.0.1', 63032)
+2026-08-04 12:47:26,463 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\20 PROCURAR AJUDA É CORAGEM.mp4
+2026-08-04 12:47:26,463 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-08-04 12:47:27,272 INFO: Decodificação ativa: d3d11va
+2026-08-04 12:48:12,271 INFO: end-file reason=stop
+2026-08-04 12:49:20,465 INFO: [weather] OWM: 34.9°C (Palmas, BR)
+2026-08-04 12:49:20,535 INFO: [osd_text] osd=380x213 font=6 bmp=50x16 pos=(315,183) margin_y=14
+2026-08-07 12:32:21,624 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-07 12:32:21,997 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-07 12:32:22,907 INFO: MPV inicializado
+2026-08-07 12:32:22,908 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 21280
+2026-08-07 12:32:22,909 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-07 12:32:22,968 INFO: Cliente conectado: ('127.0.0.1', 52622)
+2026-08-07 12:33:04,463 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\20 PROCURAR AJUDA É CORAGEM.mp4
+2026-08-07 12:33:04,467 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-08-07 12:33:05,128 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:33:45,603 INFO: end-file reason=stop
+2026-08-07 12:43:31,789 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\20 PROCURAR AJUDA É CORAGEM.mp4
+2026-08-07 12:43:31,789 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\invalido.mp4
+2026-08-07 12:43:32,301 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:43:39,337 INFO: end-file reason=stop
+2026-08-07 12:43:39,338 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\invalido.mp4
+2026-08-07 12:43:39,340 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4
+2026-08-07 12:43:39,360 INFO: end-file reason=error
+2026-08-07 12:43:39,398 INFO: end-file reason=stop
+2026-08-07 12:43:39,399 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\MOMENTO SAUDE -  OBSERVE O RESULTADO.mp4
+2026-08-07 12:43:39,399 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\texto.mp4
+2026-08-07 12:43:39,875 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:43:39,915 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:43:42,331 INFO: end-file reason=stop
+2026-08-07 12:43:42,331 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\texto.mp4
+2026-08-07 12:43:42,332 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-08-07 12:43:42,355 INFO: end-file reason=error
+2026-08-07 12:43:42,397 INFO: end-file reason=stop
+2026-08-07 12:43:42,398 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 01.mp4
+2026-08-07 12:43:42,403 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\truncado.mp4
+2026-08-07 12:43:42,895 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:43:42,910 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:43:45,124 INFO: end-file reason=stop
+2026-08-07 12:43:45,124 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\truncado.mp4
+2026-08-07 12:43:45,126 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-08-07 12:43:45,139 INFO: end-file reason=error
+2026-08-07 12:43:45,173 INFO: end-file reason=stop
+2026-08-07 12:43:45,173 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\AV. CÔNEGO JOÃO LIMA.mp4
+2026-08-07 12:43:45,174 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\vazio.mp4
+2026-08-07 12:43:45,650 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:43:45,686 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:43:52,509 INFO: end-file reason=stop
+2026-08-07 12:43:52,510 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\vazio.mp4
+2026-08-07 12:43:52,531 INFO: end-file reason=error
+2026-08-07 12:49:17,461 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\truncado_grande.mp4
+2026-08-07 12:49:17,970 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:49:18,708 INFO: end-file reason=eof
+2026-08-07 12:49:27,012 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO - Copia.mp4
+2026-08-07 12:49:27,013 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\truncado_grande.mp4
+2026-08-07 12:49:27,521 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:49:30,360 INFO: end-file reason=stop
+2026-08-07 12:49:30,361 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\TestesPlayLine\truncado_grande.mp4
+2026-08-07 12:49:30,362 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4
+2026-08-07 12:49:30,882 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:49:31,139 INFO: end-file reason=eof
+2026-08-07 12:49:31,186 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\19 COMO AJUDAR ALGUÉM EM SOFRIMENTO.mp4
+2026-08-07 12:49:31,193 INFO: end-file reason=stop
+2026-08-07 12:49:31,656 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:49:31,711 INFO: Decodificação ativa: d3d11va
+2026-08-07 12:49:35,172 INFO: end-file reason=stop
+2026-08-07 12:58:40,426 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-07 12:58:40,455 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-07 12:58:41,312 INFO: MPV inicializado
+2026-08-07 12:58:41,313 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 23004
+2026-08-07 12:58:41,314 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-07 12:58:41,891 INFO: Cliente conectado: ('127.0.0.1', 62613)

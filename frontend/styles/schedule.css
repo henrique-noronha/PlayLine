@@ -199,6 +199,25 @@
 .schedule-item.invalid .item-title  { color: var(--danger); }
 .schedule-item.invalid .item-dur    { color: var(--danger); }
 
+.sch-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+#sch-error-count {
+  display: none;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  border-radius: 4px;
+  padding: 2px 7px;
+  letter-spacing: 0.02em;
+}
+
 .yt-live-dur { color: #dc2626; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
 
 .schedule-item input         { pointer-events: none; cursor: grab; user-select: none; }
