@@ -132,8 +132,8 @@ function updateNowPlaying(item) {
 
 function updateBadge(status) {
   const badge = document.getElementById("state-badge");
-  badge.className = "state-badge " + (status === "playing" ? "playing" : status === "paused" ? "paused" : "");
-  badge.textContent = { playing: "reproduzindo", paused: "pausado", stopped: "parado" }[status] ?? status;
+  badge.className = "state-badge " + (status === "playing" ? "playing" : status === "paused" ? "paused" : status === "reconnecting" ? "reconnecting" : "");
+  badge.textContent = { playing: "reproduzindo", paused: "pausado", stopped: "parado", reconnecting: "reconectando" }[status] ?? status;
 }
 
 video.addEventListener("loadedmetadata", () => {

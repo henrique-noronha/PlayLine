@@ -223,6 +223,9 @@ class MPVDaemon:
             prefetch_playlist=True,
             volume_max=200,             # permite até +6 dB (200 = +6 dB)
             image_display_duration=86400,  # standby.png exibido por 24h (efetivamente infinito)
+            network_timeout=10,         # encerra stream morta em até 10s sem dados
+            hwdec="auto-safe",          # decodificação por GPU quando disponível, software como fallback
+            osc=False,                  # desativa controles na tela ao passar o mouse
         )
 
         if has_secondary:
@@ -255,6 +258,17 @@ class MPVDaemon:
             if not self._window_positioned:
                 target = self._move_to_tv if self._has_secondary else self._send_to_back
                 threading.Thread(target=target, daemon=True).start()
+            def _log_hwdec():
+                import time
+                time.sleep(0.5)
+                if self._mpv_dead or self._mpv is None:
+                    return
+                try:
+                    hwdec_active = self._mpv.hwdec_current
+                    logger.info("Decodificação ativa: %s", hwdec_active or "software")
+                except Exception:
+                    pass
+            threading.Thread(target=_log_hwdec, daemon=True).start()
             with self._logo_lock:
                 has_active = any(d["active"] for d in self._logo.values())
             if has_active:
@@ -263,6 +277,7 @@ class MPVDaemon:
                 text_active = self._text_overlay.get("active", False)
             if text_active:
                 threading.Thread(target=self._apply_text_overlay_delayed, daemon=True).start()
+            self._broadcast_sync({"event": "file-loaded"})
 
         @self._mpv.event_callback("end-file")
         def _end_file(event):

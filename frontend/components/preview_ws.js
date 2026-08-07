@@ -76,8 +76,8 @@
     _ws.binaryType = "blob";
 
     _ws.onopen = () => {
-      // Reinicia o timer de staleness ao conectar
       _lastFrame = 0;
+      _decoding  = false;
       _setLive(false);
       _drawNoSignal();
     };
