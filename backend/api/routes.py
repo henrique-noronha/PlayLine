@@ -10,6 +10,8 @@ import sys
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, UploadFile, File
+
+_NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
 from fastapi.responses import FileResponse, Response
 
 # Mesmo caminho usado pelo mpv_daemon — sem espaços para compatibilidade com lavfi
@@ -201,6 +203,7 @@ def _generate_thumb(path: str) -> bytes | None:
             ],
             capture_output=True,
             timeout=15,
+            creationflags=_NO_WINDOW,
         )
         if result.returncode == 0 and result.stdout:
             return result.stdout

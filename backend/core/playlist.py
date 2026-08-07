@@ -4,12 +4,31 @@ Playlist Engine — gerencia a fila de reprodução e responde a eventos do Play
 
 import logging
 import asyncio
+import socket
 from typing import Callable, Optional
 
 from .db import get_conn
 from .history import HistoryManager
 
 logger = logging.getLogger(__name__)
+
+_RECONNECT_MAX    = 5
+_RECONNECT_DELAYS = [3, 6, 12, 20, 30]
+
+
+def _has_internet(timeout: float = 1.5) -> bool:
+    try:
+        socket.create_connection(("8.8.8.8", 53), timeout=timeout).close()
+        return True
+    except OSError:
+        return False
+
+
+def _is_live_item(item: dict) -> bool:
+    if item.get("live"):
+        return True
+    path = (item.get("path") or "").lower()
+    return path.startswith(("rtmp://", "rtmps://", "rtsp://"))
 
 
 class PlaylistEngine:
@@ -25,6 +44,8 @@ class PlaylistEngine:
         self._skip_end_file: int = 0  # end-files a ignorar após substituição manual de vídeo
         self._preloading: bool = False  # True quando próximo vídeo já está na fila do MPV
         self._history = HistoryManager()
+        self._reconnect_attempt: int = 0
+        self._live_has_played: bool = False
 
     # Roteiro                                                              #
  
@@ -135,6 +156,12 @@ class PlaylistEngine:
     def set_event_loop(self, loop: asyncio.AbstractEventLoop):
         self._loop = loop
 
+    def on_file_loaded(self):
+        """Chamado pelo Player quando o MPV sinaliza file-loaded."""
+        current = self._items[0] if self._items else {}
+        if _is_live_item(current):
+            self._live_has_played = True
+
     def on_end_file(self, reason: str):
         """Chamado pelo Player (thread de leitura TCP) quando um arquivo termina."""
         if reason == "stop":
@@ -147,8 +174,22 @@ class PlaylistEngine:
             if self._loop:
                 asyncio.run_coroutine_threadsafe(self._on_mpv_closed(), self._loop)
             return
+        if reason in ("error", "eof"):
+            self._preloading = False
+            current = self._items[0] if self._items else {}
+            if self._running and _is_live_item(current):
+                self._reconnect_attempt += 1
+                self._history.close_entry(reason)
+                if self._reconnect_attempt <= _RECONNECT_MAX:
+                    if self._loop:
+                        asyncio.run_coroutine_threadsafe(self._schedule_reconnect(), self._loop)
+                else:
+                    self._reconnect_attempt = 0
+                    if self._loop:
+                        asyncio.run_coroutine_threadsafe(self._on_reconnect_failed(), self._loop)
+                return
         if reason == "error":
-            self._preloading = False  # erro: não confia no estado da playlist interna
+            self._preloading = False
             self._history.close_entry("error")
             logger.warning("Arquivo com erro — avançando automaticamente")
         elif reason == "eof":
@@ -174,6 +215,38 @@ class PlaylistEngine:
         await self._broadcast({"event": "mpv_closed"})
         await self._broadcast({"event": "stopped"})
         logger.info("Playout parado (janela MPV fechada)")
+
+    async def _schedule_reconnect(self):
+        attempt = self._reconnect_attempt
+        delay   = _RECONNECT_DELAYS[min(attempt - 1, len(_RECONNECT_DELAYS) - 1)]
+        loop = asyncio.get_event_loop()
+        has_net      = await loop.run_in_executor(None, _has_internet)
+        no_internet  = not has_net
+        never_played = not self._live_has_played
+        await self._broadcast({
+            "event": "stream_reconnecting",
+            "attempt": attempt,
+            "max_attempts": _RECONNECT_MAX,
+            "delay": delay,
+            "no_internet": no_internet,
+            "never_played": never_played,
+        })
+        await asyncio.sleep(delay)
+        if not self._running or not self._items:
+            return
+        if not _is_live_item(self._items[0]):
+            return
+        await self.play_index(0, force_resolve=True)
+
+    async def _on_reconnect_failed(self):
+        no_internet  = not _has_internet()
+        never_played = not self._live_has_played
+        await self._broadcast({
+            "event": "stream_reconnect_failed",
+            "no_internet": no_internet,
+            "never_played": never_played,
+        })
+        logger.warning("Falha ao reconectar live após %d tentativas", _RECONNECT_MAX)
 
     async def _advance(self, expected_seq: int = -1):
         """
@@ -203,10 +276,14 @@ class PlaylistEngine:
             if expected_seq < 0:  # avanço manual — cancela preload e substitui explicitamente
                 self._preloading = False
                 self._skip_end_file += 1
+            self._reconnect_attempt = 0
+            self._live_has_played = False
             await self.play_index(0)
         else:
             self._running = False
             self._index = -1
+            self._reconnect_attempt = 0
+            self._live_has_played = False
             await self._broadcast({"event": "playlist_end"})
             logger.info("Fim da playlist")
 
@@ -215,7 +292,7 @@ class PlaylistEngine:
         self._advance_seq += 1  # invalida qualquer end-file pendente
         await self.play_index(0)
 
-    async def play_index(self, index: int):
+    async def play_index(self, index: int, force_resolve: bool = False):
         if not (0 <= index < len(self._items)):
             return
         self._index = index
@@ -223,9 +300,13 @@ class PlaylistEngine:
         self._paused = False
         item = self._items[index]
 
+        if _is_live_item(item) and not force_resolve:
+            self._live_has_played = False
+            self._reconnect_attempt = 0
+
         if item.get("path"):
             self._history.open_entry(item.get("title") or item["path"].split("\\")[-1], item["path"])
-            if self._preloading:
+            if self._preloading and not force_resolve:
                 # MPV já avançou para este vídeo via playlist interna (pré-carregado)
                 # Não chama player.play() para não interromper a reprodução
                 logger.info("MPV já está em transição para: %s", item["path"])
@@ -234,6 +315,7 @@ class PlaylistEngine:
                     item["path"],
                     start_time=item.get("start_time"),
                     end_time=item.get("end_time"),
+                    force_resolve=force_resolve,
                 )
 
             self._preloading = False
@@ -293,6 +375,8 @@ class PlaylistEngine:
         self._paused = False
         self._index = -1
         self._preloading = False
+        self._reconnect_attempt = 0
+        self._live_has_played = False
         self._history.close_entry("stopped")
         self._player.stop()
         await self._broadcast({"event": "stopped"})
