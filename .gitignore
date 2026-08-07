@@ -19,6 +19,11 @@ backend/history.json
 backend/playline.db
 backend/playline.db-wal
 backend/playline.db-shm
+backend/core/playline.db
+backend/core/playline.db-wal
+backend/core/playline.db-shm
+backend/core/*.db-wal
+backend/core/*.db-shm
 backend/checkpoint.json
 backend/text_overlay.json
 backend/.playline_input.conf

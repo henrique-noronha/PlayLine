@@ -298,3 +298,19 @@
 2026-08-07 14:06:57,204 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4
 2026-08-07 14:06:57,718 INFO: Decodificação ativa: d3d11va
 2026-08-07 14:07:19,192 INFO: end-file reason=stop
+2026-08-07 14:07:33,759 INFO: Daemon iniciado — log em: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\backend\daemon.log
+2026-08-07 14:07:33,787 WARNING: Monitor secundário não detectado — MPV abrirá no principal em janela (380x213)
+2026-08-07 14:07:34,719 INFO: MPV inicializado
+2026-08-07 14:07:34,720 INFO: MPV Daemon escutando em 127.0.0.1:6600 — PID 25572
+2026-08-07 14:07:34,721 INFO: Janela 'PlayLine' enviada para o fundo (HWND_BOTTOM)
+2026-08-07 14:07:35,095 INFO: Cliente conectado: ('127.0.0.1', 60282)
+2026-08-07 14:07:42,623 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\DIGA NÃO 05.mp4
+2026-08-07 14:07:43,210 INFO: Decodificação ativa: d3d11va
+2026-08-07 14:08:30,463 INFO: end-file reason=eof
+2026-08-07 14:08:30,545 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\HGP - FRANCISCO AYRES.mp4 [trim 1–None]
+2026-08-07 14:08:31,155 INFO: Decodificação ativa: d3d11va
+2026-08-07 14:08:35,604 INFO: end-file reason=stop
+2026-08-07 14:08:35,607 INFO: play: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Comerciais\18 SINAIS DE ALERTA PARA O SUICÍDIO.mp4
+2026-08-07 14:08:35,607 INFO: preload: C:\Users\HENRIQUE NORONHA\Documents\PlayLine\Biblioteca\Programas\A CASA É SUA 91 BL 1 .mp4
+2026-08-07 14:08:36,122 INFO: Decodificação ativa: d3d11va
+2026-08-07 14:09:45,300 INFO: end-file reason=stop
