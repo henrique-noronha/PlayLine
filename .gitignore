@@ -57,3 +57,5 @@ Biblioteca/
 *.pdf
 *.bak
 backend/.playline_server
+.claude/skills/
+
