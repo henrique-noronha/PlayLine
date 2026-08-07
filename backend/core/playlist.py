@@ -299,10 +299,14 @@ class PlaylistEngine:
             if expected_seq < 0:  # avanço manual — cancela preload e substitui explicitamente
                 self._preloading = False
                 self._skip_end_file += 1
+            self._reconnect_attempt = 0
+            self._live_has_played = False
             await self.play_index(0)
         else:
             self._running = False
             self._index = -1
+            self._reconnect_attempt = 0
+            self._live_has_played = False
             await self._broadcast({"event": "playlist_end"})
             logger.info("Fim da playlist")
 
@@ -322,6 +326,10 @@ class PlaylistEngine:
         # Reset "já tocou" ao iniciar uma live nova (não em tentativas de reconexão)
         if _is_live_item(item) and not force_resolve:
             self._live_has_played = False
+
+        if _is_live_item(item) and not force_resolve:
+            self._live_has_played = False
+            self._reconnect_attempt = 0
 
         if item.get("path"):
             self._history.open_entry(item.get("title") or item["path"].split("\\")[-1], item["path"])
@@ -396,6 +404,8 @@ class PlaylistEngine:
         self._paused = False
         self._index = -1
         self._preloading = False
+        self._reconnect_attempt = 0
+        self._live_has_played = False
         self._history.close_entry("stopped")
         self._player.stop()
         await self._broadcast({"event": "stopped"})

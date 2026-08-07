@@ -213,6 +213,7 @@ class MPVDaemon:
             loglevel="warn",
             prefetch_playlist=True,
             volume_max=200,             # permite até +6 dB (200 = +6 dB)
+            image_display_duration=86400,  # standby.png exibido por 24h (efetivamente infinito)
             hwdec="auto-safe",          # decodificação por GPU quando disponível, software como fallback
             osc=False,                  # desativa controles na tela ao passar o mouse
             network_timeout=10,         # desiste de stream morta em 10s (reduz freeze após queda de rede)

@@ -25,6 +25,7 @@ window._markPathInvalid = path => invalidPaths.add(path);
 window._clearPathError  = path => {
   if (!invalidPaths.has(path)) return false;
   invalidPaths.delete(path);
+  _updateErrorCount();
   if (thumbCache[path]) {
     delete thumbCache[path];
     try { localStorage.removeItem(THUMB_PREFIX + path); } catch (_) {}
@@ -307,6 +308,7 @@ function generateThumb(path, imgEl) {
         cache.pending.forEach(el => el.closest(".lib-item, .schedule-item")?.classList.add("invalid"));
         cache.pending = [];
         thumbToStorage(path, "__error__");
+        _updateErrorCount();
       });
   }, { once: true });
 }
@@ -484,8 +486,8 @@ function renderSchedule() {
       </div>
       <div class="item-time">
         <span class="item-start" data-idx="${i}">${fmtTime(startTimes[i])}</span>
-        <span class="item-date ${isToday(startTimes[i]) ? "" : "future"}" data-idx="${i}">${fmtDate(startTimes[i])}</span>
         <span class="item-dur${item.live ? ' yt-live-dur' : ''}${hasTrim(item) ? ' trim-active' : ''}" data-idx="${i}">${item.live ? 'ao vivo' : (item.duration > 0 ? (hasTrim(item) ? ('✂ ' + fmt(effectiveDuration(item))) : fmt(item.duration)) : '—')}</span>
+        <span class="item-date ${isToday(startTimes[i]) ? "" : "future"}" data-idx="${i}">${fmtDate(startTimes[i])}</span>
       </div>
       <div class="item-actions">
         ${!isLocked ? `<button class="btn-clip-overlay${item.clip_overlays ? ' configured' : ''}" title="Automação de overlays" data-idx="${i}">⚙</button>` : ''}
@@ -617,6 +619,15 @@ function renderSchedule() {
   updateStartTimes();
   updateScheduleSelectionUI();
   _refreshLibSchedBadges();
+  _updateErrorCount();
+}
+
+function _updateErrorCount() {
+  const n = state.schedule.filter(it => it.path && invalidPaths.has(it.path)).length;
+  const el = document.getElementById("sch-error-count");
+  if (!el) return;
+  el.textContent = n === 1 ? "1 clipe com erro" : `${n} clipes com erro`;
+  el.style.display = n > 0 ? "inline-flex" : "none";
 }
 
 function _refreshLibSchedBadges() {
