@@ -26,6 +26,7 @@ backend/core/*.db-wal
 backend/core/*.db-shm
 backend/checkpoint.json
 backend/text_overlay.json
+backend/sessions.json
 backend/.playline_input.conf
 backend/standby.png
 
