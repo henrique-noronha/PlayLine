@@ -237,6 +237,7 @@
             <div class="sch-title-group">
               <h2>Roteiro</h2>
               <span id="sch-error-count"></span>
+              <span id="sch-loop-indicator" title="Repetir roteiro ativo"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repetir</span>
             </div>
             <div class="sch-header-right">
               <div class="sch-col-time-header">
@@ -300,6 +301,9 @@
           <div id="capture-device-list" class="capture-device-list">
             <span class="yt-status yt-status-loading">Carregando dispositivos…</span>
           </div>
+        </div>
+        <div id="capture-modal-preview-wrap" style="display:none">
+          <video id="capture-modal-video" autoplay muted playsinline></video>
         </div>
       </div>
       <div class="yt-modal-actions">
@@ -438,6 +442,15 @@
   <script src="/static/components/preview_ws.js"></script>
   <script src="/static/components/youtube_live.js"></script>
   <script src="/static/components/capture.js"></script>
+  <!-- Preview de dispositivo de captura -->
+  <div id="capture-preview-modal" style="display:none">
+    <div class="yt-preview-header">
+      <span class="yt-preview-label" id="capture-preview-label" style="color:#22d3ee">⬤ Capture</span>
+      <button id="capture-preview-close">✕</button>
+    </div>
+    <video id="capture-preview-video" autoplay muted playsinline></video>
+  </div>
+
   <!-- Preview de live do YouTube -->
   <div id="yt-preview-modal" style="display:none">
     <div class="yt-preview-header">
@@ -454,6 +467,7 @@
 
   <script src="/static/components/controls_menu.js"></script>
   <script src="/static/components/yt_preview.js"></script>
+  <script src="/static/components/capture_preview.js"></script>
   <script src="/static/components/saved_schedules.js"></script>
 
   <!-- Diálogo de fechamento da interface -->

@@ -118,6 +118,40 @@
   background: var(--accent);
 }
 
+/* ── Preview de dispositivo de captura ── */
+#capture-preview-modal {
+  position: fixed;
+  z-index: 600;
+  width: 360px;
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 36px rgba(0,0,0,.75);
+}
+
+#capture-preview-video {
+  display: block;
+  width: 360px;
+  height: 203px;
+  background: #050a10;
+  object-fit: cover;
+}
+
+#capture-preview-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity .12s;
+}
+#capture-preview-close:hover { opacity: 1; }
+
 /* ── Preview de live do YouTube ── */
 #yt-preview-modal {
   position: fixed;
@@ -222,6 +256,24 @@
   border-radius: 4px;
   padding: 2px 7px;
   letter-spacing: 0.02em;
+}
+
+#sch-loop-indicator {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #f0b429;
+  background: rgba(240, 180, 41, 0.1);
+  border: 1px solid rgba(240, 180, 41, 0.35);
+  border-radius: 4px;
+  padding: 2px 7px;
+  letter-spacing: 0.02em;
+}
+
+.sch-menu-item.loop-active {
+  color: #f0b429;
 }
 
 .yt-live-dur { color: #dc2626; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
