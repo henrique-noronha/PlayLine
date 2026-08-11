@@ -59,6 +59,21 @@
   flex-shrink: 0;
 }
 
+#capture-modal-preview-wrap {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #050a10;
+}
+
+#capture-modal-video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #050a10;
+}
+
 #btn-yt-open {
   padding: 4px 12px;
   border: 1px solid var(--border);

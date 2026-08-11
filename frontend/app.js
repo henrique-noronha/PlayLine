@@ -11,6 +11,7 @@ const state = {
   pausedAt: null,       // timestamp de quando pausou
   totalPausedMs: 0,     // soma de todos os tempos pausados no clipe atual
   mpvAlive: true,       // false após mpv_closed, true após mpv_ready / now_playing
+  repeat: false,
 };
 
 let _remainingTimer = null;
@@ -238,8 +239,13 @@ function handleEvent(ev) {
       if (_pendingLoad) _commitPendingLoad(ev.pos);
       syncPosition(ev.pos);
       break;
+    case "repeat":
+      state.repeat = ev.enabled;
+      updateLoopIndicator();
+      break;
     case "schedule_updated":
       state.schedule = ev.items ?? [];
+      if (typeof ev.current_index === "number") state.currentIndex = ev.current_index;
       if (!window._schedDragging) renderSchedule();
       break;
     case "logo_list":
@@ -285,6 +291,7 @@ function applyState(s) {
   state.currentIndex = s.index ?? -1;
   state.playing = s.running ?? false;
   state.paused = s.paused ?? false;
+  if (typeof s.repeat === "boolean") { state.repeat = s.repeat; updateLoopIndicator(); }
 
   if (s.items) { 
     state.schedule = s.items; 

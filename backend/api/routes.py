@@ -482,6 +482,13 @@ async def get_saved_schedule_items(schedule_id: int):
     return {"items": items}
 
 
+@router.post("/api/repeat")
+async def set_repeat(body: dict):
+    enabled = bool(body.get("enabled", False))
+    _playlist_engine.set_repeat(enabled)
+    return {"repeat": enabled}
+
+
 @router.get("/api/capture-devices")
 async def list_capture_devices():
     """Lista dispositivos de vídeo DirectShow disponíveis (webcams, placas de captura)."""

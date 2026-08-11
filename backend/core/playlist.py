@@ -46,6 +46,7 @@ class PlaylistEngine:
         self._history = HistoryManager()
         self._reconnect_attempt: int = 0
         self._live_has_played: bool = False
+        self._repeat: bool = False
 
     # Roteiro                                                              #
  
@@ -153,12 +154,34 @@ class PlaylistEngine:
 
     # Controle de reprodução                                               #
 
+    def set_repeat(self, enabled: bool):
+        previously = self._repeat
+        self._repeat = enabled
+        if not enabled and previously and 0 < self._index < len(self._items):
+            # Desativando: descarta itens já reproduzidos, mantém a partir do atual
+            self._items = self._items[self._index:]
+            self._index = 0
+            self.save_schedule(self._items)
+            if self._loop:
+                asyncio.run_coroutine_threadsafe(
+                    self._broadcast({
+                        "event": "schedule_updated",
+                        "items": list(self._items),
+                        "current_index": 0,
+                    }),
+                    self._loop
+                )
+        if self._loop:
+            asyncio.run_coroutine_threadsafe(
+                self._broadcast({"event": "repeat", "enabled": enabled}), self._loop
+            )
+
     def set_event_loop(self, loop: asyncio.AbstractEventLoop):
         self._loop = loop
 
     def on_file_loaded(self):
         """Chamado pelo Player quando o MPV sinaliza file-loaded."""
-        current = self._items[0] if self._items else {}
+        current = self._items[self._index] if 0 <= self._index < len(self._items) else {}
         if _is_live_item(current):
             self._live_has_played = True
 
@@ -176,7 +199,7 @@ class PlaylistEngine:
             return
         if reason in ("error", "eof"):
             self._preloading = False
-            current = self._items[0] if self._items else {}
+            current = self._items[self._index] if 0 <= self._index < len(self._items) else {}
             if self._running and _is_live_item(current):
                 self._reconnect_attempt += 1
                 self._history.close_entry(reason)
@@ -234,9 +257,10 @@ class PlaylistEngine:
         await asyncio.sleep(delay)
         if not self._running or not self._items:
             return
-        if not _is_live_item(self._items[0]):
+        current = self._items[self._index] if 0 <= self._index < len(self._items) else {}
+        if not _is_live_item(current):
             return
-        await self.play_index(0, force_resolve=True)
+        await self.play_index(self._index, force_resolve=True)
 
     async def _on_reconnect_failed(self):
         no_internet  = not _has_internet()
@@ -259,6 +283,22 @@ class PlaylistEngine:
             logger.debug("_advance obsoleto (seq %d != %d) — ignorado", expected_seq, self._advance_seq)
             return
         self._advance_seq += 1
+
+        if self._repeat:
+            # Modo loop: não consome itens, avança o cursor pelo roteiro fixo
+            if not self._items:
+                return
+            next_index = self._index + 1
+            if next_index >= len(self._items):
+                next_index = 0
+                logger.info("Loop: reiniciando roteiro do início")
+            if expected_seq < 0:
+                self._preloading = False
+                self._skip_end_file += 1
+            self._reconnect_attempt = 0
+            self._live_has_played = False
+            await self.play_index(next_index)
+            return
 
         if self._items:
             self._items.pop(0)
@@ -352,7 +392,7 @@ class PlaylistEngine:
         """Aguarda o MPV carregar o arquivo e então busca a posição salva.
         Cancela o seek se o item atual mudou antes dos 1.5s."""
         await asyncio.sleep(1.5)
-        current_path = self._items[0].get("path") if self._items else None
+        current_path = self._items[self._index].get("path") if 0 <= self._index < len(self._items) else None
         if current_path != expected_path:
             logger.debug("_deferred_seek cancelado — item mudou antes do seek")
             return
@@ -415,11 +455,17 @@ class PlaylistEngine:
         if self._running and (not was_preloading or index != 1):
             # Um loadfile replace será emitido → precisamos ignorar o end-file(stop)
             self._skip_end_file += 1
-        if index > 0:
-            del self._items[:index]
-            self.save_schedule(self._items)
-            await self._broadcast({"event": "schedule_updated", "items": list(self._items)})
-        await self.play_index(0)
+        if self._repeat:
+            # Modo loop: só muda o cursor, não remove itens
+            self._reconnect_attempt = 0
+            self._live_has_played = False
+            await self.play_index(index)
+        else:
+            if index > 0:
+                del self._items[:index]
+                self.save_schedule(self._items)
+                await self._broadcast({"event": "schedule_updated", "items": list(self._items)})
+            await self.play_index(0)
 
     # ------------------------------------------------------------------ #
     # Estado                                                               #
@@ -434,4 +480,5 @@ class PlaylistEngine:
             "index": self._index,
             "current_item": item,
             "total_items": len(self._items),
+            "repeat": self._repeat,
         }
