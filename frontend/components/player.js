@@ -1,9 +1,10 @@
 /* PlayLine — Player de vídeo HTML5 */
 
 const video = document.getElementById("player-video");
-let _lastMpvPos = null;
-let _syncPending = false;
-let _lastSyncAt  = 0;      // performance.now() do último seek de sincronização
+let _lastMpvPos    = null;
+let _lastMpvPosAt  = 0;    // performance.now() do último evento position recebido
+let _syncPending   = false;
+let _lastSyncAt    = 0;    // performance.now() do último seek de sincronização
 let _ytVideoDuration = 0;  // duração manual para vídeos YouTube (MPV não expõe via HTML5)
 
 function fmt(secs) {
@@ -70,7 +71,8 @@ function _restoreLogoOverlays() {
 
 function stopVideo() {
   _ytVideoDuration = 0;
-  _lastMpvPos = null;
+  _lastMpvPos   = null;
+  _lastMpvPosAt = 0;
   _hideUnavailable();
   video.removeAttribute("src");
   video.load();
@@ -100,7 +102,9 @@ const _SYNC_THRESHOLD_S  = 12;   // segundos de diferença para forçar resync
 const _SYNC_COOLDOWN_MS  = 6000; // ms mínimos entre dois resyncs consecutivos
 
 function syncPosition(pos) {
-  _lastMpvPos = pos;
+  _lastMpvPos   = pos;
+  _lastMpvPosAt = performance.now();
+
   // Modo YouTube: atualiza barra diretamente via posição do MPV
   if (_ytVideoDuration > 0) {
     document.getElementById("pos").textContent = fmt(pos);
@@ -109,6 +113,8 @@ function syncPosition(pos) {
     document.getElementById("progress-fill").style.width = pct + "%";
     return;
   }
+
+  // Sincroniza o elemento <video> com o MPV (apenas para o preview visual)
   if (!video.src || isNaN(video.duration) || video.duration === 0) return;
   if (_syncPending) return;
   if (performance.now() - _lastSyncAt < _SYNC_COOLDOWN_MS) return;
@@ -118,6 +124,21 @@ function syncPosition(pos) {
     video.currentTime = pos;
   }
 }
+
+// Loop de interpolação: atualiza o display de posição independentemente do
+// estado de buffering do elemento <video>. Âncora = último evento MPV +
+// tempo decorrido desde então, zerado quando pausado.
+setInterval(() => {
+  if (_lastMpvPos === null || _ytVideoDuration > 0) return;
+  const paused     = typeof state !== "undefined" ? state.paused : false;
+  const elapsed    = paused ? 0 : (performance.now() - _lastMpvPosAt) / 1000;
+  const displayPos = Math.max(0, _lastMpvPos + elapsed);
+  const dur        = (video.src && !isNaN(video.duration) && video.duration > 0) ? video.duration : 0;
+  document.getElementById("pos").textContent    = fmt(displayPos);
+  if (dur > 0) document.getElementById("dur").textContent = fmt(dur);
+  const pct = dur > 0 ? Math.min((displayPos / dur) * 100, 100) : 0;
+  document.getElementById("progress-fill").style.width = pct + "%";
+}, 100);
 
 function resetProgress() {
   document.getElementById("progress-fill").style.width = "0%";
@@ -146,12 +167,7 @@ video.addEventListener("seeked", () => {
 });
 
 video.addEventListener("timeupdate", () => {
-  const pos = video.currentTime || 0;
-  const dur = isFinite(video.duration) ? video.duration : 0;
-  document.getElementById("pos").textContent = fmt(pos);
-  document.getElementById("dur").textContent = fmt(dur);
-  const pct = dur > 0 ? Math.min((pos / dur) * 100, 100) : 0;
-  document.getElementById("progress-fill").style.width = pct + "%";
+  // Display driven by interpolation loop — não atualiza aqui.
 });
 
 video.addEventListener("ended", () => {});
