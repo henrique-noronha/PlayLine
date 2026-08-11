@@ -7,13 +7,57 @@
 }
 
 .bottom-row .log-card,
+.capture-card,
 .youtube-card {
   flex: 1;
   min-width: 0;
 }
 
-/* YouTube card — sempre compacto (só header, igual ao log colapsado) */
+/* Capture / YouTube cards — sempre compactos (só header) */
+.capture-card .log-header,
 .youtube-card .log-header { margin-bottom: 0; }
+
+#btn-capture-open {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+#btn-capture-open:hover { background: var(--surface2); }
+
+/* ── Lista de dispositivos no modal de captura ── */
+.capture-device-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.capture-device-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  font-size: 13px;
+  color: var(--text);
+}
+.capture-device-item:hover { background: var(--surface2); }
+.capture-device-item.selected {
+  border-color: var(--accent);
+  background: rgba(74,144,226,.08);
+}
+.capture-device-item .capture-device-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
 
 #btn-yt-open {
   padding: 4px 12px;

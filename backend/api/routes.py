@@ -183,6 +183,10 @@ def _ffmpeg_bin() -> str:
         local = Path(sys._MEIPASS) / "ffmpeg.exe"
         if local.is_file():
             return str(local)
+    # Dev mode: ffmpeg.exe alongside the backend package
+    local_dev = Path(__file__).parent.parent / "ffmpeg.exe"
+    if local_dev.is_file():
+        return str(local_dev)
     return "ffmpeg"
 
 
@@ -497,6 +501,35 @@ async def get_saved_schedule_items(schedule_id: int):
     if items is None:
         raise HTTPException(status_code=404, detail="Roteiro não encontrado")
     return {"items": items}
+
+
+@router.get("/api/capture-devices")
+async def list_capture_devices():
+    """Lista dispositivos de vídeo DirectShow disponíveis (webcams, placas de captura)."""
+    import re
+    ffmpeg = _ffmpeg_bin()
+    logger.info("capture-devices: usando ffmpeg em %r", ffmpeg)
+    try:
+        result = subprocess.run(
+            [ffmpeg, "-list_devices", "true", "-f", "dshow", "-i", "dummy"],
+            capture_output=True, timeout=10,
+            creationflags=_NO_WINDOW,
+        )
+        raw = result.stderr.decode("utf-8", errors="replace")
+        logger.info("capture-devices stderr:\n%s", raw)
+        devices = []
+        for line in raw.splitlines():
+            if "(video)" in line:
+                m = re.search(r'"([^"]+)"', line)
+                if m:
+                    name = m.group(1)
+                    if name not in devices:
+                        devices.append(name)
+        logger.info("capture-devices encontrados: %s", devices)
+        return {"devices": devices}
+    except Exception as exc:
+        logger.warning("capture-devices error: %s", exc)
+        return {"devices": [], "error": str(exc)}
 
 
 @router.delete("/api/library/folder")

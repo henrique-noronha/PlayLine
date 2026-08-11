@@ -267,6 +267,15 @@
         <div class="log" id="log"></div>
       </section>
 
+      <section class="card capture-card" id="capture-card">
+        <div class="log-header">
+          <h2>Entrada de Vídeo</h2>
+          <div class="log-actions">
+            <button id="btn-capture-open">+ Adicionar</button>
+          </div>
+        </div>
+      </section>
+
       <section class="card youtube-card" id="youtube-live-card">
         <div class="log-header">
           <h2>Vídeo/Live do Youtube</h2>
@@ -277,6 +286,28 @@
       </section>
     </div>
   </main>
+
+  <!-- Modal Entrada de Vídeo (placa de captura / webcam) -->
+  <div id="capture-modal" class="yt-modal-backdrop" style="display:none">
+    <div class="yt-modal-box">
+      <div class="yt-modal-header">
+        <h3>Entrada de Vídeo</h3>
+        <button id="capture-modal-close" class="yt-modal-close">✕</button>
+      </div>
+      <div class="yt-modal-body">
+        <div class="yt-field">
+          <label class="yt-label">Dispositivo disponível</label>
+          <div id="capture-device-list" class="capture-device-list">
+            <span class="yt-status yt-status-loading">Carregando dispositivos…</span>
+          </div>
+        </div>
+      </div>
+      <div class="yt-modal-actions">
+        <button id="btn-capture-cancel" class="yt-btn-cancel">Cancelar</button>
+        <button id="btn-capture-add" class="btn-yt-add" disabled>Adicionar ao roteiro</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal YouTube Live -->
   <div id="yt-modal" class="yt-modal-backdrop" style="display:none">
@@ -406,6 +437,7 @@
   <script src="/static/app.js"></script>
   <script src="/static/components/preview_ws.js"></script>
   <script src="/static/components/youtube_live.js"></script>
+  <script src="/static/components/capture.js"></script>
   <!-- Preview de live do YouTube -->
   <div id="yt-preview-modal" style="display:none">
     <div class="yt-preview-header">

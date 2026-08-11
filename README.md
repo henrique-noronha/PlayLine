@@ -30,6 +30,11 @@
 - Resolução automática da URL de stream via yt-dlp — sem download, reprodução direta
 - Suporte a streams HLS (ao vivo) com reconexão automática em caso de falha
 
+### Entrada de Vídeo
+- Captura ao vivo de qualquer dispositivo conectado — webcam, placa de captura, câmera HDMI
+- Detecção automática dos dispositivos disponíveis via DirectShow (Windows)
+- O dispositivo é tratado como item ao vivo no roteiro, com reconexão automática em caso de falha de sinal
+
 ### Sobreposição de Logos
 - Até 2 logotipos simultâneos em qualquer canto da tela
 - Cada clipe do roteiro pode ter configuração independente de overlay
