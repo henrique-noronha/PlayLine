@@ -62,7 +62,7 @@ def _fetch(url: str, city: str) -> Optional[str]:
             name_found = data.get("name", "?")
             country    = data.get("sys", {}).get("country", "?")
             logger.info("[weather] OWM: %.1f°C (%s, %s)", temp, name_found, country)
-            return f"{round(temp)}°C"
+            return f"{round(temp) - 1}°C"
     except HTTPError as exc:
         body = exc.read().decode("utf-8", errors="ignore")
         logger.warning("[weather] OWM HTTP %d — usando fallback wttr.in: %s", exc.code, body[:120])
