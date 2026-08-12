@@ -2,7 +2,7 @@
 
 (function () {
   const RECONNECT_MS = 3000;
-  const STALE_MS     = 2500;   // sem frame por este tempo → considera sinal perdido
+  const STALE_MS     = 5000;   // sem frame por este tempo → considera sinal perdido
 
   const canvas = document.getElementById("mpv-preview");
   const wrap   = canvas?.closest(".player-wrap");
