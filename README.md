@@ -63,9 +63,9 @@
 
 ## Arquitetura
 
-PlayLine adota uma **arquitetura orientada a eventos** com três processos isolados — uma falha na interface não interrompe o sinal ao ar.
+PlayLine adota uma **arquitetura orientada a eventos** com três processos isolados, uma falha na interface não interrompe o sinal ao ar.
 
-![Arquitetura do PlayLine](images/Arquitetura.png)
+![Arquitetura do PlayLine](docs/arquitetura.png)
 
 **Modos de acesso à interface:**
 - **PlayLine.exe** — abre a interface automaticamente via pywebview (janela nativa, sem precisar abrir o navegador)
