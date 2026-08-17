@@ -788,7 +788,7 @@ class MPVDaemon:
             if self._mpv_dead or self._mpv is None or not self._clients:
                 continue
             try:
-                if self._mpv.path is None:
+                if self._mpv.core_idle:
                     continue
             except Exception:
                 continue

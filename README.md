@@ -48,12 +48,12 @@
 ### Histórico e Estatísticas
 - Registro automático de cada exibição com data, hora e duração
 - Aba **Registro**: listagem cronológica filtrável por data
-- Aba **Estatísticas**: clipes mais exibidos (ranking completo), total de horas transmitidas e histórico de exibição por dia (30 dias)
+- Aba **Estatísticas**: clipes mais exibidos (ranking completo), total de horas transmitidas e histórico de exibição por dia.
 
 ### Preview em Tempo Real
 - Monitore o que está sendo exibido diretamente na interface
 - VU meter de áudio em dBFS com peak hold e indicador de clip
-- Fader de volume calibrado em dB (−10 dB a +3 dB)
+- Fader de volume calibrado em dB (−20 dB a +6 dB)
 
 ### Acesso Remoto
 - Opere de qualquer máquina da rede via navegador (`http://<IP>:18000`)

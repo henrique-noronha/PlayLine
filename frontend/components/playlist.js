@@ -79,6 +79,7 @@ function updateScheduleSelectionUI() {
       <div class="sch-menu-item" id="sch-menu-duplicate"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Duplicar roteiro</div>
       <div class="sch-menu-item" id="sch-menu-save"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Salvar roteiro</div>
       <div class="sch-menu-item" id="sch-menu-load"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>Roteiros salvos</div>
+      <div class="sch-menu-item" id="sch-menu-loop"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repetir roteiro</div>
       <div class="sch-menu-separator"></div>
       <div class="sch-menu-item" id="sch-menu-clear"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Limpar roteiro</div>
     `;
@@ -117,6 +118,29 @@ function updateScheduleSelectionUI() {
     document.getElementById("sch-menu-load").addEventListener("click", () => {
       dropdown.classList.remove("open");
       openSavedSchedsModal();
+    });
+
+    document.getElementById("sch-menu-loop").addEventListener("click", () => {
+      dropdown.classList.remove("open");
+      if (state.repeat) {
+        showConfirm("Desativar o loop? O roteiro continuará normalmente a partir do clipe atual.", () => {
+          state.repeat = false;
+          fetch("/api/repeat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ enabled: false }),
+          });
+          updateLoopIndicator();
+        });
+      } else {
+        state.repeat = true;
+        fetch("/api/repeat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ enabled: true }),
+        });
+        updateLoopIndicator();
+      }
     });
 
     document.getElementById("sch-menu-clear").addEventListener("click", () => {
@@ -180,6 +204,19 @@ const _YT_LIVE_THUMB = 'data:image/svg+xml,' + encodeURIComponent(
   '<rect x="16" y="16" width="80" height="31" rx="4" fill="#dc2626"/>' +
   '<text x="56" y="37" font-family="Arial,sans-serif" font-size="11" font-weight="bold" ' +
   'fill="white" text-anchor="middle">&#9679; LIVE</text>' +
+  '</svg>'
+);
+
+// Placeholder SVG para dispositivos de captura (webcam, placa de captura)
+const _CAPTURE_THUMB = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="112" height="63" viewBox="0 0 112 63">' +
+  '<rect width="112" height="63" fill="#0c1116"/>' +
+  '<rect x="18" y="12" width="76" height="44" rx="5" fill="#111827" stroke="#1e3a4a" stroke-width="1.5"/>' +
+  '<circle cx="56" cy="34" r="13" fill="none" stroke="#1e3a4a" stroke-width="2"/>' +
+  '<circle cx="56" cy="34" r="8" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity=".7"/>' +
+  '<circle cx="56" cy="34" r="3" fill="#22d3ee" opacity=".9"/>' +
+  '<rect x="32" y="16" width="14" height="8" rx="2" fill="#1e3a4a"/>' +
+  '<text x="56" y="59" font-family="Arial,sans-serif" font-size="7" fill="#22d3ee" opacity=".7" text-anchor="middle" letter-spacing=".5">CAPTURE</text>' +
   '</svg>'
 );
 
@@ -349,7 +386,15 @@ function calcStartTimes() {
   return times;
 }
 
+function updateLoopIndicator() {
+  const indicator = document.getElementById("sch-loop-indicator");
+  if (indicator) indicator.style.display = state.repeat ? "inline-flex" : "none";
+  const menuItem = document.getElementById("sch-menu-loop");
+  if (menuItem) menuItem.classList.toggle("loop-active", !!state.repeat);
+}
+
 function calcRemaining() {
+  if (state.repeat) return Infinity;
   if (!state.playing || state.currentIndex < 0) return 0;
   // Live stream em reprodução: sem como saber o tempo restante
   const currentItem = state.schedule[state.currentIndex];
@@ -378,7 +423,7 @@ function updateStartTimes() {
 
   const secs = calcRemaining();
   const rem = document.getElementById("remaining-time");
-  if (rem) rem.textContent = secs > 0 ? fmt(secs) : "—";
+  if (rem) rem.textContent = secs === Infinity ? "∞" : (secs > 0 ? fmt(secs) : "—");
 
   const nextEl = document.getElementById("next-clip-time");
   if (nextEl) {
@@ -501,12 +546,17 @@ function renderSchedule() {
     if (item.path) {
       const imgEl = row.querySelector(".item-thumb");
       if (item.live) {
-        imgEl.src = _YT_LIVE_THUMB;
+        const isCapture = item.type === "capture";
+        imgEl.src = isCapture ? _CAPTURE_THUMB : _YT_LIVE_THUMB;
         imgEl.style.cursor = "pointer";
-        imgEl.title = "Clique para visualizar a live";
+        imgEl.title = isCapture ? "Clique para prévisualizar o dispositivo" : "Clique para visualizar a live";
         imgEl.addEventListener("click", e => {
           e.stopPropagation();
-          if (typeof openYtPreview === "function") openYtPreview(item.path, imgEl);
+          if (isCapture) {
+            if (typeof openCapturePreview === "function") openCapturePreview(item.path, imgEl);
+          } else {
+            if (typeof openYtPreview === "function") openYtPreview(item.path, imgEl);
+          }
         });
       } else if (item.type === "youtube_live") {
         imgEl.src = _YT_THUMB;

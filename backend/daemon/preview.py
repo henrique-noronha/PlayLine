@@ -7,6 +7,7 @@ e codificada como JPEG para envio eficiente via WebSocket.
 import io
 import logging
 import tempfile
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -28,10 +29,24 @@ def capture_jpeg(mpv) -> Optional[bytes]:
     try:
         from PIL import Image
 
+        # Remove arquivo anterior para garantir que PIL lê o frame recém-capturado
+        # (evita race condition com cache de escrita do SO no Windows)
+        try:
+            if _TMP.exists():
+                _TMP.unlink()
+        except OSError:
+            pass
+
         # "window" = captura o conteúdo renderizado da janela MPV (com OSD/overlays)
         mpv.command("screenshot-to-file", str(_TMP), "window")
 
-        if not _TMP.is_file() or _TMP.stat().st_size == 0:
+        # Aguarda o arquivo ser escrito (até 300ms) — necessário no Windows onde o
+        # write pode estar em cache quando python-mpv retorna do command()
+        for _ in range(30):
+            if _TMP.is_file() and _TMP.stat().st_size > 0:
+                break
+            time.sleep(0.01)
+        else:
             return None
 
         with Image.open(str(_TMP)) as img:
