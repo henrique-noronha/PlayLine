@@ -1,0 +1,2766 @@
+('C:\\Users\\HENRIQUE '
+ 'NORONHA\\Documents\\PlayLine\\playingest\\build\\PlayIngest\\PYZ-00.pyz',
+ [('PyInstaller',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\__init__.py',
+   'PYMODULE'),
+  ('PyInstaller._shared_with_waf',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\_shared_with_waf.py',
+   'PYMODULE'),
+  ('PyInstaller.building',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\building\\__init__.py',
+   'PYMODULE'),
+  ('PyInstaller.building.utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\building\\utils.py',
+   'PYMODULE'),
+  ('PyInstaller.compat',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\compat.py',
+   'PYMODULE'),
+  ('PyInstaller.config',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\config.py',
+   'PYMODULE'),
+  ('PyInstaller.depend',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\depend\\__init__.py',
+   'PYMODULE'),
+  ('PyInstaller.depend.imphookapi',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\depend\\imphookapi.py',
+   'PYMODULE'),
+  ('PyInstaller.exceptions',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\exceptions.py',
+   'PYMODULE'),
+  ('PyInstaller.isolated',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\isolated\\__init__.py',
+   'PYMODULE'),
+  ('PyInstaller.isolated._parent',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\isolated\\_parent.py',
+   'PYMODULE'),
+  ('PyInstaller.lib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\lib\\__init__.py',
+   'PYMODULE'),
+  ('PyInstaller.lib.modulegraph',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\lib\\modulegraph\\__init__.py',
+   'PYMODULE'),
+  ('PyInstaller.lib.modulegraph.modulegraph',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\lib\\modulegraph\\modulegraph.py',
+   'PYMODULE'),
+  ('PyInstaller.lib.modulegraph.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\lib\\modulegraph\\util.py',
+   'PYMODULE'),
+  ('PyInstaller.log',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\log.py',
+   'PYMODULE'),
+  ('PyInstaller.utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\utils\\__init__.py',
+   'PYMODULE'),
+  ('PyInstaller.utils.hooks',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\utils\\hooks\\__init__.py',
+   'PYMODULE'),
+  ('PyInstaller.utils.hooks.conda',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\utils\\hooks\\conda.py',
+   'PYMODULE'),
+  ('PyInstaller.utils.misc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\utils\\misc.py',
+   'PYMODULE'),
+  ('PyInstaller.utils.osx',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\utils\\osx.py',
+   'PYMODULE'),
+  ('PyInstaller.utils.win32',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\utils\\win32\\__init__.py',
+   'PYMODULE'),
+  ('PyInstaller.utils.win32.versioninfo',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\utils\\win32\\versioninfo.py',
+   'PYMODULE'),
+  ('__future__',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\__future__.py',
+   'PYMODULE'),
+  ('_aix_support',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_aix_support.py',
+   'PYMODULE'),
+  ('_colorize',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_colorize.py',
+   'PYMODULE'),
+  ('_compat_pickle',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_compat_pickle.py',
+   'PYMODULE'),
+  ('_compression',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_compression.py',
+   'PYMODULE'),
+  ('_distutils_hack',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_distutils_hack\\__init__.py',
+   'PYMODULE'),
+  ('_distutils_hack.override',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_distutils_hack\\override.py',
+   'PYMODULE'),
+  ('_opcode_metadata',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_opcode_metadata.py',
+   'PYMODULE'),
+  ('_py_abc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_py_abc.py',
+   'PYMODULE'),
+  ('_pydatetime',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pydatetime.py',
+   'PYMODULE'),
+  ('_pydecimal',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pydecimal.py',
+   'PYMODULE'),
+  ('_pyrepl',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\__init__.py',
+   'PYMODULE'),
+  ('_pyrepl._minimal_curses',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\_minimal_curses.py',
+   'PYMODULE'),
+  ('_pyrepl._threading_handler',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\_threading_handler.py',
+   'PYMODULE'),
+  ('_pyrepl.commands',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\commands.py',
+   'PYMODULE'),
+  ('_pyrepl.completing_reader',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\completing_reader.py',
+   'PYMODULE'),
+  ('_pyrepl.console',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\console.py',
+   'PYMODULE'),
+  ('_pyrepl.curses',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\curses.py',
+   'PYMODULE'),
+  ('_pyrepl.fancy_termios',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\fancy_termios.py',
+   'PYMODULE'),
+  ('_pyrepl.historical_reader',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\historical_reader.py',
+   'PYMODULE'),
+  ('_pyrepl.input',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\input.py',
+   'PYMODULE'),
+  ('_pyrepl.keymap',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\keymap.py',
+   'PYMODULE'),
+  ('_pyrepl.main',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\main.py',
+   'PYMODULE'),
+  ('_pyrepl.pager',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\pager.py',
+   'PYMODULE'),
+  ('_pyrepl.reader',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\reader.py',
+   'PYMODULE'),
+  ('_pyrepl.readline',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\readline.py',
+   'PYMODULE'),
+  ('_pyrepl.simple_interact',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\simple_interact.py',
+   'PYMODULE'),
+  ('_pyrepl.trace',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\trace.py',
+   'PYMODULE'),
+  ('_pyrepl.types',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\types.py',
+   'PYMODULE'),
+  ('_pyrepl.unix_console',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\unix_console.py',
+   'PYMODULE'),
+  ('_pyrepl.unix_eventqueue',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\unix_eventqueue.py',
+   'PYMODULE'),
+  ('_pyrepl.utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\utils.py',
+   'PYMODULE'),
+  ('_pyrepl.windows_console',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pyrepl\\windows_console.py',
+   'PYMODULE'),
+  ('_sitebuiltins',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_sitebuiltins.py',
+   'PYMODULE'),
+  ('_strptime',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_strptime.py',
+   'PYMODULE'),
+  ('_threading_local',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_threading_local.py',
+   'PYMODULE'),
+  ('altgraph',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\altgraph\\__init__.py',
+   'PYMODULE'),
+  ('altgraph.Graph',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\altgraph\\Graph.py',
+   'PYMODULE'),
+  ('altgraph.GraphUtil',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\altgraph\\GraphUtil.py',
+   'PYMODULE'),
+  ('altgraph.ObjectGraph',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\altgraph\\ObjectGraph.py',
+   'PYMODULE'),
+  ('argparse',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\argparse.py',
+   'PYMODULE'),
+  ('ast',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ast.py',
+   'PYMODULE'),
+  ('asyncio',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\__init__.py',
+   'PYMODULE'),
+  ('asyncio.base_events',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\base_events.py',
+   'PYMODULE'),
+  ('asyncio.base_futures',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\base_futures.py',
+   'PYMODULE'),
+  ('asyncio.base_subprocess',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\base_subprocess.py',
+   'PYMODULE'),
+  ('asyncio.base_tasks',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\base_tasks.py',
+   'PYMODULE'),
+  ('asyncio.constants',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\constants.py',
+   'PYMODULE'),
+  ('asyncio.coroutines',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\coroutines.py',
+   'PYMODULE'),
+  ('asyncio.events',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\events.py',
+   'PYMODULE'),
+  ('asyncio.exceptions',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\exceptions.py',
+   'PYMODULE'),
+  ('asyncio.format_helpers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\format_helpers.py',
+   'PYMODULE'),
+  ('asyncio.futures',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\futures.py',
+   'PYMODULE'),
+  ('asyncio.locks',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\locks.py',
+   'PYMODULE'),
+  ('asyncio.log',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\log.py',
+   'PYMODULE'),
+  ('asyncio.mixins',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\mixins.py',
+   'PYMODULE'),
+  ('asyncio.proactor_events',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\proactor_events.py',
+   'PYMODULE'),
+  ('asyncio.protocols',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\protocols.py',
+   'PYMODULE'),
+  ('asyncio.queues',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\queues.py',
+   'PYMODULE'),
+  ('asyncio.runners',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\runners.py',
+   'PYMODULE'),
+  ('asyncio.selector_events',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\selector_events.py',
+   'PYMODULE'),
+  ('asyncio.sslproto',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\sslproto.py',
+   'PYMODULE'),
+  ('asyncio.staggered',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\staggered.py',
+   'PYMODULE'),
+  ('asyncio.streams',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\streams.py',
+   'PYMODULE'),
+  ('asyncio.subprocess',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\subprocess.py',
+   'PYMODULE'),
+  ('asyncio.taskgroups',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\taskgroups.py',
+   'PYMODULE'),
+  ('asyncio.tasks',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\tasks.py',
+   'PYMODULE'),
+  ('asyncio.threads',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\threads.py',
+   'PYMODULE'),
+  ('asyncio.timeouts',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\timeouts.py',
+   'PYMODULE'),
+  ('asyncio.transports',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\transports.py',
+   'PYMODULE'),
+  ('asyncio.trsock',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\trsock.py',
+   'PYMODULE'),
+  ('asyncio.unix_events',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\unix_events.py',
+   'PYMODULE'),
+  ('asyncio.windows_events',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\windows_events.py',
+   'PYMODULE'),
+  ('asyncio.windows_utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\windows_utils.py',
+   'PYMODULE'),
+  ('base64',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\base64.py',
+   'PYMODULE'),
+  ('bisect',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\bisect.py',
+   'PYMODULE'),
+  ('bottle',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\bottle.py',
+   'PYMODULE'),
+  ('bz2',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\bz2.py',
+   'PYMODULE'),
+  ('calendar',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\calendar.py',
+   'PYMODULE'),
+  ('certifi',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\certifi\\__init__.py',
+   'PYMODULE'),
+  ('certifi.core',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\certifi\\core.py',
+   'PYMODULE'),
+  ('cffi',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\__init__.py',
+   'PYMODULE'),
+  ('cffi._imp_emulation',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\_imp_emulation.py',
+   'PYMODULE'),
+  ('cffi._shimmed_dist_utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\_shimmed_dist_utils.py',
+   'PYMODULE'),
+  ('cffi.api',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\api.py',
+   'PYMODULE'),
+  ('cffi.cffi_opcode',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\cffi_opcode.py',
+   'PYMODULE'),
+  ('cffi.commontypes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\commontypes.py',
+   'PYMODULE'),
+  ('cffi.cparser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\cparser.py',
+   'PYMODULE'),
+  ('cffi.error',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\error.py',
+   'PYMODULE'),
+  ('cffi.ffiplatform',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\ffiplatform.py',
+   'PYMODULE'),
+  ('cffi.lock',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\lock.py',
+   'PYMODULE'),
+  ('cffi.model',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\model.py',
+   'PYMODULE'),
+  ('cffi.pkgconfig',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\pkgconfig.py',
+   'PYMODULE'),
+  ('cffi.recompiler',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\recompiler.py',
+   'PYMODULE'),
+  ('cffi.vengine_cpy',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\vengine_cpy.py',
+   'PYMODULE'),
+  ('cffi.vengine_gen',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\vengine_gen.py',
+   'PYMODULE'),
+  ('cffi.verifier',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi\\verifier.py',
+   'PYMODULE'),
+  ('charset_normalizer',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\charset_normalizer\\__init__.py',
+   'PYMODULE'),
+  ('charset_normalizer.api',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\charset_normalizer\\api.py',
+   'PYMODULE'),
+  ('charset_normalizer.cd',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\charset_normalizer\\cd.py',
+   'PYMODULE'),
+  ('charset_normalizer.constant',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\charset_normalizer\\constant.py',
+   'PYMODULE'),
+  ('charset_normalizer.legacy',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\charset_normalizer\\legacy.py',
+   'PYMODULE'),
+  ('charset_normalizer.models',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\charset_normalizer\\models.py',
+   'PYMODULE'),
+  ('charset_normalizer.utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\charset_normalizer\\utils.py',
+   'PYMODULE'),
+  ('charset_normalizer.version',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\charset_normalizer\\version.py',
+   'PYMODULE'),
+  ('clr',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr.py',
+   'PYMODULE'),
+  ('clr_loader',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\__init__.py',
+   'PYMODULE'),
+  ('clr_loader.ffi',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\ffi\\__init__.py',
+   'PYMODULE'),
+  ('clr_loader.ffi.hostfxr',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\ffi\\hostfxr.py',
+   'PYMODULE'),
+  ('clr_loader.ffi.mono',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\ffi\\mono.py',
+   'PYMODULE'),
+  ('clr_loader.ffi.netfx',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\ffi\\netfx.py',
+   'PYMODULE'),
+  ('clr_loader.hostfxr',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\hostfxr.py',
+   'PYMODULE'),
+  ('clr_loader.mono',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\mono.py',
+   'PYMODULE'),
+  ('clr_loader.netfx',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\netfx.py',
+   'PYMODULE'),
+  ('clr_loader.types',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\types.py',
+   'PYMODULE'),
+  ('clr_loader.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\util\\__init__.py',
+   'PYMODULE'),
+  ('clr_loader.util.clr_error',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\util\\clr_error.py',
+   'PYMODULE'),
+  ('clr_loader.util.coreclr_errors',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\util\\coreclr_errors.py',
+   'PYMODULE'),
+  ('clr_loader.util.find',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\util\\find.py',
+   'PYMODULE'),
+  ('clr_loader.util.hostfxr_errors',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\util\\hostfxr_errors.py',
+   'PYMODULE'),
+  ('clr_loader.util.runtime_spec',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\clr_loader\\util\\runtime_spec.py',
+   'PYMODULE'),
+  ('code',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\code.py',
+   'PYMODULE'),
+  ('codeop',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\codeop.py',
+   'PYMODULE'),
+  ('concurrent',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\concurrent\\__init__.py',
+   'PYMODULE'),
+  ('concurrent.futures',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\concurrent\\futures\\__init__.py',
+   'PYMODULE'),
+  ('concurrent.futures._base',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\concurrent\\futures\\_base.py',
+   'PYMODULE'),
+  ('concurrent.futures.process',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\concurrent\\futures\\process.py',
+   'PYMODULE'),
+  ('concurrent.futures.thread',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\concurrent\\futures\\thread.py',
+   'PYMODULE'),
+  ('configparser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\configparser.py',
+   'PYMODULE'),
+  ('contextlib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\contextlib.py',
+   'PYMODULE'),
+  ('contextvars',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\contextvars.py',
+   'PYMODULE'),
+  ('copy',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\copy.py',
+   'PYMODULE'),
+  ('csv',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\csv.py',
+   'PYMODULE'),
+  ('ctypes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ctypes\\__init__.py',
+   'PYMODULE'),
+  ('ctypes._aix',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ctypes\\_aix.py',
+   'PYMODULE'),
+  ('ctypes._endian',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ctypes\\_endian.py',
+   'PYMODULE'),
+  ('ctypes.macholib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ctypes\\macholib\\__init__.py',
+   'PYMODULE'),
+  ('ctypes.macholib.dyld',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ctypes\\macholib\\dyld.py',
+   'PYMODULE'),
+  ('ctypes.macholib.dylib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ctypes\\macholib\\dylib.py',
+   'PYMODULE'),
+  ('ctypes.macholib.framework',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ctypes\\macholib\\framework.py',
+   'PYMODULE'),
+  ('ctypes.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ctypes\\util.py',
+   'PYMODULE'),
+  ('ctypes.wintypes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ctypes\\wintypes.py',
+   'PYMODULE'),
+  ('curses',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\curses\\__init__.py',
+   'PYMODULE'),
+  ('curses.has_key',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\curses\\has_key.py',
+   'PYMODULE'),
+  ('dataclasses',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\dataclasses.py',
+   'PYMODULE'),
+  ('datetime',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\datetime.py',
+   'PYMODULE'),
+  ('decimal',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\decimal.py',
+   'PYMODULE'),
+  ('difflib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\difflib.py',
+   'PYMODULE'),
+  ('dis',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\dis.py',
+   'PYMODULE'),
+  ('email',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\__init__.py',
+   'PYMODULE'),
+  ('email._encoded_words',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\_encoded_words.py',
+   'PYMODULE'),
+  ('email._header_value_parser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\_header_value_parser.py',
+   'PYMODULE'),
+  ('email._parseaddr',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\_parseaddr.py',
+   'PYMODULE'),
+  ('email._policybase',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\_policybase.py',
+   'PYMODULE'),
+  ('email.base64mime',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\base64mime.py',
+   'PYMODULE'),
+  ('email.charset',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\charset.py',
+   'PYMODULE'),
+  ('email.contentmanager',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\contentmanager.py',
+   'PYMODULE'),
+  ('email.encoders',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\encoders.py',
+   'PYMODULE'),
+  ('email.errors',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\errors.py',
+   'PYMODULE'),
+  ('email.feedparser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\feedparser.py',
+   'PYMODULE'),
+  ('email.generator',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\generator.py',
+   'PYMODULE'),
+  ('email.header',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\header.py',
+   'PYMODULE'),
+  ('email.headerregistry',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\headerregistry.py',
+   'PYMODULE'),
+  ('email.iterators',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\iterators.py',
+   'PYMODULE'),
+  ('email.message',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\message.py',
+   'PYMODULE'),
+  ('email.parser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\parser.py',
+   'PYMODULE'),
+  ('email.policy',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\policy.py',
+   'PYMODULE'),
+  ('email.quoprimime',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\quoprimime.py',
+   'PYMODULE'),
+  ('email.utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\email\\utils.py',
+   'PYMODULE'),
+  ('fnmatch',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\fnmatch.py',
+   'PYMODULE'),
+  ('fractions',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\fractions.py',
+   'PYMODULE'),
+  ('ftplib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ftplib.py',
+   'PYMODULE'),
+  ('getopt',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\getopt.py',
+   'PYMODULE'),
+  ('getpass',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\getpass.py',
+   'PYMODULE'),
+  ('gettext',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\gettext.py',
+   'PYMODULE'),
+  ('glob',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\glob.py',
+   'PYMODULE'),
+  ('gzip',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\gzip.py',
+   'PYMODULE'),
+  ('hashlib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\hashlib.py',
+   'PYMODULE'),
+  ('hmac',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\hmac.py',
+   'PYMODULE'),
+  ('html',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\html\\__init__.py',
+   'PYMODULE'),
+  ('html.entities',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\html\\entities.py',
+   'PYMODULE'),
+  ('http',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\__init__.py',
+   'PYMODULE'),
+  ('http.client',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\client.py',
+   'PYMODULE'),
+  ('http.cookiejar',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\cookiejar.py',
+   'PYMODULE'),
+  ('http.cookies',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\cookies.py',
+   'PYMODULE'),
+  ('http.server',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py',
+   'PYMODULE'),
+  ('idna',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\idna\\__init__.py',
+   'PYMODULE'),
+  ('idna.core',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\idna\\core.py',
+   'PYMODULE'),
+  ('idna.idnadata',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\idna\\idnadata.py',
+   'PYMODULE'),
+  ('idna.intranges',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\idna\\intranges.py',
+   'PYMODULE'),
+  ('idna.package_data',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\idna\\package_data.py',
+   'PYMODULE'),
+  ('idna.uts46data',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\idna\\uts46data.py',
+   'PYMODULE'),
+  ('importlib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\__init__.py',
+   'PYMODULE'),
+  ('importlib._abc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\_abc.py',
+   'PYMODULE'),
+  ('importlib._bootstrap',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\_bootstrap.py',
+   'PYMODULE'),
+  ('importlib._bootstrap_external',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\_bootstrap_external.py',
+   'PYMODULE'),
+  ('importlib.abc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\abc.py',
+   'PYMODULE'),
+  ('importlib.machinery',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\machinery.py',
+   'PYMODULE'),
+  ('importlib.metadata',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\metadata\\__init__.py',
+   'PYMODULE'),
+  ('importlib.metadata._adapters',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\metadata\\_adapters.py',
+   'PYMODULE'),
+  ('importlib.metadata._collections',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\metadata\\_collections.py',
+   'PYMODULE'),
+  ('importlib.metadata._functools',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\metadata\\_functools.py',
+   'PYMODULE'),
+  ('importlib.metadata._itertools',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\metadata\\_itertools.py',
+   'PYMODULE'),
+  ('importlib.metadata._meta',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\metadata\\_meta.py',
+   'PYMODULE'),
+  ('importlib.metadata._text',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\metadata\\_text.py',
+   'PYMODULE'),
+  ('importlib.readers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\readers.py',
+   'PYMODULE'),
+  ('importlib.resources',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\resources\\__init__.py',
+   'PYMODULE'),
+  ('importlib.resources._adapters',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\resources\\_adapters.py',
+   'PYMODULE'),
+  ('importlib.resources._common',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\resources\\_common.py',
+   'PYMODULE'),
+  ('importlib.resources._functional',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\resources\\_functional.py',
+   'PYMODULE'),
+  ('importlib.resources._itertools',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\resources\\_itertools.py',
+   'PYMODULE'),
+  ('importlib.resources.abc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\resources\\abc.py',
+   'PYMODULE'),
+  ('importlib.resources.readers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\resources\\readers.py',
+   'PYMODULE'),
+  ('importlib.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\util.py',
+   'PYMODULE'),
+  ('inspect',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\inspect.py',
+   'PYMODULE'),
+  ('ipaddress',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ipaddress.py',
+   'PYMODULE'),
+  ('jinja2',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\__init__.py',
+   'PYMODULE'),
+  ('jinja2._identifier',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\_identifier.py',
+   'PYMODULE'),
+  ('jinja2.async_utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\async_utils.py',
+   'PYMODULE'),
+  ('jinja2.bccache',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\bccache.py',
+   'PYMODULE'),
+  ('jinja2.compiler',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\compiler.py',
+   'PYMODULE'),
+  ('jinja2.constants',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\constants.py',
+   'PYMODULE'),
+  ('jinja2.debug',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\debug.py',
+   'PYMODULE'),
+  ('jinja2.defaults',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\defaults.py',
+   'PYMODULE'),
+  ('jinja2.environment',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\environment.py',
+   'PYMODULE'),
+  ('jinja2.exceptions',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\exceptions.py',
+   'PYMODULE'),
+  ('jinja2.ext',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\ext.py',
+   'PYMODULE'),
+  ('jinja2.filters',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\filters.py',
+   'PYMODULE'),
+  ('jinja2.idtracking',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\idtracking.py',
+   'PYMODULE'),
+  ('jinja2.lexer',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\lexer.py',
+   'PYMODULE'),
+  ('jinja2.loaders',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\loaders.py',
+   'PYMODULE'),
+  ('jinja2.nodes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\nodes.py',
+   'PYMODULE'),
+  ('jinja2.optimizer',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\optimizer.py',
+   'PYMODULE'),
+  ('jinja2.parser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\parser.py',
+   'PYMODULE'),
+  ('jinja2.runtime',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\runtime.py',
+   'PYMODULE'),
+  ('jinja2.sandbox',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\sandbox.py',
+   'PYMODULE'),
+  ('jinja2.tests',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\tests.py',
+   'PYMODULE'),
+  ('jinja2.utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\utils.py',
+   'PYMODULE'),
+  ('jinja2.visitor',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2\\visitor.py',
+   'PYMODULE'),
+  ('json',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\json\\__init__.py',
+   'PYMODULE'),
+  ('json.decoder',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\json\\decoder.py',
+   'PYMODULE'),
+  ('json.encoder',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\json\\encoder.py',
+   'PYMODULE'),
+  ('json.scanner',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\json\\scanner.py',
+   'PYMODULE'),
+  ('logging',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py',
+   'PYMODULE'),
+  ('lzma',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\lzma.py',
+   'PYMODULE'),
+  ('markupsafe',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\markupsafe\\__init__.py',
+   'PYMODULE'),
+  ('markupsafe._native',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\markupsafe\\_native.py',
+   'PYMODULE'),
+  ('mimetypes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\mimetypes.py',
+   'PYMODULE'),
+  ('multiprocessing',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\__init__.py',
+   'PYMODULE'),
+  ('multiprocessing.connection',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\connection.py',
+   'PYMODULE'),
+  ('multiprocessing.context',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\context.py',
+   'PYMODULE'),
+  ('multiprocessing.dummy',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\dummy\\__init__.py',
+   'PYMODULE'),
+  ('multiprocessing.dummy.connection',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\dummy\\connection.py',
+   'PYMODULE'),
+  ('multiprocessing.forkserver',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\forkserver.py',
+   'PYMODULE'),
+  ('multiprocessing.heap',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\heap.py',
+   'PYMODULE'),
+  ('multiprocessing.managers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\managers.py',
+   'PYMODULE'),
+  ('multiprocessing.pool',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\pool.py',
+   'PYMODULE'),
+  ('multiprocessing.popen_fork',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\popen_fork.py',
+   'PYMODULE'),
+  ('multiprocessing.popen_forkserver',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\popen_forkserver.py',
+   'PYMODULE'),
+  ('multiprocessing.popen_spawn_posix',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\popen_spawn_posix.py',
+   'PYMODULE'),
+  ('multiprocessing.popen_spawn_win32',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\popen_spawn_win32.py',
+   'PYMODULE'),
+  ('multiprocessing.process',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\process.py',
+   'PYMODULE'),
+  ('multiprocessing.queues',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\queues.py',
+   'PYMODULE'),
+  ('multiprocessing.reduction',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\reduction.py',
+   'PYMODULE'),
+  ('multiprocessing.resource_sharer',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\resource_sharer.py',
+   'PYMODULE'),
+  ('multiprocessing.resource_tracker',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\resource_tracker.py',
+   'PYMODULE'),
+  ('multiprocessing.shared_memory',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\shared_memory.py',
+   'PYMODULE'),
+  ('multiprocessing.sharedctypes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\sharedctypes.py',
+   'PYMODULE'),
+  ('multiprocessing.spawn',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\spawn.py',
+   'PYMODULE'),
+  ('multiprocessing.synchronize',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\synchronize.py',
+   'PYMODULE'),
+  ('multiprocessing.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\util.py',
+   'PYMODULE'),
+  ('netrc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\netrc.py',
+   'PYMODULE'),
+  ('nturl2path',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\nturl2path.py',
+   'PYMODULE'),
+  ('numbers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\numbers.py',
+   'PYMODULE'),
+  ('opcode',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\opcode.py',
+   'PYMODULE'),
+  ('ordlookup',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\ordlookup\\__init__.py',
+   'PYMODULE'),
+  ('ordlookup.oleaut32',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\ordlookup\\oleaut32.py',
+   'PYMODULE'),
+  ('ordlookup.ws2_32',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\ordlookup\\ws2_32.py',
+   'PYMODULE'),
+  ('ordlookup.wsock32',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\ordlookup\\wsock32.py',
+   'PYMODULE'),
+  ('packaging',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\__init__.py',
+   'PYMODULE'),
+  ('packaging._elffile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\_elffile.py',
+   'PYMODULE'),
+  ('packaging._manylinux',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\_manylinux.py',
+   'PYMODULE'),
+  ('packaging._musllinux',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\_musllinux.py',
+   'PYMODULE'),
+  ('packaging._parser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\_parser.py',
+   'PYMODULE'),
+  ('packaging._structures',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\_structures.py',
+   'PYMODULE'),
+  ('packaging._tokenizer',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\_tokenizer.py',
+   'PYMODULE'),
+  ('packaging.licenses',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\licenses\\__init__.py',
+   'PYMODULE'),
+  ('packaging.licenses._spdx',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\licenses\\_spdx.py',
+   'PYMODULE'),
+  ('packaging.markers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\markers.py',
+   'PYMODULE'),
+  ('packaging.requirements',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\requirements.py',
+   'PYMODULE'),
+  ('packaging.specifiers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\specifiers.py',
+   'PYMODULE'),
+  ('packaging.tags',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\tags.py',
+   'PYMODULE'),
+  ('packaging.utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\utils.py',
+   'PYMODULE'),
+  ('packaging.version',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging\\version.py',
+   'PYMODULE'),
+  ('pathlib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\pathlib\\__init__.py',
+   'PYMODULE'),
+  ('pathlib._abc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\pathlib\\_abc.py',
+   'PYMODULE'),
+  ('pathlib._local',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\pathlib\\_local.py',
+   'PYMODULE'),
+  ('pefile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pefile.py',
+   'PYMODULE'),
+  ('pickle',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\pickle.py',
+   'PYMODULE'),
+  ('pkgutil',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\pkgutil.py',
+   'PYMODULE'),
+  ('platform',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\platform.py',
+   'PYMODULE'),
+  ('pprint',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\pprint.py',
+   'PYMODULE'),
+  ('proxy_tools',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\proxy_tools\\__init__.py',
+   'PYMODULE'),
+  ('py_compile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\py_compile.py',
+   'PYMODULE'),
+  ('pycparser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pycparser\\__init__.py',
+   'PYMODULE'),
+  ('pycparser.ast_transforms',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pycparser\\ast_transforms.py',
+   'PYMODULE'),
+  ('pycparser.c_ast',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pycparser\\c_ast.py',
+   'PYMODULE'),
+  ('pycparser.c_lexer',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pycparser\\c_lexer.py',
+   'PYMODULE'),
+  ('pycparser.c_parser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pycparser\\c_parser.py',
+   'PYMODULE'),
+  ('pydoc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\pydoc.py',
+   'PYMODULE'),
+  ('pydoc_data',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\pydoc_data\\__init__.py',
+   'PYMODULE'),
+  ('pydoc_data.topics',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\pydoc_data\\topics.py',
+   'PYMODULE'),
+  ('pythonnet',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pythonnet\\__init__.py',
+   'PYMODULE'),
+  ('queue',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\queue.py',
+   'PYMODULE'),
+  ('quopri',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\quopri.py',
+   'PYMODULE'),
+  ('random',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\random.py',
+   'PYMODULE'),
+  ('requests',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\__init__.py',
+   'PYMODULE'),
+  ('requests.__version__',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\__version__.py',
+   'PYMODULE'),
+  ('requests._internal_utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\_internal_utils.py',
+   'PYMODULE'),
+  ('requests.adapters',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py',
+   'PYMODULE'),
+  ('requests.api',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\api.py',
+   'PYMODULE'),
+  ('requests.auth',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\auth.py',
+   'PYMODULE'),
+  ('requests.certs',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\certs.py',
+   'PYMODULE'),
+  ('requests.compat',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\compat.py',
+   'PYMODULE'),
+  ('requests.cookies',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\cookies.py',
+   'PYMODULE'),
+  ('requests.exceptions',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\exceptions.py',
+   'PYMODULE'),
+  ('requests.hooks',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\hooks.py',
+   'PYMODULE'),
+  ('requests.models',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\models.py',
+   'PYMODULE'),
+  ('requests.packages',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\packages.py',
+   'PYMODULE'),
+  ('requests.sessions',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py',
+   'PYMODULE'),
+  ('requests.status_codes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\status_codes.py',
+   'PYMODULE'),
+  ('requests.structures',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\structures.py',
+   'PYMODULE'),
+  ('requests.utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\utils.py',
+   'PYMODULE'),
+  ('rlcompleter',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\rlcompleter.py',
+   'PYMODULE'),
+  ('runpy',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\runpy.py',
+   'PYMODULE'),
+  ('secrets',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\secrets.py',
+   'PYMODULE'),
+  ('selectors',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\selectors.py',
+   'PYMODULE'),
+  ('setuptools',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._core_metadata',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_core_metadata.py',
+   'PYMODULE'),
+  ('setuptools._discovery',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_discovery.py',
+   'PYMODULE'),
+  ('setuptools._distutils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._distutils._log',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\_log.py',
+   'PYMODULE'),
+  ('setuptools._distutils._modified',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\_modified.py',
+   'PYMODULE'),
+  ('setuptools._distutils._msvccompiler',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\_msvccompiler.py',
+   'PYMODULE'),
+  ('setuptools._distutils.archive_util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\archive_util.py',
+   'PYMODULE'),
+  ('setuptools._distutils.ccompiler',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\ccompiler.py',
+   'PYMODULE'),
+  ('setuptools._distutils.cmd',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\cmd.py',
+   'PYMODULE'),
+  ('setuptools._distutils.command',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\command\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._distutils.command.bdist',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\command\\bdist.py',
+   'PYMODULE'),
+  ('setuptools._distutils.command.build',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\command\\build.py',
+   'PYMODULE'),
+  ('setuptools._distutils.command.build_ext',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\command\\build_ext.py',
+   'PYMODULE'),
+  ('setuptools._distutils.command.sdist',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\command\\sdist.py',
+   'PYMODULE'),
+  ('setuptools._distutils.compat',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\compat\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._distutils.compat.numpy',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\compat\\numpy.py',
+   'PYMODULE'),
+  ('setuptools._distutils.compat.py39',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\compat\\py39.py',
+   'PYMODULE'),
+  ('setuptools._distutils.compilers', '-', 'PYMODULE'),
+  ('setuptools._distutils.compilers.C', '-', 'PYMODULE'),
+  ('setuptools._distutils.compilers.C.base',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\compilers\\C\\base.py',
+   'PYMODULE'),
+  ('setuptools._distutils.compilers.C.errors',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\compilers\\C\\errors.py',
+   'PYMODULE'),
+  ('setuptools._distutils.compilers.C.msvc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\compilers\\C\\msvc.py',
+   'PYMODULE'),
+  ('setuptools._distutils.core',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\core.py',
+   'PYMODULE'),
+  ('setuptools._distutils.debug',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\debug.py',
+   'PYMODULE'),
+  ('setuptools._distutils.dir_util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\dir_util.py',
+   'PYMODULE'),
+  ('setuptools._distutils.dist',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\dist.py',
+   'PYMODULE'),
+  ('setuptools._distutils.errors',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\errors.py',
+   'PYMODULE'),
+  ('setuptools._distutils.extension',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\extension.py',
+   'PYMODULE'),
+  ('setuptools._distutils.fancy_getopt',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\fancy_getopt.py',
+   'PYMODULE'),
+  ('setuptools._distutils.file_util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\file_util.py',
+   'PYMODULE'),
+  ('setuptools._distutils.filelist',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\filelist.py',
+   'PYMODULE'),
+  ('setuptools._distutils.log',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\log.py',
+   'PYMODULE'),
+  ('setuptools._distutils.spawn',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\spawn.py',
+   'PYMODULE'),
+  ('setuptools._distutils.sysconfig',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\sysconfig.py',
+   'PYMODULE'),
+  ('setuptools._distutils.text_file',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\text_file.py',
+   'PYMODULE'),
+  ('setuptools._distutils.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\util.py',
+   'PYMODULE'),
+  ('setuptools._distutils.version',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\version.py',
+   'PYMODULE'),
+  ('setuptools._distutils.versionpredicate',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_distutils\\versionpredicate.py',
+   'PYMODULE'),
+  ('setuptools._entry_points',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_entry_points.py',
+   'PYMODULE'),
+  ('setuptools._imp',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_imp.py',
+   'PYMODULE'),
+  ('setuptools._importlib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_importlib.py',
+   'PYMODULE'),
+  ('setuptools._itertools',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_itertools.py',
+   'PYMODULE'),
+  ('setuptools._normalization',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_normalization.py',
+   'PYMODULE'),
+  ('setuptools._path',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_path.py',
+   'PYMODULE'),
+  ('setuptools._reqs',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_reqs.py',
+   'PYMODULE'),
+  ('setuptools._shutil',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_shutil.py',
+   'PYMODULE'),
+  ('setuptools._static',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_static.py',
+   'PYMODULE'),
+  ('setuptools._vendor', '-', 'PYMODULE'),
+  ('setuptools._vendor.backports',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\backports\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.backports.tarfile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\backports\\tarfile\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.backports.tarfile.compat',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\backports\\tarfile\\compat\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.backports.tarfile.compat.py38',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\backports\\tarfile\\compat\\py38.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata._adapters',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\_adapters.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata._collections',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\_collections.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata._compat',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\_compat.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata._functools',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\_functools.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata._itertools',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\_itertools.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata._meta',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\_meta.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata._text',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\_text.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata.compat',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\compat\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata.compat.py311',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\compat\\py311.py',
+   'PYMODULE'),
+  ('setuptools._vendor.importlib_metadata.compat.py39',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata\\compat\\py39.py',
+   'PYMODULE'),
+  ('setuptools._vendor.jaraco', '-', 'PYMODULE'),
+  ('setuptools._vendor.jaraco.context',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\jaraco\\context.py',
+   'PYMODULE'),
+  ('setuptools._vendor.jaraco.functools',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\jaraco\\functools\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.jaraco.text',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\jaraco\\text\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.more_itertools',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\more_itertools\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.more_itertools.more',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\more_itertools\\more.py',
+   'PYMODULE'),
+  ('setuptools._vendor.more_itertools.recipes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\more_itertools\\recipes.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging._elffile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\_elffile.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging._manylinux',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\_manylinux.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging._musllinux',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\_musllinux.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging._parser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\_parser.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging._structures',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\_structures.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging._tokenizer',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\_tokenizer.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging.markers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\markers.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging.requirements',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\requirements.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging.specifiers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\specifiers.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging.tags',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\tags.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging.utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\utils.py',
+   'PYMODULE'),
+  ('setuptools._vendor.packaging.version',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\packaging\\version.py',
+   'PYMODULE'),
+  ('setuptools._vendor.tomli',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\tomli\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.tomli._parser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\tomli\\_parser.py',
+   'PYMODULE'),
+  ('setuptools._vendor.tomli._re',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\tomli\\_re.py',
+   'PYMODULE'),
+  ('setuptools._vendor.tomli._types',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\tomli\\_types.py',
+   'PYMODULE'),
+  ('setuptools._vendor.zipp',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\zipp\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.zipp.compat',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\zipp\\compat\\__init__.py',
+   'PYMODULE'),
+  ('setuptools._vendor.zipp.compat.py310',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\zipp\\compat\\py310.py',
+   'PYMODULE'),
+  ('setuptools._vendor.zipp.glob',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\zipp\\glob.py',
+   'PYMODULE'),
+  ('setuptools.archive_util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\archive_util.py',
+   'PYMODULE'),
+  ('setuptools.command',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\command\\__init__.py',
+   'PYMODULE'),
+  ('setuptools.command._requirestxt',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\command\\_requirestxt.py',
+   'PYMODULE'),
+  ('setuptools.command.bdist_egg',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\command\\bdist_egg.py',
+   'PYMODULE'),
+  ('setuptools.command.bdist_wheel',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\command\\bdist_wheel.py',
+   'PYMODULE'),
+  ('setuptools.command.build',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\command\\build.py',
+   'PYMODULE'),
+  ('setuptools.command.egg_info',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\command\\egg_info.py',
+   'PYMODULE'),
+  ('setuptools.command.sdist',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\command\\sdist.py',
+   'PYMODULE'),
+  ('setuptools.command.setopt',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\command\\setopt.py',
+   'PYMODULE'),
+  ('setuptools.compat',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\compat\\__init__.py',
+   'PYMODULE'),
+  ('setuptools.compat.py310',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\compat\\py310.py',
+   'PYMODULE'),
+  ('setuptools.compat.py311',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\compat\\py311.py',
+   'PYMODULE'),
+  ('setuptools.compat.py39',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\compat\\py39.py',
+   'PYMODULE'),
+  ('setuptools.config',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\__init__.py',
+   'PYMODULE'),
+  ('setuptools.config._apply_pyprojecttoml',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\_apply_pyprojecttoml.py',
+   'PYMODULE'),
+  ('setuptools.config._validate_pyproject',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\_validate_pyproject\\__init__.py',
+   'PYMODULE'),
+  ('setuptools.config._validate_pyproject.error_reporting',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\_validate_pyproject\\error_reporting.py',
+   'PYMODULE'),
+  ('setuptools.config._validate_pyproject.extra_validations',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\_validate_pyproject\\extra_validations.py',
+   'PYMODULE'),
+  ('setuptools.config._validate_pyproject.fastjsonschema_exceptions',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\_validate_pyproject\\fastjsonschema_exceptions.py',
+   'PYMODULE'),
+  ('setuptools.config._validate_pyproject.fastjsonschema_validations',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\_validate_pyproject\\fastjsonschema_validations.py',
+   'PYMODULE'),
+  ('setuptools.config._validate_pyproject.formats',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\_validate_pyproject\\formats.py',
+   'PYMODULE'),
+  ('setuptools.config.expand',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\expand.py',
+   'PYMODULE'),
+  ('setuptools.config.pyprojecttoml',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\pyprojecttoml.py',
+   'PYMODULE'),
+  ('setuptools.config.setupcfg',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\config\\setupcfg.py',
+   'PYMODULE'),
+  ('setuptools.depends',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\depends.py',
+   'PYMODULE'),
+  ('setuptools.discovery',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\discovery.py',
+   'PYMODULE'),
+  ('setuptools.dist',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\dist.py',
+   'PYMODULE'),
+  ('setuptools.errors',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\errors.py',
+   'PYMODULE'),
+  ('setuptools.extension',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\extension.py',
+   'PYMODULE'),
+  ('setuptools.glob',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\glob.py',
+   'PYMODULE'),
+  ('setuptools.installer',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\installer.py',
+   'PYMODULE'),
+  ('setuptools.logging',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\logging.py',
+   'PYMODULE'),
+  ('setuptools.monkey',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\monkey.py',
+   'PYMODULE'),
+  ('setuptools.msvc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\msvc.py',
+   'PYMODULE'),
+  ('setuptools.unicode_utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\unicode_utils.py',
+   'PYMODULE'),
+  ('setuptools.version',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\version.py',
+   'PYMODULE'),
+  ('setuptools.warnings',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\warnings.py',
+   'PYMODULE'),
+  ('setuptools.wheel',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\wheel.py',
+   'PYMODULE'),
+  ('setuptools.windows_support',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\windows_support.py',
+   'PYMODULE'),
+  ('shlex',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\shlex.py',
+   'PYMODULE'),
+  ('shutil',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\shutil.py',
+   'PYMODULE'),
+  ('signal',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\signal.py',
+   'PYMODULE'),
+  ('site',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site.py',
+   'PYMODULE'),
+  ('socket',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socket.py',
+   'PYMODULE'),
+  ('socketserver',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py',
+   'PYMODULE'),
+  ('ssl',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ssl.py',
+   'PYMODULE'),
+  ('statistics',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\statistics.py',
+   'PYMODULE'),
+  ('string',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\string.py',
+   'PYMODULE'),
+  ('stringprep',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\stringprep.py',
+   'PYMODULE'),
+  ('subprocess',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\subprocess.py',
+   'PYMODULE'),
+  ('sysconfig',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\sysconfig\\__init__.py',
+   'PYMODULE'),
+  ('tarfile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\tarfile.py',
+   'PYMODULE'),
+  ('tempfile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\tempfile.py',
+   'PYMODULE'),
+  ('textwrap',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\textwrap.py',
+   'PYMODULE'),
+  ('threading',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\threading.py',
+   'PYMODULE'),
+  ('token',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\token.py',
+   'PYMODULE'),
+  ('tokenize',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\tokenize.py',
+   'PYMODULE'),
+  ('tomllib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\tomllib\\__init__.py',
+   'PYMODULE'),
+  ('tomllib._parser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\tomllib\\_parser.py',
+   'PYMODULE'),
+  ('tomllib._re',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\tomllib\\_re.py',
+   'PYMODULE'),
+  ('tomllib._types',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\tomllib\\_types.py',
+   'PYMODULE'),
+  ('tracemalloc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\tracemalloc.py',
+   'PYMODULE'),
+  ('tty',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\tty.py',
+   'PYMODULE'),
+  ('typing',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\typing.py',
+   'PYMODULE'),
+  ('typing_extensions',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\typing_extensions.py',
+   'PYMODULE'),
+  ('unittest',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\__init__.py',
+   'PYMODULE'),
+  ('unittest._log',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\_log.py',
+   'PYMODULE'),
+  ('unittest.async_case',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\async_case.py',
+   'PYMODULE'),
+  ('unittest.case',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\case.py',
+   'PYMODULE'),
+  ('unittest.loader',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\loader.py',
+   'PYMODULE'),
+  ('unittest.main',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\main.py',
+   'PYMODULE'),
+  ('unittest.mock',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\mock.py',
+   'PYMODULE'),
+  ('unittest.result',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\result.py',
+   'PYMODULE'),
+  ('unittest.runner',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\runner.py',
+   'PYMODULE'),
+  ('unittest.signals',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\signals.py',
+   'PYMODULE'),
+  ('unittest.suite',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\suite.py',
+   'PYMODULE'),
+  ('unittest.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\util.py',
+   'PYMODULE'),
+  ('urllib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\urllib\\__init__.py',
+   'PYMODULE'),
+  ('urllib.error',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\urllib\\error.py',
+   'PYMODULE'),
+  ('urllib.parse',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\urllib\\parse.py',
+   'PYMODULE'),
+  ('urllib.request',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\urllib\\request.py',
+   'PYMODULE'),
+  ('urllib.response',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\urllib\\response.py',
+   'PYMODULE'),
+  ('urllib3',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\__init__.py',
+   'PYMODULE'),
+  ('urllib3._base_connection',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\_base_connection.py',
+   'PYMODULE'),
+  ('urllib3._collections',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\_collections.py',
+   'PYMODULE'),
+  ('urllib3._request_methods',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\_request_methods.py',
+   'PYMODULE'),
+  ('urllib3._version',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\_version.py',
+   'PYMODULE'),
+  ('urllib3.connection',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\connection.py',
+   'PYMODULE'),
+  ('urllib3.connectionpool',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\connectionpool.py',
+   'PYMODULE'),
+  ('urllib3.contrib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\contrib\\__init__.py',
+   'PYMODULE'),
+  ('urllib3.contrib.emscripten',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\contrib\\emscripten\\__init__.py',
+   'PYMODULE'),
+  ('urllib3.contrib.emscripten.connection',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\contrib\\emscripten\\connection.py',
+   'PYMODULE'),
+  ('urllib3.contrib.emscripten.fetch',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\contrib\\emscripten\\fetch.py',
+   'PYMODULE'),
+  ('urllib3.contrib.emscripten.request',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\contrib\\emscripten\\request.py',
+   'PYMODULE'),
+  ('urllib3.contrib.emscripten.response',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\contrib\\emscripten\\response.py',
+   'PYMODULE'),
+  ('urllib3.contrib.pyopenssl',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\contrib\\pyopenssl.py',
+   'PYMODULE'),
+  ('urllib3.contrib.socks',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\contrib\\socks.py',
+   'PYMODULE'),
+  ('urllib3.exceptions',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\exceptions.py',
+   'PYMODULE'),
+  ('urllib3.fields',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\fields.py',
+   'PYMODULE'),
+  ('urllib3.filepost',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\filepost.py',
+   'PYMODULE'),
+  ('urllib3.http2',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\http2\\__init__.py',
+   'PYMODULE'),
+  ('urllib3.http2.connection',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\http2\\connection.py',
+   'PYMODULE'),
+  ('urllib3.http2.probe',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\http2\\probe.py',
+   'PYMODULE'),
+  ('urllib3.poolmanager',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\poolmanager.py',
+   'PYMODULE'),
+  ('urllib3.response',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\response.py',
+   'PYMODULE'),
+  ('urllib3.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\__init__.py',
+   'PYMODULE'),
+  ('urllib3.util.connection',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\connection.py',
+   'PYMODULE'),
+  ('urllib3.util.proxy',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\proxy.py',
+   'PYMODULE'),
+  ('urllib3.util.request',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\request.py',
+   'PYMODULE'),
+  ('urllib3.util.response',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\response.py',
+   'PYMODULE'),
+  ('urllib3.util.retry',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\retry.py',
+   'PYMODULE'),
+  ('urllib3.util.ssl_',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\ssl_.py',
+   'PYMODULE'),
+  ('urllib3.util.ssl_match_hostname',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\ssl_match_hostname.py',
+   'PYMODULE'),
+  ('urllib3.util.ssltransport',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\ssltransport.py',
+   'PYMODULE'),
+  ('urllib3.util.timeout',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\timeout.py',
+   'PYMODULE'),
+  ('urllib3.util.url',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\url.py',
+   'PYMODULE'),
+  ('urllib3.util.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\util.py',
+   'PYMODULE'),
+  ('urllib3.util.wait',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3\\util\\wait.py',
+   'PYMODULE'),
+  ('uuid',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\uuid.py',
+   'PYMODULE'),
+  ('webbrowser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\webbrowser.py',
+   'PYMODULE'),
+  ('webview',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\__init__.py',
+   'PYMODULE'),
+  ('webview.__pyinstaller',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\__pyinstaller\\__init__.py',
+   'PYMODULE'),
+  ('webview.__pyinstaller.hook-webview',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\__pyinstaller\\hook-webview.py',
+   'PYMODULE'),
+  ('webview._version',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\_version.py',
+   'PYMODULE'),
+  ('webview.dom',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\dom\\__init__.py',
+   'PYMODULE'),
+  ('webview.dom.classlist',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\dom\\classlist.py',
+   'PYMODULE'),
+  ('webview.dom.dom',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\dom\\dom.py',
+   'PYMODULE'),
+  ('webview.dom.element',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\dom\\element.py',
+   'PYMODULE'),
+  ('webview.dom.event',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\dom\\event.py',
+   'PYMODULE'),
+  ('webview.dom.propsdict',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\dom\\propsdict.py',
+   'PYMODULE'),
+  ('webview.errors',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\errors.py',
+   'PYMODULE'),
+  ('webview.event',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\event.py',
+   'PYMODULE'),
+  ('webview.guilib',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\guilib.py',
+   'PYMODULE'),
+  ('webview.http',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\http.py',
+   'PYMODULE'),
+  ('webview.localization',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\localization.py',
+   'PYMODULE'),
+  ('webview.menu',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\menu.py',
+   'PYMODULE'),
+  ('webview.models',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\models.py',
+   'PYMODULE'),
+  ('webview.platforms',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\__init__.py',
+   'PYMODULE'),
+  ('webview.platforms.android',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\__init__.py',
+   'PYMODULE'),
+  ('webview.platforms.android.app',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\app.py',
+   'PYMODULE'),
+  ('webview.platforms.android.base',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\base.py',
+   'PYMODULE'),
+  ('webview.platforms.android.event',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\event.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jclass',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jclass\\__init__.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jclass.app',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jclass\\app.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jclass.content',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jclass\\content.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jclass.net',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jclass\\net.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jclass.os',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jclass\\os.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jclass.view',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jclass\\view.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jclass.webkit',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jclass\\webkit.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jinterface',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jinterface\\__init__.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jinterface.pywebview',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jinterface\\pywebview.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jinterface.view',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jinterface\\view.py',
+   'PYMODULE'),
+  ('webview.platforms.android.jinterface.webkit',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\android\\jinterface\\webkit.py',
+   'PYMODULE'),
+  ('webview.platforms.cef',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\cef.py',
+   'PYMODULE'),
+  ('webview.platforms.cocoa',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\cocoa.py',
+   'PYMODULE'),
+  ('webview.platforms.edgechromium',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\edgechromium.py',
+   'PYMODULE'),
+  ('webview.platforms.gtk',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\gtk.py',
+   'PYMODULE'),
+  ('webview.platforms.mshtml',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\mshtml.py',
+   'PYMODULE'),
+  ('webview.platforms.qt',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\qt.py',
+   'PYMODULE'),
+  ('webview.platforms.win32',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\win32.py',
+   'PYMODULE'),
+  ('webview.platforms.winforms',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\platforms\\winforms.py',
+   'PYMODULE'),
+  ('webview.screen',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\screen.py',
+   'PYMODULE'),
+  ('webview.state',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\state.py',
+   'PYMODULE'),
+  ('webview.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\util.py',
+   'PYMODULE'),
+  ('webview.window',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webview\\window.py',
+   'PYMODULE'),
+  ('wheel',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\__init__.py',
+   'PYMODULE'),
+  ('wheel.cli',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\cli\\__init__.py',
+   'PYMODULE'),
+  ('wheel.cli.convert',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\cli\\convert.py',
+   'PYMODULE'),
+  ('wheel.cli.pack',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\cli\\pack.py',
+   'PYMODULE'),
+  ('wheel.cli.tags',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\cli\\tags.py',
+   'PYMODULE'),
+  ('wheel.cli.unpack',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\cli\\unpack.py',
+   'PYMODULE'),
+  ('wheel.macosx_libfile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\macosx_libfile.py',
+   'PYMODULE'),
+  ('wheel.metadata',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\metadata.py',
+   'PYMODULE'),
+  ('wheel.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\util.py',
+   'PYMODULE'),
+  ('wheel.vendored',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\__init__.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\__init__.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging._elffile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\_elffile.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging._manylinux',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\_manylinux.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging._musllinux',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\_musllinux.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging._parser',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\_parser.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging._structures',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\_structures.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging._tokenizer',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\_tokenizer.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging.markers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\markers.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging.requirements',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\requirements.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging.specifiers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\specifiers.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging.tags',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\tags.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging.utils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\utils.py',
+   'PYMODULE'),
+  ('wheel.vendored.packaging.version',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\vendored\\packaging\\version.py',
+   'PYMODULE'),
+  ('wheel.wheelfile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel\\wheelfile.py',
+   'PYMODULE'),
+  ('win32ctypes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\__init__.py',
+   'PYMODULE'),
+  ('win32ctypes.core',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\__init__.py',
+   'PYMODULE'),
+  ('win32ctypes.core._winerrors',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\_winerrors.py',
+   'PYMODULE'),
+  ('win32ctypes.core.cffi',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\cffi\\__init__.py',
+   'PYMODULE'),
+  ('win32ctypes.core.cffi._authentication',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\cffi\\_authentication.py',
+   'PYMODULE'),
+  ('win32ctypes.core.cffi._common',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\cffi\\_common.py',
+   'PYMODULE'),
+  ('win32ctypes.core.cffi._dll',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\cffi\\_dll.py',
+   'PYMODULE'),
+  ('win32ctypes.core.cffi._nl_support',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\cffi\\_nl_support.py',
+   'PYMODULE'),
+  ('win32ctypes.core.cffi._resource',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\cffi\\_resource.py',
+   'PYMODULE'),
+  ('win32ctypes.core.cffi._system_information',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\cffi\\_system_information.py',
+   'PYMODULE'),
+  ('win32ctypes.core.cffi._time',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\cffi\\_time.py',
+   'PYMODULE'),
+  ('win32ctypes.core.cffi._util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\cffi\\_util.py',
+   'PYMODULE'),
+  ('win32ctypes.core.compat',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\compat.py',
+   'PYMODULE'),
+  ('win32ctypes.core.ctypes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\ctypes\\__init__.py',
+   'PYMODULE'),
+  ('win32ctypes.core.ctypes._authentication',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\ctypes\\_authentication.py',
+   'PYMODULE'),
+  ('win32ctypes.core.ctypes._common',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\ctypes\\_common.py',
+   'PYMODULE'),
+  ('win32ctypes.core.ctypes._dll',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\ctypes\\_dll.py',
+   'PYMODULE'),
+  ('win32ctypes.core.ctypes._nl_support',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\ctypes\\_nl_support.py',
+   'PYMODULE'),
+  ('win32ctypes.core.ctypes._resource',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\ctypes\\_resource.py',
+   'PYMODULE'),
+  ('win32ctypes.core.ctypes._system_information',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\ctypes\\_system_information.py',
+   'PYMODULE'),
+  ('win32ctypes.core.ctypes._time',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\ctypes\\_time.py',
+   'PYMODULE'),
+  ('win32ctypes.core.ctypes._util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\core\\ctypes\\_util.py',
+   'PYMODULE'),
+  ('win32ctypes.pywin32',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\pywin32\\__init__.py',
+   'PYMODULE'),
+  ('win32ctypes.pywin32.pywintypes',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\pywin32\\pywintypes.py',
+   'PYMODULE'),
+  ('win32ctypes.pywin32.win32api',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\pywin32\\win32api.py',
+   'PYMODULE'),
+  ('win32ctypes.pywin32.win32cred',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\pywin32\\win32cred.py',
+   'PYMODULE'),
+  ('win32ctypes.version',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes\\version.py',
+   'PYMODULE'),
+  ('wsgiref',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\wsgiref\\__init__.py',
+   'PYMODULE'),
+  ('wsgiref.handlers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\wsgiref\\handlers.py',
+   'PYMODULE'),
+  ('wsgiref.headers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\wsgiref\\headers.py',
+   'PYMODULE'),
+  ('wsgiref.simple_server',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\wsgiref\\simple_server.py',
+   'PYMODULE'),
+  ('wsgiref.types',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\wsgiref\\types.py',
+   'PYMODULE'),
+  ('wsgiref.util',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\wsgiref\\util.py',
+   'PYMODULE'),
+  ('xml',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\__init__.py',
+   'PYMODULE'),
+  ('xml.etree',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\etree\\__init__.py',
+   'PYMODULE'),
+  ('xml.etree.ElementInclude',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\etree\\ElementInclude.py',
+   'PYMODULE'),
+  ('xml.etree.ElementPath',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\etree\\ElementPath.py',
+   'PYMODULE'),
+  ('xml.etree.ElementTree',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\etree\\ElementTree.py',
+   'PYMODULE'),
+  ('xml.etree.cElementTree',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\etree\\cElementTree.py',
+   'PYMODULE'),
+  ('xml.parsers',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\parsers\\__init__.py',
+   'PYMODULE'),
+  ('xml.parsers.expat',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\parsers\\expat.py',
+   'PYMODULE'),
+  ('xml.sax',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\sax\\__init__.py',
+   'PYMODULE'),
+  ('xml.sax._exceptions',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\sax\\_exceptions.py',
+   'PYMODULE'),
+  ('xml.sax.expatreader',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\sax\\expatreader.py',
+   'PYMODULE'),
+  ('xml.sax.handler',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\sax\\handler.py',
+   'PYMODULE'),
+  ('xml.sax.saxutils',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\sax\\saxutils.py',
+   'PYMODULE'),
+  ('xml.sax.xmlreader',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xml\\sax\\xmlreader.py',
+   'PYMODULE'),
+  ('xmlrpc',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xmlrpc\\__init__.py',
+   'PYMODULE'),
+  ('xmlrpc.client',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\xmlrpc\\client.py',
+   'PYMODULE'),
+  ('zipfile',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\zipfile\\__init__.py',
+   'PYMODULE'),
+  ('zipfile._path',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\zipfile\\_path\\__init__.py',
+   'PYMODULE'),
+  ('zipfile._path.glob',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\zipfile\\_path\\glob.py',
+   'PYMODULE'),
+  ('zipimport',
+   'C:\\Users\\HENRIQUE '
+   'NORONHA\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\zipimport.py',
+   'PYMODULE')])
