@@ -15,6 +15,7 @@ from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI, Request, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -277,13 +278,17 @@ class _SessionAuth(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         if request.headers.get("upgrade", "").lower() == "websocket":
             return await call_next(request)
-        if request.url.path in ("/login", "/api/ping"):
+        if request.method == "OPTIONS":
+            return await call_next(request)
+        if request.url.path in ("/login", "/api/ping", "/api/login"):
             return await call_next(request)
         token = request.cookies.get("playline_session")
         if token and _SESSIONS.get(token, 0) > time.time():
             return await call_next(request)
         url_token = request.query_params.get("session_token")
         if url_token and _SESSIONS.get(url_token, 0) > time.time():
+            if request.url.path.startswith("/api/"):
+                return await call_next(request)
             resp = RedirectResponse(url=request.url.path, status_code=302)
             resp.set_cookie("playline_session", url_token, httponly=True, samesite="lax", max_age=_SESSION_TTL)
             return resp
@@ -291,6 +296,12 @@ class _SessionAuth(BaseHTTPMiddleware):
 
 
 app = FastAPI(title="PlayLine", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
 app.add_middleware(_SessionAuth)
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 app.include_router(http_router)
@@ -328,6 +339,21 @@ async def login_submit(request: Request):
         resp.set_cookie("playline_session", token, httponly=True, samesite="lax", max_age=_SESSION_TTL)
         return resp
     return HTMLResponse(_build_login_html(error=True), status_code=401)
+
+
+@app.post("/api/login")
+async def api_login(request: Request):
+    """Login JSON para clientes externos (PlayIngest, etc.)."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON inválido"}, status_code=400)
+    if body.get("username") == _AUTH_USER and body.get("password") == _AUTH_PASS:
+        token = secrets.token_urlsafe(32)
+        _SESSIONS[token] = time.time() + _SESSION_TTL
+        _save_sessions(_SESSIONS)
+        return JSONResponse({"ok": True, "token": token})
+    return JSONResponse({"ok": False, "error": "Credenciais inválidas"}, status_code=401)
 
 
 @app.post("/api/logout")
@@ -398,6 +424,22 @@ def _wait_and_navigate(window, port: int = 18000):
 
 
 if __name__ == "__main__":
+    # ── Modo servidor isolado (subprocesso desacoplado, sem PyWebView) ────
+    if '--server-only' in sys.argv:
+        try:
+            _srv_port = int(sys.argv[sys.argv.index('--port') + 1])
+        except (ValueError, IndexError):
+            _srv_port = 18000
+        (_DATA_DIR / "server.pid").write_text(str(os.getpid()), encoding="utf-8")
+        try:
+            _run_server(_srv_port)
+        finally:
+            try:
+                (_DATA_DIR / "server.pid").unlink()
+            except Exception:
+                pass
+        sys.exit(0)
+
     def _unblock_meipass():
         if not getattr(sys, 'frozen', False):
             return
@@ -698,7 +740,24 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
                         break
             except Exception:
                 pass
-            # 3. Invalida a sessão para exigir autenticação no próximo acesso
+            # 3. Encerra o processo do servidor pelo PID salvo
+            try:
+                import subprocess as _sp
+                _pid_file = _DATA_DIR / "server.pid"
+                if _pid_file.exists():
+                    _srv_pid = int(_pid_file.read_text(encoding="utf-8").strip())
+                    _sp.run(
+                        ['taskkill', '/F', '/PID', str(_srv_pid)],
+                        capture_output=True, timeout=5,
+                        creationflags=0x08000000,
+                    )
+                    try:
+                        _pid_file.unlink()
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            # 4. Invalida a sessão para exigir autenticação no próximo acesso
             _SESSIONS.clear()
             _save_sessions(_SESSIONS)
             # 4. Fecha a janela
@@ -769,7 +828,17 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
         _start_webview()
     else:
         _PORT = _find_free_port(18000)
-        threading.Thread(target=_run_server, args=(_PORT,), daemon=True).start()
+        import subprocess as _sp_srv
+        _srv_cmd = (
+            [sys.executable, '--server-only', '--port', str(_PORT)]
+            if getattr(sys, 'frozen', False) else
+            [sys.executable, str(Path(__file__).resolve()), '--server-only', '--port', str(_PORT)]
+        )
+        _sp_srv.Popen(
+            _srv_cmd,
+            creationflags=_sp_srv.DETACHED_PROCESS | _sp_srv.CREATE_NEW_PROCESS_GROUP,
+            close_fds=True,
+        )
         _window = webview.create_window(
             "PlayLine",
             html=_splash,

@@ -815,6 +815,11 @@ class MPVDaemon:
             await asyncio.sleep(0.05)   # alvo 20 fps (limitado pelo tempo de captura)
             if self._mpv_dead or self._mpv is None or not self._clients:
                 continue
+            try:
+                if self._mpv.core_idle:
+                    continue
+            except Exception:
+                continue
             mpv_ref = self._mpv
             jpeg = await loop.run_in_executor(None, preview.capture_jpeg, mpv_ref)
             if jpeg and self._clients:

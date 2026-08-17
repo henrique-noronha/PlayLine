@@ -395,6 +395,80 @@ async def get_library_files(subfolder: str = ""):
     return {"files": files}
 
 
+_UPLOAD_EXTS = {".mp4", ".mkv", ".mov", ".avi", ".ts", ".mxf", ".mpg", ".mpeg", ".wmv", ".flv", ".webm"}
+_MIN_FREE_MB = 200  # espaço mínimo exigido antes de aceitar upload
+
+
+@router.post("/api/upload")
+async def upload_file(subfolder: str = "", file: UploadFile = File(...)):
+    """Recebe um arquivo de mídia e salva na Biblioteca (subpasta indicada)."""
+    import errno as _errno
+    import shutil
+
+    ext = Path(file.filename).suffix.lower()
+    if ext not in _UPLOAD_EXTS:
+        raise HTTPException(status_code=415, detail=f"Extensão não suportada: {ext}")
+
+    if subfolder:
+        if ".." in subfolder or "/" in subfolder or "\\" in subfolder:
+            raise HTTPException(status_code=400, detail="Subfolder inválido")
+        dest_dir = _LIBRARY_BASE / subfolder
+        if not dest_dir.is_dir():
+            raise HTTPException(status_code=404, detail="Subpasta não encontrada")
+    else:
+        dest_dir = _LIBRARY_BASE
+
+    # Verifica espaço em disco antes de iniciar
+    try:
+        free_mb = shutil.disk_usage(dest_dir).free // (1024 * 1024)
+        if free_mb < _MIN_FREE_MB:
+            raise HTTPException(
+                status_code=507,
+                detail=f"Disco quase cheio no servidor — apenas {free_mb} MB livres (mínimo exigido: {_MIN_FREE_MB} MB)"
+            )
+    except HTTPException:
+        raise
+    except Exception:
+        pass
+
+    dest = dest_dir / file.filename
+    suffix = 1
+    while dest.exists():
+        dest = dest_dir / f"{Path(file.filename).stem}_{suffix}{ext}"
+        suffix += 1
+
+    try:
+        content = await file.read()
+        if len(content) == 0:
+            raise HTTPException(status_code=400, detail="Arquivo vazio")
+
+        needed_mb = len(content) // (1024 * 1024)
+        free_mb = shutil.disk_usage(dest_dir).free // (1024 * 1024)
+        if free_mb < needed_mb + 50:
+            raise HTTPException(
+                status_code=507,
+                detail=f"Disco cheio no servidor — arquivo precisa de {needed_mb} MB, disponível: {free_mb} MB"
+            )
+
+        dest.write_bytes(content)
+    except HTTPException:
+        raise
+    except OSError as exc:
+        if exc.errno == _errno.ENOSPC:
+            raise HTTPException(status_code=507, detail="Disco cheio no servidor — sem espaço para salvar o arquivo")
+        elif exc.errno in (_errno.EACCES, _errno.EPERM):
+            raise HTTPException(
+                status_code=403,
+                detail="Acesso negado ao salvar o arquivo — um antivírus ou política de segurança pode estar bloqueando a gravação na pasta Biblioteca"
+            )
+        else:
+            raise HTTPException(status_code=500, detail=f"Erro de sistema ao salvar arquivo: {exc}")
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+    return {"ok": True, "saved_as": dest.name, "path": str(dest)}
+
+
 @router.post("/api/library/folder")
 async def create_library_folder(body: dict):
     """Cria uma nova subpasta na Biblioteca."""

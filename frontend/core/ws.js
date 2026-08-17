@@ -16,6 +16,16 @@ function connect() {
     state.connected = false;
     setConnStatus("disconnected");
     log("Conexão perdida. Reconectando em 3s…", "error");
+
+    // Para o timer de posição e congela a UI até o servidor responder.
+    // applyState() restaura o estado correto ao reconectar.
+    state.playing = false;
+    state.paused  = false;
+    stopRemainingTimer();
+    stopVideo();
+    updateBadge("stopped");
+    updateButtons();
+
     setTimeout(connect, 3000);
   };
 
