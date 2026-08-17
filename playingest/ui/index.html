@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlayIngest</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── Topo ── -->
+<div class="topbar">
+  <div class="logo">Play<span>Ingest</span></div>
+  <div class="status-pill">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Desconectado</span>
+  </div>
+</div>
+
+<!-- ── Conteúdo ── -->
+<div class="main">
+
+  <!-- Passo 1: Conexão -->
+  <div class="step-card" id="cardConnect">
+    <div class="step-title">1 — Servidor</div>
+    <div class="field-row">
+      <input type="text" id="ipInput" placeholder="Ex: 192.168.1.100" autocomplete="off" spellcheck="false" />
+      <button class="btn btn-primary" id="btnConnect">Conectar</button>
+    </div>
+    <div class="inline-error" id="errConnect"></div>
+  </div>
+
+  <!-- Passo 2: Upload -->
+  <div class="step-card disabled" id="cardUpload">
+    <div class="step-title">2 — Arquivos</div>
+
+    <div class="dest-row" style="margin-bottom: 14px;">
+      <label>Destino:</label>
+      <select id="subfolderSelect">
+        <option value="">(raiz da Biblioteca)</option>
+      </select>
+      <button class="btn btn-ghost" id="btnSelect">+ Selecionar arquivos</button>
+      <input type="file" id="fileInput" multiple
+             accept=".mp4,.mkv,.mov,.avi,.ts,.mxf,.mpg,.mpeg,.wmv,.flv,.webm"
+             style="display:none" />
+    </div>
+
+    <div class="file-table-wrap">
+      <table class="file-table">
+        <thead>
+          <tr>
+            <th>Arquivo</th>
+            <th>Tamanho</th>
+            <th>Validação</th>
+            <th>Progresso</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="fileTableBody">
+          <tr><td colspan="5" class="empty-queue">Nenhum arquivo selecionado</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Rodapé ── -->
+<div class="footer">
+  <div class="footer-info" id="footerInfo"></div>
+  <button class="btn btn-success" id="btnSendAll" disabled>Enviar todos</button>
+</div>
+
+<!-- ── Modal de login ── -->
+<div class="popup-backdrop" id="loginBackdrop">
+  <div class="popup">
+    <div class="popup-icon" style="color:var(--accent)">🔐</div>
+    <div class="popup-title" style="color:var(--text)">Credenciais</div>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+      <input type="text"     id="inputUser" placeholder="Usuário" autocomplete="off"
+             style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-size:14px;outline:none;" />
+      <input type="password" id="inputPass" placeholder="Senha"   autocomplete="off"
+             style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-size:14px;outline:none;" />
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">
+      Utilize as mesmas credenciais do PlayLine.
+    </div>
+    <div class="inline-error" id="errLogin" style="margin-bottom:12px;"></div>
+    <button class="btn btn-primary" id="btnLogin" style="width:100%">Entrar</button>
+  </div>
+</div>
+
+<!-- ── Popup de erro ── -->
+<div class="popup-backdrop" id="popupBackdrop">
+  <div class="popup">
+    <div class="popup-icon">⚠</div>
+    <div class="popup-title" id="popupTitle">Erro</div>
+    <div class="popup-msg" id="popupMsg"></div>
+    <button class="btn btn-primary" id="popupOk">OK</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
