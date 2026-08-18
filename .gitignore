@@ -40,6 +40,9 @@ backend/build/
 backend/dist/
 backend/specs/
 backend/assets/
+playingest/build/
+playingest/dist/
+playingest/specs/
 
 # Ambiente virtual
 .venv/
