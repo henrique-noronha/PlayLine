@@ -217,6 +217,9 @@ class MPVDaemon:
             hwdec="auto-safe",          # decodificação por GPU quando disponível, software como fallback
             osc=False,                  # desativa controles na tela ao passar o mouse
             network_timeout=10,         # desiste de stream morta em 10s (reduz freeze após queda de rede)
+            cache=True,                 # ativa cache para arquivos locais (absorve latência de HDD)
+            demuxer_max_bytes="150MiB", # buffer de leitura adiantada em RAM
+            demuxer_max_back_bytes="50MiB",  # buffer de retrocesso
         )
 
         if has_secondary:
