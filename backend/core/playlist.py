@@ -5,6 +5,7 @@ Playlist Engine — gerencia a fila de reprodução e responde a eventos do Play
 import logging
 import asyncio
 import socket
+import time
 from typing import Callable, Optional
 
 from .db import get_conn
@@ -49,6 +50,10 @@ class PlaylistEngine:
         self._live_has_played: bool = False  # True após file-loaded confirmar a live atual
         self._live_has_played: bool = False
         self._repeat: bool = False
+        self._live_last_pos: float = -1.0
+        self._live_pos_ts: float = 0.0
+        self._live_watchdog_task: Optional[asyncio.Task] = None
+        self._live_reconnecting: bool = False  # True quando _schedule_reconnect emitiu loadfile replace
 
     # Roteiro                                                              #
  
@@ -181,20 +186,42 @@ class PlaylistEngine:
     def set_event_loop(self, loop: asyncio.AbstractEventLoop):
         self._loop = loop
 
+    def on_position(self, pos: float):
+        """Chamado pelo Player a cada evento de posição do MPV."""
+        if self._running and 0 <= self._index < len(self._items):
+            if _is_live_item(self._items[self._index]):
+                if abs(pos - self._live_last_pos) > 0.05:
+                    self._live_last_pos = pos
+                    self._live_pos_ts = time.monotonic()
+
     def on_file_loaded(self):
         """Chamado pelo Player quando o MPV sinaliza file-loaded."""
         current = self._items[self._index] if 0 <= self._index < len(self._items) else {}
         if _is_live_item(current):
+            self._live_reconnecting = False  # live carregou com sucesso
             self._live_has_played = True
-            logger.debug("[reconexão] file-loaded confirmado para live — never_played = False")
+            self._live_last_pos = -1.0
+            self._live_pos_ts = time.monotonic()
+            if self._loop:
+                asyncio.run_coroutine_threadsafe(self._start_live_watchdog(), self._loop)
 
     def on_end_file(self, reason: str):
         """Chamado pelo Player (thread de leitura TCP) quando um arquivo termina."""
         if reason == "stop":
-            # end-file(stop) vem de loadfile replace ou do comando stop — não avança
             if self._skip_end_file > 0:
+                # end-file(stop) esperado de um loadfile replace intencional
                 self._skip_end_file -= 1
-            return
+                return
+            if self._live_reconnecting:
+                # end-file(stop) do loadfile replace que a reconexão emitiu
+                self._live_reconnecting = False
+                return
+            # "stop" sem skip pendente: MPV encerrou a live por timeout de rede
+            # (reporta código 2 em vez de 4). Trata como erro para reconectar.
+            current = self._items[self._index] if 0 <= self._index < len(self._items) else {}
+            if not (self._running and _is_live_item(current)):
+                return
+            reason = "error"  # cai no bloco de reconnect abaixo
         if reason == "mpv_closed":
             self._preloading = False
             if self._loop:
@@ -235,6 +262,7 @@ class PlaylistEngine:
                 )
 
     async def _on_mpv_closed(self):
+        self._cancel_live_watchdog()
         self._advance_seq += 1  # invalida qualquer avanço pendente
         self._running = False
         self._paused = False
@@ -275,11 +303,50 @@ class PlaylistEngine:
         })
         await asyncio.sleep(delay)
         if not self._running or not self._items:
+            self._live_reconnecting = False
             return
         current = self._items[self._index] if 0 <= self._index < len(self._items) else {}
         if not _is_live_item(current):
+            self._live_reconnecting = False
             return
+        # Sinaliza que este loadfile replace é intencional para não disparar novo reconnect
+        self._live_reconnecting = True
         await self.play_index(self._index, force_resolve=True)
+
+    def _cancel_live_watchdog(self):
+        if self._live_watchdog_task and not self._live_watchdog_task.done():
+            self._live_watchdog_task.cancel()
+        self._live_watchdog_task = None
+
+    async def _start_live_watchdog(self):
+        self._cancel_live_watchdog()
+        self._live_watchdog_task = asyncio.ensure_future(self._live_watchdog_loop())
+
+    async def _live_watchdog_loop(self):
+        STALL_SEC = 90
+        CHECK_SEC = 10
+        try:
+            while True:
+                await asyncio.sleep(CHECK_SEC)
+                if not self._running or self._index < 0:
+                    return
+                current = self._items[self._index] if 0 <= self._index < len(self._items) else {}
+                if not _is_live_item(current):
+                    return
+                elapsed = time.monotonic() - self._live_pos_ts
+                if elapsed > STALL_SEC:
+                    logger.warning("Live stream presa há %.0fs sem avanço de posição — reconectando", elapsed)
+                    self._preloading = False
+                    self._reconnect_attempt += 1
+                    self._history.close_entry("error")
+                    if self._reconnect_attempt <= _RECONNECT_MAX:
+                        asyncio.ensure_future(self._schedule_reconnect())
+                    else:
+                        self._reconnect_attempt = 0
+                        asyncio.ensure_future(self._on_reconnect_failed())
+                    return
+        except asyncio.CancelledError:
+            pass
 
     async def _on_reconnect_failed(self):
         loop = asyncio.get_event_loop()
@@ -301,7 +368,8 @@ class PlaylistEngine:
         quando end-file natural e next/jump chegam simultaneamente).
         expected_seq = -1: avança incondicionalmente (next manual, jump).
         """
-        self._reconnect_attempt = 0
+        self._live_reconnecting = False
+        self._cancel_live_watchdog()
         if expected_seq >= 0 and expected_seq != self._advance_seq:
             logger.debug("_advance obsoleto (seq %d != %d) — ignorado", expected_seq, self._advance_seq)
             return
@@ -383,6 +451,7 @@ class PlaylistEngine:
                     start_time=item.get("start_time"),
                     end_time=item.get("end_time"),
                     force_resolve=force_resolve,
+                    live=_is_live_item(item),
                 )
 
             self._preloading = False
@@ -437,8 +506,8 @@ class PlaylistEngine:
             await self._broadcast({"event": "resumed"})
 
     async def stop(self):
-        self._reconnect_attempt = 0
-        self._live_has_played = False
+        self._live_reconnecting = False
+        self._cancel_live_watchdog()
         self._advance_seq += 1  # invalida qualquer end-file pendente
         self._running = False
         self._paused = False
@@ -476,6 +545,8 @@ class PlaylistEngine:
         """Pula para o índice N, consumindo todos os anteriores."""
         if not (0 <= index < len(self._items)):
             return
+        self._live_reconnecting = False
+        self._cancel_live_watchdog()
         self._advance_seq += 1  # invalida qualquer end-file pendente
         # Cancela preload: o item preloaded pode não ser o destino do jump.
         # play_index vai chamar player.play() explicitamente, gerando end-file(stop).

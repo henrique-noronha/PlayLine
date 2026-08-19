@@ -176,11 +176,12 @@ class Player:
 
     # API pública                                                          #
 
-    def play(self, path: str, start_time=None, end_time=None, force_resolve: bool = False):
+    def play(self, path: str, start_time=None, end_time=None, force_resolve: bool = False, live: bool = False):
         msg: dict = {"action": "play", "path": path}
         if start_time: msg["start_time"] = start_time
         if end_time:   msg["end_time"]   = end_time
         if force_resolve: msg["force_resolve"] = True
+        if live: msg["live"] = True
         self._send(msg)
         logger.info("Reproduzindo: %s", path)
 

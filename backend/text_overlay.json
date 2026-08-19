@@ -2,7 +2,7 @@
   "active": false,
   "show_time": true,
   "show_temp": true,
-  "corner": "bl",
-  "city": "Palmas,TO",
+  "corner": "tl",
+  "city": "Belo Horizonte,MG",
   "manual_temp": ""
 }
