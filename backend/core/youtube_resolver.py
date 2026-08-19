@@ -139,18 +139,25 @@ def _innertube_hls(video_id: str) -> "str | None":
 def _ytdlp_stream_url(url: str) -> str:
     if _yt_dlp is None:
         raise RuntimeError("yt-dlp não instalado")
+    # player_client=mweb resolve melhor lives do YouTube — retorna manifests HLS
+    # estáveis sem os problemas de rate-limit e expiração do cliente padrão.
     opts = {
         "quiet": True,
         "no_warnings": True,
-        "format": "best[ext=mp4]/best",
+        "format": "best[protocol=m3u8_native]/best[protocol=m3u8]/best",
+        "extractor_args": {"youtube": {"player_client": ["mweb"]}},
     }
     with _yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=False)
     direct = info.get("url")
     if direct:
+        proto = info.get("protocol", "")
+        logger.info("[yt-dlp] protocolo selecionado: %s  url: %.80s", proto, direct)
         return direct
     fmts = info.get("requested_formats") or []
     if fmts and fmts[0].get("url"):
+        proto = fmts[0].get("protocol", "")
+        logger.info("[yt-dlp] protocolo selecionado (fmt[0]): %s  url: %.80s", proto, fmts[0]["url"])
         return fmts[0]["url"]
     raise RuntimeError(f"yt-dlp não retornou URL de stream para: {url}")
 

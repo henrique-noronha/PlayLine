@@ -127,6 +127,8 @@ async def lifespan(app: FastAPI):
             manager.broadcast({"event": "position", "pos": pos}),
             loop,
         )
+        if playlist_engine:
+            playlist_engine.on_position(pos)
 
     def _on_logo_list(files: list):
         asyncio.run_coroutine_threadsafe(

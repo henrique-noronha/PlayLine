@@ -66,6 +66,62 @@ def _is_youtube_url(url: str) -> bool:
     return "youtube.com" in url or "youtu.be" in url
 
 
+def _to_ytdl_url(youtube_url: str) -> str:
+    """Converte URL do YouTube para o formato ytdl:// que o hook interno do MPV usa."""
+    import re
+    m = re.search(
+        r"[?&]v=([A-Za-z0-9_-]{11})"
+        r"|youtu\.be/([A-Za-z0-9_-]{11})"
+        r"|youtube\.com/live/([A-Za-z0-9_-]{11})",
+        youtube_url,
+    )
+    if m:
+        vid = m.group(1) or m.group(2) or m.group(3)
+        return f"ytdl://www.youtube.com/watch?v={vid}"
+    return f"ytdl://{youtube_url}"
+
+
+def _find_node_exe() -> str:
+    """Localiza o executável Node.js para o yt-dlp resolver o desafio nsig."""
+    import shutil
+    return shutil.which("node") or ""
+
+
+def _build_ytdl_raw_options(is_live: bool = False) -> str:
+    """Monta ytdl-raw-options: js-runtimes para nsig e mweb apenas para lives."""
+    node = _find_node_exe()
+    parts = []
+    if node:
+        parts.append(f"js-runtimes=node:{node}")
+    if is_live:
+        parts.append("extractor-args=youtube:player_client=mweb")
+    return ",".join(parts)
+
+
+def _yt_url_fresh(resolved_url: str) -> bool:
+    """Verifica se a URL resolvida ainda está dentro da janela de validade.
+
+    URLs diretas do googlevideo.com carregam expire=TIMESTAMP na query ou
+    /expire/TIMESTAMP/ no path. Manifests HLS do manifest.googlevideo.com
+    também seguem o mesmo padrão. Retorna False se a URL expira em <30 s.
+    """
+    import re as _re
+    import urllib.parse as _up
+    try:
+        parsed = _up.urlparse(resolved_url)
+        # googlevideo.com direto: ?expire=1234567890
+        params = _up.parse_qs(parsed.query)
+        if "expire" in params:
+            return float(params["expire"][0]) - time.time() > 30
+        # manifest.googlevideo.com: /expire/1234567890/ no path
+        m = _re.search(r"/expire/(\d+)/", parsed.path)
+        if m:
+            return float(m.group(1)) - time.time() > 30
+    except Exception:
+        pass
+    return True  # URL sem expiry explícito → assume longa duração
+
+
 def _resolve_yt_stream(url: str) -> str:
     """Resolve URL do YouTube para URL HLS direta. Bloqueia — chamar via executor."""
     try:
@@ -208,7 +264,7 @@ class MPVDaemon:
         self._has_secondary = has_secondary
 
         mpv_kwargs = dict(
-            ytdl=False,
+            ytdl=True,
             input_default_bindings=False,
             input_vo_keyboard=False,
             input_conf=str(_INPUT_CONF_PATH),
@@ -223,13 +279,20 @@ class MPVDaemon:
             prefetch_playlist=True,
             volume_max=200,             # permite até +6 dB (200 = +6 dB)
             image_display_duration=86400,  # standby.png exibido por 24h (efetivamente infinito)
-            network_timeout=10,         # encerra stream morta em até 10s sem dados
+            network_timeout=0,          # 0 = desabilitado; watchdog detecta streams mortas pelo position (STALL_SEC=90)
             hwdec="auto-safe",          # decodificação por GPU quando disponível, software como fallback
             osc=False,                  # desativa controles na tela ao passar o mouse
             cache=True,                 # ativa cache para arquivos locais (absorve latência de HDD)
             demuxer_max_bytes="150MiB", # buffer de leitura adiantada em RAM
             demuxer_max_back_bytes="50MiB",  # buffer de retrocesso
         )
+
+        raw_opts = _build_ytdl_raw_options(is_live=False)
+        if raw_opts:
+            mpv_kwargs["ytdl_raw_options"] = raw_opts
+            logger.info("ytdl_raw_options inicial: %s", raw_opts)
+        else:
+            logger.warning("Node.js não encontrado — yt-dlp não resolverá nsig do YouTube")
 
         if has_secondary:
             mpv_kwargs.update(border=False, fullscreen=True, ontop=True, geometry=geo)
@@ -457,12 +520,41 @@ class MPVDaemon:
                 logger.info("Reinicializando MPV para reprodução...")
                 self._init_mpv()
             if self._mpv:
+                if _is_youtube_url(path) and cmd.get("live"):
+                    # Lives do YouTube: hook ytdl do MPV cuida da resolução e do
+                    # refresh automático do manifesto HLS (sem resolução Python).
+                    ytdl_url = _to_ytdl_url(path)
+                    appended = self._yt_appended.pop(original_path, None)
+                    if appended and appended[0] == ytdl_url and (time.monotonic() - appended[1]) < 300:
+                        try:
+                            cur = self._mpv.path
+                        except Exception:
+                            cur = None
+                        if cur == ytdl_url:
+                            self._mpv.pause = False
+                            self._write_checkpoint(original_path)
+                            logger.info("play live (MPV já em ytdl, sem loadfile): %s", original_path)
+                            self._stop_vu()
+                            self._vu_task = asyncio.ensure_future(self._audio_level_task())
+                            return
+                    try:
+                        self._mpv.ytdl_raw_options = _build_ytdl_raw_options(is_live=True)
+                    except Exception as exc:
+                        logger.warning("ytdl_raw_options (live): %s", exc)
+                    self._mpv.command("loadfile", ytdl_url, "replace")
+                    self._mpv.pause = False
+                    self._write_checkpoint(original_path)
+                    logger.info("play live ytdl: %s → %s", original_path, ytdl_url)
+                    self._stop_vu()
+                    self._vu_task = asyncio.ensure_future(self._audio_level_task())
+                    return
+
                 if _is_youtube_url(path):
                     if cmd.get("force_resolve"):
                         self._yt_cache.pop(original_path, None)
                         logger.info("force_resolve: cache limpo para %s", original_path)
                     cached = self._yt_cache.get(original_path)
-                    if cached and (time.monotonic() - cached[1]) < 14400:
+                    if cached and (time.monotonic() - cached[1]) < 3600 and _yt_url_fresh(cached[0]):
                         path = cached[0]
                         logger.info("YouTube URL resolvida via cache: %s", original_path)
                     elif original_path in self._yt_resolving:
@@ -501,6 +593,10 @@ class MPVDaemon:
                             self._stop_vu()
                             self._vu_task = asyncio.ensure_future(self._audio_level_task())
                             return
+                try:
+                    self._mpv.ytdl_raw_options = _build_ytdl_raw_options(is_live=False)
+                except Exception as exc:
+                    logger.warning("ytdl_raw_options (clip): %s", exc)
                 opts_parts = []
                 if not _is_youtube_url(original_path):
                     if start_time: opts_parts.append(f"start={start_time}")
@@ -536,13 +632,26 @@ class MPVDaemon:
 
         elif action == "prefetch_yt":
             url = cmd.get("path", "")
-            if url and _is_youtube_url(url):
-                cached = self._yt_cache.get(url)
-                already_fresh = cached and (time.monotonic() - cached[1]) < 14400
-                if not already_fresh and url not in self._yt_resolving:
-                    task = asyncio.ensure_future(self._prefetch_yt_bg(url))
-                    self._yt_resolving[url] = task
-                    logger.info("prefetch_yt solicitado: %s", url)
+            if url and _is_youtube_url(url) and self._mpv and not self._mpv_dead:
+                try:
+                    current = self._mpv.path
+                except Exception:
+                    current = None
+                if not current:
+                    logger.debug("prefetch_yt ignorado (MPV idle): %s", url)
+                elif "googlevideo" in current or _is_youtube_url(current):
+                    logger.info("prefetch_yt ignorado (MPV já em live): %s", url)
+                elif url in self._yt_appended:
+                    logger.debug("prefetch_yt ignorado (já appendado): %s", url)
+                else:
+                    ytdl_url = _to_ytdl_url(url)
+                    try:
+                        self._mpv.ytdl_raw_options = _build_ytdl_raw_options(is_live=True)
+                    except Exception as exc:
+                        logger.warning("ytdl_raw_options (prefetch): %s", exc)
+                    self._mpv.command("loadfile", ytdl_url, "append")
+                    self._yt_appended[url] = (ytdl_url, time.monotonic())
+                    logger.info("prefetch_yt ytdl append: %s → %s", url, ytdl_url)
 
         elif action == "init_mpv":
             if self._mpv_dead or self._mpv is None:
@@ -733,7 +842,6 @@ class MPVDaemon:
             elapsed = time.monotonic() - t0
             self._yt_cache[url] = (resolved, time.monotonic())
             logger.info("YouTube URL pré-resolvida em %.2fs: %s", elapsed, url)
-            self._try_append_hls(url, resolved)
             return resolved
         except Exception as exc:
             logger.warning("Falha no prefetch de YouTube URL: %s", exc)
