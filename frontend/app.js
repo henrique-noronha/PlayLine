@@ -514,32 +514,6 @@ function _closeAllPickers() {
   _closePicker(2);
 }
 
-function _updatePosSelector(slot) {
-  const selector = document.querySelector(`.logo-pos-selector[data-slot="${slot}"]`);
-  if (!selector) return;
-  const corner = _logoState[slot].corner;
-
-  // Posições ocupadas pela outra logo e pelo texto
-  const blocked = new Set();
-  const other = slot === 1 ? 2 : 1;
-  if (_logoState[other]?.active) blocked.add(_logoState[other].corner);
-  if (typeof _textState !== "undefined" && _textState?.active) blocked.add(_textState.corner);
-
-  selector.querySelectorAll(".pos-zone").forEach(z => {
-    const c = z.dataset.corner;
-    const isBlocked = blocked.has(c);
-    z.classList.toggle("active",  c === corner && !isBlocked);
-    z.classList.toggle("blocked", isBlocked);
-    z.style.pointerEvents = isBlocked ? "none" : "";
-  });
-
-  const ind = selector.querySelector(".pos-indicator");
-  if (!ind) return;
-  ind.style.top    = corner[0] === "t" ? "2px" : "auto";
-  ind.style.bottom = corner[0] === "b" ? "2px" : "auto";
-  ind.style.left   = corner[1] === "l" ? "2px" : "auto";
-  ind.style.right  = corner[1] === "r" ? "2px" : "auto";
-}
 
 function initLogoUI() {
   // Fecha todos os pickers ao clicar fora
@@ -553,22 +527,6 @@ function initLogoUI() {
 
     // Restaura estado visual
     if (toggle) toggle.classList.toggle("active", s.active);
-    _updatePosSelector(slot);
-
-    // Zonas clicáveis do seletor visual de posição
-    document.querySelectorAll(`.pos-zone[data-slot="${slot}"]`).forEach(zone => {
-      zone.addEventListener("click", () => {
-        s.corner = zone.dataset.corner;
-        localStorage.setItem(`playline_logo${slot}_corner`, s.corner);
-        _updatePosSelector(slot);
-        _updatePosSelector(slot === 1 ? 2 : 1);
-        if (s.active) {
-          _sendLogo(slot);
-          _updateLogoOverlay(slot, s.corner, s.active);
-        }
-        if (typeof _updateTextPosSelector === "function") _updateTextPosSelector();
-      });
-    });
 
     // Botão numérico "1" / "2" — toggler de ativação
     if (toggle) {
@@ -583,7 +541,6 @@ function initLogoUI() {
         toggle.classList.toggle("active", s.active);
         _sendLogo(slot);
         _updateLogoOverlay(slot, s.corner, s.active);
-        _updatePosSelector(slot === 1 ? 2 : 1);
         if (typeof _updateTextPosSelector === "function") _updateTextPosSelector();
       });
     }
@@ -606,11 +563,9 @@ function initLogoUI() {
 function _updateLogoOverlay(slot, corner, active) {
   const el = document.getElementById(`logo-overlay-${slot}`);
   if (!el) return;
-  el.classList.remove("corner-tl", "corner-tr", "corner-bl", "corner-br");
   if (active) {
     const s = _logoState[slot];
     el.src = `/api/logos/${encodeURIComponent(s.filename)}`;
-    el.classList.add(`corner-${corner}`);
     el.style.display = "";
   } else {
     el.src = "";
@@ -825,10 +780,8 @@ function _applyClipOverlays(co) {
     // Atualiza DOM de preview sem alterar _logoState
     const el = document.getElementById(`logo-overlay-${slot}`);
     if (el) {
-      el.classList.remove("corner-tl", "corner-tr", "corner-bl", "corner-br");
       if (active && filename) {
         el.src = `/api/logos/${encodeURIComponent(filename)}`;
-        el.classList.add(`corner-${corner}`);
         el.style.display = "";
       } else {
         el.src = "";

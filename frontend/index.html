@@ -144,35 +144,23 @@
 
           <div class="logo-controls-compact">
 
-            <div class="logo-ctrl">
-              <span class="logo-label">Logo 1</span>
-              <div class="logo-pos-selector" data-slot="1">
-                <div class="pos-zone" data-slot="1" data-corner="tl" title="Superior esquerdo"></div>
-                <div class="pos-zone" data-slot="1" data-corner="tr" title="Superior direito"></div>
-                <div class="pos-zone" data-slot="1" data-corner="bl" title="Inferior esquerdo"></div>
-                <div class="pos-zone" data-slot="1" data-corner="br" title="Inferior direito"></div>
-                <div class="pos-indicator"></div>
+            <div class="logo-pair">
+              <div class="logo-ctrl">
+                <span class="logo-label">Logo 1</span>
+                <div class="logo-toggle-wrap">
+                  <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
+                  <button class="btn-logo-pick" data-slot="1" title="Selecionar logo">▾</button>
+                  <div class="logo-picker-dropdown" id="logo-picker-1"></div>
+                </div>
               </div>
-              <div class="logo-toggle-wrap">
-                <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
-                <button class="btn-logo-pick" data-slot="1" title="Selecionar logo">▾</button>
-                <div class="logo-picker-dropdown" id="logo-picker-1"></div>
-              </div>
-            </div>
 
-            <div class="logo-ctrl">
-              <span class="logo-label">Logo 2</span>
-              <div class="logo-pos-selector" data-slot="2">
-                <div class="pos-zone" data-slot="2" data-corner="tl" title="Superior esquerdo"></div>
-                <div class="pos-zone" data-slot="2" data-corner="tr" title="Superior direito"></div>
-                <div class="pos-zone" data-slot="2" data-corner="bl" title="Inferior esquerdo"></div>
-                <div class="pos-zone" data-slot="2" data-corner="br" title="Inferior direito"></div>
-                <div class="pos-indicator"></div>
-              </div>
-              <div class="logo-toggle-wrap">
-                <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
-                <button class="btn-logo-pick" data-slot="2" title="Selecionar logo">▾</button>
-                <div class="logo-picker-dropdown" id="logo-picker-2"></div>
+              <div class="logo-ctrl">
+                <span class="logo-label">Logo 2</span>
+                <div class="logo-toggle-wrap">
+                  <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
+                  <button class="btn-logo-pick" data-slot="2" title="Selecionar logo">▾</button>
+                  <div class="logo-picker-dropdown" id="logo-picker-2"></div>
+                </div>
               </div>
             </div>
 
@@ -218,7 +206,7 @@
                   </div>
                   <div class="to-temp-row">
                     <span class="to-temp-label">Temp. manual</span>
-                    <input type="text" id="to-temp-input" class="to-temp-input" placeholder="—" maxlength="7" />
+                    <input type="text" id="to-temp-input" class="to-temp-input" placeholder="25" maxlength="7" />
                     <button id="to-temp-fetch" class="to-temp-fetch" title="Buscar temperatura via API"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
                   </div>
                 </div>

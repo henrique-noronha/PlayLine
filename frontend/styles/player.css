@@ -34,15 +34,12 @@
 
 .logo-overlay {
   position: absolute;
-  max-height: 14%;
-  max-width: 30%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   pointer-events: none;
 }
-.logo-overlay.corner-tl { top: 5%;    left: 4%;   }
-.logo-overlay.corner-tr { top: 5%;    right: 4%;  }
-.logo-overlay.corner-bl { bottom: 5%; left: 4%;   }
-.logo-overlay.corner-br { bottom: 5%; right: 4%;  }
 
 #preview-unavailable {
   display: none;
@@ -474,13 +471,20 @@
 
 /* ── Logo controls compactos ── */
 .logo-controls-compact {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  justify-content: center;
   gap: 14px;
   padding-left: 16px;
   border-left: 1px solid var(--border);
   align-self: stretch;
+}
+
+.logo-pair {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo-ctrl {
@@ -496,57 +500,6 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--muted);
-}
-
-/* ── Mini-tela seletora de posição (16:9) ── */
-.logo-pos-selector {
-  width: 64px;
-  height: 36px;
-  position: relative;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-  background: var(--surface2);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 1px;
-  cursor: pointer;
-}
-
-.pos-zone {
-  background: transparent;
-  transition: background .1s;
-}
-.pos-zone:hover { background: rgba(255,255,255,.08); }
-
-/* Zona ativa: azul para Logo 1, laranja para Logo 2 */
-.logo-pos-selector[data-slot="1"] .pos-zone.active { background: rgba(79,142,247,.35); }
-.logo-pos-selector[data-slot="2"] .pos-zone.active { background: rgba(245,158,11,.35); }
-
-/* Zona bloqueada por outra logo ou texto ativo */
-.logo-pos-selector .pos-zone.blocked {
-  background: rgba(239,68,68,.18);
-  cursor: not-allowed;
-}
-
-/* Indicador de posição — ponto colorido no canto selecionado */
-.pos-indicator {
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  border-radius: 2px;
-  pointer-events: none;
-  z-index: 2;
-  transition: top .12s, right .12s, bottom .12s, left .12s;
-}
-.logo-pos-selector[data-slot="1"] .pos-indicator {
-  background: var(--accent);
-  box-shadow: 0 0 5px var(--accent);
-}
-.logo-pos-selector[data-slot="2"] .pos-indicator {
-  background: var(--warning);
-  box-shadow: 0 0 5px var(--warning);
 }
 
 .logo-toggle-wrap {

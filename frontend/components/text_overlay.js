@@ -268,6 +268,12 @@ function initTextOverlayUI() {
       localStorage.setItem("playline_to_manual_temp", _textState.manual_temp);
       clearTimeout(_tempTimer);
       _tempTimer = setTimeout(() => {
+        const val = _textState.manual_temp;
+        if (val && !val.includes("°")) {
+          _textState.manual_temp = val + "°C";
+          localStorage.setItem("playline_to_manual_temp", _textState.manual_temp);
+          tempInput.value = _textState.manual_temp;
+        }
         if (_textState.manual_temp) {
           _previewTemp = _textState.manual_temp;
           _updatePreviewOverlay();
