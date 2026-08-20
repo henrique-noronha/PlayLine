@@ -169,7 +169,6 @@ def _ytdlp_stream_url(url: str) -> str:
         "quiet": True,
         "no_warnings": True,
         "format": "best[protocol=m3u8_native]/best[protocol=m3u8]/best",
-        "extractor_args": {"youtube": {"player_client": ["mweb"]}},
     }
     with _yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=False)

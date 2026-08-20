@@ -48,8 +48,8 @@ def apply(mpv, config: dict, temperature: Optional[str]) -> None:
 
     bgra_bytes, w, h = result
     x, y = _corner_pos(corner, osd_w, osd_h, w, h, margin_x, margin_y)
-    logger.info("[osd_text] osd=%dx%d font=%d bmp=%dx%d pos=(%d,%d) margin_y=%d",
-                osd_w, osd_h, font_sz, w, h, x, y, margin_y)
+    logger.debug("[osd_text] osd=%dx%d font=%d bmp=%dx%d pos=(%d,%d) margin_y=%d",
+                 osd_w, osd_h, font_sz, w, h, x, y, margin_y)
     try:
         import tempfile, datetime
         dbg = Path(tempfile.gettempdir()) / "playline_osd_debug.txt"

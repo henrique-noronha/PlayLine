@@ -77,38 +77,6 @@ def _is_stream_path(path: str) -> bool:
         p.startswith("rtmp://") or p.startswith("rtmps://") or
         p.startswith("rtsp://")
     )
-def _to_ytdl_url(youtube_url: str) -> str:
-    """Converte URL do YouTube para o formato ytdl:// que o hook interno do MPV usa."""
-    import re
-    m = re.search(
-        r"[?&]v=([A-Za-z0-9_-]{11})"
-        r"|youtu\.be/([A-Za-z0-9_-]{11})"
-        r"|youtube\.com/live/([A-Za-z0-9_-]{11})",
-        youtube_url,
-    )
-    if m:
-        vid = m.group(1) or m.group(2) or m.group(3)
-        return f"ytdl://www.youtube.com/watch?v={vid}"
-    return f"ytdl://{youtube_url}"
-
-
-def _find_node_exe() -> str:
-    """Localiza o executável Node.js para o yt-dlp resolver o desafio nsig."""
-    import shutil
-    return shutil.which("node") or ""
-
-
-def _build_ytdl_raw_options(is_live: bool = False) -> str:
-    """Monta ytdl-raw-options: js-runtimes para nsig e mweb apenas para lives."""
-    node = _find_node_exe()
-    parts = []
-    if node:
-        parts.append(f"js-runtimes=node:{node}")
-    if is_live:
-        parts.append("extractor-args=youtube:player_client=mweb")
-    return ",".join(parts)
-
-
 def _yt_url_fresh(resolved_url: str) -> bool:
     """Verifica se a URL resolvida ainda está dentro da janela de validade.
 
@@ -253,7 +221,6 @@ class MPVDaemon:
         self._has_secondary = has_secondary
 
         mpv_kwargs = dict(
-            ytdl=True,
             input_default_bindings=False,
             input_vo_keyboard=False,
             input_conf=str(_INPUT_CONF_PATH),
@@ -275,13 +242,6 @@ class MPVDaemon:
             demuxer_max_bytes="150MiB", # buffer de leitura adiantada em RAM
             demuxer_max_back_bytes="50MiB",  # buffer de retrocesso
         )
-
-        raw_opts = _build_ytdl_raw_options(is_live=False)
-        if raw_opts:
-            mpv_kwargs["ytdl_raw_options"] = raw_opts
-            logger.info("ytdl_raw_options inicial: %s", raw_opts)
-        else:
-            logger.warning("Node.js não encontrado — yt-dlp não resolverá nsig do YouTube")
 
         if has_secondary:
             mpv_kwargs.update(border=False, fullscreen=True, ontop=True, geometry=geo)
@@ -553,35 +513,6 @@ class MPVDaemon:
                 logger.info("Reinicializando MPV para reprodução...")
                 self._init_mpv()
             if self._mpv:
-                if _is_youtube_url(path) and cmd.get("live"):
-                    # Lives do YouTube: hook ytdl do MPV cuida da resolução e do
-                    # refresh automático do manifesto HLS (sem resolução Python).
-                    ytdl_url = _to_ytdl_url(path)
-                    appended = self._yt_appended.pop(original_path, None)
-                    if appended and appended[0] == ytdl_url and (time.monotonic() - appended[1]) < 300:
-                        try:
-                            cur = self._mpv.path
-                        except Exception:
-                            cur = None
-                        if cur == ytdl_url:
-                            self._mpv.pause = False
-                            self._write_checkpoint(original_path)
-                            logger.info("play live (MPV já em ytdl, sem loadfile): %s", original_path)
-                            self._stop_vu()
-                            self._vu_task = asyncio.ensure_future(self._audio_level_task())
-                            return
-                    try:
-                        self._mpv.ytdl_raw_options = _build_ytdl_raw_options(is_live=True)
-                    except Exception as exc:
-                        logger.warning("ytdl_raw_options (live): %s", exc)
-                    self._mpv.command("loadfile", ytdl_url, "replace")
-                    self._mpv.pause = False
-                    self._write_checkpoint(original_path)
-                    logger.info("play live ytdl: %s → %s", original_path, ytdl_url)
-                    self._stop_vu()
-                    self._vu_task = asyncio.ensure_future(self._audio_level_task())
-                    return
-
                 if _is_youtube_url(path):
                     if cmd.get("force_resolve"):
                         self._yt_cache.pop(original_path, None)
@@ -626,10 +557,6 @@ class MPVDaemon:
                             self._stop_vu()
                             self._vu_task = asyncio.ensure_future(self._audio_level_task())
                             return
-                try:
-                    self._mpv.ytdl_raw_options = _build_ytdl_raw_options(is_live=False)
-                except Exception as exc:
-                    logger.warning("ytdl_raw_options (clip): %s", exc)
                 opts_parts = []
                 if not _is_youtube_url(original_path):
                     if start_time: opts_parts.append(f"start={start_time}")
@@ -640,8 +567,9 @@ class MPVDaemon:
                     self._mpv.command("loadfile", path, "replace")
                 self._mpv.pause = False
                 self._write_checkpoint(original_path)
-                logger.info("play: %s%s", original_path,
-                            f" [trim {start_time}–{end_time}]" if opts_parts else "")
+                live_tag = " [live]" if cmd.get("live") else ""
+                logger.info("play: %s%s%s", original_path,
+                            f" [trim {start_time}–{end_time}]" if opts_parts else "", live_tag)
                 self._stop_vu()
                 if _is_youtube_url(original_path):
                     self._vu_task = asyncio.ensure_future(self._audio_level_task())
@@ -658,26 +586,13 @@ class MPVDaemon:
 
         elif action == "prefetch_yt":
             url = cmd.get("path", "")
-            if url and _is_youtube_url(url) and self._mpv and not self._mpv_dead:
-                try:
-                    current = self._mpv.path
-                except Exception:
-                    current = None
-                if not current:
-                    logger.debug("prefetch_yt ignorado (MPV idle): %s", url)
-                elif "googlevideo" in current or _is_youtube_url(current):
-                    logger.info("prefetch_yt ignorado (MPV já em live): %s", url)
-                elif url in self._yt_appended:
-                    logger.debug("prefetch_yt ignorado (já appendado): %s", url)
+            if url and _is_youtube_url(url):
+                if url in self._yt_resolving or url in self._yt_cache:
+                    logger.debug("prefetch_yt ignorado (já em cache ou resolvendo): %s", url)
                 else:
-                    ytdl_url = _to_ytdl_url(url)
-                    try:
-                        self._mpv.ytdl_raw_options = _build_ytdl_raw_options(is_live=True)
-                    except Exception as exc:
-                        logger.warning("ytdl_raw_options (prefetch): %s", exc)
-                    self._mpv.command("loadfile", ytdl_url, "append")
-                    self._yt_appended[url] = (ytdl_url, time.monotonic())
-                    logger.info("prefetch_yt ytdl append: %s → %s", url, ytdl_url)
+                    task = asyncio.ensure_future(self._prefetch_yt_bg(url))
+                    self._yt_resolving[url] = task
+                    logger.info("prefetch_yt background: %s", url)
 
         elif action == "init_mpv":
             if self._mpv_dead or self._mpv is None:
@@ -782,6 +697,8 @@ class MPVDaemon:
             self._save_text_overlay()
             if not cfg["active"] and self._mpv and not self._mpv_dead:
                 osd_text.remove(self._mpv)
+            elif cfg["active"] and self._mpv and not self._mpv_dead:
+                threading.Thread(target=self._apply_text_overlay_delayed, daemon=True).start()
             self._broadcast_sync({"event": "text_overlay_state", **cfg})
 
         elif action == "get_text_overlay":
@@ -886,24 +803,27 @@ class MPVDaemon:
 
     async def _text_overlay_task(self):
         while True:
-            await asyncio.sleep(1)
-            if self._mpv_dead or self._mpv is None:
-                continue
-            with self._text_overlay_lock:
-                cfg = dict(self._text_overlay)
-            if not cfg.get("active"):
-                continue
-            temp = None
-            if cfg.get("show_temp"):
-                manual = cfg.get("manual_temp", "").strip()
-                if manual:
-                    temp = manual
-                else:
-                    try:
-                        temp = await weather.get_temperature(cfg.get("city", "Palmas,TO"))
-                    except Exception:
-                        pass
-            osd_text.apply(self._mpv, cfg, temp)
+            try:
+                await asyncio.sleep(1)
+                if self._mpv_dead or self._mpv is None:
+                    continue
+                with self._text_overlay_lock:
+                    cfg = dict(self._text_overlay)
+                if not cfg.get("active"):
+                    continue
+                temp = None
+                if cfg.get("show_temp"):
+                    manual = cfg.get("manual_temp", "").strip()
+                    if manual:
+                        temp = manual
+                    else:
+                        try:
+                            temp = await weather.get_temperature(cfg.get("city", "Palmas,TO"))
+                        except Exception:
+                            pass
+                osd_text.apply(self._mpv, cfg, temp)
+            except Exception as exc:
+                logger.error("[text_overlay_task] erro não capturado: %s", exc)
 
     async def _position_task(self):
         while True:

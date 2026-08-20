@@ -1,8 +1,8 @@
 {
-  "active": false,
+  "active": true,
   "show_time": true,
   "show_temp": true,
   "corner": "tl",
-  "city": "Belo Horizonte,MG",
-  "manual_temp": ""
+  "city": "Palmas,TO",
+  "manual_temp": "40°C"
 }

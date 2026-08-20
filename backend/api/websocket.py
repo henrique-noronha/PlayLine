@@ -70,11 +70,12 @@ async def _handle_command(cmd: dict):
         )
     elif action == "set_text_overlay":
         _playlist_engine.set_text_overlay({
-            "active":    bool(cmd.get("active",    False)),
-            "show_time": bool(cmd.get("show_time", True)),
-            "show_temp": bool(cmd.get("show_temp", True)),
-            "corner":    str(cmd.get("corner",    "tl")),
-            "city":      str(cmd.get("city",      "Palmas")),
+            "active":      bool(cmd.get("active",      False)),
+            "show_time":   bool(cmd.get("show_time",   True)),
+            "show_temp":   bool(cmd.get("show_temp",   True)),
+            "corner":      str(cmd.get("corner",      "tl")),
+            "city":        str(cmd.get("city",        "Palmas")),
+            "manual_temp": str(cmd.get("manual_temp", "")),
         })
     else:
         logger.warning("Ação desconhecida: %s", action)
