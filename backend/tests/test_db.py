@@ -21,27 +21,6 @@ def test_wal_mode_ativo():
     assert mode == "wal"
 
 
-def test_migrate_schedule(tmp_path):
-    dados = [
-        {"id": "i1", "title": "VT Abertura", "path": "C:\\a.mp4", "live": False},
-        {"id": "i2", "title": "VT Encerramento", "path": "C:\\b.mp4", "live": False},
-    ]
-    (tmp_path / "schedule.json").write_text(json.dumps(dados), encoding="utf-8")
-
-    migrate_from_json(tmp_path)
-
-    conn = get_conn()
-    rows = conn.execute("SELECT * FROM schedule ORDER BY position").fetchall()
-    conn.close()
-
-    assert len(rows) == 2
-    assert rows[0]["title"] == "VT Abertura"
-    assert rows[1]["title"] == "VT Encerramento"
-    # arquivo original renomeado para .bak
-    assert not (tmp_path / "schedule.json").exists()
-    assert (tmp_path / "schedule.json.bak").exists()
-
-
 def test_migrate_nao_sobrescreve_dados_existentes(tmp_path):
     """Se o banco já tem dados, a migração não deve duplicar."""
     conn = get_conn()

@@ -41,6 +41,38 @@ def _ffmpeg_path() -> Path:
     return Path(__file__).parent.parent / "ffmpeg.exe"
 
 
+class _JpegFrameSplitter:
+    """Extrai frames JPEG completos de um stream MJPEG cru, recebendo bytes aos poucos.
+
+    Separado do laço de I/O assíncrono pra poder ser testado com bytes fake,
+    sem precisar de um processo ffmpeg de verdade.
+    """
+    _SOI = b"\xff\xd8"
+    _EOI = b"\xff\xd9"
+
+    def __init__(self):
+        self._buf = bytearray()
+
+    def feed(self, chunk: bytes) -> list:
+        """Adiciona bytes recebidos; retorna a lista de frames JPEG completos encontrados."""
+        self._buf.extend(chunk)
+        frames = []
+        while True:
+            start = self._buf.find(self._SOI)
+            if start == -1:
+                self._buf.clear()
+                break
+            end = self._buf.find(self._EOI, start + 2)
+            if end == -1:
+                if start > 0:
+                    del self._buf[:start]
+                break
+            end += 2
+            frames.append(bytes(self._buf[start:end]))
+            del self._buf[:end]
+        return frames
+
+
 class DesktopCapture:
     """Processo ffmpeg persistente capturando um monitor via ddagrab, entregando frames JPEG."""
 
@@ -109,26 +141,13 @@ class DesktopCapture:
         """Gera frames JPEG completos conforme chegam do stdout do ffmpeg (stream MJPEG cru)."""
         if not self._proc or not self._proc.stdout:
             return
-        buf = bytearray()
-        SOI, EOI = b"\xff\xd8", b"\xff\xd9"
+        splitter = _JpegFrameSplitter()
         while True:
             chunk = await self._proc.stdout.read(65536)
             if not chunk:
                 break
-            buf.extend(chunk)
-            while True:
-                start = buf.find(SOI)
-                if start == -1:
-                    buf.clear()
-                    break
-                end = buf.find(EOI, start + 2)
-                if end == -1:
-                    if start > 0:
-                        del buf[:start]
-                    break
-                end += 2
-                yield bytes(buf[start:end])
-                del buf[:end]
+            for frame in splitter.feed(chunk):
+                yield frame
 
     async def stop(self):
         if self._proc and self._proc.returncode is None:

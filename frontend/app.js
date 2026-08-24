@@ -482,7 +482,7 @@ function applyLogoState(remoteState) {
     if (toggle) toggle.classList.toggle("active", s.active);
     _renderPickerDropdown(slot);
     _updateLogoOverlay(slot, s.corner, s.active);
-    _updatePosSelector(slot);
+    if (typeof _updatePosSelector === "function") _updatePosSelector(slot);
   });
 }
 

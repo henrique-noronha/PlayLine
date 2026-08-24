@@ -57,20 +57,10 @@ function _updateTextPosSelector() {
   const selector = document.getElementById("text-pos-selector");
   if (!selector) return;
 
-  const blocked = new Set();
-  if (typeof _logoState !== "undefined") {
-    [1, 2].forEach(slot => {
-      if (_logoState[slot]?.active) blocked.add(_logoState[slot].corner);
-    });
-  }
-
   const corner = _textState.corner;
   selector.querySelectorAll(".pos-zone").forEach(z => {
     const c = z.dataset.corner;
-    const isBlocked = blocked.has(c);
-    z.classList.toggle("active",  c === corner && !isBlocked);
-    z.classList.toggle("blocked", isBlocked);
-    z.style.pointerEvents = isBlocked ? "none" : "";
+    z.classList.toggle("active", c === corner);
   });
 
   const ind = selector.querySelector(".pos-indicator");
