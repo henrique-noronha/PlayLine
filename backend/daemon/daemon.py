@@ -22,6 +22,7 @@ Eventos emitidos:
 """
 
 import asyncio
+import base64
 import json
 import logging
 import os
@@ -33,7 +34,7 @@ from pathlib import Path
 from typing import Optional
 
 
-from . import checkpoint, monitor, overlay, osd_text, preview, protocol, weather
+from . import checkpoint, monitor, overlay, osd_text, preview, preview_stream, protocol, weather
 
 # Garante que libmpv-2.dll seja encontrada (em sys._MEIPASS quando empacotado)
 if getattr(sys, 'frozen', False):
@@ -166,6 +167,9 @@ class MPVDaemon:
         self._last_position  = 0.0
         self._checkpoint_dirty = False
         self._window_positioned = False  # move_to_tv() só roda uma vez por sessão MPV
+        self._has_secondary = False
+        self._desktop_capture: Optional["preview_stream.DesktopCapture"] = None
+        self._preview_restart = asyncio.Event()  # sinaliza troca de estratégia de preview
         self._volume: float  = 100.0   # persiste entre reinits do MPV (100 = 0 dB)
         self._logo: dict = {
             1: {"corner": "br", "active": False, "filename": ""},
@@ -329,6 +333,28 @@ class MPVDaemon:
     def _send_to_back(self):
         monitor.send_window_to_back("PlayLine")
         self._window_positioned = True
+
+    async def _monitor_watchdog_task(self):
+        """Detecta conexão/desconexão de monitor secundário após o daemon já estar
+        rodando (hoje a topologia só era lida uma vez, no início do processo MPV)."""
+        while True:
+            await asyncio.sleep(3)
+            try:
+                now_has_secondary = bool(monitor.get_secondary_monitor_rect())
+            except Exception:
+                continue
+            if now_has_secondary == self._has_secondary or self._mpv is None:
+                continue
+            self._has_secondary = now_has_secondary
+            if now_has_secondary:
+                logger.info("[monitor] monitor secundário conectado — reposicionando janela")
+                threading.Thread(target=self._move_to_tv, daemon=True).start()
+            else:
+                logger.info("[monitor] monitor secundário desconectado — janela para o fundo")
+                threading.Thread(target=self._send_to_back, daemon=True).start()
+            if self._desktop_capture:
+                await self._desktop_capture.stop()
+            self._preview_restart.set()
 
     def _mpv_log(self, level, component, message):
         logger.debug("[mpv/%s] %s", component, message.strip())
@@ -669,7 +695,9 @@ class MPVDaemon:
                     if f:
                         self._logo[s]["filename"] = f
                     logger.info("[set_logo] estado: %s", self._logo)
+                    state = {str(k): dict(v) for k, v in self._logo.items()}
                 self._apply_overlay()
+                self._broadcast_sync({"event": "logo_state", "state": state})
 
             threading.Thread(target=_update, daemon=True).start()
 
@@ -705,6 +733,16 @@ class MPVDaemon:
             with self._text_overlay_lock:
                 cfg = dict(self._text_overlay)
             resp = {"event": "text_overlay_state", **cfg}
+            try:
+                writer.write((json.dumps(resp) + "\n").encode())
+                await writer.drain()
+            except Exception:
+                pass
+
+        elif action == "get_logo_state":
+            with self._logo_lock:
+                state = {str(k): dict(v) for k, v in self._logo.items()}
+            resp = {"event": "logo_state", "state": state}
             try:
                 writer.write((json.dumps(resp) + "\n").encode())
                 await writer.drain()
@@ -837,10 +875,50 @@ class MPVDaemon:
                     pass
 
     async def _preview_task(self):
-        """Captura frames MPV a ~10 fps e distribui para clientes TCP conectados."""
-        import base64
-        loop = asyncio.get_event_loop()
+        """Distribui frames de preview para clientes conectados.
+
+        Com monitor secundário: captura contínua via ffmpeg/ddagrab (Desktop
+        Duplication API), isolada do IPC do MPV — mais robusta em sessões
+        longas que repetir screenshot-to-file a cada frame. Sem monitor
+        secundário (janela do MPV fica atrás de tudo o resto na tela
+        principal): usa o screenshot interno do MPV, já que não há uma saída
+        de vídeo isolada para capturar.
+
+        Reavalia a estratégia sempre que `_monitor_watchdog_task` sinaliza
+        `_preview_restart` (monitor secundário conectado/desconectado em tempo real).
+        """
         while True:
+            self._preview_restart.clear()
+            if self._has_secondary:
+                capture = preview_stream.DesktopCapture()
+                self._desktop_capture = capture
+                if await capture.start():
+                    await self._preview_task_ddagrab(capture)
+                else:
+                    logger.warning("[preview] ddagrab indisponível — usando screenshot do MPV")
+                self._desktop_capture = None
+                if self._preview_restart.is_set():
+                    continue
+                logger.warning("[preview] captura via ddagrab encerrou — caindo para screenshot do MPV")
+            await self._preview_task_mpv_screenshot()
+            if not self._preview_restart.is_set():
+                await asyncio.sleep(1)  # evita loop apertado se a captura sair por engano
+
+    async def _preview_task_ddagrab(self, capture: "preview_stream.DesktopCapture"):
+        try:
+            async for jpeg in capture.frames():
+                if self._clients:
+                    b64 = base64.b64encode(jpeg).decode("ascii")
+                    await self._broadcast({"event": "preview_frame", "data": b64})
+        except Exception as exc:
+            logger.warning("[preview] captura via ddagrab falhou em execução: %s", exc)
+        finally:
+            await capture.stop()
+
+    async def _preview_task_mpv_screenshot(self):
+        """Captura frames via screenshot interno do MPV a ~10 fps."""
+        loop = asyncio.get_event_loop()
+        while not self._preview_restart.is_set():
             await asyncio.sleep(0.05)   # alvo 20 fps (limitado pelo tempo de captura)
             if self._mpv_dead or self._mpv is None or not self._clients:
                 continue
@@ -864,6 +942,7 @@ class MPVDaemon:
         asyncio.create_task(self._position_task())
         asyncio.create_task(self._text_overlay_task())
         asyncio.create_task(self._preview_task())
+        asyncio.create_task(self._monitor_watchdog_task())
         async with server:
             await server.serve_forever()
 

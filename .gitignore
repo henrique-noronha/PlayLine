@@ -1,5 +1,6 @@
 # Claude Code — configurações locais do usuário (não compartilhar)
 .claude/settings.local.json
+CLAUDE.md
 
 # Python
 __pycache__/

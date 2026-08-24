@@ -165,6 +165,7 @@ function handleEvent(ev) {
       } else {
         hideLiveIndicator();
         if (window._setPreviewStatus) window._setPreviewStatus(null);
+        _vuBackendDb = null; // volta pro analisador local — item não vem mais do YouTube
         loadVideo(ev.item.path);
       }
       updateStartTimes();
@@ -250,6 +251,9 @@ function handleEvent(ev) {
       break;
     case "logo_list":
       updateLogoDropdowns(ev.files);
+      break;
+    case "logo_state":
+      if (!_clipOverrideActive) applyLogoState(ev.state);
       break;
     case "text_overlay_state":
       if (!_clipOverrideActive && typeof applyTextOverlayState === "function") applyTextOverlayState(ev);
@@ -445,6 +449,31 @@ const _logoState = {
       filename: localStorage.getItem("playline_logo2_file") || "" 
   },
 };
+
+// Sincroniza _logoState com o estado real do daemon (chamado ao conectar/reconectar,
+// já que o daemon é um processo separado e mantém a logo ativa mesmo com a interface fechada)
+function applyLogoState(remoteState) {
+  if (!remoteState) return;
+  [1, 2].forEach(slot => {
+    const rs = remoteState[slot] ?? remoteState[String(slot)];
+    if (!rs) return;
+    const s = _logoState[slot];
+    if (rs.active !== undefined) s.active = rs.active;
+    if (rs.corner !== undefined) {
+      s.corner = rs.corner;
+      localStorage.setItem(`playline_logo${slot}_corner`, s.corner);
+    }
+    if (rs.filename) {
+      s.filename = rs.filename;
+      localStorage.setItem(`playline_logo${slot}_file`, s.filename);
+    }
+    const toggle = document.querySelector(`.btn-logo-toggle[data-slot="${slot}"]`);
+    if (toggle) toggle.classList.toggle("active", s.active);
+    _renderPickerDropdown(slot);
+    _updateLogoOverlay(slot, s.corner, s.active);
+    _updatePosSelector(slot);
+  });
+}
 
 // Guarda a lista de arquivos disponíveis para uso em outros contextos
 let _logoFiles = [];
