@@ -202,7 +202,7 @@ def _generate_thumb(path: str) -> bytes | None:
             [
                 _ffmpeg_bin(), "-y", "-ss", "2", "-i", path,
                 "-vframes", "1",
-                "-vf", "scale=112:63:force_original_aspect_ratio=decrease,pad=112:63:(ow-iw)/2:(oh-ih)/2:color=black",
+                "-vf", "scale=112:63:force_original_aspect_ratio=increase,crop=112:63",
                 "-f", "image2", "-vcodec", "mjpeg", "pipe:1",
             ],
             capture_output=True,
