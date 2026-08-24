@@ -34,6 +34,30 @@ def is_youtube_url(url: str) -> bool:
     return bool(_YT_RE.search(url))
 
 
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+_YT_ERROR_MAP = [
+    (re.compile(r"live event will begin in (\d+) hour",  re.I), lambda m: f"Esta live começa em {m.group(1)} hora{'s' if int(m.group(1)) != 1 else ''}"),
+    (re.compile(r"live event will begin in (\d+) minute", re.I), lambda m: f"Esta live começa em {m.group(1)} minuto{'s' if int(m.group(1)) != 1 else ''}"),
+    (re.compile(r"live event will begin in (\d+) day",   re.I), lambda m: f"Esta live começa em {m.group(1)} dia{'s' if int(m.group(1)) != 1 else ''}"),
+    (re.compile(r"private video",                        re.I), lambda m: "Vídeo privado"),
+    (re.compile(r"video unavailable",                    re.I), lambda m: "Vídeo indisponível"),
+    (re.compile(r"members.only",                         re.I), lambda m: "Conteúdo exclusivo para membros"),
+    (re.compile(r"confirm your age",                     re.I), lambda m: "Restrição de idade"),
+    (re.compile(r"copyright",                            re.I), lambda m: "Conteúdo bloqueado por direitos autorais"),
+]
+
+def _friendly_error(exc: Exception) -> str:
+    raw = _ANSI_RE.sub("", str(exc))
+    for pattern, msg_fn in _YT_ERROR_MAP:
+        m = pattern.search(raw)
+        if m:
+            return msg_fn(m)
+    # Remove prefixo "ERROR: [youtube] ID: " deixando só a mensagem
+    clean = re.sub(r"^ERROR:\s*\[youtube\]\s*[A-Za-z0-9_-]+:\s*", "", raw).strip()
+    return clean or "Não foi possível obter informações do vídeo"
+
+
 def get_info(url: str) -> dict:
     """Retorna metadados básicos sem baixar o stream."""
     if _yt_dlp is None:
@@ -49,7 +73,7 @@ def get_info(url: str) -> dict:
             }
     except Exception as exc:
         logger.warning("get_info falhou: %s", exc)
-        return {"valid": False, "error": str(exc)}
+        return {"valid": False, "error": _friendly_error(exc)}
 
 
 # ── Caminho rápido: InnerTube API ────────────────────────────────────────────
@@ -139,18 +163,24 @@ def _innertube_hls(video_id: str) -> "str | None":
 def _ytdlp_stream_url(url: str) -> str:
     if _yt_dlp is None:
         raise RuntimeError("yt-dlp não instalado")
+    # player_client=mweb resolve melhor lives do YouTube — retorna manifests HLS
+    # estáveis sem os problemas de rate-limit e expiração do cliente padrão.
     opts = {
         "quiet": True,
         "no_warnings": True,
-        "format": "best[ext=mp4]/best",
+        "format": "best[protocol=m3u8_native]/best[protocol=m3u8]/best",
     }
     with _yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=False)
     direct = info.get("url")
     if direct:
+        proto = info.get("protocol", "")
+        logger.info("[yt-dlp] protocolo selecionado: %s  url: %.80s", proto, direct)
         return direct
     fmts = info.get("requested_formats") or []
     if fmts and fmts[0].get("url"):
+        proto = fmts[0].get("protocol", "")
+        logger.info("[yt-dlp] protocolo selecionado (fmt[0]): %s  url: %.80s", proto, fmts[0]["url"])
         return fmts[0]["url"]
     raise RuntimeError(f"yt-dlp não retornou URL de stream para: {url}")
 

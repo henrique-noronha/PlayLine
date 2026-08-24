@@ -127,7 +127,7 @@ function _updatePreviewOverlay() {
   // Usa o canvas de preview como referência de altura (o <video> agora tem height:0)
   const previewEl = document.getElementById("mpv-preview") || document.getElementById("player-video");
   const videoH    = previewEl ? (previewEl.getBoundingClientRect().height || 200) : 200;
-  el.style.fontSize = Math.max(6, Math.round(videoH * 0.020)) + "px";
+  el.style.fontSize = Math.max(8, Math.round(videoH * 0.028)) + "px";
 
   const now  = new Date();
   const hh   = String(now.getHours()).padStart(2, "0");
@@ -268,6 +268,12 @@ function initTextOverlayUI() {
       localStorage.setItem("playline_to_manual_temp", _textState.manual_temp);
       clearTimeout(_tempTimer);
       _tempTimer = setTimeout(() => {
+        const val = _textState.manual_temp;
+        if (val && !val.includes("°")) {
+          _textState.manual_temp = val + "°C";
+          localStorage.setItem("playline_to_manual_temp", _textState.manual_temp);
+          tempInput.value = _textState.manual_temp;
+        }
         if (_textState.manual_temp) {
           _previewTemp = _textState.manual_temp;
           _updatePreviewOverlay();

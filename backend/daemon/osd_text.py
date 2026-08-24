@@ -14,10 +14,11 @@ _SLOT     = "3"
 _MARGIN_X = 0.04
 _MARGIN_Y = 0.07
 
-_BG_TIME  = (68,  68,  68,  190)
-_BG_TEMP  = (52,  52,  52,  190)
-_BG_CITY  = (38,  38,  38,  190)
-_FG       = (255, 255, 255, 255)
+_BG_TIME  = (30,  130, 220, 185)   # azul claro
+_BG_TEMP  = (235, 195,  15, 185)   # amarelo
+_BG_CITY  = (35,  165,  65, 185)   # verde
+_FG_LIGHT = (255, 255, 255, 255)   # branco — hora
+_FG_DARK  = ( 18,  18,  18, 255)   # preto  — temp e cidade
 
 
 def apply(mpv, config: dict, temperature: Optional[str]) -> None:
@@ -37,7 +38,7 @@ def apply(mpv, config: dict, temperature: Optional[str]) -> None:
 
     corner    = config.get("corner", "tl")
     osd_w, osd_h = _osd_dims(mpv)
-    font_sz   = max(6, int(osd_h * 0.020))
+    font_sz   = max(8, int(osd_h * 0.028))
     margin_x  = max(4, int(osd_w * _MARGIN_X))
     margin_y  = max(6, int(osd_h * _MARGIN_Y))
 
@@ -47,8 +48,8 @@ def apply(mpv, config: dict, temperature: Optional[str]) -> None:
 
     bgra_bytes, w, h = result
     x, y = _corner_pos(corner, osd_w, osd_h, w, h, margin_x, margin_y)
-    logger.info("[osd_text] osd=%dx%d font=%d bmp=%dx%d pos=(%d,%d) margin_y=%d",
-                osd_w, osd_h, font_sz, w, h, x, y, margin_y)
+    logger.debug("[osd_text] osd=%dx%d font=%d bmp=%dx%d pos=(%d,%d) margin_y=%d",
+                 osd_w, osd_h, font_sz, w, h, x, y, margin_y)
     try:
         import tempfile, datetime
         dbg = Path(tempfile.gettempdir()) / "playline_osd_debug.txt"
@@ -128,9 +129,9 @@ def _render(config: dict, temperature: Optional[str], font_sz: int) -> Optional[
         font_main = _load_font(font_sz)
         font_city = _load_font(max(4, int(font_sz * 0.72)))
 
-        pad_x  = max(2, int(font_sz * 0.25))
-        pad_y  = max(1, int(font_sz * 0.16))
-        pad_cy = max(2, int(font_sz * 0.22))
+        pad_x  = max(4, int(font_sz * 0.40))
+        pad_y  = max(3, int(font_sz * 0.28))
+        pad_cy = max(3, int(font_sz * 0.30))
 
         probe = Image.new("RGBA", (1, 1))
         d     = ImageDraw.Draw(probe)
@@ -173,22 +174,22 @@ def _render(config: dict, temperature: Optional[str], font_sz: int) -> Optional[
         if both:
             # Hora à esquerda (azul)
             draw.rectangle([0, 0, left_w - 1, top_h - 1], fill=_BG_TIME)
-            draw.text(cpos(time_str, font_main, 0, 0, left_w, top_h), time_str, font=font_main, fill=_FG)
+            draw.text(cpos(time_str, font_main, 0, 0, left_w, top_h), time_str, font=font_main, fill=_FG_LIGHT)
             # Temp à direita (amarelo) — ocupa o restante
             r_start = left_w
             r_w     = total_w - r_start
             draw.rectangle([r_start, 0, total_w - 1, top_h - 1], fill=_BG_TEMP)
-            draw.text(cpos(temp_str, font_main, r_start, 0, r_w, top_h), temp_str, font=font_main, fill=_FG)
+            draw.text(cpos(temp_str, font_main, r_start, 0, r_w, top_h), temp_str, font=font_main, fill=_FG_DARK)
         elif time_str:
             draw.rectangle([0, 0, total_w - 1, top_h - 1], fill=_BG_TIME)
-            draw.text(cpos(time_str, font_main, 0, 0, total_w, top_h), time_str, font=font_main, fill=_FG)
+            draw.text(cpos(time_str, font_main, 0, 0, total_w, top_h), time_str, font=font_main, fill=_FG_LIGHT)
         else:
             draw.rectangle([0, 0, total_w - 1, top_h - 1], fill=_BG_TEMP)
-            draw.text(cpos(temp_str, font_main, 0, 0, total_w, top_h), temp_str, font=font_main, fill=_FG)
+            draw.text(cpos(temp_str, font_main, 0, 0, total_w, top_h), temp_str, font=font_main, fill=_FG_DARK)
 
         # Cidade em baixo (verde)
         draw.rectangle([0, top_h, total_w - 1, total_h - 1], fill=_BG_CITY)
-        draw.text(cpos(city, font_city, 0, top_h, total_w, city_h), city, font=font_city, fill=_FG)
+        draw.text(cpos(city, font_city, 0, top_h, total_w, city_h), city, font=font_city, fill=_FG_DARK)
 
         # RGBA → BGRA pré-multiplicado
         rgba = img.tobytes()
