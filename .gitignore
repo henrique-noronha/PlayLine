@@ -1,5 +1,6 @@
 # Claude Code — configurações locais do usuário (não compartilhar)
 .claude/settings.local.json
+CLAUDE.md
 
 # Python
 __pycache__/
@@ -63,4 +64,5 @@ Biblioteca/
 *.bak
 backend/.playline_server
 .claude/skills/
+
 
