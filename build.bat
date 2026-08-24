@@ -34,6 +34,7 @@ python -m PyInstaller --onefile --noconsole --noconfirm ^
     --name PlayLine-daemon ^
     --add-binary "libmpv-2.dll;." ^
     --paths "." ^
+    --collect-all yt_dlp ^
     %ICON_ARG% ^
     mpv_daemon.py
 if errorlevel 1 ( echo. & echo ERRO ao compilar daemon & cd .. & pause & exit /b 1 )
@@ -50,6 +51,7 @@ python -m PyInstaller --onedir --noconsole --noconfirm ^
     --add-data "../frontend;frontend" ^
     --paths "." ^
     --collect-all webview ^
+    --collect-all yt_dlp ^
     --hidden-import clr ^
     %FFMPEG_ARG% ^
     %ICON_ARG% ^
