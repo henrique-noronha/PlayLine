@@ -136,6 +136,18 @@ async def lifespan(app: FastAPI):
             loop,
         )
 
+    def _on_logo_state(msg: dict):
+        asyncio.run_coroutine_threadsafe(
+            manager.broadcast(msg),
+            loop,
+        )
+
+    def _on_audio_level(db):
+        asyncio.run_coroutine_threadsafe(
+            manager.broadcast({"event": "audio_level", "db": db}),
+            loop,
+        )
+
     def _on_text_overlay_state(state: dict):
         asyncio.run_coroutine_threadsafe(
             manager.broadcast(state),
@@ -163,9 +175,11 @@ async def lifespan(app: FastAPI):
         on_end_file=_on_end,
         on_position=_on_position,
         on_logo_list=_on_logo_list,
+        on_logo_state=_on_logo_state,
         on_text_overlay_state=_on_text_overlay_state,
         on_preview_frame=_on_preview_frame,
         on_file_loaded=_on_file_loaded,
+        on_audio_level=_on_audio_level,
     )
     playlist_engine = PlaylistEngine(player=player_instance, broadcast=manager.broadcast)
     playlist_engine.set_event_loop(loop)

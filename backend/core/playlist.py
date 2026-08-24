@@ -507,6 +507,9 @@ class PlaylistEngine:
     def request_logo_list(self):
         self._player.request_logo_list()
 
+    def request_logo_state(self):
+        self._player.request_logo_state()
+
     def set_text_overlay(self, config: dict):
         self._player.set_text_overlay(config)
 

@@ -22,13 +22,15 @@ logger = logging.getLogger(__name__)
 
 
 class Player:
-    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None, on_text_overlay_state: Optional[Callable[[dict], None]] = None, on_preview_frame: Optional[Callable[[str], None]] = None, on_file_loaded: Optional[Callable[[], None]] = None):
+    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None, on_logo_state: Optional[Callable[[dict], None]] = None, on_text_overlay_state: Optional[Callable[[dict], None]] = None, on_preview_frame: Optional[Callable[[str], None]] = None, on_file_loaded: Optional[Callable[[], None]] = None, on_audio_level: Optional[Callable[[float], None]] = None):
         self._on_end_file = on_end_file
         self._on_position = on_position
         self._on_logo_list = on_logo_list
+        self._on_logo_state = on_logo_state
         self._on_text_overlay_state = on_text_overlay_state
         self._on_preview_frame = on_preview_frame
         self._on_file_loaded = on_file_loaded
+        self._on_audio_level = on_audio_level
         self._sock: Optional[socket.socket] = None
         self._send_lock = threading.Lock()
         self._connected = False
@@ -133,6 +135,12 @@ class Player:
         elif event == "logo_list":
             if self._on_logo_list:
                 self._on_logo_list(msg.get("files", []))
+        elif event == "logo_state":
+            if self._on_logo_state:
+                self._on_logo_state(msg)
+        elif event == "audio_level":
+            if self._on_audio_level:
+                self._on_audio_level(msg.get("db"))
         elif event == "text_overlay_state":
             if self._on_text_overlay_state:
                 self._on_text_overlay_state(msg)
@@ -231,6 +239,9 @@ class Player:
 
     def request_logo_list(self):
         self._send({"action": "list_logos"})
+
+    def request_logo_state(self):
+        self._send({"action": "get_logo_state"})
 
     def set_text_overlay(self, config: dict):
         self._send({"action": "set_text_overlay", **config})

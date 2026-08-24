@@ -27,6 +27,7 @@ async def websocket_endpoint(ws: WebSocket):
     except Exception as exc:
         logger.error("Erro ao enviar estado inicial: %s", exc)
     _playlist_engine.request_logo_list()
+    _playlist_engine.request_logo_state()
     _playlist_engine.request_text_overlay_state()
     try:
         while True:
