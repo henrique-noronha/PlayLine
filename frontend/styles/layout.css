@@ -48,26 +48,31 @@ header {
   50%       { opacity: .4; }
 }
 
-/* ── Grid principal ── */
+/* ── Grid principal ──
+   flex:1 + min-height:0 fazem o grid preencher exatamente o espaço que sobra
+   abaixo do header, em qualquer altura de tela/zoom — sem isso, os cards
+   ficam com altura "natural" e sobra espaço em branco embaixo em telas maiores. */
 main {
   display: grid;
   grid-template-columns: clamp(380px, 26%, 520px) 1fr;
-  gap: 16px;
+  gap: 8px;
   padding: 20px clamp(16px, 2vw, 40px);
   align-items: stretch;
+  flex: 1;
+  min-height: 0;
 }
 
 .left-col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
   min-height: 0;
 }
 
 .right-col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
   min-height: 100%;
 }
 

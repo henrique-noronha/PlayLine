@@ -44,13 +44,21 @@
 .pl-toast.pl-toast-info  { border-color: var(--accent);  color: var(--accent);  }
 .pl-toast.pl-toast-error { border-color: var(--danger);  color: var(--danger);  }
 
+html { height: 100%; }
+
+/* Altura fixa (não só min-height): sem isso o flex:1 do <main> não tem o que
+   preencher e volta a crescer pelo conteúdo. Overflow interno é tratado pelas
+   próprias listas roláveis (.library-list, .schedule-list), não pela página. */
 body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
   font-size: 14px;
-  min-height: 100vh;
+  height: 100vh;
   min-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .empty { color: var(--muted); text-align: center; padding: 24px; }

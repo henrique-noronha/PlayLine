@@ -1,7 +1,9 @@
-/* ── Rodapé: log + YouTube lado a lado, mesma largura ── */
+/* ── Rodapé: log + YouTube lado a lado, mesma largura ──
+   Oculto por enquanto: Log de eventos, Entrada de Vídeo e YouTube saíram
+   daqui — os dois últimos viraram o quadrante fixo ao lado do Roteiro. */
 .bottom-row {
+  display: none;
   grid-column: 1 / -1;
-  display: flex;
   gap: 16px;
   align-items: stretch;
 }

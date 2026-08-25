@@ -39,6 +39,27 @@
     _modal.style.left = left + "px";
   }
 
+  // Encontra o dispositivo pelo nome (labels só ficam disponíveis após a primeira permissão
+  // concedida) e retorna o MediaStream, ou null se não conseguir acessar.
+  // Exposto pro quadrante fixo de entrada (input_quadrant.js) reaproveitar sem duplicar.
+  window._captureGetStream = async function (deviceName) {
+    if (!navigator.mediaDevices?.getUserMedia) return null;
+    try {
+      const devices   = await navigator.mediaDevices.enumerateDevices();
+      const videoDevs = devices.filter(d => d.kind === "videoinput" && d.label);
+      const match = videoDevs.find(d =>
+        d.label.toLowerCase().includes(deviceName.toLowerCase()) ||
+        deviceName.toLowerCase().includes(d.label.toLowerCase())
+      );
+      const constraints = match
+        ? { video: { deviceId: { exact: match.deviceId } } }
+        : { video: true };
+      return await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (_e) {
+      return null;
+    }
+  };
+
   window.openCapturePreview = async function (path, anchor) {
     const deviceName = path.replace(/^av:\/\/dshow:video=/, "");
 
@@ -56,25 +77,11 @@
     _videoEl.srcObject = null;
     el.style.display = "block";
 
-    try {
-      // Tenta encontrar o dispositivo pelo nome via enumerateDevices
-      // (labels só ficam disponíveis após a primeira permissão concedida)
-      const devices  = await navigator.mediaDevices.enumerateDevices();
-      const videoDevs = devices.filter(d => d.kind === "videoinput" && d.label);
-      const match = videoDevs.find(d =>
-        d.label.toLowerCase().includes(deviceName.toLowerCase()) ||
-        deviceName.toLowerCase().includes(d.label.toLowerCase())
-      );
-
-      const constraints = match
-        ? { video: { deviceId: { exact: match.deviceId } } }
-        : { video: true };
-
-      _stream = await navigator.mediaDevices.getUserMedia(constraints);
+    _stream = await window._captureGetStream(deviceName);
+    if (_stream) {
       _videoEl.srcObject = _stream;
-    } catch (_e) {
+    } else {
       el.style.display = "none";
-      _stream = null;
       if (typeof showToast === "function") showToast("Não foi possível acessar: " + deviceName, "warn");
     }
   };

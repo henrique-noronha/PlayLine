@@ -6,7 +6,7 @@
 
 .schedule-card {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0; left: 0; right: 268px; bottom: 0;
   display: flex;
   flex-direction: column;
   margin: 0;
@@ -15,6 +15,7 @@
 
 .schedule-card .schedule-header {
   margin-bottom: 6px;
+  padding-right: 8px;
 }
 
 /* ── Ações do roteiro ── */
@@ -93,6 +94,7 @@
   overflow-y: auto;
   min-height: 0;
   gap: 4px;
+  padding-right: 8px;
   position: relative;
 }
 
