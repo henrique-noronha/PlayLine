@@ -12,6 +12,11 @@
   function _applyZoom(z) {
     _zoom = z;
     document.body.style.zoom = _zoom + '%';
+    // `zoom` encolhe/amplia o resultado já calculado em 100vh — sem compensar,
+    // sobra (zoom<100%) ou falta (zoom>100%) espaço em relação à tela real.
+    // Ajusta a altura lógica do body pelo inverso do zoom pra sempre preencher
+    // exatamente a viewport, em qualquer nível de zoom.
+    document.body.style.height = (10000 / _zoom) + 'vh';
     localStorage.setItem('pl-zoom', String(_zoom));
   }
 

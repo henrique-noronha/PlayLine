@@ -1,8 +1,8 @@
-/* ── Card da biblioteca (âncora de altura) ── */
+/* ── Card da biblioteca (preenche o que sobrar na coluna esquerda) ── */
 .library-card {
   display: flex;
   flex-direction: column;
-  height: 60vh;
+  flex: 1;
   min-height: 400px;
 }
 
@@ -164,6 +164,7 @@
   overflow-y: auto;
   min-height: 0;
   gap: 4px;
+  padding-right: 8px;
 }
 
 /* ── Item da biblioteca ── */

@@ -409,6 +409,17 @@ function calcRemaining() {
   return Math.max(0, total - elapsed);
 }
 
+function calcClipRemaining() {
+  if (!state.playing || state.currentIndex < 0) return 0;
+  const currentItem = state.schedule[state.currentIndex];
+  if (!currentItem || currentItem.live) return 0;
+  const dur = effectiveDuration(currentItem);
+  if (!state.currentItemStartTime) return dur;
+  const pausedMs = (state.totalPausedMs || 0) + (state.pausedAt ? Date.now() - state.pausedAt : 0);
+  const elapsed = Math.max(0, (Date.now() - state.currentItemStartTime - pausedMs) / 1000);
+  return Math.max(0, dur - elapsed);
+}
+
 function updateStartTimes() {
   const times = calcStartTimes();
   times.forEach((t, i) => {
@@ -424,6 +435,10 @@ function updateStartTimes() {
   const secs = calcRemaining();
   const rem = document.getElementById("remaining-time");
   if (rem) rem.textContent = secs === Infinity ? "∞" : (secs > 0 ? fmt(secs) : "—");
+
+  const clipSecs = calcClipRemaining();
+  const clipRem = document.getElementById("clip-remaining-time");
+  if (clipRem) clipRem.textContent = clipSecs > 0 ? fmt(clipSecs) : "—";
 
   const nextEl = document.getElementById("next-clip-time");
   if (nextEl) {
@@ -502,6 +517,7 @@ function renderSchedule() {
     list.appendChild(empty);
     initDnD(list);
     _refreshLibSchedBadges();
+    if (typeof window._onScheduleChangedForInputQuadrant === "function") window._onScheduleChangedForInputQuadrant();
     return;
   }
 
@@ -670,6 +686,7 @@ function renderSchedule() {
   updateScheduleSelectionUI();
   _refreshLibSchedBadges();
   _updateErrorCount();
+  if (typeof window._onScheduleChangedForInputQuadrant === "function") window._onScheduleChangedForInputQuadrant();
 }
 
 function _updateErrorCount() {
