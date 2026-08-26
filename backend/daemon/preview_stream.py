@@ -134,16 +134,33 @@ class DesktopCapture:
                 line = await self._proc.stderr.readline()
                 if not line:
                     break
+                text = line.decode(errors="replace").strip()
+                if text:
+                    # ffmpeg roda com -loglevel error, então qualquer linha aqui é
+                    # sinal de problema real (ex.: DXGI access-lost) — vale logar
+                    # pra não ficarmos cegos na próxima falha em campo.
+                    logger.warning("[desktop-capture] ffmpeg: %s", text)
         except Exception:
             pass
 
+    _STALL_TIMEOUT = 6.0  # s sem nenhum byte novo — trata como travado e encerra p/ permitir retry
+
     async def frames(self) -> AsyncIterator[bytes]:
-        """Gera frames JPEG completos conforme chegam do stdout do ffmpeg (stream MJPEG cru)."""
+        """Gera frames JPEG completos conforme chegam do stdout do ffmpeg (stream MJPEG cru).
+
+        Um timeout de leitura garante que um ffmpeg travado (processo vivo mas sem
+        produzir saída, ex.: preso numa chamada DXGI) não prenda o consumidor pra
+        sempre — sem isso, `daemon.py` nunca percebe a falha pra tentar de novo.
+        """
         if not self._proc or not self._proc.stdout:
             return
         splitter = _JpegFrameSplitter()
         while True:
-            chunk = await self._proc.stdout.read(65536)
+            try:
+                chunk = await asyncio.wait_for(self._proc.stdout.read(65536), timeout=self._STALL_TIMEOUT)
+            except asyncio.TimeoutError:
+                logger.warning("[desktop-capture] sem frames há %.0fs — ffmpeg travado, encerrando captura", self._STALL_TIMEOUT)
+                break
             if not chunk:
                 break
             for frame in splitter.feed(chunk):

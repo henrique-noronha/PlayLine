@@ -308,6 +308,21 @@ function applyState(s) {
   state.paused = s.paused ?? false;
   if (typeof s.repeat === "boolean") { state.repeat = s.repeat; updateLoopIndicator(); }
 
+  // Reconstrói o "relógio" do clipe atual a partir da posição enviada pelo servidor —
+  // sem isso, os mostradores do painel de controle (calcClipRemaining/calcRemaining/
+  // calcStartTimes) ficam travados após reabrir a interface, pois dependem de
+  // state.currentItemStartTime, que só é setado nos eventos now_playing/paused/resumed.
+  if (state.playing || state.paused) {
+    const posSec = typeof s.position === "number" ? s.position : 0;
+    state.currentItemStartTime = Date.now() - posSec * 1000;
+    state.totalPausedMs = 0;
+    state.pausedAt = state.paused ? Date.now() : null;
+  } else {
+    state.currentItemStartTime = null;
+    state.totalPausedMs = 0;
+    state.pausedAt = null;
+  }
+
   if (s.items) { 
     state.schedule = s.items; 
     renderSchedule(); 
@@ -342,6 +357,7 @@ function applyState(s) {
   }
   updateButtons();
   highlightActive(state.currentIndex);
+  updateStartTimes();
 }
 
 // Botões de controle de mídia
