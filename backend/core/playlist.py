@@ -50,6 +50,7 @@ class PlaylistEngine:
         self._repeat: bool = False
         self._live_last_pos: float = -1.0
         self._live_pos_ts: float = 0.0
+        self._last_position: float = 0.0  # posição (s) do item atual — permite reconstruir o tempo decorrido ao reconectar a interface
         self._live_watchdog_task: Optional[asyncio.Task] = None
         self._live_reconnecting: bool = False  # True quando _schedule_reconnect emitiu loadfile replace
 
@@ -187,6 +188,7 @@ class PlaylistEngine:
     def on_position(self, pos: float):
         """Chamado pelo Player a cada evento de posição do MPV."""
         if self._running and 0 <= self._index < len(self._items):
+            self._last_position = pos
             if _is_live_item(self._items[self._index]):
                 if abs(pos - self._live_last_pos) > 0.05:
                     self._live_last_pos = pos
@@ -408,6 +410,7 @@ class PlaylistEngine:
         self._index = index
         self._running = True
         self._paused = False
+        self._last_position = 0.0
         item = self._items[index]
 
         if _is_live_item(item) and not force_resolve:
@@ -559,4 +562,5 @@ class PlaylistEngine:
             "current_item": item,
             "total_items": len(self._items),
             "repeat": self._repeat,
+            "position": self._last_position,
         }
