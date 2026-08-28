@@ -53,12 +53,12 @@ def apply(mpv, logo_state: dict, logos_dir: Path) -> None:
             logger.error("[overlay] slot=%d arquivo não encontrado: %s", slot, p)
             continue
 
-        result = _load_and_resize(p, max_w, max_h)
-        if result is None:
+        img = _load_and_resize(p, max_w, max_h)
+        if img is None:
             continue
-        rgba_bytes, w, h = result
+        w, h = img.size
 
-        bgra_path = _write_bgra_tmp(rgba_bytes, w, h, slot)
+        bgra_path = _write_bgra_tmp(img, slot)
         if bgra_path is None:
             continue
 
@@ -100,10 +100,10 @@ def _osd_dimensions(mpv) -> tuple[int, int]:
         return 1920, 1080
 
 
-def _load_and_resize(path: Path, max_w: int, max_h: int) -> Optional[tuple]:
+def _load_and_resize(path: Path, max_w: int, max_h: int):
     """Carrega imagem, converte para RGBA e redimensiona mantendo proporção.
 
-    Retorna (rgba_bytes, width, height) ou None em caso de erro.
+    Retorna a imagem PIL (modo RGBA) redimensionada, ou None em caso de erro.
     """
     try:
         from PIL import Image
@@ -114,25 +114,30 @@ def _load_and_resize(path: Path, max_w: int, max_h: int) -> Optional[tuple]:
         new_h = max(1, int(h * ratio))
         img = img.resize((new_w, new_h), Image.LANCZOS)
         logger.info("[overlay] %s → %dx%d", path.name, new_w, new_h)
-        return img.tobytes(), new_w, new_h
+        return img
     except Exception as exc:
         logger.error("[overlay] erro ao carregar %s: %s", path.name, exc)
         return None
 
 
-def _write_bgra_tmp(rgba_bytes: bytes, w: int, h: int, slot: int) -> Optional[Path]:
-    """Converte RGBA → BGRA pré-multiplicado e grava em arquivo temporário."""
+def _write_bgra_tmp(img, slot: int) -> Optional[Path]:
+    """Converte RGBA → BGRA pré-multiplicado e grava em arquivo temporário.
+
+    Premultiplica e reordena os canais via PIL (ImageChops.multiply, em C) em
+    vez de um loop Python por pixel — para uma logo típica isso troca dezenas
+    de milhares de iterações Python por 3 operações vetorizadas, sensível
+    sobretudo em CPUs mais fracas (é chamado toda vez que a logo é ativada
+    ou trocada).
+    """
     try:
-        buf = bytearray(len(rgba_bytes))
-        for i in range(0, len(rgba_bytes), 4):
-            r, g, b, a = rgba_bytes[i], rgba_bytes[i+1], rgba_bytes[i+2], rgba_bytes[i+3]
-            fa = a / 255.0
-            buf[i]   = int(b * fa)
-            buf[i+1] = int(g * fa)
-            buf[i+2] = int(r * fa)
-            buf[i+3] = a
+        from PIL import Image, ImageChops
+        r, g, b, a = img.split()
+        r = ImageChops.multiply(r, a)
+        g = ImageChops.multiply(g, a)
+        b = ImageChops.multiply(b, a)
+        bgra = Image.merge("RGBA", (b, g, r, a))
         tmp = Path(tempfile.gettempdir()) / f"playline_logo_{slot}.bgra"
-        tmp.write_bytes(bytes(buf))
+        tmp.write_bytes(bgra.tobytes())
         return tmp
     except Exception as exc:
         logger.error("[overlay] erro ao gravar BGRA slot=%d: %s", slot, exc)

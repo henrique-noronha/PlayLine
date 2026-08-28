@@ -563,9 +563,15 @@ async def set_repeat(body: dict):
     return {"repeat": enabled}
 
 
-@router.get("/api/capture-devices")
-async def list_capture_devices():
-    """Lista dispositivos de vídeo DirectShow disponíveis (webcams, placas de captura)."""
+def _list_capture_devices_sync() -> dict:
+    """Enumera dispositivos DirectShow via ffmpeg (bloqueante — chamar via run_in_executor).
+
+    subprocess.run aqui pode levar vários segundos (timeout=10). Rodar isso direto
+    numa rota async trava o event loop inteiro nesse meio-tempo — inclusive o
+    encaminhamento dos frames de preview vindos do daemon, fazendo o "Reproduzindo
+    agora" ficar sem sinal sempre que o modal de câmera é aberto, mesmo sem nenhum
+    clipe relacionado tocando.
+    """
     import re
     ffmpeg = _ffmpeg_bin()
     logger.info("capture-devices: usando ffmpeg em %r", ffmpeg)
@@ -590,6 +596,14 @@ async def list_capture_devices():
     except Exception as exc:
         logger.warning("capture-devices error: %s", exc)
         return {"devices": [], "error": str(exc)}
+
+
+@router.get("/api/capture-devices")
+async def list_capture_devices():
+    """Lista dispositivos de vídeo DirectShow disponíveis (webcams, placas de captura)."""
+    import asyncio
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, _list_capture_devices_sync)
 
 
 @router.delete("/api/library/folder")
