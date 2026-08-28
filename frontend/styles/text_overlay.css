@@ -27,9 +27,9 @@
   overflow: hidden;
 }
 
-/* Blocos — mesmos RGBA que o PIL (185/255 ≈ 0.725) */
+/* Blocos — mesmos RGBA que o PIL (190/255 ≈ 0.745) */
 .to-time {
-  background: rgba(30, 130, 220, 0.725);
+  background: rgba(68, 68, 68, 0.745);
   color: #fff;
   padding: 0.28em 0.40em;
   font-size: 1em;
@@ -40,8 +40,8 @@
 }
 
 .to-temp {
-  background: rgba(235, 195, 15, 0.725);
-  color: #121212;
+  background: rgba(52, 52, 52, 0.745);
+  color: #fff;
   padding: 0.28em 0.40em;
   font-size: 1em;
   display: flex;
@@ -52,8 +52,8 @@
 
 /* Cidade — linha inteira abaixo (0.72 × font_sz) */
 .to-city-lbl {
-  background: rgba(35, 165, 65, 0.725);
-  color: #121212;
+  background: rgba(38, 38, 38, 0.745);
+  color: #fff;
   padding: 0.30em 0.40em;
   font-size: 0.72em;
   display: flex;
