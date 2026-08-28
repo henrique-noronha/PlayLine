@@ -40,13 +40,8 @@ def apply(mpv, logo_state: dict, logos_dir: Path) -> None:
             logger.error("[overlay] slot=%d arquivo não encontrado: %s", slot, p)
             continue
 
-<<<<<<< HEAD
-        result = _load_for_osd(p, osd_w, osd_h)
-        if result is None:
-=======
-        img = _load_and_resize(p, max_w, max_h)
+        img = _load_for_osd(p, osd_w, osd_h)
         if img is None:
->>>>>>> develop
             continue
         w, h = img.size
 
@@ -90,24 +85,16 @@ def _osd_dimensions(mpv) -> tuple[int, int]:
         return _CANVAS_W, _CANVAS_H
 
 
-<<<<<<< HEAD
-def _load_for_osd(path: Path, osd_w: int, osd_h: int) -> Optional[tuple]:
+def _load_for_osd(path: Path, osd_w: int, osd_h: int):
     """Carrega a logo no tamanho original do canvas.
 
     Escala proporcionalmente apenas quando o OSD difere do canvas 1920x1080
     (ex: janela de debug em modo sem monitor secundário).
-    Retorna (rgba_bytes, width, height) ou None em caso de erro.
-=======
-def _load_and_resize(path: Path, max_w: int, max_h: int):
-    """Carrega imagem, converte para RGBA e redimensiona mantendo proporção.
-
-    Retorna a imagem PIL (modo RGBA) redimensionada, ou None em caso de erro.
->>>>>>> develop
+    Retorna a imagem PIL (modo RGBA), ou None em caso de erro.
     """
     try:
         from PIL import Image
         img = Image.open(str(path)).convert("RGBA")
-<<<<<<< HEAD
         src_w, src_h = img.size
 
         if src_w != osd_w or src_h != osd_h:
@@ -117,19 +104,9 @@ def _load_and_resize(path: Path, max_w: int, max_h: int):
             img = img.resize((new_w, new_h), Image.LANCZOS)
             logger.info("[overlay] %s escalado %dx%d → %dx%d", path.name, src_w, src_h, new_w, new_h)
         else:
-            new_w, new_h = src_w, src_h
-            logger.info("[overlay] %s %dx%d (tamanho original)", path.name, new_w, new_h)
+            logger.info("[overlay] %s %dx%d (tamanho original)", path.name, src_w, src_h)
 
-        return img.tobytes(), new_w, new_h
-=======
-        w, h = img.size
-        ratio = min(max_h / h, max_w / w)
-        new_w = max(1, int(w * ratio))
-        new_h = max(1, int(h * ratio))
-        img = img.resize((new_w, new_h), Image.LANCZOS)
-        logger.info("[overlay] %s → %dx%d", path.name, new_w, new_h)
         return img
->>>>>>> develop
     except Exception as exc:
         logger.error("[overlay] erro ao carregar %s: %s", path.name, exc)
         return None
