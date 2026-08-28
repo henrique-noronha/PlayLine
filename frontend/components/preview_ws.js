@@ -41,6 +41,8 @@
     _drawNoSignal();
   };
 
+  const DECODE_TIMEOUT_MS = 2000; // onload/onerror que nunca disparam não podem travar o preview pro resto da sessão
+
   function _drawFrame(blob) {
     _statusMsg = null;
     _lastFrame = Date.now();
@@ -56,15 +58,26 @@
 
     const url = URL.createObjectURL(blob);
     const img = new Image();
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(watchdog);
+      URL.revokeObjectURL(url);
+      _decoding = false;
+    };
+    // Sem isso, um onload/onerror que nunca dispara (ex.: decode em disputa com
+    // outro consumo pesado de GPU/mídia na página, como abrir uma câmera) deixa
+    // _decoding travado em true pra sempre — todo frame seguinte cai no "return"
+    // acima em silêncio, sem erro nenhum, e o preview fica congelado até recarregar
+    // a página inteira (nenhuma ação no roteiro resolve, porque o travamento é só
+    // deste script, não do servidor).
+    const watchdog = setTimeout(finish, DECODE_TIMEOUT_MS);
     img.onload = () => {
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      URL.revokeObjectURL(url);
-      _decoding = false;
+      if (!settled) ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      finish();
     };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      _decoding = false;
-    };
+    img.onerror = finish;
     img.src = url;
   }
 

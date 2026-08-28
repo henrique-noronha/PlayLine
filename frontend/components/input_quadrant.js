@@ -20,6 +20,13 @@
     return (state.schedule || []).find(it => it.type === type);
   }
 
+  // Ver isCaptureDeviceNeededSoon() em app.js — mesma checagem (atual ou
+  // próximo da fila) usada por todo preview de captura no navegador, pra não
+  // disputar o dispositivo com o MPV.
+  function _needsToStayFree(item) {
+    return !!window.isCaptureDeviceNeededSoon?.(item.path);
+  }
+
   function _clearPreview() {
     if (_stream) { _stream.getTracks().forEach(t => t.stop()); _stream = null; }
     video.srcObject   = null;
@@ -35,8 +42,15 @@
 
   async function _showCamera(item) {
     _clearPreview();
-    if (typeof window._captureGetStream !== "function") return;
     const deviceName = item.path.replace(/^av:\/\/dshow:video=/, "");
+    if (_needsToStayFree(item)) {
+      // Não abre o mesmo dispositivo aqui — deixa exclusivo pro MPV, que é
+      // quem realmente está transmitindo (ou está prestes a). Ver "Reproduzindo
+      // agora" pro preview real.
+      _showEmpty("Ao vivo agora (ou é a próxima da fila) — sem preview duplicado para não travar a transmissão");
+      return;
+    }
+    if (typeof window._captureGetStream !== "function") return;
     _stream = await window._captureGetStream(deviceName);
     if (_stream) {
       video.srcObject     = _stream;

@@ -16,6 +16,21 @@ const state = {
 
 let _remainingTimer = null;
 
+// Dispositivos de captura (webcam/placa) geralmente só aceitam um consumidor
+// por vez — se algum preview no navegador (quadrante fixo, popup do roteiro)
+// segura o mesmo dispositivo que o item atual ou o próximo da fila, o MPV
+// perde a disputa ao tentar ir ao ar e a live cai em loop de reconexão.
+// Fonte única usada por todo preview de captura pra decidir se deve evitar
+// abrir o dispositivo (compara por path — mais robusto que referência de
+// objeto, que muda a cada "schedule_updated" mesmo pro mesmo item lógico).
+function isCaptureDeviceNeededSoon(path) {
+  if (!path || !state.playing || state.currentIndex < 0) return false;
+  const curr = state.schedule[state.currentIndex];
+  const next = state.schedule[state.currentIndex + 1];
+  return (!!curr && curr.path === path) || (!!next && next.path === path);
+}
+window.isCaptureDeviceNeededSoon = isCaptureDeviceNeededSoon;
+
 // Carregamento diferido do preview: aguarda o primeiro evento "position" para
 // saber onde abrir o vídeo via #t=N, evitando o seek manual que congela o browser.
 let _pendingLoad         = null;   // { path, paused } enquanto aguarda posição
@@ -180,6 +195,8 @@ function handleEvent(ev) {
           _restoreOverlayBaseline();
         }
       }
+      window._onScheduleChangedForInputQuadrant?.(); // libera a câmera do quadrante se ela acabou de entrar no ar
+      window._captureReleaseIfNeededSoon?.();        // idem pro popup de preview do roteiro, se estiver aberto
       break;
     case "paused":
       state.paused = true;
@@ -220,6 +237,8 @@ function handleEvent(ev) {
       stopVideo();
       if (window._setPreviewStatus) window._setPreviewStatus(null);
       updateStartTimes();
+      window._onScheduleChangedForInputQuadrant?.(); // devolve a câmera pro quadrante, se aplicável
+      window._captureReleaseIfNeededSoon?.();        // idem pro popup de preview do roteiro, se estiver aberto
       break;
     case "playlist_end":
       _clearReconnectStatus();
@@ -235,6 +254,8 @@ function handleEvent(ev) {
       stopVideo();
       updateStartTimes();
       updateButtons();
+      window._onScheduleChangedForInputQuadrant?.(); // devolve a câmera pro quadrante, se aplicável
+      window._captureReleaseIfNeededSoon?.();        // idem pro popup de preview do roteiro, se estiver aberto
       break;
     case "position":
       if (_pendingLoad) _commitPendingLoad(ev.pos);
