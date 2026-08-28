@@ -21,11 +21,21 @@
     return _modal;
   }
 
+  let _openPath = null;
+
   function _close() {
     if (_stream) { _stream.getTracks().forEach(t => t.stop()); _stream = null; }
     if (_videoEl) _videoEl.srcObject = null;
     if (_modal)   _modal.style.display = "none";
+    _openPath = null;
   }
+
+  // Chamado nas trocas de item (now_playing/stopped/playlist_end, ver app.js)
+  // pra soltar o dispositivo caso o popup tenha ficado aberto justamente
+  // quando o item dele virou o atual ou o próximo da fila.
+  window._captureReleaseIfNeededSoon = function () {
+    if (_openPath && window.isCaptureDeviceNeededSoon?.(_openPath)) _close();
+  };
 
   function _position(anchor) {
     const rect = anchor.getBoundingClientRect();
@@ -68,6 +78,13 @@
       return;
     }
 
+    // Mesmo dispositivo está no ar (ou prestes a) — não disputa com o MPV.
+    // Ver isCaptureDeviceNeededSoon() em app.js.
+    if (window.isCaptureDeviceNeededSoon?.(path)) {
+      if (typeof showToast === "function") showToast("Ao vivo agora — sem preview duplicado para não travar a transmissão", "warn");
+      return;
+    }
+
     const el = _getOrCreate();
     _labelEl.textContent = deviceName;
     _position(anchor.closest(".schedule-item") || anchor);
@@ -76,12 +93,14 @@
     if (_stream) { _stream.getTracks().forEach(t => t.stop()); _stream = null; }
     _videoEl.srcObject = null;
     el.style.display = "block";
+    _openPath = path;
 
     _stream = await window._captureGetStream(deviceName);
     if (_stream) {
       _videoEl.srcObject = _stream;
     } else {
       el.style.display = "none";
+      _openPath = null;
       if (typeof showToast === "function") showToast("Não foi possível acessar: " + deviceName, "warn");
     }
   };

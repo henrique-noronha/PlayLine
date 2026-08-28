@@ -40,12 +40,17 @@ def apply(mpv, logo_state: dict, logos_dir: Path) -> None:
             logger.error("[overlay] slot=%d arquivo não encontrado: %s", slot, p)
             continue
 
+<<<<<<< HEAD
         result = _load_for_osd(p, osd_w, osd_h)
         if result is None:
+=======
+        img = _load_and_resize(p, max_w, max_h)
+        if img is None:
+>>>>>>> develop
             continue
-        rgba_bytes, w, h = result
+        w, h = img.size
 
-        bgra_path = _write_bgra_tmp(rgba_bytes, w, h, slot)
+        bgra_path = _write_bgra_tmp(img, slot)
         if bgra_path is None:
             continue
 
@@ -85,16 +90,24 @@ def _osd_dimensions(mpv) -> tuple[int, int]:
         return _CANVAS_W, _CANVAS_H
 
 
+<<<<<<< HEAD
 def _load_for_osd(path: Path, osd_w: int, osd_h: int) -> Optional[tuple]:
     """Carrega a logo no tamanho original do canvas.
 
     Escala proporcionalmente apenas quando o OSD difere do canvas 1920x1080
     (ex: janela de debug em modo sem monitor secundário).
     Retorna (rgba_bytes, width, height) ou None em caso de erro.
+=======
+def _load_and_resize(path: Path, max_w: int, max_h: int):
+    """Carrega imagem, converte para RGBA e redimensiona mantendo proporção.
+
+    Retorna a imagem PIL (modo RGBA) redimensionada, ou None em caso de erro.
+>>>>>>> develop
     """
     try:
         from PIL import Image
         img = Image.open(str(path)).convert("RGBA")
+<<<<<<< HEAD
         src_w, src_h = img.size
 
         if src_w != osd_w or src_h != osd_h:
@@ -108,24 +121,38 @@ def _load_for_osd(path: Path, osd_w: int, osd_h: int) -> Optional[tuple]:
             logger.info("[overlay] %s %dx%d (tamanho original)", path.name, new_w, new_h)
 
         return img.tobytes(), new_w, new_h
+=======
+        w, h = img.size
+        ratio = min(max_h / h, max_w / w)
+        new_w = max(1, int(w * ratio))
+        new_h = max(1, int(h * ratio))
+        img = img.resize((new_w, new_h), Image.LANCZOS)
+        logger.info("[overlay] %s → %dx%d", path.name, new_w, new_h)
+        return img
+>>>>>>> develop
     except Exception as exc:
         logger.error("[overlay] erro ao carregar %s: %s", path.name, exc)
         return None
 
 
-def _write_bgra_tmp(rgba_bytes: bytes, w: int, h: int, slot: int) -> Optional[Path]:
-    """Converte RGBA → BGRA pré-multiplicado e grava em arquivo temporário."""
+def _write_bgra_tmp(img, slot: int) -> Optional[Path]:
+    """Converte RGBA → BGRA pré-multiplicado e grava em arquivo temporário.
+
+    Premultiplica e reordena os canais via PIL (ImageChops.multiply, em C) em
+    vez de um loop Python por pixel — para uma logo típica isso troca dezenas
+    de milhares de iterações Python por 3 operações vetorizadas, sensível
+    sobretudo em CPUs mais fracas (é chamado toda vez que a logo é ativada
+    ou trocada).
+    """
     try:
-        buf = bytearray(len(rgba_bytes))
-        for i in range(0, len(rgba_bytes), 4):
-            r, g, b, a = rgba_bytes[i], rgba_bytes[i+1], rgba_bytes[i+2], rgba_bytes[i+3]
-            fa = a / 255.0
-            buf[i]   = int(b * fa)
-            buf[i+1] = int(g * fa)
-            buf[i+2] = int(r * fa)
-            buf[i+3] = a
+        from PIL import Image, ImageChops
+        r, g, b, a = img.split()
+        r = ImageChops.multiply(r, a)
+        g = ImageChops.multiply(g, a)
+        b = ImageChops.multiply(b, a)
+        bgra = Image.merge("RGBA", (b, g, r, a))
         tmp = Path(tempfile.gettempdir()) / f"playline_logo_{slot}.bgra"
-        tmp.write_bytes(bytes(buf))
+        tmp.write_bytes(bgra.tobytes())
         return tmp
     except Exception as exc:
         logger.error("[overlay] erro ao gravar BGRA slot=%d: %s", slot, exc)
