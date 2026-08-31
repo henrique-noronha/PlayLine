@@ -7,13 +7,13 @@ echo  PlayLine -- Build de Distribuicao
 echo ==========================================
 echo.
 
-:: Verifica PyInstaller
-python -m PyInstaller --version >nul 2>&1
-if errorlevel 1 (
-    echo Instalando PyInstaller...
-    pip install pyinstaller
-    if errorlevel 1 ( echo ERRO: falha ao instalar PyInstaller & exit /b 1 )
-)
+:: Instala/atualiza dependencias (garante yt-dlp e demais libs sempre na
+:: versao minima do requirements.txt -- o YouTube quebra extracao com
+:: frequencia e uma versao de yt-dlp desatualizada no ambiente de build
+:: acaba virando um .exe com o mesmo problema ja embutido)
+echo Instalando/atualizando dependencias...
+python -m pip install -r requirements.txt --upgrade
+if errorlevel 1 ( echo ERRO: falha ao instalar dependencias & exit /b 1 )
 
 :: Limpa builds anteriores
 if exist "backend\build"    rmdir /s /q "backend\build"
