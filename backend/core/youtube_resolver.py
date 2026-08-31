@@ -1,25 +1,18 @@
 """Resolução de streams do YouTube.
 
-Estratégia: InnerTube API (TVHTML5 client) em ~300 ms como caminho rápido;
-yt-dlp como fallback caso o InnerTube falhe ou retorne sem URL HLS.
+Resolve a URL do vídeo/live pra uma URL HLS direta via yt-dlp, pra o MPV
+tocar sem precisar baixar o arquivo inteiro.
 """
 
-import json
 import logging
 import re
-import urllib.request
-import urllib.error
+import time
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 _YT_RE = re.compile(
     r"(?:https?://)?(?:www\.)?(?:youtube\.com/(?:watch|live)|youtu\.be/)"
-)
-
-_VIDEO_ID_RE = re.compile(
-    r"[?&]v=([A-Za-z0-9_-]{11})"
-    r"|youtu\.be/([A-Za-z0-9_-]{11})"
-    r"|youtube\.com/live/([A-Za-z0-9_-]{11})"
 )
 
 # Pré-importa yt_dlp na inicialização do módulo para evitar ~0.5 s de penalidade
@@ -76,145 +69,87 @@ def get_info(url: str) -> dict:
         return {"valid": False, "error": _friendly_error(exc)}
 
 
-# ── Caminho rápido: InnerTube API ────────────────────────────────────────────
+# ── Resolução via yt-dlp ─────────────────────────────────────────────────────
 
-def _extract_video_id(url: str) -> "str | None":
-    m = _VIDEO_ID_RE.search(url)
-    return (m.group(1) or m.group(2) or m.group(3)) if m else None
+_YTDLP_ATTEMPTS  = 2     # tenta mais de uma vez — falha de rede transitória não deve virar reconexão cara
+_YTDLP_RETRY_SEC = 1.5
+
+# O client "android" ainda serve HLS com vídeo+áudio já combinados num único
+# formato — o MPV abre um stream só e começa a decodificar. Os clients
+# padrão (mweb/web/tv/visionos) só servem formatos separados (vídeo-only +
+# áudio-only): aí a única opção é o manifesto HLS mestre, que lista ~8
+# variantes e o MPV enumera todas antes de tocar (10s+ só nisso). Por ser um
+# client específico visado pelas restrições do YouTube, uma falha aqui não é
+# retentada — cai direto pro fallback abaixo.
+_ANDROID_CLIENT = ["android"]
 
 
-def _innertube_hls(video_id: str) -> "str | None":
-    """POST para a API InnerTube — tenta ANDROID e IOS em sequência, retorna m3u8."""
-    clients = [
-        {
-            "name": "ANDROID",
-            "num": "3",
-            "version": "19.29.37",
-            "context": {
-                "clientName": "ANDROID",
-                "clientVersion": "19.29.37",
-                "androidSdkVersion": 30,
-                "hl": "pt",
-                "gl": "BR",
-            },
-            "ua": "com.google.android.youtube/19.29.37 (Linux; U; Android 11) gzip",
-        },
-        {
-            "name": "IOS",
-            "num": "5",
-            "version": "19.29.1",
-            "context": {
-                "clientName": "IOS",
-                "clientVersion": "19.29.1",
-                "deviceMake": "Apple",
-                "deviceModel": "iPhone16,2",
-                "osName": "iPhone",
-                "osVersion": "17.5.1.21F90",
-                "hl": "pt",
-                "gl": "BR",
-            },
-            "ua": "com.google.ios.youtube/19.29.1 (iPhone16,2; U; CPU iOS 17_5_1 like Mac OS X)",
-        },
-    ]
+def _pick_stream_url(info: dict) -> Optional[str]:
+    """Escolhe a URL de stream a partir do resultado do yt-dlp.
 
-    for client in clients:
-        body = json.dumps({
-            "videoId": video_id,
-            "context": {"client": client["context"]},
-        }).encode()
-        req = urllib.request.Request(
-            "https://www.youtube.com/youtubei/v1/player?prettyPrint=false",
-            data=body,
-            headers={
-                "Content-Type": "application/json",
-                "X-YouTube-Client-Name": client["num"],
-                "X-YouTube-Client-Version": client["version"],
-                "User-Agent": client["ua"],
-                "Origin": "https://www.youtube.com",
-                "Referer": "https://www.youtube.com/",
-            },
-            method="POST",
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=8) as resp:
-                data = json.loads(resp.read())
-        except Exception as exc:
-            logger.warning("InnerTube [%s] erro de rede: %s", client["name"], exc)
-            continue
-
-        status = data.get("playabilityStatus", {}).get("status")
-        if status != "OK":
-            reason = data.get("playabilityStatus", {}).get("reason", "")
-            logger.warning("InnerTube [%s] status=%s (%s)", client["name"], status, reason)
-            continue
-
-        hls = data.get("streamingData", {}).get("hlsManifestUrl")
-        if hls:
-            logger.info("InnerTube [%s] OK — HLS obtido", client["name"])
-            return hls
-
-        logger.warning("InnerTube [%s] OK mas sem hlsManifestUrl", client["name"])
-
+    Prioridade: formato já muxado (vídeo+áudio juntos, quando o client
+    usado ainda oferece um) > manifesto HLS mestre (o MPV escolhe a
+    variante e a trilha de áudio sozinho) > URL direta > primeiro formato
+    disponível.
+    """
+    fmts = info.get("formats") or info.get("requested_formats") or []
+    muxed = [f for f in fmts
+             if f.get("vcodec") not in (None, "none")
+             and f.get("acodec") not in (None, "none")
+             and f.get("url")]
+    if muxed:
+        muxed.sort(key=lambda f: f.get("height") or 0, reverse=True)
+        return muxed[0]["url"]
+    for f in fmts:
+        manifest = f.get("manifest_url")
+        if manifest:
+            return manifest
+    direct = info.get("url")
+    if direct:
+        return direct
+    if fmts and fmts[0].get("url"):
+        return fmts[0]["url"]
     return None
 
 
-# ── Fallback: yt-dlp completo ────────────────────────────────────────────────
-
-def _ytdlp_stream_url(url: str) -> str:
+def get_stream_url(url: str) -> str:
+    """Resolve URL do YouTube para uma URL de stream reproduzível pelo MPV."""
     if _yt_dlp is None:
         raise RuntimeError("yt-dlp não instalado")
-    # player_client=mweb resolve melhor lives do YouTube — retorna manifests HLS
-    # estáveis sem os problemas de rate-limit e expiração do cliente padrão.
-    opts = {
+    base_opts = {
         "quiet": True,
         "no_warnings": True,
-        "format": "best[protocol=m3u8_native]/best[protocol=m3u8]/best",
+        "socket_timeout": 10,
     }
-    with _yt_dlp.YoutubeDL(opts) as ydl:
-        info = ydl.extract_info(url, download=False)
-    direct = info.get("url")
-    if direct:
-        proto = info.get("protocol", "")
-        logger.info("[yt-dlp] protocolo selecionado: %s  url: %.80s", proto, direct)
-        return direct
-    fmts = info.get("requested_formats") or []
-    if fmts and fmts[0].get("url"):
-        proto = fmts[0].get("protocol", "")
-        logger.info("[yt-dlp] protocolo selecionado (fmt[0]): %s  url: %.80s", proto, fmts[0]["url"])
-        return fmts[0]["url"]
-    raise RuntimeError(f"yt-dlp não retornou URL de stream para: {url}")
-
-
-# ── API pública ──────────────────────────────────────────────────────────────
-
-def get_stream_url(url: str) -> str:
-    """Resolve URL do YouTube para URL HLS direta.
-
-    Tenta InnerTube (~300 ms) antes de yt-dlp (~3 s).
-    """
-    import time
     t0 = time.monotonic()
 
-    video_id = _extract_video_id(url)
-    logger.info("[DIAGNÓSTICO] Iniciando resolução — video_id=%s url=%s", video_id, url)
+    try:
+        android_opts = {**base_opts, "extractor_args": {"youtube": {"player_client": _ANDROID_CLIENT}}}
+        with _yt_dlp.YoutubeDL(android_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+        stream_url = _pick_stream_url(info)
+        if stream_url:
+            logger.info("[yt-dlp] URL selecionada (client android): %.80s  (%.2fs)",
+                        stream_url, time.monotonic() - t0)
+            return stream_url
+    except Exception as exc:
+        logger.warning("[yt-dlp] client android falhou (%s) — caindo pro client padrão", exc)
 
-    if video_id:
+    last_exc: Optional[Exception] = None
+    for attempt in range(1, _YTDLP_ATTEMPTS + 1):
         try:
-            t1 = time.monotonic()
-            hls = _innertube_hls(video_id)
-            t_innertube = time.monotonic() - t1
-            if hls:
-                logger.info("[DIAGNÓSTICO] InnerTube OK em %.2fs — HLS obtido", t_innertube)
-                return hls
-            else:
-                logger.warning("[DIAGNÓSTICO] InnerTube retornou None em %.2fs — caindo no yt-dlp", t_innertube)
+            with _yt_dlp.YoutubeDL(base_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+            stream_url = _pick_stream_url(info)
+            if stream_url:
+                logger.info("[yt-dlp] URL selecionada: %.80s  (%.2fs)",
+                            stream_url, time.monotonic() - t0)
+                return stream_url
+            raise RuntimeError(f"yt-dlp não retornou URL de stream para: {url}")
         except Exception as exc:
-            logger.warning("[DIAGNÓSTICO] InnerTube ERRO em %.2fs: %s — caindo no yt-dlp",
-                           time.monotonic() - t0, exc)
-    else:
-        logger.warning("[DIAGNÓSTICO] video_id não extraído da URL — indo direto ao yt-dlp")
-
-    t2 = time.monotonic()
-    result = _ytdlp_stream_url(url)
-    logger.info("[DIAGNÓSTICO] yt-dlp concluído em %.2fs", time.monotonic() - t2)
-    return result
+            last_exc = exc
+            if attempt < _YTDLP_ATTEMPTS:
+                logger.warning("[yt-dlp] tentativa %d/%d falhou (%s) — retentando em %.1fs",
+                                attempt, _YTDLP_ATTEMPTS, exc, _YTDLP_RETRY_SEC)
+                time.sleep(_YTDLP_RETRY_SEC)
+    raise last_exc

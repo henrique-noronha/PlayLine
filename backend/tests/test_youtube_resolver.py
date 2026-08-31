@@ -1,11 +1,8 @@
 """Testes para core/youtube_resolver.py.
 
-Cobre a detecção/extração de URL do YouTube (lógica pura) e o fallback
-InnerTube -> yt-dlp com a rede mockada (sem bater no YouTube de verdade,
-sem depender de conexão). O cenário de fallback reproduz o que foi observado
-em produção: o InnerTube volta a quebrar periodicamente (o YouTube descontinua
-as versões de cliente que o código finge ser) e o sistema precisa continuar
-resolvendo lives via yt-dlp mesmo assim.
+Cobre a detecção de URL do YouTube (lógica pura) e a resolução via yt-dlp
+com a rede mockada (sem bater no YouTube de verdade, sem depender de conexão),
+incluindo o retry em falha transitória.
 """
 from unittest.mock import MagicMock, patch
 
@@ -29,69 +26,137 @@ def test_is_youtube_url(url, esperado):
     assert yr.is_youtube_url(url) == esperado
 
 
-# ── _extract_video_id ────────────────────────────────────────────────────
+# ── get_stream_url (via yt-dlp) ──────────────────────────────────────────
 
-@pytest.mark.parametrize("url, esperado", [
-    ("https://www.youtube.com/watch?v=abcDEFghijk", "abcDEFghijk"),
-    ("https://youtu.be/abcDEFghijk", "abcDEFghijk"),
-    ("https://www.youtube.com/live/abcDEFghijk", "abcDEFghijk"),
-    ("https://vimeo.com/12345", None),
-])
-def test_extract_video_id(url, esperado):
-    assert yr._extract_video_id(url) == esperado
+def _mock_ydl(mock_yt_dlp, **extract_info_kwargs):
+    mock_ydl = MagicMock()
+    mock_ydl.__enter__.return_value = mock_ydl
+    mock_ydl.extract_info.return_value = extract_info_kwargs
+    mock_yt_dlp.YoutubeDL.return_value = mock_ydl
+    return mock_ydl
 
 
-# ── Fallback InnerTube -> yt-dlp ─────────────────────────────────────────
+def test_resolve_via_client_android_quando_ja_muxado():
+    """O client "android" ainda serve HLS com vídeo+áudio já combinados --
+    é a via rápida: o MPV abre um único stream, sem precisar enumerar as
+    variantes do manifesto mestre (o que sozinho custava 10s+ por troca de
+    live). Deve ser tentado primeiro e, quando funciona, nem chega a cair
+    pro client padrão."""
+    with patch.object(yr, "_yt_dlp") as mock_yt_dlp:
+        _mock_ydl(mock_yt_dlp, formats=[
+            {"format_id": "301", "vcodec": "avc1.64002A", "acodec": "mp4a.40.2",
+             "height": 1080, "url": "https://googlevideo.com/videoplayback?itag=301"},
+            {"format_id": "93", "vcodec": "avc1.4D401E", "acodec": "mp4a.40.2",
+             "height": 360, "url": "https://googlevideo.com/videoplayback?itag=93"},
+        ])
+        resultado = yr.get_stream_url("https://www.youtube.com/watch?v=abcDEFghijk")
 
-def test_fallback_para_ytdlp_quando_innertube_falha():
-    """Os dois clientes do InnerTube (ANDROID e IOS) falham -- precisa cair
-    pro yt-dlp e ainda assim resolver a URL, igual acontece em produção hoje."""
-    with patch(
-        "core.youtube_resolver.urllib.request.urlopen",
-        side_effect=OSError("HTTP Error 400: Bad Request"),
-    ) as mock_urlopen, patch.object(yr, "_yt_dlp") as mock_yt_dlp:
+    assert resultado == "https://googlevideo.com/videoplayback?itag=301"
+    mock_yt_dlp.YoutubeDL.assert_called_once()
+    opts_usadas = mock_yt_dlp.YoutubeDL.call_args[0][0]
+    assert opts_usadas["extractor_args"]["youtube"]["player_client"] == yr._ANDROID_CLIENT
+
+
+def test_cai_pro_client_padrao_quando_android_falha():
+    """O client "android" é um alvo comum das restrições do YouTube -- se
+    ele falhar, cai pro client padrão (manifesto HLS mestre) sem retentar
+    o android (falha estrutural, não adianta insistir no mesmo client)."""
+    with patch.object(yr, "_yt_dlp") as mock_yt_dlp, patch("core.youtube_resolver.time.sleep"):
         mock_ydl = MagicMock()
         mock_ydl.__enter__.return_value = mock_ydl
-        mock_ydl.extract_info.return_value = {
-            "url": "https://manifest.googlevideo.com/fake.m3u8",
-            "protocol": "m3u8_native",
-        }
+        mock_ydl.extract_info.side_effect = [
+            Exception("The page needs to be reloaded."),
+            {"formats": [{"manifest_url": "https://manifest.googlevideo.com/master.m3u8"}]},
+        ]
+        mock_yt_dlp.YoutubeDL.return_value = mock_ydl
+
+        resultado = yr.get_stream_url("https://www.youtube.com/watch?v=abcDEFghijk")
+
+    assert resultado == "https://manifest.googlevideo.com/master.m3u8"
+    assert mock_ydl.extract_info.call_count == 2
+    call_opts = [c[0][0] for c in mock_yt_dlp.YoutubeDL.call_args_list]
+    assert call_opts[0]["extractor_args"]["youtube"]["player_client"] == yr._ANDROID_CLIENT
+    assert "extractor_args" not in call_opts[1]
+
+
+def test_usa_url_direta_quando_sem_manifest_url():
+    with patch.object(yr, "_yt_dlp") as mock_yt_dlp, patch("core.youtube_resolver.time.sleep"):
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__.return_value = mock_ydl
+        mock_ydl.extract_info.side_effect = [
+            Exception("android indisponível"),
+            {"url": "https://manifest.googlevideo.com/fake.m3u8", "formats": []},
+        ]
         mock_yt_dlp.YoutubeDL.return_value = mock_ydl
 
         resultado = yr.get_stream_url("https://www.youtube.com/watch?v=abcDEFghijk")
 
     assert resultado == "https://manifest.googlevideo.com/fake.m3u8"
-    assert mock_urlopen.call_count == 2  # tentou ANDROID e IOS antes de desistir
 
 
-def test_usa_innertube_quando_disponivel_sem_cair_no_ytdlp():
-    """Caminho feliz: se o InnerTube responder OK, o yt-dlp nem deveria ser chamado."""
-    resposta_ok = MagicMock()
-    resposta_ok.__enter__.return_value = resposta_ok
-    resposta_ok.read.return_value = (
-        b'{"playabilityStatus": {"status": "OK"}, '
-        b'"streamingData": {"hlsManifestUrl": "https://manifest.googlevideo.com/rapido.m3u8"}}'
-    )
-
-    with patch(
-        "core.youtube_resolver.urllib.request.urlopen", return_value=resposta_ok
-    ), patch.object(yr, "_yt_dlp") as mock_yt_dlp:
-        resultado = yr.get_stream_url("https://www.youtube.com/watch?v=abcDEFghijk")
-
-    assert resultado == "https://manifest.googlevideo.com/rapido.m3u8"
-    mock_yt_dlp.YoutubeDL.assert_not_called()
-
-
-def test_innertube_e_ytdlp_falham_propaga_erro():
-    """Se nem o InnerTube nem o yt-dlp resolverem, o erro deve subir (não
-    deve fingir sucesso nem travar em silêncio)."""
-    with patch(
-        "core.youtube_resolver.urllib.request.urlopen",
-        side_effect=OSError("sem rede"),
-    ), patch.object(yr, "_yt_dlp") as mock_yt_dlp:
+def test_usa_requested_formats_quando_sem_manifest_nem_url_direta():
+    """Último recurso: nenhum formato HLS disponível — usa a URL do primeiro
+    formato (vídeo-only, sem áudio, mas melhor que travar)."""
+    with patch.object(yr, "_yt_dlp") as mock_yt_dlp, patch("core.youtube_resolver.time.sleep"):
         mock_ydl = MagicMock()
         mock_ydl.__enter__.return_value = mock_ydl
-        mock_ydl.extract_info.return_value = {}  # sem "url" nem "requested_formats"
+        mock_ydl.extract_info.side_effect = [
+            Exception("android indisponível"),
+            {"requested_formats": [{"url": "https://manifest.googlevideo.com/fmt0.mp4"}]},
+        ]
+        mock_yt_dlp.YoutubeDL.return_value = mock_ydl
+
+        resultado = yr.get_stream_url("https://www.youtube.com/watch?v=abcDEFghijk")
+
+    assert resultado == "https://manifest.googlevideo.com/fmt0.mp4"
+
+
+def test_retenta_apos_falha_transitoria_e_resolve():
+    """Client android falha (cai pro padrão) -- primeira tentativa do client
+    padrão falha (ex.: hiccup de rede), segunda resolve. Não pode precisar
+    escalar pro ciclo caro de reconexão do daemon por isso."""
+    with patch.object(yr, "_yt_dlp") as mock_yt_dlp, patch("core.youtube_resolver.time.sleep") as mock_sleep:
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__.return_value = mock_ydl
+        mock_ydl.extract_info.side_effect = [
+            Exception("android indisponível"),
+            OSError("falha transitória de rede"),
+            {"url": "https://manifest.googlevideo.com/fake.m3u8", "formats": []},
+        ]
+        mock_yt_dlp.YoutubeDL.return_value = mock_ydl
+
+        resultado = yr.get_stream_url("https://www.youtube.com/watch?v=abcDEFghijk")
+
+    assert resultado == "https://manifest.googlevideo.com/fake.m3u8"
+    assert mock_ydl.extract_info.call_count == 3
+    mock_sleep.assert_called_once_with(yr._YTDLP_RETRY_SEC)
+
+
+def test_ytdlp_falha_em_tudo_propaga_erro():
+    """Se android e as duas tentativas do client padrão falharem, o erro
+    deve subir (não pode fingir sucesso nem travar em silêncio)."""
+    with patch.object(yr, "_yt_dlp") as mock_yt_dlp, patch("core.youtube_resolver.time.sleep"):
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__.return_value = mock_ydl
+        mock_ydl.extract_info.side_effect = OSError("sem rede")
+        mock_yt_dlp.YoutubeDL.return_value = mock_ydl
+
+        with pytest.raises(OSError):
+            yr.get_stream_url("https://www.youtube.com/watch?v=abcDEFghijk")
+
+    # 1 tentativa (android, sem retry) + _YTDLP_ATTEMPTS tentativas (client padrão)
+    assert mock_ydl.extract_info.call_count == 1 + yr._YTDLP_ATTEMPTS
+
+
+def test_sem_url_nem_formatos_propaga_erro():
+    with patch.object(yr, "_yt_dlp") as mock_yt_dlp, patch("core.youtube_resolver.time.sleep"):
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__.return_value = mock_ydl
+        mock_ydl.extract_info.side_effect = [
+            Exception("android indisponível"),
+            {},  # sem "url", "formats" nem "requested_formats"
+            {},
+        ]
         mock_yt_dlp.YoutubeDL.return_value = mock_ydl
 
         with pytest.raises(RuntimeError):

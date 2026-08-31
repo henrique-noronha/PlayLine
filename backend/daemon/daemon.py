@@ -243,9 +243,10 @@ class MPVDaemon:
             network_timeout=0,          # 0 = desabilitado; watchdog detecta streams mortas pelo position (STALL_SEC=90)
             hwdec="auto-safe",          # decodificação por GPU quando disponível, software como fallback
             osc=False,                  # desativa controles na tela ao passar o mouse
-            cache=True,                 # ativa cache para arquivos locais (absorve latência de HDD)
-            demuxer_max_bytes="150MiB", # buffer de leitura adiantada em RAM
-            demuxer_max_back_bytes="50MiB",  # buffer de retrocesso
+            cache=True,                  # ativa cache para arquivos locais e de rede
+            demuxer_max_bytes="512MiB",  # buffer de leitura adiantada em RAM — absorve quedas de rede sem travar
+            demuxer_max_back_bytes="128MiB",  # buffer de retrocesso
+            demuxer_readahead_secs=30,   # tenta manter ~30s de conteúdo já baixado à frente, não só um teto em bytes
         )
 
         if has_secondary:
