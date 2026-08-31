@@ -13,8 +13,9 @@
 
   if (!btnCamera || !btnYoutube) return;
 
-  let _mode   = null; // "camera" | "youtube" | null
-  let _stream = null;
+  let _mode    = null; // "camera" | "youtube" | null
+  let _stream  = null;
+  let _camPath = null; // path do dispositivo atualmente mostrado (modo câmera)
 
   function _findItem(type) {
     return (state.schedule || []).find(it => it.type === type);
@@ -33,6 +34,7 @@
     video.style.display  = "none";
     iframe.src        = "";
     iframe.style.display = "none";
+    _camPath = null;
   }
 
   function _showEmpty(msg) {
@@ -42,6 +44,7 @@
 
   async function _showCamera(item) {
     _clearPreview();
+    _camPath = item.path;
     const deviceName = item.path.replace(/^av:\/\/dshow:video=/, "");
     if (_needsToStayFree(item)) {
       // Não abre o mesmo dispositivo aqui — deixa exclusivo pro MPV, que é
@@ -128,6 +131,16 @@
       return;
     }
     _refreshActive();
+  };
+
+  // Chamado via evento "capture_device_releasing" (ver app.js) — o servidor
+  // está prestes a mandar o MPV abrir esse dispositivo, solta incondicionalmente
+  // (sem checar isCaptureDeviceNeededSoon: já foi decidido, é agora).
+  window._inputQuadrantForceRelease = function (path) {
+    if (_mode === "camera" && _camPath === path) {
+      _clearPreview();
+      _showEmpty("Ao vivo agora — sem preview duplicado para não travar a transmissão");
+    }
   };
 
   _updateToggleUI();

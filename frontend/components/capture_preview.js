@@ -37,6 +37,13 @@
     if (_openPath && window.isCaptureDeviceNeededSoon?.(_openPath)) _close();
   };
 
+  // Chamado via evento "capture_device_releasing" (ver app.js) — o servidor
+  // está prestes a mandar o MPV abrir esse dispositivo, solta incondicionalmente
+  // (sem checar isCaptureDeviceNeededSoon: já foi decidido, é agora).
+  window._captureForceRelease = function (path) {
+    if (_openPath === path) _close();
+  };
+
   function _position(anchor) {
     const rect = anchor.getBoundingClientRect();
     const mw = 360, mh = 229;
