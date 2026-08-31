@@ -164,6 +164,13 @@ function handleEvent(ev) {
     case "mpv_ready":
       state.mpvAlive = true;
       break;
+    case "capture_device_releasing":
+      // Servidor está prestes a mandar o MPV abrir este dispositivo de
+      // captura — solta qualquer preview do navegador nele imediatamente,
+      // sem esperar o "now_playing" (que só chega depois do play()).
+      window._captureForceRelease?.(ev.path);
+      window._inputQuadrantForceRelease?.(ev.path);
+      break;
     case "now_playing":
       _clearReconnectStatus();
       window._netMonitor?.onNowPlaying(ev.item);

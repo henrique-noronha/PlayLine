@@ -33,6 +33,20 @@ def _is_live_item(item: dict) -> bool:
     return path.startswith(("rtmp://", "rtmps://", "rtsp://"))
 
 
+def _is_capture_item(item: dict) -> bool:
+    return (item.get("path") or "").lower().startswith("av://dshow:")
+
+
+_CAPTURE_RELEASE_DELAY = 0.3   # segundos — tempo pro navegador soltar visualmente o
+                                # preview antes do MPV tentar abrir o dispositivo. Não
+                                # elimina o retry (ver comentário em play_index) — só
+                                # evita a sobreposição visual de dois consumidores. — tempo pro navegador soltar o getUserMedia
+                                # do mesmo dispositivo antes do MPV tentar abri-lo.
+                                # 0.35s não foi suficiente em teste real (o teardown do
+                                # driver da webcam no SO pode levar mais que o track.stop()
+                                # em si) — 0.8s ainda é imperceptível numa troca ao vivo.
+
+
 class PlaylistEngine:
     def __init__(self, player, broadcast: Callable):
         self._player = player
@@ -449,6 +463,25 @@ class PlaylistEngine:
                 # Não chama player.play() para não interromper a reprodução
                 logger.info("MPV já está em transição para: %s", item["path"])
             else:
+                if _is_capture_item(item):
+                    # Dispositivo de captura (webcam/placa) aceita só um consumidor
+                    # por vez. Avisa o navegador pra soltar o preview (getUserMedia)
+                    # ANTES do MPV tentar abrir, em vez de só reagir depois do
+                    # "now_playing" (que só é emitido depois do play()).
+                    #
+                    # IMPORTANTE — isso melhora a experiência (o preview não fica
+                    # sobreposto no instante da troca) mas NÃO elimina a 1ª falha:
+                    # testado em bancada com delays de 0.3s a 2.5s antes desta
+                    # linha, e o 1º open do MPV falha de forma idêntica em todos
+                    # (~500ms após o play, sempre resolvido no retry seguinte).
+                    # Não é uma corrida de tempo — parece ser o Windows negociando
+                    # a troca de "dono" do dispositivo entre a API do navegador
+                    # (Media Foundation) e a API clássica que o MPV usa (DirectShow
+                    # via ffmpeg) sempre que a primeira alguma vez tocou no
+                    # dispositivo. O watchdog de reconexão existente cobre esse
+                    # retry único automaticamente.
+                    await self._broadcast({"event": "capture_device_releasing", "path": item["path"]})
+                    await asyncio.sleep(_CAPTURE_RELEASE_DELAY)
                 self._player.play(
                     item["path"],
                     start_time=item.get("start_time"),
