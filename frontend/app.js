@@ -196,7 +196,6 @@ function handleEvent(ev) {
       } else {
         hideLiveIndicator();
         if (window._setPreviewStatus) window._setPreviewStatus(null);
-        _vuBackendDb = null; // volta pro analisador local — item não vem mais do YouTube
         loadVideo(ev.item.path);
       }
       updateStartTimes();
@@ -659,7 +658,18 @@ function _sendLogo(slot) {
 
 // ── VU Meter ─────────────────────────────────────────────────────────────────
 
-let _vuBackendDb = null;  // nível fornecido pelo daemon (live streams)
+// Nível sempre fornecido pelo daemon via Windows Core Audio (backend/daemon/
+// win_audio_meter.py) — o mesmo medidor pra qualquer conteúdo (clipe local,
+// YouTube, captura), não só lives. Antes disso, clipes locais liam o nível
+// via Web Audio API a partir do <video> local do navegador
+// (createMediaElementSource); isso dependia de video.play() ter sucesso, e
+// as políticas de autoplay do navegador (bloqueiam play() não-mudo sem
+// gesto do usuário; um elemento mudo, por sua vez, não entrega dados pro
+// Web Audio) tornavam isso frágil demais — sobretudo ao restaurar o clipe
+// atual reabrindo só a interface no PyWebView, sem nenhum gesto prévio na
+// página nova. Ler direto do áudio real do sistema evita essa classe
+// inteira de problema.
+let _vuBackendDb = null;
 
 const VU_MIN  = -40;   // dBFS mínimo do meter
 const VU_MAX  =  6;    // dBFS máximo (iguala o slider)
@@ -667,10 +677,6 @@ const VU_SEGS = 30;    // nº de segmentos LED
 const VU_HOLD = 1500;  // ms de peak hold antes do decay
 const VU_DCY  = 0.3;   // dB/frame de decay do peak
 
-let _vuAudioCtx = null;
-let _vuAnalyser  = null;
-let _vuBuf       = null;
-let _vuReady     = false;
 let _vuPeakDb    = VU_MIN;
 let _vuPeakTil   = 0;
 let _vuClipTil   = 0;
@@ -752,21 +758,12 @@ function _vuFrame() {
     canvas.width = canvas.offsetWidth;
   }
 
-  let outDb;
-  if (_vuBackendDb !== null) {
-    // _vuBackendDb já é o nível real pós-volume do Windows Core Audio — não somar _volDb
-    outDb = _muted ? VU_MIN : Math.min(VU_MAX, _vuBackendDb);
-  } else if (!_vuReady || !_vuAnalyser) {
+  if (_vuBackendDb === null) {
     _vuDraw(VU_MIN);
     return;
-  } else {
-    _vuAnalyser.getFloatTimeDomainData(_vuBuf);
-    let sum = 0;
-    for (let i = 0; i < _vuBuf.length; i++) sum += _vuBuf[i] * _vuBuf[i];
-    const rms = Math.sqrt(sum / _vuBuf.length);
-    const sigDb = 20 * Math.log10(Math.max(rms, 1e-10));
-    outDb = _muted ? VU_MIN : Math.min(VU_MAX, sigDb + _volDb);
   }
+  // _vuBackendDb já é o nível real pós-volume do Windows Core Audio — não somar _volDb
+  const outDb = _muted ? VU_MIN : Math.min(VU_MAX, _vuBackendDb);
 
   const now = performance.now();
   if (outDb > _vuPeakDb) { _vuPeakDb = outDb; _vuPeakTil = now + VU_HOLD; }
@@ -778,41 +775,6 @@ function _vuFrame() {
 
   _vuDraw(outDb);
 }
-
-function _initVuMeter() {
-  if (_vuReady) return;
-  try {
-    _vuAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    // createMediaElementSource toma posse do áudio: desconecta saída padrão
-    const src = _vuAudioCtx.createMediaElementSource(video);
-    video.muted = false; // seguro após a captura acima
-
-    _vuAnalyser = _vuAudioCtx.createAnalyser();
-    _vuAnalyser.fftSize = 2048;
-    _vuAnalyser.smoothingTimeConstant = 0.1;
-
-    const silencer = _vuAudioCtx.createGain();
-    silencer.gain.value = 0; // browser fica mudo — MPV é o som real
-
-    src.connect(_vuAnalyser);
-    _vuAnalyser.connect(silencer);
-    silencer.connect(_vuAudioCtx.destination);
-
-    _vuBuf   = new Float32Array(_vuAnalyser.fftSize);
-    _vuReady = true;
-  } catch (e) {
-    console.warn("[VU]", e);
-  }
-}
-
-function _resumeVuCtx() {
-  if (_vuAudioCtx && _vuAudioCtx.state === "suspended") {
-    _vuAudioCtx.resume().catch(() => {});
-  }
-}
-
-document.addEventListener("click",      _resumeVuCtx);
-document.addEventListener("touchstart", _resumeVuCtx, { passive: true });
 
 requestAnimationFrame(_vuFrame);
 
@@ -892,7 +854,6 @@ async function init() {
 
   initLogoUI();
   initTextOverlayUI();
-  _initVuMeter();
 
   if (typeof connect === "function") connect();
 

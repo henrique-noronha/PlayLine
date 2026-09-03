@@ -599,8 +599,11 @@ class MPVDaemon:
                 logger.info("play: %s%s%s", original_path,
                             f" [trim {start_time}–{end_time}]" if opts_parts else "", live_tag)
                 self._stop_vu()
-                if _is_youtube_url(original_path):
-                    self._vu_task = asyncio.ensure_future(self._audio_level_task())
+                # Sempre pelo medidor real do Windows Core Audio, não só pra YouTube --
+                # evita depender do <video> local do navegador (autoplay/mute do
+                # navegador bloqueiam a leitura via Web Audio API em vários cenários,
+                # ex.: restaurar o clipe atual ao reabrir só a interface no PyWebView).
+                self._vu_task = asyncio.ensure_future(self._audio_level_task())
 
         elif action == "play_standby":
             threading.Thread(target=self._apply_standby_overlay, daemon=True).start()
@@ -825,6 +828,12 @@ class MPVDaemon:
             elapsed = time.monotonic() - t0
             self._yt_cache[url] = (resolved, time.monotonic())
             logger.info("YouTube URL pré-resolvida em %.2fs: %s", elapsed, url)
+            # Appenda na fila do MPV pra pré-bufferizar em segundo plano enquanto
+            # o clipe atual ainda toca -- com prefetch_playlist=True, o MPV já
+            # deixa a próxima entrada pronta, e a troca fica tão instantânea
+            # quanto entre dois clipes locais (medido: ~16ms vs ~3s do loadfile
+            # a frio). _try_append_hls() já tem a guarda contra live→live.
+            self._try_append_hls(url, resolved)
             return resolved
         except Exception as exc:
             logger.warning("Falha no prefetch de YouTube URL: %s", exc)
