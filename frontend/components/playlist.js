@@ -925,7 +925,9 @@ function openClipOverlayPanel(item, idx, anchorEl) {
   let left = rect.left - W - 6;
   let top  = rect.top;
   if (left < 4) left = rect.right + 6;
-  if (top + H > window.innerHeight - 8) top = window.innerHeight - H - 8;
+  // Se não couber abaixo, ancora pela base do botão (abre pra cima) em vez de
+  // pular pro rodapé da tela — fica colado no clique, não solto longe dele.
+  if (top + H > window.innerHeight - 8) top = rect.bottom - H;
   if (top < 4) top = 4;
   el.style.left = left + "px";
   el.style.top  = top  + "px";
@@ -982,7 +984,9 @@ function openGearMenu(item, idx, anchorEl) {
   const rect = anchorEl.getBoundingClientRect();
   let left = rect.left - W - 6, top = rect.top;
   if (left < 4) left = rect.right + 6;
-  if (top + H > window.innerHeight - 8) top = window.innerHeight - H - 8;
+  // Se não couber abaixo, ancora pela base do botão (abre pra cima) em vez de
+  // pular pro rodapé da tela — fica colado no clique, não solto longe dele.
+  if (top + H > window.innerHeight - 8) top = rect.bottom - H;
   if (top < 4) top = 4;
   el.style.left = left + "px";
   el.style.top  = top  + "px";
@@ -1151,7 +1155,9 @@ function openClipTrimPanel(item, idx, anchorEl) {
   const rect = anchorEl.getBoundingClientRect();
   let left = rect.left - W - 6, top = rect.top;
   if (left < 4) left = rect.right + 6;
-  if (top + H > window.innerHeight - 8) top = window.innerHeight - H - 8;
+  // Se não couber abaixo, ancora pela base do botão (abre pra cima) em vez de
+  // pular pro rodapé da tela — fica colado no clique, não solto longe dele.
+  if (top + H > window.innerHeight - 8) top = rect.bottom - H;
   if (top < 4) top = 4;
   el.style.left = left + "px";
   el.style.top  = top  + "px";

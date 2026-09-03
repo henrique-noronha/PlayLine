@@ -1,6 +1,7 @@
 /* PlayLine — Player de vídeo HTML5 */
 
 const video = document.getElementById("player-video");
+let _pendingPlayRetry = false;  // true quando video.play() foi bloqueado pelo autoplay
 let _lastMpvPos    = null;
 let _lastMpvPosAt  = 0;    // performance.now() do último evento position recebido
 let _syncPending   = false;
@@ -58,8 +59,27 @@ function loadVideo(path, startAt = 0) {
   const fragment = startAt > 1 ? `#t=${Math.floor(startAt)}` : '';
   const url = "/media?path=" + encodeURIComponent(path) + fragment;
   video.src = url;
-  video.play().catch(e => { if (e.name !== "AbortError") log("Preview bloqueado pelo navegador", "warn"); });
+  _tryPlayVideo();
 }
+
+// Ao reabrir só a interface no PyWebView (servidor/daemon continuam vivos), a
+// restauração do clipe já em andamento chama loadVideo() sem nenhum gesto
+// prévio do usuário na página nova — o autoplay do navegador bloqueia o
+// video.play() (NotAllowedError) e, sem retry, o preview/medidor de volume
+// fica mudo indefinidamente. Pular pra outro clipe "resolve" só porque o
+// próprio clique no botão já destrava o autoplay da página dali em diante.
+// Aqui isso é feito automaticamente: guarda a intenção e tenta de novo no
+// primeiro clique/toque, sem depender do usuário descobrir isso sozinho.
+function _tryPlayVideo() {
+  video.play().then(() => { _pendingPlayRetry = false; }).catch(e => {
+    if (e.name === "AbortError") return;
+    if (e.name === "NotAllowedError") { _pendingPlayRetry = true; return; }
+    log("Preview bloqueado pelo navegador", "warn");
+  });
+}
+
+document.addEventListener("click",      () => { if (_pendingPlayRetry) _tryPlayVideo(); });
+document.addEventListener("touchstart", () => { if (_pendingPlayRetry) _tryPlayVideo(); }, { passive: true });
 
 function _restoreLogoOverlays() {
   if (typeof _logoState === "undefined" || typeof _updateLogoOverlay === "undefined") return;
