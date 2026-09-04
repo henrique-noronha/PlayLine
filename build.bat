@@ -7,13 +7,13 @@ echo  PlayLine -- Build de Distribuicao
 echo ==========================================
 echo.
 
-:: Verifica PyInstaller
-python -m PyInstaller --version >nul 2>&1
-if errorlevel 1 (
-    echo Instalando PyInstaller...
-    pip install pyinstaller
-    if errorlevel 1 ( echo ERRO: falha ao instalar PyInstaller & exit /b 1 )
-)
+:: Instala/atualiza dependencias (garante yt-dlp e demais libs sempre na
+:: versao minima do requirements.txt -- o YouTube quebra extracao com
+:: frequencia e uma versao de yt-dlp desatualizada no ambiente de build
+:: acaba virando um .exe com o mesmo problema ja embutido)
+echo Instalando/atualizando dependencias...
+python -m pip install -r requirements.txt --upgrade
+if errorlevel 1 ( echo ERRO: falha ao instalar dependencias & exit /b 1 )
 
 :: Limpa builds anteriores
 if exist "backend\build"    rmdir /s /q "backend\build"
@@ -95,6 +95,10 @@ copy /y "dist\PlayLine-daemon.exe" "dist\PlayLine\"
 :: Cria pasta de logos e copia logos do sistema
 if not exist "dist\PlayLine\logos" mkdir "dist\PlayLine\logos"
 if exist "logos" ( xcopy /e /i /y "logos\*" "dist\PlayLine\logos\" >nul 2>&1 )
+
+:: Copia imagens de standby (problemastecnicos.png etc.)
+if not exist "dist\PlayLine\images" mkdir "dist\PlayLine\images"
+if exist "images" ( xcopy /e /i /y "images\*" "dist\PlayLine\images\" >nul 2>&1 )
 
 :: Cria pasta Biblioteca vazia
 if not exist "dist\PlayLine\Biblioteca" mkdir "dist\PlayLine\Biblioteca"

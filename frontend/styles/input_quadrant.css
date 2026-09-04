@@ -1,0 +1,86 @@
+/* ── Quadrante de entrada (Câmera / YouTube) ao lado do Roteiro ── */
+
+.input-quadrant-card {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  margin: 0;
+}
+
+.iq-source-toggle {
+  display: flex;
+  gap: 6px;
+}
+
+.iq-source-btn {
+  flex: 1;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface2);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.iq-source-btn:hover { background: var(--border); }
+.iq-source-btn.active {
+  border-color: var(--accent);
+  color: var(--text);
+  background: rgba(79,142,247,.15);
+}
+
+.iq-preview-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+#iq-preview-video,
+#iq-preview-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+  display: none;
+}
+
+.iq-preview-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.iq-add-btn {
+  padding: 8px 10px;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.iq-add-btn:hover { background: var(--surface2); border-color: var(--accent); color: var(--text); }

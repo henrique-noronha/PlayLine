@@ -123,6 +123,9 @@ class Player:
         event = msg.get("event")
         if event == "end-file":
             self._on_end_file(msg.get("reason", "eof"))
+        elif event == "file-loaded":
+            if self._on_file_loaded:
+                self._on_file_loaded()
         elif event == "mpv_closed":
             self._on_end_file("mpv_closed")
         elif event == "position":

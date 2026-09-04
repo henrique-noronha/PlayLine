@@ -168,6 +168,7 @@ class MPVDaemon:
         self._checkpoint_dirty = False
         self._window_positioned = False  # move_to_tv() só roda uma vez por sessão MPV
         self._has_secondary = False
+        self._core_idle_since: Optional[float] = None  # debounce do preview via screenshot do MPV
         self._desktop_capture: Optional["preview_stream.DesktopCapture"] = None
         self._preview_restart = asyncio.Event()  # sinaliza troca de estratégia de preview
         self._volume: float  = 100.0   # persiste entre reinits do MPV (100 = 0 dB)
@@ -242,9 +243,10 @@ class MPVDaemon:
             network_timeout=0,          # 0 = desabilitado; watchdog detecta streams mortas pelo position (STALL_SEC=90)
             hwdec="auto-safe",          # decodificação por GPU quando disponível, software como fallback
             osc=False,                  # desativa controles na tela ao passar o mouse
-            cache=True,                 # ativa cache para arquivos locais (absorve latência de HDD)
-            demuxer_max_bytes="150MiB", # buffer de leitura adiantada em RAM
-            demuxer_max_back_bytes="50MiB",  # buffer de retrocesso
+            cache=True,                  # ativa cache para arquivos locais e de rede
+            demuxer_max_bytes="512MiB",  # buffer de leitura adiantada em RAM — absorve quedas de rede sem travar
+            demuxer_max_back_bytes="128MiB",  # buffer de retrocesso
+            demuxer_readahead_secs=30,   # tenta manter ~30s de conteúdo já baixado à frente, não só um teto em bytes
         )
 
         if has_secondary:
@@ -597,8 +599,11 @@ class MPVDaemon:
                 logger.info("play: %s%s%s", original_path,
                             f" [trim {start_time}–{end_time}]" if opts_parts else "", live_tag)
                 self._stop_vu()
-                if _is_youtube_url(original_path):
-                    self._vu_task = asyncio.ensure_future(self._audio_level_task())
+                # Sempre pelo medidor real do Windows Core Audio, não só pra YouTube --
+                # evita depender do <video> local do navegador (autoplay/mute do
+                # navegador bloqueiam a leitura via Web Audio API em vários cenários,
+                # ex.: restaurar o clipe atual ao reabrir só a interface no PyWebView).
+                self._vu_task = asyncio.ensure_future(self._audio_level_task())
 
         elif action == "play_standby":
             threading.Thread(target=self._apply_standby_overlay, daemon=True).start()
@@ -823,6 +828,12 @@ class MPVDaemon:
             elapsed = time.monotonic() - t0
             self._yt_cache[url] = (resolved, time.monotonic())
             logger.info("YouTube URL pré-resolvida em %.2fs: %s", elapsed, url)
+            # Appenda na fila do MPV pra pré-bufferizar em segundo plano enquanto
+            # o clipe atual ainda toca -- com prefetch_playlist=True, o MPV já
+            # deixa a próxima entrada pronta, e a troca fica tão instantânea
+            # quanto entre dois clipes locais (medido: ~16ms vs ~3s do loadfile
+            # a frio). _try_append_hls() já tem a guarda contra live→live.
+            self._try_append_hls(url, resolved)
             return resolved
         except Exception as exc:
             logger.warning("Falha no prefetch de YouTube URL: %s", exc)
@@ -874,6 +885,8 @@ class MPVDaemon:
                 except Exception:
                     pass
 
+    _DDAGRAB_RETRY_SEC = 15  # com monitor secundário ainda conectado, retenta ddagrab depois desse tempo em fallback
+
     async def _preview_task(self):
         """Distribui frames de preview para clientes conectados.
 
@@ -886,6 +899,12 @@ class MPVDaemon:
 
         Reavalia a estratégia sempre que `_monitor_watchdog_task` sinaliza
         `_preview_restart` (monitor secundário conectado/desconectado em tempo real).
+
+        Uma falha do ddagrab que NÃO veio de desconexão de monitor (ex.: DXGI
+        access-lost transitório, ffmpeg travado) não deve degradar a sessão pro
+        fallback pra sempre — por isso o fallback aqui roda por tempo limitado
+        e volta a tentar ddagrab periodicamente enquanto o monitor secundário
+        continuar conectado.
         """
         while True:
             self._preview_restart.clear()
@@ -899,7 +918,14 @@ class MPVDaemon:
                 self._desktop_capture = None
                 if self._preview_restart.is_set():
                     continue
-                logger.warning("[preview] captura via ddagrab encerrou — caindo para screenshot do MPV")
+                logger.warning(
+                    "[preview] captura via ddagrab encerrou — screenshot do MPV por %ds, depois tenta ddagrab de novo",
+                    self._DDAGRAB_RETRY_SEC,
+                )
+                await self._preview_task_mpv_screenshot(max_duration=self._DDAGRAB_RETRY_SEC)
+                if not self._preview_restart.is_set():
+                    await asyncio.sleep(1)  # evita loop apertado se a captura sair por engano
+                continue
             await self._preview_task_mpv_screenshot()
             if not self._preview_restart.is_set():
                 await asyncio.sleep(1)  # evita loop apertado se a captura sair por engano
@@ -915,18 +941,39 @@ class MPVDaemon:
         finally:
             await capture.stop()
 
-    async def _preview_task_mpv_screenshot(self):
-        """Captura frames via screenshot interno do MPV a ~10 fps."""
+    _CORE_IDLE_GRACE = 0.4  # s — tolera blips de core_idle durante troca de clipe sem cortar o preview
+
+    async def _preview_task_mpv_screenshot(self, max_duration: Optional[float] = None):
+        """Captura frames via screenshot interno do MPV a ~10 fps.
+
+        `max_duration`, quando informado, encerra a função após esse tempo mesmo
+        sem `_preview_restart` — usado pelo fallback pós-falha do ddagrab pra
+        devolver o controle a `_preview_task` e retentar ddagrab periodicamente,
+        em vez de ficar preso neste modo pelo resto da sessão.
+        """
         loop = asyncio.get_event_loop()
+        deadline = (time.monotonic() + max_duration) if max_duration else None
         while not self._preview_restart.is_set():
+            if deadline is not None and time.monotonic() >= deadline:
+                return
             await asyncio.sleep(0.05)   # alvo 20 fps (limitado pelo tempo de captura)
             if self._mpv_dead or self._mpv is None or not self._clients:
                 continue
             try:
-                if self._mpv.core_idle:
-                    continue
+                idle = self._mpv.core_idle
             except Exception:
                 continue
+            if idle:
+                # core_idle oscila por ~0.5s a cada troca de clipe (fim do decode antigo
+                # até o novo assumir) — só trata como parado de verdade após a graça,
+                # senão o preview "pisca" sem sinal a cada avanço do roteiro.
+                now = time.monotonic()
+                if self._core_idle_since is None:
+                    self._core_idle_since = now
+                if now - self._core_idle_since > self._CORE_IDLE_GRACE:
+                    continue
+            else:
+                self._core_idle_since = None
             mpv_ref = self._mpv
             jpeg = await loop.run_in_executor(None, preview.capture_jpeg, mpv_ref)
             if jpeg and self._clients:

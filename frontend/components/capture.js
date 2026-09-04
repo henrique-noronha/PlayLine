@@ -106,4 +106,7 @@
   btnCancel.addEventListener("click", closeModal);
   btnAdd.addEventListener("click",    addToSchedule);
   modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+
+  // Exposto pro quadrante fixo de entrada (input_quadrant.js) reaproveitar o mesmo modal
+  window.openCaptureModal = openModal;
 })();

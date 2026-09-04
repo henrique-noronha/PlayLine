@@ -299,21 +299,18 @@ async def get_temperature(city: str = "Palmas,TO"):
     def _fetch():
         import logging
         log = logging.getLogger("api.routes")
-        owm_name = city.split(",")[0].strip()  # OWM: só cidade, sem estado
-        # Tenta OpenWeatherMap primeiro
+        owm_name = city.split(",")[0].strip()
         try:
-            url  = f"https://api.openweathermap.org/data/2.5/weather?q={quote(owm_name)},BR&appid={_API_KEY}&units=metric"
+            url = f"https://api.openweathermap.org/data/2.5/weather?q={quote(owm_name)},BR&appid={_API_KEY}&units=metric"
             with urlopen(url, timeout=5) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 temp = data.get("main", {}).get("temp")
                 if temp is not None:
-                    found   = data.get("name", "?")
-                    country = data.get("sys", {}).get("country", "?")
-                    log.info("[weather] OWM: %.1f°C (%s, %s)", temp, found, country)
-                    return f"{round(temp)}°C"
+                    corrected = round(temp - 1)
+                    log.info("[weather] OWM: %.1f°C → %d°C (corrigido) (%s)", temp, corrected, city)
+                    return f"{corrected}°C"
         except Exception as e:
             log.warning("[weather] OWM falhou: %s — tentando wttr.in", e)
-        # Fallback: wttr.in — usa cidade completa com estado para evitar ambiguidade
         try:
             url = f"https://wttr.in/{quote(city)}?format=%t"
             with urlopen(url, timeout=5) as resp:
@@ -563,9 +560,15 @@ async def set_repeat(body: dict):
     return {"repeat": enabled}
 
 
-@router.get("/api/capture-devices")
-async def list_capture_devices():
-    """Lista dispositivos de vídeo DirectShow disponíveis (webcams, placas de captura)."""
+def _list_capture_devices_sync() -> dict:
+    """Enumera dispositivos DirectShow via ffmpeg (bloqueante — chamar via run_in_executor).
+
+    subprocess.run aqui pode levar vários segundos (timeout=10). Rodar isso direto
+    numa rota async trava o event loop inteiro nesse meio-tempo — inclusive o
+    encaminhamento dos frames de preview vindos do daemon, fazendo o "Reproduzindo
+    agora" ficar sem sinal sempre que o modal de câmera é aberto, mesmo sem nenhum
+    clipe relacionado tocando.
+    """
     import re
     ffmpeg = _ffmpeg_bin()
     logger.info("capture-devices: usando ffmpeg em %r", ffmpeg)
@@ -590,6 +593,14 @@ async def list_capture_devices():
     except Exception as exc:
         logger.warning("capture-devices error: %s", exc)
         return {"devices": [], "error": str(exc)}
+
+
+@router.get("/api/capture-devices")
+async def list_capture_devices():
+    """Lista dispositivos de vídeo DirectShow disponíveis (webcams, placas de captura)."""
+    import asyncio
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, _list_capture_devices_sync)
 
 
 @router.delete("/api/library/folder")

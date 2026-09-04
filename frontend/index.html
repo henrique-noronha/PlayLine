@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/static/styles/library.css" />
   <link rel="stylesheet" href="/static/styles/log.css" />
   <link rel="stylesheet" href="/static/styles/text_overlay.css" />
+  <link rel="stylesheet" href="/static/styles/input_quadrant.css" />
 </head>
 <body>
   <header>
@@ -77,6 +78,10 @@
       <section class="card controls-card">
         <div class="controls-card-head">
           <h2>Painel de Controle</h2>
+          <div class="head-clock">
+            <span class="head-clock-date" id="clock-date">—</span>
+            <span class="head-clock-time" id="clock-time">—</span>
+          </div>
           <div id="controls-menu-wrap">
             <button id="btn-controls-menu" title="Opções"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="currentColor"><circle cx="1.5" cy="1.5" r="1.5"/><rect x="4.5" y="0.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="6.5" r="1.5"/><rect x="4.5" y="5.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="11.5" r="1.5"/><rect x="4.5" y="10.5" width="10.5" height="2" rx="1"/></svg></button>
             <div id="controls-menu-dropdown">
@@ -96,13 +101,13 @@
         </div>
         <div class="control-stats">
           <div class="stat-block">
-            <div class="stat-label">Tempo restante</div>
-            <div class="stat-value stat-remaining" id="remaining-time">—</div>
+            <div class="stat-label">Restante do clipe atual</div>
+            <div class="stat-value stat-clip-remaining" id="clip-remaining-time">—</div>
           </div>
           <div class="stat-divider"></div>
-          <div class="stat-block stat-block--clock">
-            <div class="stat-label" id="clock-date">—</div>
-            <div class="stat-value stat-clock" id="clock-time">—</div>
+          <div class="stat-block">
+            <div class="stat-label">Roteiro restante</div>
+            <div class="stat-value stat-remaining" id="remaining-time">—</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-block">
@@ -144,35 +149,23 @@
 
           <div class="logo-controls-compact">
 
-            <div class="logo-ctrl">
-              <span class="logo-label">Logo 1</span>
-              <div class="logo-pos-selector" data-slot="1">
-                <div class="pos-zone" data-slot="1" data-corner="tl" title="Superior esquerdo"></div>
-                <div class="pos-zone" data-slot="1" data-corner="tr" title="Superior direito"></div>
-                <div class="pos-zone" data-slot="1" data-corner="bl" title="Inferior esquerdo"></div>
-                <div class="pos-zone" data-slot="1" data-corner="br" title="Inferior direito"></div>
-                <div class="pos-indicator"></div>
+            <div class="logo-pair">
+              <div class="logo-ctrl">
+                <span class="logo-label">Logo 1</span>
+                <div class="logo-toggle-wrap">
+                  <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
+                  <button class="btn-logo-pick" data-slot="1" title="Selecionar logo">▾</button>
+                  <div class="logo-picker-dropdown" id="logo-picker-1"></div>
+                </div>
               </div>
-              <div class="logo-toggle-wrap">
-                <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
-                <button class="btn-logo-pick" data-slot="1" title="Selecionar logo">▾</button>
-                <div class="logo-picker-dropdown" id="logo-picker-1"></div>
-              </div>
-            </div>
 
-            <div class="logo-ctrl">
-              <span class="logo-label">Logo 2</span>
-              <div class="logo-pos-selector" data-slot="2">
-                <div class="pos-zone" data-slot="2" data-corner="tl" title="Superior esquerdo"></div>
-                <div class="pos-zone" data-slot="2" data-corner="tr" title="Superior direito"></div>
-                <div class="pos-zone" data-slot="2" data-corner="bl" title="Inferior esquerdo"></div>
-                <div class="pos-zone" data-slot="2" data-corner="br" title="Inferior direito"></div>
-                <div class="pos-indicator"></div>
-              </div>
-              <div class="logo-toggle-wrap">
-                <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
-                <button class="btn-logo-pick" data-slot="2" title="Selecionar logo">▾</button>
-                <div class="logo-picker-dropdown" id="logo-picker-2"></div>
+              <div class="logo-ctrl">
+                <span class="logo-label">Logo 2</span>
+                <div class="logo-toggle-wrap">
+                  <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
+                  <button class="btn-logo-pick" data-slot="2" title="Selecionar logo">▾</button>
+                  <div class="logo-picker-dropdown" id="logo-picker-2"></div>
+                </div>
               </div>
             </div>
 
@@ -233,7 +226,7 @@
                   </div>
                   <div class="to-temp-row">
                     <span class="to-temp-label">Temp. manual</span>
-                    <input type="text" id="to-temp-input" class="to-temp-input" placeholder="—" maxlength="7" />
+                    <input type="text" id="to-temp-input" class="to-temp-input" placeholder="25" maxlength="7" />
                     <button id="to-temp-fetch" class="to-temp-fetch" title="Buscar temperatura via API"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
                   </div>
                 </div>
@@ -266,6 +259,21 @@
           <div class="schedule-list" id="schedule-list">
             <div class="empty">Carregando roteiro…</div>
           </div>
+        </section>
+
+        <section class="card input-quadrant-card" id="input-quadrant-card">
+          <div class="iq-source-toggle">
+            <button class="iq-source-btn" id="iq-btn-camera" data-source="camera">Câmera</button>
+            <button class="iq-source-btn" id="iq-btn-youtube" data-source="youtube">YouTube</button>
+          </div>
+          <div class="iq-preview-wrap">
+            <video id="iq-preview-video" autoplay muted playsinline></video>
+            <iframe id="iq-preview-iframe" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen></iframe>
+            <div class="iq-preview-empty" id="iq-preview-empty">Nenhuma entrada ativa</div>
+          </div>
+          <button class="iq-add-btn" id="iq-btn-add">+ Adicionar outra câmera</button>
         </section>
       </div>
 
@@ -483,6 +491,7 @@
   <script src="/static/components/controls_menu.js"></script>
   <script src="/static/components/yt_preview.js"></script>
   <script src="/static/components/capture_preview.js"></script>
+  <script src="/static/components/input_quadrant.js"></script>
   <script src="/static/components/saved_schedules.js"></script>
 
   <!-- Diálogo de fechamento da interface -->

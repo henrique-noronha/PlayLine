@@ -13,11 +13,12 @@ from .history import HistoryManager
 
 logger = logging.getLogger(__name__)
 
-_RECONNECT_MAX    = 5
-_RECONNECT_DELAYS = [3, 6, 12, 20, 30]
+_RECONNECT_MAX    = 5                    # tentativas antes de desistir
+_RECONNECT_DELAYS = [3, 6, 12, 20, 30]  # backoff exponencial (segundos por tentativa)
 
 
 def _has_internet(timeout: float = 1.5) -> bool:
+    """Testa conectividade real da máquina via TCP no DNS do Google (8.8.8.8:53)."""
     try:
         socket.create_connection(("8.8.8.8", 53), timeout=timeout).close()
         return True
@@ -30,6 +31,20 @@ def _is_live_item(item: dict) -> bool:
         return True
     path = (item.get("path") or "").lower()
     return path.startswith(("rtmp://", "rtmps://", "rtsp://"))
+
+
+def _is_capture_item(item: dict) -> bool:
+    return (item.get("path") or "").lower().startswith("av://dshow:")
+
+
+_CAPTURE_RELEASE_DELAY = 0.3   # segundos — tempo pro navegador soltar visualmente o
+                                # preview antes do MPV tentar abrir o dispositivo. Não
+                                # elimina o retry (ver comentário em play_index) — só
+                                # evita a sobreposição visual de dois consumidores. — tempo pro navegador soltar o getUserMedia
+                                # do mesmo dispositivo antes do MPV tentar abri-lo.
+                                # 0.35s não foi suficiente em teste real (o teardown do
+                                # driver da webcam no SO pode levar mais que o track.stop()
+                                # em si) — 0.8s ainda é imperceptível numa troca ao vivo.
 
 
 class PlaylistEngine:
@@ -46,10 +61,12 @@ class PlaylistEngine:
         self._preloading: bool = False  # True quando próximo vídeo já está na fila do MPV
         self._history = HistoryManager()
         self._reconnect_attempt: int = 0
+        self._live_has_played: bool = False  # True após file-loaded confirmar a live atual
         self._live_has_played: bool = False
         self._repeat: bool = False
         self._live_last_pos: float = -1.0
         self._live_pos_ts: float = 0.0
+        self._last_position: float = 0.0  # posição (s) do item atual — permite reconstruir o tempo decorrido ao reconectar a interface
         self._live_watchdog_task: Optional[asyncio.Task] = None
         self._live_reconnecting: bool = False  # True quando _schedule_reconnect emitiu loadfile replace
 
@@ -187,6 +204,7 @@ class PlaylistEngine:
     def on_position(self, pos: float):
         """Chamado pelo Player a cada evento de posição do MPV."""
         if self._running and 0 <= self._index < len(self._items):
+            self._last_position = pos
             if _is_live_item(self._items[self._index]):
                 if abs(pos - self._live_last_pos) > 0.05:
                     self._live_last_pos = pos
@@ -233,18 +251,21 @@ class PlaylistEngine:
                 self._history.close_entry(reason)
                 if self._reconnect_attempt <= _RECONNECT_MAX:
                     if self._loop:
-                        asyncio.run_coroutine_threadsafe(self._schedule_reconnect(), self._loop)
+                        asyncio.run_coroutine_threadsafe(
+                            self._schedule_reconnect(), self._loop
+                        )
                 else:
                     self._reconnect_attempt = 0
                     if self._loop:
-                        asyncio.run_coroutine_threadsafe(self._on_reconnect_failed(), self._loop)
+                        asyncio.run_coroutine_threadsafe(
+                            self._on_reconnect_failed(), self._loop
+                        )
                 return
-        if reason == "error":
-            self._preloading = False
-            self._history.close_entry("error")
-            logger.warning("Arquivo com erro — avançando automaticamente")
-        elif reason == "eof":
-            self._history.close_entry("completed")
+            if reason == "error":
+                self._history.close_entry("error")
+                logger.warning("Arquivo com erro — avançando automaticamente")
+            else:
+                self._history.close_entry("completed")
         if self._skip_end_file > 0:
             self._skip_end_file -= 1
             logger.debug("end-file ignorado (substituição por avanço manual)")
@@ -271,10 +292,23 @@ class PlaylistEngine:
     async def _schedule_reconnect(self):
         attempt = self._reconnect_attempt
         delay   = _RECONNECT_DELAYS[min(attempt - 1, len(_RECONNECT_DELAYS) - 1)]
+
+        # Testa conectividade real em executor para não bloquear o event loop
         loop = asyncio.get_event_loop()
-        has_net      = await loop.run_in_executor(None, _has_internet)
-        no_internet  = not has_net
+        has_net     = await loop.run_in_executor(None, _has_internet)
+        no_internet = not has_net
         never_played = not self._live_has_played
+
+        if no_internet:
+            label = "sem conexão com a internet"
+        elif never_played:
+            label = "live nunca carregou"
+        else:
+            label = "live caiu"
+
+        logger.info("[reconexão] tentativa %d/%d (%s) — aguardando %ds...",
+                    attempt, _RECONNECT_MAX, label, delay)
+
         await self._broadcast({
             "event": "stream_reconnecting",
             "attempt": attempt,
@@ -331,14 +365,17 @@ class PlaylistEngine:
             pass
 
     async def _on_reconnect_failed(self):
-        no_internet  = not _has_internet()
+        loop = asyncio.get_event_loop()
+        has_net     = await loop.run_in_executor(None, _has_internet)
+        no_internet = not has_net
         never_played = not self._live_has_played
         await self._broadcast({
             "event": "stream_reconnect_failed",
             "no_internet": no_internet,
             "never_played": never_played,
         })
-        logger.warning("Falha ao reconectar live após %d tentativas", _RECONNECT_MAX)
+        logger.error("[reconexão] esgotadas %d tentativas — avançando", _RECONNECT_MAX)
+        await self._advance(expected_seq=self._advance_seq)
 
     async def _advance(self, expected_seq: int = -1):
         """
@@ -399,6 +436,7 @@ class PlaylistEngine:
 
     async def play(self):
         """Inicia pelo primeiro item do roteiro."""
+        self._reconnect_attempt = 0
         self._advance_seq += 1  # invalida qualquer end-file pendente
         await self.play_index(0)
 
@@ -408,7 +446,11 @@ class PlaylistEngine:
         self._index = index
         self._running = True
         self._paused = False
+        self._last_position = 0.0
         item = self._items[index]
+        # Reset "já tocou" ao iniciar uma live nova (não em tentativas de reconexão)
+        if _is_live_item(item) and not force_resolve:
+            self._live_has_played = False
 
         if _is_live_item(item) and not force_resolve:
             self._live_has_played = False
@@ -421,6 +463,25 @@ class PlaylistEngine:
                 # Não chama player.play() para não interromper a reprodução
                 logger.info("MPV já está em transição para: %s", item["path"])
             else:
+                if _is_capture_item(item):
+                    # Dispositivo de captura (webcam/placa) aceita só um consumidor
+                    # por vez. Avisa o navegador pra soltar o preview (getUserMedia)
+                    # ANTES do MPV tentar abrir, em vez de só reagir depois do
+                    # "now_playing" (que só é emitido depois do play()).
+                    #
+                    # IMPORTANTE — isso melhora a experiência (o preview não fica
+                    # sobreposto no instante da troca) mas NÃO elimina a 1ª falha:
+                    # testado em bancada com delays de 0.3s a 2.5s antes desta
+                    # linha, e o 1º open do MPV falha de forma idêntica em todos
+                    # (~500ms após o play, sempre resolvido no retry seguinte).
+                    # Não é uma corrida de tempo — parece ser o Windows negociando
+                    # a troca de "dono" do dispositivo entre a API do navegador
+                    # (Media Foundation) e a API clássica que o MPV usa (DirectShow
+                    # via ffmpeg) sempre que a primeira alguma vez tocou no
+                    # dispositivo. O watchdog de reconexão existente cobre esse
+                    # retry único automaticamente.
+                    await self._broadcast({"event": "capture_device_releasing", "path": item["path"]})
+                    await asyncio.sleep(_CAPTURE_RELEASE_DELAY)
                 self._player.play(
                     item["path"],
                     start_time=item.get("start_time"),
@@ -559,4 +620,5 @@ class PlaylistEngine:
             "current_item": item,
             "total_items": len(self._items),
             "repeat": self._repeat,
+            "position": self._last_position,
         }

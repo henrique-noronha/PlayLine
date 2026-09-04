@@ -16,6 +16,21 @@ const state = {
 
 let _remainingTimer = null;
 
+// Dispositivos de captura (webcam/placa) geralmente só aceitam um consumidor
+// por vez — se algum preview no navegador (quadrante fixo, popup do roteiro)
+// segura o mesmo dispositivo que o item atual ou o próximo da fila, o MPV
+// perde a disputa ao tentar ir ao ar e a live cai em loop de reconexão.
+// Fonte única usada por todo preview de captura pra decidir se deve evitar
+// abrir o dispositivo (compara por path — mais robusto que referência de
+// objeto, que muda a cada "schedule_updated" mesmo pro mesmo item lógico).
+function isCaptureDeviceNeededSoon(path) {
+  if (!path || !state.playing || state.currentIndex < 0) return false;
+  const curr = state.schedule[state.currentIndex];
+  const next = state.schedule[state.currentIndex + 1];
+  return (!!curr && curr.path === path) || (!!next && next.path === path);
+}
+window.isCaptureDeviceNeededSoon = isCaptureDeviceNeededSoon;
+
 // Carregamento diferido do preview: aguarda o primeiro evento "position" para
 // saber onde abrir o vídeo via #t=N, evitando o seek manual que congela o browser.
 let _pendingLoad         = null;   // { path, paused } enquanto aguarda posição
@@ -64,7 +79,10 @@ function stopRemainingTimer() {
   _remainingTimer = null;
 }
 
+// Estado de reconexão do stream — controla o banner abaixo do player.
 let _streamReconnecting = false;
+// true somente quando o ciclo de reconexão do MPV está ativo (stream_reconnecting recebido).
+// false quando o banner veio apenas do evento offline do browser (MPV ainda buffering).
 let _mpvReconnectActive = false;
 
 function _showReconnectStatus(msg) {
@@ -82,6 +100,8 @@ function _clearReconnectStatus() {
   if (banner) banner.style.display = "none";
 }
 
+// Detecta queda de rede via evento do browser para mostrar aviso IMEDIATAMENTE,
+// sem esperar o MPV drenar o buffer (pode demorar vários segundos).
 window.addEventListener("offline", () => {
   const item = state.schedule[state.currentIndex];
   if (state.playing && item?.live) {
@@ -90,6 +110,9 @@ window.addEventListener("offline", () => {
   }
 });
 
+// Quando a rede volta: se o ciclo de reconexão do MPV ainda não iniciou
+// (MPV estava buffering quando a rede caiu e voltou), limpa o banner imediatamente.
+// Se o ciclo já iniciou (_mpvReconnectActive), mantém até o MPV confirmar (now_playing).
 window.addEventListener("online", () => {
   if (_streamReconnecting && !_mpvReconnectActive) {
     _clearReconnectStatus();
@@ -141,8 +164,16 @@ function handleEvent(ev) {
     case "mpv_ready":
       state.mpvAlive = true;
       break;
+    case "capture_device_releasing":
+      // Servidor está prestes a mandar o MPV abrir este dispositivo de
+      // captura — solta qualquer preview do navegador nele imediatamente,
+      // sem esperar o "now_playing" (que só chega depois do play()).
+      window._captureForceRelease?.(ev.path);
+      window._inputQuadrantForceRelease?.(ev.path);
+      break;
     case "now_playing":
       _clearReconnectStatus();
+      window._netMonitor?.onNowPlaying(ev.item);
       state.mpvAlive = true;
       _cancelPendingLoad();
       state.currentIndex = ev.index;
@@ -165,7 +196,6 @@ function handleEvent(ev) {
       } else {
         hideLiveIndicator();
         if (window._setPreviewStatus) window._setPreviewStatus(null);
-        _vuBackendDb = null; // volta pro analisador local — item não vem mais do YouTube
         loadVideo(ev.item.path);
       }
       updateStartTimes();
@@ -180,6 +210,8 @@ function handleEvent(ev) {
           _restoreOverlayBaseline();
         }
       }
+      window._onScheduleChangedForInputQuadrant?.(); // libera a câmera do quadrante se ela acabou de entrar no ar
+      window._captureReleaseIfNeededSoon?.();        // idem pro popup de preview do roteiro, se estiver aberto
       break;
     case "paused":
       state.paused = true;
@@ -204,6 +236,7 @@ function handleEvent(ev) {
       break;
     case "stopped":
       _clearReconnectStatus();
+      window._netMonitor?.onStopped();
       _vuBackendDb = null;
       _cancelPendingLoad();
       state.playing = false;
@@ -220,9 +253,12 @@ function handleEvent(ev) {
       stopVideo();
       if (window._setPreviewStatus) window._setPreviewStatus(null);
       updateStartTimes();
+      window._onScheduleChangedForInputQuadrant?.(); // devolve a câmera pro quadrante, se aplicável
+      window._captureReleaseIfNeededSoon?.();        // idem pro popup de preview do roteiro, se estiver aberto
       break;
     case "playlist_end":
       _clearReconnectStatus();
+      window._netMonitor?.onStopped();
       _cancelPendingLoad();
       state.playing = false;
       state.currentItemStartTime = null;
@@ -235,6 +271,8 @@ function handleEvent(ev) {
       stopVideo();
       updateStartTimes();
       updateButtons();
+      window._onScheduleChangedForInputQuadrant?.(); // devolve a câmera pro quadrante, se aplicável
+      window._captureReleaseIfNeededSoon?.();        // idem pro popup de preview do roteiro, se estiver aberto
       break;
     case "position":
       if (_pendingLoad) _commitPendingLoad(ev.pos);
@@ -297,6 +335,21 @@ function applyState(s) {
   state.paused = s.paused ?? false;
   if (typeof s.repeat === "boolean") { state.repeat = s.repeat; updateLoopIndicator(); }
 
+  // Reconstrói o "relógio" do clipe atual a partir da posição enviada pelo servidor —
+  // sem isso, os mostradores do painel de controle (calcClipRemaining/calcRemaining/
+  // calcStartTimes) ficam travados após reabrir a interface, pois dependem de
+  // state.currentItemStartTime, que só é setado nos eventos now_playing/paused/resumed.
+  if (state.playing || state.paused) {
+    const posSec = typeof s.position === "number" ? s.position : 0;
+    state.currentItemStartTime = Date.now() - posSec * 1000;
+    state.totalPausedMs = 0;
+    state.pausedAt = state.paused ? Date.now() : null;
+  } else {
+    state.currentItemStartTime = null;
+    state.totalPausedMs = 0;
+    state.pausedAt = null;
+  }
+
   if (s.items) { 
     state.schedule = s.items; 
     renderSchedule(); 
@@ -331,6 +384,7 @@ function applyState(s) {
   }
   updateButtons();
   highlightActive(state.currentIndex);
+  updateStartTimes();
 }
 
 // Botões de controle de mídia
@@ -471,7 +525,7 @@ function applyLogoState(remoteState) {
     if (toggle) toggle.classList.toggle("active", s.active);
     _renderPickerDropdown(slot);
     _updateLogoOverlay(slot, s.corner, s.active);
-    _updatePosSelector(slot);
+    if (typeof _updatePosSelector === "function") _updatePosSelector(slot);
   });
 }
 
@@ -532,32 +586,6 @@ function _closeAllPickers() {
   _closePicker(2);
 }
 
-function _updatePosSelector(slot) {
-  const selector = document.querySelector(`.logo-pos-selector[data-slot="${slot}"]`);
-  if (!selector) return;
-  const corner = _logoState[slot].corner;
-
-  // Posições ocupadas pela outra logo e pelo texto
-  const blocked = new Set();
-  const other = slot === 1 ? 2 : 1;
-  if (_logoState[other]?.active) blocked.add(_logoState[other].corner);
-  if (typeof _textState !== "undefined" && _textState?.active) blocked.add(_textState.corner);
-
-  selector.querySelectorAll(".pos-zone").forEach(z => {
-    const c = z.dataset.corner;
-    const isBlocked = blocked.has(c);
-    z.classList.toggle("active",  c === corner && !isBlocked);
-    z.classList.toggle("blocked", isBlocked);
-    z.style.pointerEvents = isBlocked ? "none" : "";
-  });
-
-  const ind = selector.querySelector(".pos-indicator");
-  if (!ind) return;
-  ind.style.top    = corner[0] === "t" ? "2px" : "auto";
-  ind.style.bottom = corner[0] === "b" ? "2px" : "auto";
-  ind.style.left   = corner[1] === "l" ? "2px" : "auto";
-  ind.style.right  = corner[1] === "r" ? "2px" : "auto";
-}
 
 function initLogoUI() {
   // Fecha todos os pickers ao clicar fora
@@ -571,22 +599,6 @@ function initLogoUI() {
 
     // Restaura estado visual
     if (toggle) toggle.classList.toggle("active", s.active);
-    _updatePosSelector(slot);
-
-    // Zonas clicáveis do seletor visual de posição
-    document.querySelectorAll(`.pos-zone[data-slot="${slot}"]`).forEach(zone => {
-      zone.addEventListener("click", () => {
-        s.corner = zone.dataset.corner;
-        localStorage.setItem(`playline_logo${slot}_corner`, s.corner);
-        _updatePosSelector(slot);
-        _updatePosSelector(slot === 1 ? 2 : 1);
-        if (s.active) {
-          _sendLogo(slot);
-          _updateLogoOverlay(slot, s.corner, s.active);
-        }
-        if (typeof _updateTextPosSelector === "function") _updateTextPosSelector();
-      });
-    });
 
     // Botão numérico "1" / "2" — toggler de ativação
     if (toggle) {
@@ -601,7 +613,6 @@ function initLogoUI() {
         toggle.classList.toggle("active", s.active);
         _sendLogo(slot);
         _updateLogoOverlay(slot, s.corner, s.active);
-        _updatePosSelector(slot === 1 ? 2 : 1);
         if (typeof _updateTextPosSelector === "function") _updateTextPosSelector();
       });
     }
@@ -624,11 +635,9 @@ function initLogoUI() {
 function _updateLogoOverlay(slot, corner, active) {
   const el = document.getElementById(`logo-overlay-${slot}`);
   if (!el) return;
-  el.classList.remove("corner-tl", "corner-tr", "corner-bl", "corner-br");
   if (active) {
     const s = _logoState[slot];
     el.src = `/api/logos/${encodeURIComponent(s.filename)}`;
-    el.classList.add(`corner-${corner}`);
     el.style.display = "";
   } else {
     el.src = "";
@@ -649,7 +658,18 @@ function _sendLogo(slot) {
 
 // ── VU Meter ─────────────────────────────────────────────────────────────────
 
-let _vuBackendDb = null;  // nível fornecido pelo daemon (live streams)
+// Nível sempre fornecido pelo daemon via Windows Core Audio (backend/daemon/
+// win_audio_meter.py) — o mesmo medidor pra qualquer conteúdo (clipe local,
+// YouTube, captura), não só lives. Antes disso, clipes locais liam o nível
+// via Web Audio API a partir do <video> local do navegador
+// (createMediaElementSource); isso dependia de video.play() ter sucesso, e
+// as políticas de autoplay do navegador (bloqueiam play() não-mudo sem
+// gesto do usuário; um elemento mudo, por sua vez, não entrega dados pro
+// Web Audio) tornavam isso frágil demais — sobretudo ao restaurar o clipe
+// atual reabrindo só a interface no PyWebView, sem nenhum gesto prévio na
+// página nova. Ler direto do áudio real do sistema evita essa classe
+// inteira de problema.
+let _vuBackendDb = null;
 
 const VU_MIN  = -40;   // dBFS mínimo do meter
 const VU_MAX  =  6;    // dBFS máximo (iguala o slider)
@@ -657,10 +677,6 @@ const VU_SEGS = 30;    // nº de segmentos LED
 const VU_HOLD = 1500;  // ms de peak hold antes do decay
 const VU_DCY  = 0.3;   // dB/frame de decay do peak
 
-let _vuAudioCtx = null;
-let _vuAnalyser  = null;
-let _vuBuf       = null;
-let _vuReady     = false;
 let _vuPeakDb    = VU_MIN;
 let _vuPeakTil   = 0;
 let _vuClipTil   = 0;
@@ -742,21 +758,12 @@ function _vuFrame() {
     canvas.width = canvas.offsetWidth;
   }
 
-  let outDb;
-  if (_vuBackendDb !== null) {
-    // _vuBackendDb já é o nível real pós-volume do Windows Core Audio — não somar _volDb
-    outDb = _muted ? VU_MIN : Math.min(VU_MAX, _vuBackendDb);
-  } else if (!_vuReady || !_vuAnalyser) {
+  if (_vuBackendDb === null) {
     _vuDraw(VU_MIN);
     return;
-  } else {
-    _vuAnalyser.getFloatTimeDomainData(_vuBuf);
-    let sum = 0;
-    for (let i = 0; i < _vuBuf.length; i++) sum += _vuBuf[i] * _vuBuf[i];
-    const rms = Math.sqrt(sum / _vuBuf.length);
-    const sigDb = 20 * Math.log10(Math.max(rms, 1e-10));
-    outDb = _muted ? VU_MIN : Math.min(VU_MAX, sigDb + _volDb);
   }
+  // _vuBackendDb já é o nível real pós-volume do Windows Core Audio — não somar _volDb
+  const outDb = _muted ? VU_MIN : Math.min(VU_MAX, _vuBackendDb);
 
   const now = performance.now();
   if (outDb > _vuPeakDb) { _vuPeakDb = outDb; _vuPeakTil = now + VU_HOLD; }
@@ -768,41 +775,6 @@ function _vuFrame() {
 
   _vuDraw(outDb);
 }
-
-function _initVuMeter() {
-  if (_vuReady) return;
-  try {
-    _vuAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    // createMediaElementSource toma posse do áudio: desconecta saída padrão
-    const src = _vuAudioCtx.createMediaElementSource(video);
-    video.muted = false; // seguro após a captura acima
-
-    _vuAnalyser = _vuAudioCtx.createAnalyser();
-    _vuAnalyser.fftSize = 2048;
-    _vuAnalyser.smoothingTimeConstant = 0.1;
-
-    const silencer = _vuAudioCtx.createGain();
-    silencer.gain.value = 0; // browser fica mudo — MPV é o som real
-
-    src.connect(_vuAnalyser);
-    _vuAnalyser.connect(silencer);
-    silencer.connect(_vuAudioCtx.destination);
-
-    _vuBuf   = new Float32Array(_vuAnalyser.fftSize);
-    _vuReady = true;
-  } catch (e) {
-    console.warn("[VU]", e);
-  }
-}
-
-function _resumeVuCtx() {
-  if (_vuAudioCtx && _vuAudioCtx.state === "suspended") {
-    _vuAudioCtx.resume().catch(() => {});
-  }
-}
-
-document.addEventListener("click",      _resumeVuCtx);
-document.addEventListener("touchstart", _resumeVuCtx, { passive: true });
 
 requestAnimationFrame(_vuFrame);
 
@@ -843,10 +815,8 @@ function _applyClipOverlays(co) {
     // Atualiza DOM de preview sem alterar _logoState
     const el = document.getElementById(`logo-overlay-${slot}`);
     if (el) {
-      el.classList.remove("corner-tl", "corner-tr", "corner-bl", "corner-br");
       if (active && filename) {
         el.src = `/api/logos/${encodeURIComponent(filename)}`;
-        el.classList.add(`corner-${corner}`);
         el.style.display = "";
       } else {
         el.src = "";
@@ -884,7 +854,6 @@ async function init() {
 
   initLogoUI();
   initTextOverlayUI();
-  _initVuMeter();
 
   if (typeof connect === "function") connect();
 

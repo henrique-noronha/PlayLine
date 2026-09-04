@@ -21,11 +21,28 @@
     return _modal;
   }
 
+  let _openPath = null;
+
   function _close() {
     if (_stream) { _stream.getTracks().forEach(t => t.stop()); _stream = null; }
     if (_videoEl) _videoEl.srcObject = null;
     if (_modal)   _modal.style.display = "none";
+    _openPath = null;
   }
+
+  // Chamado nas trocas de item (now_playing/stopped/playlist_end, ver app.js)
+  // pra soltar o dispositivo caso o popup tenha ficado aberto justamente
+  // quando o item dele virou o atual ou o próximo da fila.
+  window._captureReleaseIfNeededSoon = function () {
+    if (_openPath && window.isCaptureDeviceNeededSoon?.(_openPath)) _close();
+  };
+
+  // Chamado via evento "capture_device_releasing" (ver app.js) — o servidor
+  // está prestes a mandar o MPV abrir esse dispositivo, solta incondicionalmente
+  // (sem checar isCaptureDeviceNeededSoon: já foi decidido, é agora).
+  window._captureForceRelease = function (path) {
+    if (_openPath === path) _close();
+  };
 
   function _position(anchor) {
     const rect = anchor.getBoundingClientRect();
@@ -39,11 +56,39 @@
     _modal.style.left = left + "px";
   }
 
+  // Encontra o dispositivo pelo nome (labels só ficam disponíveis após a primeira permissão
+  // concedida) e retorna o MediaStream, ou null se não conseguir acessar.
+  // Exposto pro quadrante fixo de entrada (input_quadrant.js) reaproveitar sem duplicar.
+  window._captureGetStream = async function (deviceName) {
+    if (!navigator.mediaDevices?.getUserMedia) return null;
+    try {
+      const devices   = await navigator.mediaDevices.enumerateDevices();
+      const videoDevs = devices.filter(d => d.kind === "videoinput" && d.label);
+      const match = videoDevs.find(d =>
+        d.label.toLowerCase().includes(deviceName.toLowerCase()) ||
+        deviceName.toLowerCase().includes(d.label.toLowerCase())
+      );
+      const constraints = match
+        ? { video: { deviceId: { exact: match.deviceId } } }
+        : { video: true };
+      return await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (_e) {
+      return null;
+    }
+  };
+
   window.openCapturePreview = async function (path, anchor) {
     const deviceName = path.replace(/^av:\/\/dshow:video=/, "");
 
     if (!navigator.mediaDevices?.getUserMedia) {
       if (typeof showToast === "function") showToast("Preview não disponível neste browser", "warn");
+      return;
+    }
+
+    // Mesmo dispositivo está no ar (ou prestes a) — não disputa com o MPV.
+    // Ver isCaptureDeviceNeededSoon() em app.js.
+    if (window.isCaptureDeviceNeededSoon?.(path)) {
+      if (typeof showToast === "function") showToast("Ao vivo agora — sem preview duplicado para não travar a transmissão", "warn");
       return;
     }
 
@@ -55,26 +100,14 @@
     if (_stream) { _stream.getTracks().forEach(t => t.stop()); _stream = null; }
     _videoEl.srcObject = null;
     el.style.display = "block";
+    _openPath = path;
 
-    try {
-      // Tenta encontrar o dispositivo pelo nome via enumerateDevices
-      // (labels só ficam disponíveis após a primeira permissão concedida)
-      const devices  = await navigator.mediaDevices.enumerateDevices();
-      const videoDevs = devices.filter(d => d.kind === "videoinput" && d.label);
-      const match = videoDevs.find(d =>
-        d.label.toLowerCase().includes(deviceName.toLowerCase()) ||
-        deviceName.toLowerCase().includes(d.label.toLowerCase())
-      );
-
-      const constraints = match
-        ? { video: { deviceId: { exact: match.deviceId } } }
-        : { video: true };
-
-      _stream = await navigator.mediaDevices.getUserMedia(constraints);
+    _stream = await window._captureGetStream(deviceName);
+    if (_stream) {
       _videoEl.srcObject = _stream;
-    } catch (_e) {
+    } else {
       el.style.display = "none";
-      _stream = null;
+      _openPath = null;
       if (typeof showToast === "function") showToast("Não foi possível acessar: " + deviceName, "warn");
     }
   };

@@ -10,6 +10,8 @@ __pycache__/
 # Binários externos — baixar separadamente antes de buildar
 backend/libmpv-2.dll
 backend/ffmpeg.exe
+backend/deps/yt-dlp.exe   # https://github.com/yt-dlp/yt-dlp/releases/latest
+backend/deps/node.exe     # opcional: cópia local do node.exe para builds offline
 
 # Cache de thumbnails — gerado automaticamente no startup
 cache/
@@ -62,4 +64,5 @@ Biblioteca/
 *.bak
 backend/.playline_server
 .claude/skills/
+
 

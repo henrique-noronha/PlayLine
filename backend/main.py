@@ -122,6 +122,10 @@ async def lifespan(app: FastAPI):
         if playlist_engine:
             playlist_engine.on_end_file(reason)
 
+    def _on_file_loaded():
+        if playlist_engine:
+            playlist_engine.on_file_loaded()
+
     def _on_position(pos: float):
         asyncio.run_coroutine_threadsafe(
             manager.broadcast({"event": "position", "pos": pos}),
