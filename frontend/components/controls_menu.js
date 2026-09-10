@@ -84,4 +84,9 @@
     openHistoryModal();
   });
 
+  document.getElementById("ctrl-menu-settings").addEventListener("click", () => {
+    closeDropdown();
+    openSettingsModal();
+  });
+
 })();

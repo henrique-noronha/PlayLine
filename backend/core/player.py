@@ -184,14 +184,24 @@ class Player:
 
     # API pública                                                          #
 
-    def play(self, path: str, start_time=None, end_time=None, force_resolve: bool = False, live: bool = False):
+    def play(self, path: str, start_time=None, end_time=None, force_resolve: bool = False,
+             live: bool = False, transition: Optional[str] = None):
         msg: dict = {"action": "play", "path": path}
         if start_time: msg["start_time"] = start_time
         if end_time:   msg["end_time"]   = end_time
         if force_resolve: msg["force_resolve"] = True
         if live: msg["live"] = True
+        if transition: msg["transition"] = transition   # "fade"/"cut" do item; ausente = global
         self._send(msg)
         logger.info("Reproduzindo: %s", path)
+
+    def set_transition(self, cfg: dict):
+        """Transição global: {"type": "cut"|"fade", "duration": s}."""
+        self._send({"action": "set_transition", **cfg})
+
+    def set_next_transition(self, override: Optional[str]):
+        """Override do próximo item ("fade"/"cut"/None) para o fade out automático respeitar a fronteira."""
+        self._send({"action": "next_transition", "transition": override})
 
     def preload(self, path: str):
         self._send({"action": "preload", "path": path})

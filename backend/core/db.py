@@ -1,17 +1,38 @@
-"""Banco de dados SQLite do PlayLine."""
+"""Banco de dados SQLite do PlayLine.
+
+Fonte única do caminho do banco: todo módulo que precisa do SQLite (inclusive o
+daemon, via daemon/checkpoint.py) deve ler `DB_PATH` daqui em vez de recalcular.
+Antes, checkpoint.py derivava o próprio caminho e, em dev, acabava num arquivo
+diferente (backend/playline.db, sem tabela nenhuma), então a recuperação de
+crash gravava no vazio em silêncio e só funcionava no build congelado.
+
+`PLAYLINE_DB` no ambiente sobrescreve o caminho (isolamento de testes/instâncias).
+"""
 
 import logging
+import os
 import sqlite3
 import sys
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-DB_PATH: Path = (
-    Path(sys.executable).parent / "playline.db"
-    if getattr(sys, "frozen", False)
-    else Path(__file__).parent / "playline.db"
-)
+
+def _default_db_path() -> Path:
+    env = os.environ.get("PLAYLINE_DB")
+    if env:
+        return Path(env)
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).parent / "playline.db"
+    return Path(__file__).parent / "playline.db"
+
+
+DB_PATH: Path = _default_db_path()
+
+# Colunas fixas de `schedule`. Qualquer outra chave de um item (type, clip_overlays,
+# o que vier a existir) é serializada em `extra` (JSON) e restaurada no load, em
+# vez de ser descartada na persistência.
+SCHEDULE_COLUMNS = ("position", "id", "title", "path", "live", "start_time", "end_time", "duration")
 
 
 def get_conn() -> sqlite3.Connection:
@@ -20,6 +41,14 @@ def get_conn() -> sqlite3.Connection:
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
     return conn
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    """Migrações idempotentes de esquema (ADD COLUMN só se ainda não existir)."""
+    cols = {r["name"] for r in conn.execute("PRAGMA table_info(schedule)")}
+    if "extra" not in cols:
+        conn.execute("ALTER TABLE schedule ADD COLUMN extra TEXT")
+        logger.info("[db] migração: coluna schedule.extra adicionada")
 
 
 def init_db() -> None:
@@ -61,6 +90,7 @@ def init_db() -> None:
                 items      TEXT    NOT NULL
             );
         """)
+        _migrate(conn)
     logger.info("[db] Banco inicializado: %s", DB_PATH)
 
 

@@ -1,5 +1,6 @@
 """Rotas HTTP do PlayLine."""
 
+import asyncio
 import hashlib
 import io
 import mimetypes
@@ -13,6 +14,8 @@ from fastapi import APIRouter, HTTPException, UploadFile, File
 
 _NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
 from fastapi.responses import FileResponse, Response
+
+from core import settings as app_settings
 
 # Mesmo caminho usado pelo mpv_daemon — sem espaços para compatibilidade com lavfi
 _LOGO_WORK_DIR = Path(os.environ.get("PUBLIC", r"C:\Users\Public")) / "pltmp"
@@ -328,12 +331,31 @@ async def get_temperature(city: str = "Palmas,TO"):
 
 # ── Biblioteca estruturada ──────────────────────────────────────────────────
 
-_LIBRARY_BASE: Path = (
+_LIBRARY_DEFAULT: Path = (
     Path(sys.executable).parent / "Biblioteca"
     if getattr(sys, "frozen", False)
     else Path(__file__).parent.parent.parent / "Biblioteca"
 )
-_LIBRARY_BASE.mkdir(exist_ok=True)
+
+
+def _initial_library_base() -> Path:
+    """Pasta configurada em config.json, ou a padrão (criada se preciso).
+
+    Se a configurada sumiu (HD externo desligado, pasta renomeada), volta à
+    padrão só nesta execução, sem apagar a configuração; o modal avisa.
+    """
+    cfg = app_settings.get_library_dir()
+    if cfg is not None:
+        if cfg.is_dir():
+            return cfg
+        logger.warning("Pasta da biblioteca configurada não encontrada (%s); usando %s",
+                       cfg, _LIBRARY_DEFAULT)
+    _LIBRARY_DEFAULT.mkdir(exist_ok=True)
+    return _LIBRARY_DEFAULT
+
+
+# Lido em tempo de chamada por todas as rotas abaixo; POST /api/settings/library troca em runtime.
+_LIBRARY_BASE: Path = _initial_library_base()
 
 
 def _scan_media(path: Path) -> list[dict]:
@@ -350,6 +372,69 @@ async def get_library_info():
     """Retorna as subpastas da Biblioteca."""
     subfolders = sorted(f.name for f in _LIBRARY_BASE.iterdir() if f.is_dir())
     return {"subfolders": subfolders, "base": str(_LIBRARY_BASE)}
+
+
+# ── Configurações (modal do painel de controle) ─────────────────────────────
+
+@router.get("/api/settings")
+async def get_settings():
+    """Usuário atual e pasta da biblioteca (atual, padrão e configurada)."""
+    cfg = app_settings.get_library_dir()
+    loop = asyncio.get_running_loop()
+    # is_dir() numa unidade de rede fora do ar pode travar: fora do event loop
+    missing = (await loop.run_in_executor(None, cfg.is_dir) is False) if cfg is not None else False
+    return {
+        "username": app_settings.get_username(),
+        "library_dir": str(_LIBRARY_BASE),
+        "library_default": str(_LIBRARY_DEFAULT),
+        "library_configured": str(cfg) if cfg else "",
+        "library_missing": missing,
+        "transition": app_settings.get_transition(),
+    }
+
+
+@router.post("/api/settings/transition")
+async def change_transition(body: dict):
+    """Transição global. O modal só altera a duração; o tipo é o botão do cabeçalho do roteiro (WS)."""
+    if _playlist_engine is None:
+        raise HTTPException(status_code=503, detail="Engine indisponível")
+    try:
+        cfg = await _playlist_engine.set_transition({k: body[k] for k in ("type", "duration") if k in body})
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    return {"ok": True, "transition": cfg}
+
+
+@router.post("/api/settings/library")
+async def change_library_dir(body: dict):
+    """Troca a pasta da biblioteca em runtime e persiste em config.json.
+
+    Os itens do roteiro guardam caminho absoluto, então o que já está programado
+    continua tocando de onde está; só listagem, upload e subpastas passam a usar
+    a nova pasta. PlayIngest e PlayLine-Client resolvem tudo pelo servidor, então
+    nada muda neles. `{"reset": true}` volta à pasta padrão.
+    """
+    global _LIBRARY_BASE
+    loop = asyncio.get_running_loop()
+    if body.get("reset"):
+        new = _LIBRARY_DEFAULT
+        await loop.run_in_executor(None, lambda: new.mkdir(exist_ok=True))
+        app_settings.set_library_dir(None)
+    else:
+        try:
+            new = await loop.run_in_executor(
+                None, app_settings.validate_library_dir, str(body.get("path") or ""))
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+        app_settings.set_library_dir(new)
+    changed = new != _LIBRARY_BASE
+    _LIBRARY_BASE = new
+    if changed:
+        logger.info("Biblioteca alterada para %s", new)
+        if _manager:
+            await _manager.broadcast({"event": "library_changed", "library_dir": str(new)})
+        asyncio.create_task(prewarm_thumbnails())
+    return {"ok": True, "library_dir": str(new), "changed": changed}
 
 
 @router.get("/api/library/files")
