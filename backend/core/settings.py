@@ -218,6 +218,149 @@ def normalize_transition(cfg, base: Optional[dict] = None) -> dict:
     return {"type": t, "duration": round(d, 2)}
 
 
+# ── Cidades do overlay de hora/temperatura ──────────────────────────────────
+#
+# A lista fica em config.json e é montada pelo operador na tela de Configurações
+# (busca no geocoding da OpenWeatherMap). Guardar lat/lon junto do nome resolve a
+# ambiguidade de homônimos: existem cinco "Palmas" no Brasil, e a consulta por
+# nome pegava qualquer uma delas. Sem nada gravado, valem as capitais abaixo.
+
+CITIES_MAX = 30
+CITY_NAME_MAX = 64
+
+_DEFAULT_CITIES = [
+    ('Aracaju', 'SE', -10.9162, -37.0775),
+    ('Belém', 'PA', -1.4506, -48.4682),
+    ('Belo Horizonte', 'MG', -19.9227, -43.9451),
+    ('Boa Vista', 'RR', 2.8208, -60.672),
+    ('Campinas', 'SP', -22.9056, -47.0596),
+    ('Campo Grande', 'MS', -20.464, -54.6163),
+    ('Cuiabá', 'MT', -15.5987, -56.0991),
+    ('Curitiba', 'PR', -25.4296, -49.2713),
+    ('Florianópolis', 'SC', -27.5973, -48.5496),
+    ('Fortaleza', 'CE', -3.7305, -38.5218),
+    ('Goiânia', 'GO', -16.6809, -49.2533),
+    ('João Pessoa', 'PB', -7.1216, -34.882),
+    ('Londrina', 'PR', -23.3113, -51.1595),
+    ('Macapá', 'AP', 0.0402, -51.057),
+    ('Maceió', 'AL', -9.6477, -35.7339),
+    ('Manaus', 'AM', -3.1316, -59.9825),
+    ('Natal', 'RN', -5.8054, -35.2081),
+    ('Palmas', 'TO', -10.1838, -48.3336),
+    ('Porto Alegre', 'RS', -30.0325, -51.2304),
+    ('Porto Velho', 'RO', -8.7495, -63.8735),
+    ('Recife', 'PE', -8.0585, -34.8848),
+    ('Rio Branco', 'AC', -9.9765, -67.8221),
+    ('Rio de Janeiro', 'RJ', -22.911, -43.2094),
+    ('Salvador', 'BA', -12.9822, -38.4813),
+    ('Santos', 'SP', -23.9336, -46.3286),
+    ('São Luís', 'MA', -2.5295, -44.2964),
+    ('São Paulo', 'SP', -23.5507, -46.6334),
+    ('Teresina', 'PI', -5.0875, -42.805),
+    ('Uberlândia', 'MG', -18.9188, -48.2768),
+    ('Vitória', 'ES', -20.3201, -40.3377),
+]
+
+
+def default_cities() -> list[dict]:
+    return [{"name": n, "state": uf, "lat": lat, "lon": lon}
+            for n, uf, lat, lon in _DEFAULT_CITIES]
+
+
+def city_key(city) -> str:
+    """Identificador usado pela interface e pelo overlay: 'Palmas,TO'."""
+    if isinstance(city, str):
+        return city.strip()
+    if not isinstance(city, dict):
+        return ""            # None ou tipo inesperado: sem correspondência
+    name = str(city.get("name", "")).strip()
+    state = str(city.get("state", "")).strip().upper()
+    return f"{name},{state}" if state else name
+
+
+def normalize_city(city) -> dict:
+    """Valida uma cidade vinda da interface. ValueError se inválida."""
+    if not isinstance(city, dict):
+        raise ValueError("Cidade em formato inválido")
+    name = str(city.get("name", "")).strip()
+    state = str(city.get("state", "")).strip().upper()
+    if not name:
+        raise ValueError("Cidade sem nome")
+    if len(name) > CITY_NAME_MAX:
+        raise ValueError(f"Nome de cidade muito longo (máximo {CITY_NAME_MAX} caracteres)")
+    if state and (len(state) != 2 or not state.isalpha()):
+        raise ValueError(f"Estado inválido em {name!r} (use a sigla, por exemplo TO)")
+    try:
+        lat = float(city["lat"])
+        lon = float(city["lon"])
+    except (KeyError, TypeError, ValueError):
+        raise ValueError(f"Coordenadas ausentes ou inválidas em {name!r}")
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+        raise ValueError(f"Coordenadas fora de faixa em {name!r}")
+    return {"name": name, "state": state, "lat": round(lat, 4), "lon": round(lon, 4)}
+
+
+def get_cities() -> list[dict]:
+    raw = load().get("cities")
+    if not isinstance(raw, list) or not raw:
+        return default_cities()
+    out, seen = [], set()
+    for item in raw:
+        try:
+            c = normalize_city(item)
+        except ValueError:
+            continue          # entrada corrompida: ignora em vez de derrubar o overlay
+        k = city_key(c).lower()
+        if k not in seen:
+            seen.add(k)
+            out.append(c)
+    return out or default_cities()
+
+
+def set_cities(cities) -> list[dict]:
+    """Grava a lista (ordem preservada, sem duplicatas). ValueError se inválida."""
+    if not isinstance(cities, list):
+        raise ValueError("Lista de cidades inválida")
+    if not cities:
+        raise ValueError("Mantenha pelo menos uma cidade na lista")
+    if len(cities) > CITIES_MAX:
+        raise ValueError(f"O limite é de {CITIES_MAX} cidades")
+    out, seen = [], set()
+    for item in cities:
+        c = normalize_city(item)
+        k = city_key(c).lower()
+        if k in seen:
+            continue
+        seen.add(k)
+        out.append(c)
+    _update(cities=out)
+    logger.info("Lista de cidades atualizada: %d cidade(s)", len(out))
+    return out
+
+
+def reset_cities() -> list[dict]:
+    """Remove a lista gravada: volta a valer a lista padrão (capitais)."""
+    _update(cities=None)
+    logger.info("Lista de cidades restaurada para o padrão")
+    return default_cities()
+
+
+def find_city(city) -> Optional[dict]:
+    """Acha a cidade salva a partir de 'Palmas,TO' (ou só 'Palmas'). None se não houver."""
+    alvo = city_key(city).strip().lower()
+    if not alvo:
+        return None
+    cidades = get_cities()
+    for c in cidades:
+        if city_key(c).lower() == alvo:
+            return c
+    nome = alvo.split(",")[0].strip()          # sem a sigla do estado
+    for c in cidades:
+        if c["name"].lower() == nome:
+            return c
+    return None
+
+
 def get_transition() -> dict:
     try:
         return normalize_transition(load().get("transition"))

@@ -302,9 +302,15 @@ async def get_temperature(city: str = "Palmas,TO"):
     def _fetch():
         import logging
         log = logging.getLogger("api.routes")
-        owm_name = city.split(",")[0].strip()
+        # Consulta por coordenada quando a cidade está na lista salva: por nome, o
+        # OWM pode devolver a homônima de outro estado (há cinco "Palmas" no Brasil).
+        saved = app_settings.find_city(city)
+        if saved:
+            loc = f"lat={saved['lat']}&lon={saved['lon']}"
+        else:
+            loc = f"q={quote(city.split(',')[0].strip())},BR"
         try:
-            url = f"https://api.openweathermap.org/data/2.5/weather?q={quote(owm_name)},BR&appid={_API_KEY}&units=metric"
+            url = f"https://api.openweathermap.org/data/2.5/weather?{loc}&appid={_API_KEY}&units=metric"
             with urlopen(url, timeout=5) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 temp = data.get("main", {}).get("temp")
@@ -327,6 +333,87 @@ async def get_temperature(city: str = "Palmas,TO"):
     loop = asyncio.get_running_loop()
     val = await loop.run_in_executor(None, _fetch)
     return PlainTextResponse(val or "—")
+
+
+# ── Cidades do overlay de hora/temperatura ──────────────────────────────────
+
+_GEO_URL = "https://api.openweathermap.org/geo/1.0/direct"
+
+
+@router.get("/api/cities")
+async def list_cities():
+    return {"cities": app_settings.get_cities(), "max": app_settings.CITIES_MAX}
+
+
+@router.put("/api/cities")
+async def save_cities(body: dict):
+    """Grava a lista montada na tela de Configurações (no máximo CITIES_MAX).
+
+    `{"reset": true}` descarta a lista gravada e volta à padrão (capitais).
+    """
+    if body.get("reset"):
+        cities = app_settings.reset_cities()
+    else:
+        try:
+            cities = app_settings.set_cities(body.get("cities"))
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+    if _manager:
+        await _manager.broadcast({"event": "cities_changed", "cities": cities})
+    return {"ok": True, "cities": cities}
+
+
+@router.get("/api/cities/search")
+async def search_cities(q: str = "", limit: int = 6):
+    """Busca no geocoding da OpenWeatherMap para o operador escolher a cidade certa."""
+    import asyncio
+    import json as _json
+    from urllib.parse import quote as _quote
+    from urllib.request import urlopen
+
+    termo = (q or "").strip()
+    if len(termo) < 2:
+        return {"results": []}
+    limit = max(1, min(10, int(limit)))
+    _API_KEY = "f69ea9de2f716268934177c04852b89b"
+
+    def _search():
+        url = f"{_GEO_URL}?q={_quote(termo)},BR&limit={limit}&appid={_API_KEY}"
+        with urlopen(url, timeout=6) as resp:
+            return _json.loads(resp.read().decode("utf-8"))
+
+    try:
+        data = await asyncio.get_running_loop().run_in_executor(None, _search)
+    except Exception as exc:
+        logger.warning("[cities] busca falhou: %s", exc)
+        raise HTTPException(status_code=502, detail="Não foi possível consultar a busca de cidades. Verifique a conexão com a internet")
+
+    _UF = {
+        "Acre": "AC", "Alagoas": "AL", "Amapá": "AP", "Amazonas": "AM", "Bahia": "BA",
+        "Ceará": "CE", "Federal District": "DF", "Distrito Federal": "DF",
+        "Espírito Santo": "ES", "Goiás": "GO", "Maranhão": "MA", "Mato Grosso": "MT",
+        "Mato Grosso do Sul": "MS", "Minas Gerais": "MG", "Pará": "PA", "Paraíba": "PB",
+        "Paraná": "PR", "Pernambuco": "PE", "Piauí": "PI", "Rio de Janeiro": "RJ",
+        "Rio Grande do Norte": "RN", "Rio Grande do Sul": "RS", "Rondônia": "RO",
+        "Roraima": "RR", "Santa Catarina": "SC", "São Paulo": "SP", "Sergipe": "SE",
+        "Tocantins": "TO",
+    }
+    results, vistos = [], set()
+    for item in data if isinstance(data, list) else []:
+        if item.get("country") != "BR":
+            continue
+        estado = item.get("state") or ""
+        sigla = _UF.get(estado, estado[:2].upper() if estado else "")
+        nome = (item.get("name") or "").strip()
+        if not nome:
+            continue
+        chave = f"{nome},{sigla}".lower()
+        if chave in vistos:
+            continue
+        vistos.add(chave)
+        results.append({"name": nome, "state": sigla, "state_name": estado,
+                        "lat": round(float(item["lat"]), 4), "lon": round(float(item["lon"]), 4)})
+    return {"results": results}
 
 
 # ── Biblioteca estruturada ──────────────────────────────────────────────────

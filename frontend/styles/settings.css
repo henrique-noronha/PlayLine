@@ -1,4 +1,4 @@
-/* PlayLine — Modal de Configurações (pasta da biblioteca, usuário e senha) */
+/* PlayLine — Modal de Configurações em abas: biblioteca, cidades, transições e acesso */
 
 .st-backdrop {
   position: fixed;
@@ -51,21 +51,58 @@
 }
 .st-close:hover { background: var(--surface2); color: var(--text); }
 
+/* ── Abas ── */
+.st-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.st-tab {
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.st-tab:hover { background: var(--surface2); color: var(--text); }
+.st-tab-active { background: var(--surface2); color: var(--accent); border-color: var(--accent); }
+
 .st-section {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
+  padding-top: 0;
+  border-top: none;
 }
-.st-section-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  margin: 0;
+
+/* Um painel por aba: só o ativo aparece. Precisa vir depois de .st-section,
+   que também define display, senão a regra de esconder não prevalece. */
+.st-panel { display: none; }
+.st-panel.st-panel-active {
+  display: flex;
+  /* Altura fixa: a janela não muda de tamanho ao trocar de aba, dá a impressão
+     de ser o mesmo painel com o conteúdo trocando. Cabe o painel mais alto
+     (cidades, 337px); só a busca de cidades com resultados abertos rola. */
+  height: 360px;
+  overflow-y: auto;
 }
+/* Conteúdo mantém o tamanho natural em vez de ser espremido pelo flex */
+.st-panel > *,
+.st-panel form > * { flex-shrink: 0; }
+.st-panel > form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 10px;
+}
+
 .st-help {
   font-size: 11.5px;
   line-height: 1.5;
@@ -128,6 +165,7 @@
   gap: 10px;
   justify-content: flex-end;
   align-items: center;
+  margin-top: auto;   /* botões sempre no rodapé do painel, na mesma altura em toda aba */
 }
 
 .st-btn-primary {
@@ -172,6 +210,80 @@
 
 .st-field-inline { flex-direction: row; align-items: center; gap: 12px; }
 .st-input-short { width: 110px; text-align: center; }
+
+/* ── Cidades do overlay de hora/temperatura ── */
+.st-city-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 148px;
+  overflow-y: auto;
+  padding: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+}
+.st-city-list:empty::after {
+  content: "Nenhuma cidade na lista";
+  color: var(--muted);
+  font-size: 12px;
+}
+.st-city-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px 3px 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.st-city-chip .uf { color: var(--muted); font-size: 10.5px; font-weight: 600; }
+.st-city-chip button {
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.st-city-chip button:hover { background: rgba(239,68,68,.15); color: var(--danger); }
+
+.st-city-results { display: flex; flex-direction: column; gap: 4px; }
+.st-city-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 12.5px;
+  color: var(--text);
+}
+.st-city-result small { color: var(--muted); }
+.st-city-result button {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+}
+.st-city-result button:hover:not(:disabled) { background: var(--border); }
+.st-city-result button:disabled { opacity: .4; cursor: not-allowed; }
 
 @media (max-width: 560px) {
   .st-grid { grid-template-columns: 1fr; }

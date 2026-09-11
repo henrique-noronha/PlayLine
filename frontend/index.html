@@ -193,38 +193,7 @@
                     <span class="logo-picker-name">Temp.</span>
                   </div>
                   <div class="to-city-row">
-                    <select id="to-city-select" class="to-city-select">
-                      <option value="Aracaju,SE">Aracaju</option>
-                      <option value="Belém,PA">Belém</option>
-                      <option value="Belo Horizonte,MG">Belo Horizonte</option>
-                      <option value="Boa Vista,RR">Boa Vista</option>
-                      <option value="Campinas,SP">Campinas</option>
-                      <option value="Campo Grande,MS">Campo Grande</option>
-                      <option value="Cuiabá,MT">Cuiabá</option>
-                      <option value="Curitiba,PR">Curitiba</option>
-                      <option value="Florianópolis,SC">Florianópolis</option>
-                      <option value="Fortaleza,CE">Fortaleza</option>
-                      <option value="Goiânia,GO">Goiânia</option>
-                      <option value="João Pessoa,PB">João Pessoa</option>
-                      <option value="Londrina,PR">Londrina</option>
-                      <option value="Macapá,AP">Macapá</option>
-                      <option value="Maceió,AL">Maceió</option>
-                      <option value="Manaus,AM">Manaus</option>
-                      <option value="Natal,RN">Natal</option>
-                      <option value="Palmas,TO">Palmas</option>
-                      <option value="Porto Alegre,RS">Porto Alegre</option>
-                      <option value="Porto Velho,RO">Porto Velho</option>
-                      <option value="Recife,PE">Recife</option>
-                      <option value="Rio Branco,AC">Rio Branco</option>
-                      <option value="Rio de Janeiro,RJ">Rio de Janeiro</option>
-                      <option value="Salvador,BA">Salvador</option>
-                      <option value="Santos,SP">Santos</option>
-                      <option value="São Luís,MA">São Luís</option>
-                      <option value="São Paulo,SP">São Paulo</option>
-                      <option value="Teresina,PI">Teresina</option>
-                      <option value="Uberlândia,MG">Uberlândia</option>
-                      <option value="Vitória,ES">Vitória</option>
-                    </select>
+                    <select id="to-city-select" class="to-city-select"></select>
                   </div>
                   <div class="to-temp-row">
                     <span class="to-temp-label">Temp. manual</span>
@@ -374,8 +343,14 @@
         <button id="st-close" class="st-close" title="Fechar">✕</button>
       </div>
 
-      <section class="st-section">
-        <h4 class="st-section-title">Biblioteca</h4>
+      <div class="st-tabs">
+        <button class="st-tab st-tab-active" data-tab="biblioteca">Biblioteca</button>
+        <button class="st-tab" data-tab="cidades">Cidades</button>
+        <button class="st-tab" data-tab="transicoes">Transições</button>
+        <button class="st-tab" data-tab="acesso">Usuário e senha</button>
+      </div>
+
+      <section class="st-section st-panel" data-panel="biblioteca">
         <p class="st-help">Pasta, no computador do servidor, onde ficam os vídeos. Os itens que já estão no roteiro continuam tocando de onde estão.</p>
         <div class="st-field">
           <label class="st-label" for="st-lib-path">Pasta da biblioteca</label>
@@ -391,8 +366,25 @@
         </div>
       </section>
 
-      <section class="st-section">
-        <h4 class="st-section-title">Transições</h4>
+      <section class="st-section st-panel" data-panel="cidades">
+        <p class="st-help">Cidades disponíveis no seletor do overlay de hora e temperatura. Deixe apenas as que a emissora usa. <span id="st-cities-count">0/30</span></p>
+        <div id="st-cities-list" class="st-city-list"></div>
+        <div class="st-field">
+          <label class="st-label" for="st-city-search">Adicionar cidade</label>
+          <div class="st-path-row">
+            <input type="text" id="st-city-search" class="st-input" placeholder="Digite o nome e pressione Enter" autocomplete="off" />
+            <button type="button" id="st-city-search-btn" class="st-btn-secondary">Buscar</button>
+          </div>
+        </div>
+        <div id="st-city-results" class="st-city-results"></div>
+        <div id="st-cities-status" class="st-status"></div>
+        <div class="st-actions">
+          <button type="button" id="st-cities-reset" class="st-btn-link">Restaurar lista padrão</button>
+          <button type="button" id="st-cities-save" class="st-btn-primary">Salvar cidades</button>
+        </div>
+      </section>
+
+      <section class="st-section st-panel" data-panel="transicoes">
         <p class="st-help">O tipo, CUT (corte seco) ou FTB (fade to black), é alternado pelo botão no cabeçalho do Roteiro; por clipe, no menu ⚙ do item. Aqui fica a duração do FTB.</p>
         <div class="st-field st-field-inline">
           <label class="st-label" for="st-fade-dur">Duração do FTB (segundos)</label>
@@ -404,8 +396,7 @@
         </div>
       </section>
 
-      <section class="st-section">
-        <h4 class="st-section-title">Usuário e senha</h4>
+      <section class="st-section st-panel" data-panel="acesso">
         <p class="st-help">Confirme o usuário e a senha atuais para alterar. As outras sessões abertas (outro navegador, PlayIngest) precisarão entrar de novo.</p>
         <form id="st-cred-form" autocomplete="off">
           <div class="st-grid">
