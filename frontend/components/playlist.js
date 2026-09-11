@@ -545,6 +545,7 @@ function renderSchedule() {
         <span class="item-title-row"><span class="item-title" title="${esc(displayTitle)}">${esc(displayTitle)}</span>${_transitionTagHtml(item)}</span>
         <input class="item-path"  value="${esc(item.path)}"   placeholder="Caminho do arquivo" data-field="path" data-idx="${i}" />
       </div>
+      ${_clipCategoryHtml(item)}
       <div class="item-time">
         <span class="item-start" data-idx="${i}">${fmtTime(startTimes[i])}</span>
         <span class="item-dur${item.live ? ' yt-live-dur' : ''}${hasTrim(item) ? ' trim-active' : ''}" data-idx="${i}">${item.live ? 'ao vivo' : (item.duration > 0 ? (hasTrim(item) ? ('✂ ' + fmt(effectiveDuration(item))) : fmt(item.duration)) : '—')}</span>
@@ -931,6 +932,47 @@ function openClipOverlayPanel(item, idx, anchorEl) {
   if (top < 4) top = 4;
   el.style.left = left + "px";
   el.style.top  = top  + "px";
+}
+
+// ── Categoria do clipe (pasta da biblioteca) ─────────────────────────────────
+// Derivada do caminho, sem estado no servidor: 3 primeiras letras da pasta em
+// que o arquivo está (Comerciais -> COM, Documentários -> DOC). Arquivo na raiz
+// da biblioteca fica sem categoria; YouTube -> YT; dispositivo de captura -> CAM.
+
+function _normPath(p) {
+  return String(p || "").replace(/\//g, "\\").replace(/\\+$/, "").toLowerCase();
+}
+
+function _clipCategory(item) {
+  if (item.type === "capture") return { code: "CAM", name: "Dispositivo de captura" };
+  if (item.type === "youtube_live") return { code: "YT", name: "YouTube" };
+  const p = String(item.path || "");
+  if (!p || /^(https?:|av:)/i.test(p)) return null;
+  const sep = Math.max(p.lastIndexOf("\\"), p.lastIndexOf("/"));
+  if (sep <= 0) return null;
+  const dir = p.slice(0, sep);
+  const base = window._libraryBase || "";
+  if (base && _normPath(dir) === _normPath(base)) return null;   // raiz da biblioteca
+  const folder = dir.slice(Math.max(dir.lastIndexOf("\\"), dir.lastIndexOf("/")) + 1);
+  if (!folder || /^[A-Za-z]:$/.test(folder)) return null;
+  const code = folder.normalize("NFD").replace(/\p{M}/gu, "").replace(/[^A-Za-z0-9]/g, "")
+    .slice(0, 3).toUpperCase();
+  return code ? { code, name: folder } : null;
+}
+
+// Cor estável por pasta (hash do nome), só para distinguir categorias no roteiro
+function _catHue(name) {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return h % 360;
+}
+
+function _clipCategoryHtml(item) {
+  const cat = _clipCategory(item);
+  if (!cat) return '<span class="item-cat"></span>';
+  const hue = _catHue(cat.name);
+  const style = `color:hsl(${hue} 70% 70%);border-color:hsl(${hue} 55% 45% / .55);background:hsl(${hue} 60% 50% / .12)`;
+  return `<span class="item-cat" style="${style}" title="Pasta: ${esc(cat.name)}">${esc(cat.code)}</span>`;
 }
 
 // ── Transição entre clipes ───────────────────────────────────────────────────

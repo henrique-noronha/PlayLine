@@ -215,7 +215,7 @@
 /* ── Item do roteiro ── */
 .schedule-item {
   display: grid;
-  grid-template-columns: 18px 20px 50px 1fr 152px 56px;
+  grid-template-columns: 18px 20px 50px 1fr 58px 152px 56px;
   gap: 5px;
   align-items: center;
   padding: 3px 6px;
@@ -362,6 +362,35 @@
   min-width: 68px;
   justify-content: flex-end;
 }
+
+/* Categoria: 3 primeiras letras da pasta da biblioteca em que o clipe está */
+.sch-col-cat-header {
+  width: 58px;   /* coluna mais larga que o badge (40px) para ele ficar afastado de "Entrada" */
+  font-size: 8px;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.07em;
+  opacity: 0.6;
+  text-align: left;
+  flex-shrink: 0;
+}
+.item-cat {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  justify-self: start;
+  width: 40px;
+  padding: 2px 0;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: transparent;
+  white-space: nowrap;
+}
+.item-cat:empty { border-color: transparent; }
 
 .sch-col-time-header {
   display: flex;
