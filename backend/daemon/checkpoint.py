@@ -7,15 +7,23 @@ from pathlib import Path
 
 logger = logging.getLogger("mpv_daemon")
 
-_DB_PATH: Path = (
-    Path(sys.executable).parent / "playline.db"
-    if getattr(sys, "frozen", False)
-    else Path(__file__).parent.parent / "playline.db"
-)
+
+def _db_path() -> Path:
+    """Mesmo arquivo que o servidor usa (core.db.DB_PATH), lido na hora da chamada.
+
+    Não recalcula o caminho aqui: em dev, derivar de __file__ apontava para
+    backend/playline.db enquanto o servidor lia backend/core/playline.db, e o
+    checkpoint de crash ia para um arquivo sem tabelas (falha silenciosa).
+    """
+    try:
+        from core import db as _db
+    except ImportError:
+        from ..core import db as _db
+    return _db.DB_PATH
 
 
 def _conn() -> sqlite3.Connection:
-    c = sqlite3.connect(str(_DB_PATH), timeout=5)
+    c = sqlite3.connect(str(_db_path()), timeout=5)
     c.execute("PRAGMA journal_mode=WAL")
     c.execute("PRAGMA synchronous=NORMAL")
     return c

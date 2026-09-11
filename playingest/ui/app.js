@@ -243,7 +243,19 @@ btnSendAll.addEventListener("click", async () => {
     btnSelect.disabled = false;
     return;
   }
+  // Reconfere as subpastas no servidor: a biblioteca pode ter sido trocada em
+  // Configurações do PlayLine depois que a lista foi carregada no login.
   const subfolder = subfolderSelect.value;
+  await loadSubfolders();
+  if (subfolder && ![...subfolderSelect.options].some(o => o.value === subfolder)) {
+    showError("Subpasta não encontrada",
+      `A subpasta "${subfolder}" não existe mais no servidor (a biblioteca pode ter sido alterada). Escolha outra e envie de novo.`);
+    _uploading = false;
+    btnSendAll.disabled = false;
+    btnSelect.disabled = false;
+    return;
+  }
+  subfolderSelect.value = subfolder;
   const queue = _files.filter(f => f.valid && f.status !== "done");
 
   for (const file of queue) {

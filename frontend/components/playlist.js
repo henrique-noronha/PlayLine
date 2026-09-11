@@ -542,9 +542,10 @@ function renderSchedule() {
       <div class="item-index">${i + 1}</div>
       <img class="item-thumb" draggable="false" alt="" />
       <div class="item-meta">
-        <span class="item-title" title="${esc(displayTitle)}">${esc(displayTitle)}</span>
+        <span class="item-title-row"><span class="item-title" title="${esc(displayTitle)}">${esc(displayTitle)}</span>${_transitionTagHtml(item)}</span>
         <input class="item-path"  value="${esc(item.path)}"   placeholder="Caminho do arquivo" data-field="path" data-idx="${i}" />
       </div>
+      ${_clipCategoryHtml(item)}
       <div class="item-time">
         <span class="item-start" data-idx="${i}">${fmtTime(startTimes[i])}</span>
         <span class="item-dur${item.live ? ' yt-live-dur' : ''}${hasTrim(item) ? ' trim-active' : ''}" data-idx="${i}">${item.live ? 'ao vivo' : (item.duration > 0 ? (hasTrim(item) ? ('✂ ' + fmt(effectiveDuration(item))) : fmt(item.duration)) : '—')}</span>
@@ -933,6 +934,92 @@ function openClipOverlayPanel(item, idx, anchorEl) {
   el.style.top  = top  + "px";
 }
 
+// ── Categoria do clipe (pasta da biblioteca) ─────────────────────────────────
+// Derivada do caminho, sem estado no servidor: 3 primeiras letras da pasta em
+// que o arquivo está (Comerciais -> COM, Documentários -> DOC). Arquivo na raiz
+// da biblioteca fica sem categoria; YouTube -> YT; dispositivo de captura -> CAM.
+
+function _normPath(p) {
+  return String(p || "").replace(/\//g, "\\").replace(/\\+$/, "").toLowerCase();
+}
+
+function _clipCategory(item) {
+  if (item.type === "capture") return { code: "CAM", name: "Dispositivo de captura" };
+  if (item.type === "youtube_live") return { code: "YT", name: "YouTube" };
+  const p = String(item.path || "");
+  if (!p || /^(https?:|av:)/i.test(p)) return null;
+  const sep = Math.max(p.lastIndexOf("\\"), p.lastIndexOf("/"));
+  if (sep <= 0) return null;
+  const dir = p.slice(0, sep);
+  const base = window._libraryBase || "";
+  if (base && _normPath(dir) === _normPath(base)) return null;   // raiz da biblioteca
+  const folder = dir.slice(Math.max(dir.lastIndexOf("\\"), dir.lastIndexOf("/")) + 1);
+  if (!folder || /^[A-Za-z]:$/.test(folder)) return null;
+  const code = folder.normalize("NFD").replace(/\p{M}/gu, "").replace(/[^A-Za-z0-9]/g, "")
+    .slice(0, 3).toUpperCase();
+  return code ? { code, name: folder } : null;
+}
+
+// Cor estável por pasta (hash do nome), só para distinguir categorias no roteiro
+function _catHue(name) {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return h % 360;
+}
+
+function _clipCategoryHtml(item) {
+  const cat = _clipCategory(item);
+  if (!cat) return '<span class="item-cat"></span>';
+  const hue = _catHue(cat.name);
+  const style = `color:hsl(${hue} 70% 70%);border-color:hsl(${hue} 55% 45% / .55);background:hsl(${hue} 60% 50% / .12)`;
+  return `<span class="item-cat" style="${style}" title="Pasta: ${esc(cat.name)}">${esc(cat.code)}</span>`;
+}
+
+// ── Transição entre clipes ───────────────────────────────────────────────────
+// Global: botão no cabeçalho do roteiro (state.transition, vindo do servidor).
+// Por clipe: item.transition = "fade" | "cut" | ausente (segue o global).
+
+// Nomenclatura de switcher/automação de broadcast: CUT = corte seco, FTB = fade to black
+const _TRANSITION_LABELS = { cut: "CUT", fade: "FTB" };
+const _TRANSITION_ITEM_LABELS = { fade: "FTB", cut: "CUT" };
+
+function updateTransitionButton() {
+  const btn = document.getElementById("btn-transition");
+  if (!btn) return;
+  const t = state.transition || { type: "cut", duration: 0.5 };
+  btn.dataset.type = t.type;
+  btn.textContent = _TRANSITION_LABELS[t.type] || t.type;
+  btn.title = t.type === "fade"
+    ? `Transição: FTB, fade to black (${t.duration}s). Clique para voltar ao CUT.`
+    : "Transição: CUT, corte seco. Clique para usar FTB (fade to black).";
+}
+
+document.getElementById("btn-transition")?.addEventListener("click", () => {
+  const cur = state.transition?.type || "cut";
+  send({ action: "set_transition", type: cur === "fade" ? "cut" : "fade" });
+});
+
+function _transitionTagHtml(item) {
+  const t = item.transition;
+  if (t !== "fade" && t !== "cut") return "";
+  return `<span class="item-transition-tag ${t}" title="Transição de entrada deste clipe">${_TRANSITION_ITEM_LABELS[t]}</span>`;
+}
+
+function _markRowTransition(idx, value) {
+  const row = document.querySelector(`.schedule-item[data-index="${idx}"] .item-title-row`);
+  if (!row) return;
+  row.querySelector(".item-transition-tag")?.remove();
+  if (value) row.insertAdjacentHTML("beforeend", _transitionTagHtml({ transition: value }));
+}
+
+function _gdSetTransitionLabel(item) {
+  if (!_gd) return;
+  const t = item?.transition;
+  const has = t === "fade" || t === "cut";
+  _gd.querySelector("#gd-transition-val").textContent = has ? _TRANSITION_ITEM_LABELS[t] : "Padrão";
+  _gd.querySelector("#gd-transition").classList.toggle("active", has);
+}
+
 // ── Gear menu (dropdown do botão ⚙) ──────────────────────────────────────────
 
 let _gd = null;
@@ -951,6 +1038,7 @@ function _getOrCreateGd() {
   el.style.display = "none";
   el.innerHTML = `
     <div class="gear-item" id="gd-overlays">⊡ Automação de overlays</div>
+    <div class="gear-item" id="gd-transition" title="Transição de entrada deste clipe: Padrão (segue o botão do roteiro), FTB (fade to black) ou CUT (corte seco). Clique para alternar.">◐ Transição<b id="gd-transition-val">Padrão</b></div>
     <div class="gear-sep"></div>
     <div class="gear-item" id="gd-trim">✂ Recorte de clipe</div>
   `;
@@ -963,6 +1051,17 @@ function _getOrCreateGd() {
     const item = _gdItem, idx = _gdIdx, anchor = _gdAnchor;
     _closeGd();
     if (idx !== null) openClipOverlayPanel(item, idx, anchor);
+  });
+  el.querySelector("#gd-transition").addEventListener("click", () => {
+    const item = _gdItem, idx = _gdIdx;
+    if (!item || idx === null) return;
+    // Padrão (segue o botão do cabeçalho) → FTB → CUT → Padrão
+    const order = [null, "fade", "cut"];
+    const next = order[(order.indexOf(item.transition || null) + 1) % order.length];
+    if (next) item.transition = next; else delete item.transition;
+    _gdSetTransitionLabel(item);
+    _markRowTransition(idx, item.transition || null);
+    syncOrderToServer();
   });
   el.querySelector("#gd-trim").addEventListener("click", () => {
     if (el.querySelector("#gd-trim").classList.contains("disabled")) return;
@@ -977,6 +1076,7 @@ function openGearMenu(item, idx, anchorEl) {
   const el = _getOrCreateGd();
   _gdItem = item; _gdIdx = idx; _gdAnchor = anchorEl;
   el.querySelector("#gd-overlays").classList.toggle("active", !!item.clip_overlays);
+  _gdSetTransitionLabel(item);
   el.querySelector("#gd-trim").classList.toggle("active", hasTrim(item));
   el.querySelector("#gd-trim").classList.toggle("disabled", !!item.live);
   el.style.display = "block";

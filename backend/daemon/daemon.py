@@ -34,7 +34,7 @@ from pathlib import Path
 from typing import Optional
 
 
-from . import checkpoint, monitor, overlay, osd_text, preview, preview_stream, protocol, weather
+from . import checkpoint, monitor, overlay, osd_text, preview, preview_stream, protocol, transition, weather
 
 # Garante que libmpv-2.dll seja encontrada (em sys._MEIPASS quando empacotado)
 if getattr(sys, 'frozen', False):
@@ -137,17 +137,18 @@ def _render_standby_overlay(osd_w: int, osd_h: int) -> Optional[tuple]:
         logger.warning("[standby] falha ao carregar imagem: %s", exc)
         return None
 
-    rgba = canvas.tobytes()
-    bgra = bytearray(len(rgba))
-    for i in range(0, len(rgba), 4):
-        r, g, b, a = rgba[i], rgba[i+1], rgba[i+2], rgba[i+3]
-        fa = a / 255.0
-        bgra[i]   = int(b * fa)
-        bgra[i+1] = int(g * fa)
-        bgra[i+2] = int(r * fa)
-        bgra[i+3] = a
-
-    return bytes(bgra), osd_w, osd_h
+    # RGBA -> BGRA pré-multiplicado via PIL (em C), não em loop Python por pixel:
+    # em 1920x1080 são ~2 milhões de iterações, o mesmo gargalo já removido de
+    # overlay.py/osd_text.py (dezenas de vezes mais rápido).
+    from PIL import ImageChops
+    r, g, b, a = canvas.split()
+    bgra = Image.merge("RGBA", (
+        ImageChops.multiply(b, a),
+        ImageChops.multiply(g, a),
+        ImageChops.multiply(r, a),
+        a,
+    ))
+    return bgra.tobytes(), osd_w, osd_h
 
 
 try:
@@ -185,6 +186,21 @@ class MPVDaemon:
         self._yt_appended: dict  = {}   # {original_url: (hls_url, monotonic_ts)} — appendado na fila MPV
         self._vu_task: Optional[asyncio.Task] = None
         self._current_path: str = ""
+        # Fade para preto entre clipes (daemon/transition.py). O padrão global vem
+        # do config.json (o mesmo que o servidor grava); set_transition atualiza.
+        self._fader = transition.Fader(
+            lambda: self._mpv if (self._mpv is not None and not self._mpv_dead) else None,
+            user_volume=self._volume,
+        )
+        try:
+            try:
+                from core import settings as _settings
+            except ImportError:
+                from ..core import settings as _settings
+            self._fader.configure(_settings.get_transition())
+            logger.info("[transition] global: %s %.2fs", self._fader.config["type"], self._fader.duration)
+        except Exception as exc:
+            logger.warning("[transition] config não carregada (%s); usando corte seco", exc)
 
     # ── Medição de nível de áudio via Windows Core Audio ────────────────────
 
@@ -270,6 +286,11 @@ class MPVDaemon:
 
         self._mpv.observe_property("time-pos", self._on_time_pos)
         try:
+            self._mpv.observe_property("idle-active", self._on_idle_active)
+        except Exception as exc:
+            logger.warning("observe_property(idle-active) indisponível: %s", exc)
+        self._fader.rebind()
+        try:
             self._mpv.observe_property("osd-width", self._on_osd_resize)
         except Exception as exc:
             logger.warning("observe_property(osd-width) indisponível: %s", exc)
@@ -281,6 +302,7 @@ class MPVDaemon:
                 self._current_path = self._mpv.path or ""
             except Exception:
                 pass
+            self._fader.on_file_loaded(self._current_path)
             if not self._window_positioned:
                 target = self._move_to_tv if self._has_secondary else self._send_to_back
                 threading.Thread(target=target, daemon=True).start()
@@ -367,6 +389,24 @@ class MPVDaemon:
         if value is not None and not self._mpv_dead:
             self._last_position = float(value)
             self._checkpoint_dirty = True
+            self._fader.on_time_pos(self._last_position, self._mpv_duration)
+
+    def _on_idle_active(self, name, value):
+        if value and not self._mpv_dead:
+            self._fader.on_idle()
+
+    def _mpv_duration(self):
+        try:
+            return self._mpv.duration if (self._mpv and not self._mpv_dead) else None
+        except Exception:
+            return None
+
+    def _mpv_has_media(self) -> bool:
+        """True se há arquivo carregado e não ocioso: uma troca agora interrompe algo no ar."""
+        try:
+            return bool(self._mpv and not self._mpv_dead and self._mpv.path and not self._mpv.idle_active)
+        except Exception:
+            return False
 
     def _on_osd_resize(self, name, value):
         """Re-aplica overlays (com debounce) quando a janela MPV é redimensionada."""
@@ -585,6 +625,16 @@ class MPVDaemon:
                             self._stop_vu()
                             self._vu_task = asyncio.ensure_future(self._audio_level_task())
                             return
+                # Transição de entrada deste item: override por clipe ou global.
+                # Reconexão de live (force_resolve): sem fade, já está preto/standby.
+                incoming_fade = self._fader.resolve(cmd.get("transition")) and not cmd.get("force_resolve")
+                if incoming_fade and self._mpv_has_media():
+                    await asyncio.get_running_loop().run_in_executor(None, self._fader.fade_out_blocking)
+                elif not incoming_fade:
+                    self._fader.cancel_and_clear()   # corte seco: nenhum preto sobrando
+                self._fader.on_play(original_path,
+                                    end_time if not _is_youtube_url(original_path) else None,
+                                    incoming_fade)
                 opts_parts = []
                 if not _is_youtube_url(original_path):
                     if start_time: opts_parts.append(f"start={start_time}")
@@ -651,6 +701,7 @@ class MPVDaemon:
         elif action == "pause":
             if self._mpv and not self._mpv_dead:
                 self._mpv.pause = True
+                self._fader.cancel_and_clear()   # não congela no meio de um fade
 
         elif action == "resume":
             if self._mpv and not self._mpv_dead:
@@ -658,6 +709,8 @@ class MPVDaemon:
 
         elif action == "stop":
             if self._mpv and not self._mpv_dead:
+                if self._fader.is_fade_global() and self._mpv_has_media():
+                    await asyncio.get_running_loop().run_in_executor(None, self._fader.fade_out_blocking)
                 self._stop_vu()
                 self._mpv.command("stop")
                 for slot in (1, 2, 3):
@@ -671,6 +724,7 @@ class MPVDaemon:
             if self._mpv and not self._mpv_dead:
                 try:
                     self._mpv.seek(cmd.get("seconds", 0.0), cmd.get("mode", "absolute"))
+                    self._fader.cancel_and_clear()
                 except Exception as exc:
                     logger.warning("seek: %s", exc)
 
@@ -711,10 +765,22 @@ class MPVDaemon:
             self._volume = float(vol)   # persiste para reaplicar no reinit
             if self._mpv and not self._mpv_dead:
                 try:
-                    self._mpv.volume = self._volume
+                    # Passa pelo fader: no meio de um fade (ou no preto) o ganho atual é mantido
+                    self._fader.set_user_volume(self._volume)
                     logger.debug("volume → %.1f (%.1f dB)", vol, 20 * __import__("math").log10(max(vol, 0.001) / 100))
                 except Exception as exc:
                     logger.warning("set_volume: %s", exc)
+
+        elif action == "set_transition":
+            try:
+                cfg = self._fader.configure({k: cmd[k] for k in ("type", "duration") if k in cmd})
+                logger.info("[transition] global: %s %.2fs", cfg["type"], cfg["duration"])
+            except (ValueError, TypeError) as exc:
+                logger.warning("[transition] set_transition inválido: %s", exc)
+
+        elif action == "next_transition":
+            # Override do próximo item ("fade"/"cut"/None): decide o fade out automático desta fronteira
+            self._fader.set_next_boundary(cmd.get("transition"))
 
         elif action == "set_text_overlay":
             cfg = {
@@ -757,6 +823,7 @@ class MPVDaemon:
         elif action == "get_state":
             playing_path = None
             paused       = False
+            mpv_volume   = None
             if self._mpv and not self._mpv_dead:
                 try:
                     playing_path = self._mpv.path
@@ -766,11 +833,19 @@ class MPVDaemon:
                     paused = bool(self._mpv.pause)
                 except Exception:
                     pass
+                try:
+                    mpv_volume = float(self._mpv.volume)
+                except Exception:
+                    pass
             resp = {
                 "event":        "state_response",
                 "playing_path": playing_path,
                 "position":     self._last_position,
                 "paused":       paused,
+                "transition":   dict(self._fader.config),
+                # diagnóstico do fade: 0 = tela normal, 1 = preto; volume real aplicado no MPV
+                "fade_alpha":   round(self._fader.alpha, 3),
+                "mpv_volume":   mpv_volume,
             }
             try:
                 writer.write((json.dumps(resp) + "\n").encode())

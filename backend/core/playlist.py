@@ -2,14 +2,17 @@
 Playlist Engine — gerencia a fila de reprodução e responde a eventos do Player.
 """
 
+import json
 import logging
 import asyncio
+import os
 import socket
 import time
 from typing import Callable, Optional
 
-from .db import get_conn
+from .db import get_conn, SCHEDULE_COLUMNS
 from .history import HistoryManager
+from . import settings as app_settings
 
 logger = logging.getLogger(__name__)
 
@@ -37,14 +40,30 @@ def _is_capture_item(item: dict) -> bool:
     return (item.get("path") or "").lower().startswith("av://dshow:")
 
 
-_CAPTURE_RELEASE_DELAY = 0.3   # segundos — tempo pro navegador soltar visualmente o
-                                # preview antes do MPV tentar abrir o dispositivo. Não
-                                # elimina o retry (ver comentário em play_index) — só
-                                # evita a sobreposição visual de dois consumidores. — tempo pro navegador soltar o getUserMedia
-                                # do mesmo dispositivo antes do MPV tentar abri-lo.
-                                # 0.35s não foi suficiente em teste real (o teardown do
-                                # driver da webcam no SO pode levar mais que o track.stop()
-                                # em si) — 0.8s ainda é imperceptível numa troca ao vivo.
+# Tempo pro navegador soltar visualmente o preview de captura antes do MPV tentar
+# abrir o dispositivo. Não elimina o retry (ver comentário em play_index), só
+# evita a sobreposição visual de dois consumidores.
+_CAPTURE_RELEASE_DELAY = 0.3
+
+# Watchdog de clipe local: se a posição reportada pelo MPV não avança por esse
+# tempo num item não-live (rodando, não pausado), o MPV travou nesse arquivo sem
+# emitir end-file (arquivo corrompido, decoder preso) e o playout avança sozinho.
+# Lives têm o próprio watchdog (_live_watchdog_loop, STALL_SEC=90).
+_LOCAL_STALL_SEC = 20
+_STALL_CHECK_SEC = 5
+
+# Reabertura automática quando o MPV encerra no meio de um item: no máximo
+# _MPV_REOPEN_MAX vezes por _MPV_REOPEN_WINDOW s antes de desistir e parar,
+# pra não ficar em loop se o MPV estiver crashando de imediato.
+_MPV_REOPEN_DELAY  = 2.0
+_MPV_REOPEN_MAX    = 3
+_MPV_REOPEN_WINDOW = 60.0
+
+
+def _item_extra(item: dict) -> Optional[str]:
+    """Serializa em JSON as chaves do item sem coluna própria (type, clip_overlays...)."""
+    rest = {k: v for k, v in item.items() if k not in SCHEDULE_COLUMNS and k != "extra"}
+    return json.dumps(rest, ensure_ascii=False) if rest else None
 
 
 class PlaylistEngine:
@@ -62,13 +81,19 @@ class PlaylistEngine:
         self._history = HistoryManager()
         self._reconnect_attempt: int = 0
         self._live_has_played: bool = False  # True após file-loaded confirmar a live atual
-        self._live_has_played: bool = False
         self._repeat: bool = False
         self._live_last_pos: float = -1.0
         self._live_pos_ts: float = 0.0
         self._last_position: float = 0.0  # posição (s) do item atual — permite reconstruir o tempo decorrido ao reconectar a interface
         self._live_watchdog_task: Optional[asyncio.Task] = None
         self._live_reconnecting: bool = False  # True quando _schedule_reconnect emitiu loadfile replace
+        # Watchdog de clipe local (ver _LOCAL_STALL_SEC)
+        self._pos_last: float = -1.0
+        self._pos_ts: float = time.monotonic()
+        self._stall_task: Optional[asyncio.Task] = None
+        self._mpv_reopen_ts: list[float] = []  # janela deslizante de reaberturas após mpv_closed
+        # Transição global (corte seco / fade para preto); por item: chave "transition" no roteiro
+        self._transition: dict = app_settings.get_transition()
 
     # Roteiro                                                              #
  
@@ -81,6 +106,12 @@ class PlaylistEngine:
             for r in rows:
                 item = dict(r)
                 item["live"] = bool(item["live"])
+                extra = item.pop("extra", None)
+                if extra:
+                    try:
+                        item.update(json.loads(extra))
+                    except Exception:
+                        logger.warning("Campo extra inválido no item %s — ignorado", item.get("id"))
                 self._items.append(item)
             logger.info("Roteiro carregado: %d itens", len(self._items))
         except Exception as exc:
@@ -112,20 +143,37 @@ class PlaylistEngine:
                 conn.execute("DELETE FROM schedule")
                 if items:
                     conn.executemany(
-                        "INSERT INTO schedule (position,id,title,path,live,start_time,end_time,duration)"
-                        " VALUES (?,?,?,?,?,?,?,?)",
+                        "INSERT INTO schedule (position,id,title,path,live,start_time,end_time,duration,extra)"
+                        " VALUES (?,?,?,?,?,?,?,?,?)",
                         [(i, it.get("id", ""), it.get("title", ""), it.get("path", ""),
                           1 if it.get("live") else 0,
-                          it.get("start_time"), it.get("end_time"), it.get("duration"))
+                          it.get("start_time"), it.get("end_time"), it.get("duration"),
+                          _item_extra(it))
                          for i, it in enumerate(items)],
                     )
         except Exception as exc:
             logger.error("Falha ao salvar roteiro: %s", exc)
         logger.info("Roteiro salvo: %d itens", len(items))
         self._maybe_prefetch_yt()
+        if self._running:
+            self._push_next_transition()   # o override do próximo item pode ter mudado
 
     def get_schedule(self) -> list[dict]:
         return self._items
+
+    def _push_next_transition(self, index: Optional[int] = None):
+        """Avisa o daemon qual transição vale na próxima fronteira (override do próximo item ou None = global)."""
+        idx = self._index if index is None else index
+        nxt = self._items[idx + 1] if 0 <= idx and idx + 1 < len(self._items) else None
+        self._player.set_next_transition((nxt or {}).get("transition"))
+
+    async def set_transition(self, cfg: dict) -> dict:
+        """Transição global: persiste, aplica no daemon e avisa todas as interfaces. ValueError se inválida."""
+        self._transition = app_settings.set_transition(cfg)
+        self._player.set_transition(self._transition)
+        await self._broadcast({"event": "transition_state", "transition": dict(self._transition)})
+        logger.info("Transição global: %s (%.2fs)", self._transition["type"], self._transition["duration"])
+        return self._transition
 
     def _maybe_prefetch_yt(self):
         """Pré-resolve todas as URLs YouTube live do roteiro.
@@ -154,7 +202,7 @@ class PlaylistEngine:
         """
         playing = self._player.get_playing_path()
         if playing is None:
-            logger.info("Daemon ocioso — aguardando comando de play")
+            self._maybe_resume_from_checkpoint()
             return
 
         logger.info("Daemon em reprodução: %s — retomando estado", playing)
@@ -200,11 +248,16 @@ class PlaylistEngine:
 
     def set_event_loop(self, loop: asyncio.AbstractEventLoop):
         self._loop = loop
+        if self._stall_task is None and loop.is_running():
+            self._stall_task = loop.create_task(self._stall_watchdog_loop())
 
     def on_position(self, pos: float):
         """Chamado pelo Player a cada evento de posição do MPV."""
         if self._running and 0 <= self._index < len(self._items):
             self._last_position = pos
+            if abs(pos - self._pos_last) > 0.05:
+                self._pos_last = pos
+                self._pos_ts = time.monotonic()
             if _is_live_item(self._items[self._index]):
                 if abs(pos - self._live_last_pos) > 0.05:
                     self._live_last_pos = pos
@@ -212,6 +265,8 @@ class PlaylistEngine:
 
     def on_file_loaded(self):
         """Chamado pelo Player quando o MPV sinaliza file-loaded."""
+        self._pos_last = -1.0
+        self._pos_ts = time.monotonic()
         current = self._items[self._index] if 0 <= self._index < len(self._items) else {}
         if _is_live_item(current):
             self._live_reconnecting = False  # live carregou com sucesso
@@ -277,17 +332,87 @@ class PlaylistEngine:
                     self._advance(expected_seq=seq), self._loop
                 )
 
+    def _maybe_resume_from_checkpoint(self):
+        """Daemon ocioso na inicialização: se sobrou checkpoint, a reprodução foi
+        interrompida de forma anormal (queda de energia, processo morto) e o
+        playout retoma sozinho no mesmo item/posição.
+
+        O checkpoint é limpo em eof/erro e no stop manual, então só sobrevive a
+        uma interrupção anormal. PLAYLINE_AUTORESUME=0 desliga (operação assistida).
+        """
+        if os.environ.get("PLAYLINE_AUTORESUME", "1") == "0":
+            logger.info("Daemon ocioso — aguardando comando de play (auto-resume desligado)")
+            return
+        cp = self._read_checkpoint()
+        idx = -1
+        if cp and cp.get("path"):
+            idx = next((i for i, it in enumerate(self._items) if it.get("path") == cp["path"]), -1)
+        if idx < 0 or not self._loop:
+            logger.info("Daemon ocioso — aguardando comando de play")
+            return
+        logger.warning("Checkpoint de reprodução interrompida encontrado (%s, %.0fs) — retomando",
+                       cp["path"], cp.get("position") or 0.0)
+        asyncio.run_coroutine_threadsafe(self.play_index(idx), self._loop)
+
+    def _allow_mpv_reopen(self) -> bool:
+        now = time.monotonic()
+        self._mpv_reopen_ts = [t for t in self._mpv_reopen_ts if now - t < _MPV_REOPEN_WINDOW]
+        if len(self._mpv_reopen_ts) >= _MPV_REOPEN_MAX:
+            return False
+        self._mpv_reopen_ts.append(now)
+        return True
+
     async def _on_mpv_closed(self):
         self._cancel_live_watchdog()
         self._advance_seq += 1  # invalida qualquer avanço pendente
-        self._running = False
-        self._paused = False
-        self._index = -1
         self._preloading = False
         self._history.close_entry("interrupted")
         await self._broadcast({"event": "mpv_closed"})
+
+        # MPV encerrou no meio da reprodução (crash): reabre o item atual em vez
+        # de parar e esperar um play manual. O daemon reinicializa o MPV no
+        # próximo play. Limite de tentativas evita loop se o MPV cair na hora.
+        was_running, idx = self._running, self._index
+        if was_running and 0 <= idx < len(self._items) and self._allow_mpv_reopen():
+            logger.warning("MPV encerrou durante a reprodução — reabrindo o item %d em %.0fs", idx, _MPV_REOPEN_DELAY)
+            await asyncio.sleep(_MPV_REOPEN_DELAY)
+            if self._running and self._index == idx:  # ninguém deu stop/jump nesse meio-tempo
+                await self.play_index(idx)
+                return
+
+        self._running = False
+        self._paused = False
+        self._index = -1
         await self._broadcast({"event": "stopped"})
         logger.info("Playout parado (janela MPV fechada)")
+
+    def _local_stalled(self, now: float) -> bool:
+        """True se o item atual é um clipe local com a posição parada há mais de _LOCAL_STALL_SEC."""
+        if not (self._running and not self._paused and 0 <= self._index < len(self._items)):
+            return False
+        if _is_live_item(self._items[self._index]):
+            return False
+        return (now - self._pos_ts) > _LOCAL_STALL_SEC
+
+    async def _stall_watchdog_loop(self):
+        while True:
+            await asyncio.sleep(_STALL_CHECK_SEC)
+            try:
+                if not self._local_stalled(time.monotonic()):
+                    continue
+                if not getattr(self._player, "_connected", True):
+                    # Sem daemon não adianta avançar: player.py já está relançando/reconectando.
+                    continue
+                item = self._items[self._index]
+                logger.error("Clipe local sem avanço de posição há %ds (%s) — avançando",
+                             _LOCAL_STALL_SEC, item.get("title") or item.get("path"))
+                self._pos_ts = time.monotonic()
+                self._history.close_entry("error")
+                await self._advance(expected_seq=self._advance_seq)
+            except asyncio.CancelledError:
+                raise
+            except Exception as exc:
+                logger.warning("[watchdog] erro: %s", exc)
 
     async def _schedule_reconnect(self):
         attempt = self._reconnect_attempt
@@ -448,10 +573,9 @@ class PlaylistEngine:
         self._paused = False
         self._last_position = 0.0
         item = self._items[index]
+        self._pos_last = -1.0
+        self._pos_ts = time.monotonic()
         # Reset "já tocou" ao iniciar uma live nova (não em tentativas de reconexão)
-        if _is_live_item(item) and not force_resolve:
-            self._live_has_played = False
-
         if _is_live_item(item) and not force_resolve:
             self._live_has_played = False
             self._reconnect_attempt = 0
@@ -488,9 +612,12 @@ class PlaylistEngine:
                     end_time=item.get("end_time"),
                     force_resolve=force_resolve,
                     live=_is_live_item(item),
+                    # reconexão de live: corte seco, sem fade no meio da tentativa
+                    transition="cut" if force_resolve else item.get("transition"),
                 )
 
             self._preloading = False
+            self._push_next_transition(index)
 
             # Pré-carrega o próximo vídeo na fila do MPV para transição sem flash.
             # Live streams e clipes com corte não são pré-carregados.
@@ -538,6 +665,7 @@ class PlaylistEngine:
             self._player.pause()
             await self._broadcast({"event": "paused"})
         else:
+            self._pos_ts = time.monotonic()  # tempo pausado não conta como travamento
             self._player.resume()
             await self._broadcast({"event": "resumed"})
 
@@ -621,4 +749,5 @@ class PlaylistEngine:
             "total_items": len(self._items),
             "repeat": self._repeat,
             "position": self._last_position,
+            "transition": dict(self._transition),
         }

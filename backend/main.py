@@ -23,8 +23,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from core.player import Player
 from core.playlist import PlaylistEngine
 from api.routes import router as http_router, setup as setup_routes, prewarm_thumbnails
-from api.websocket import router as ws_router, setup as setup_ws
+from api.websocket import router as ws_router, setup as setup_ws, ws_authorized
 from core.db import init_db, migrate_from_json
+from core import settings as app_settings
 
 _log_handlers = [logging.StreamHandler()]
 if getattr(sys, "frozen", False):
@@ -122,10 +123,6 @@ async def lifespan(app: FastAPI):
         if playlist_engine:
             playlist_engine.on_end_file(reason)
 
-    def _on_file_loaded():
-        if playlist_engine:
-            playlist_engine.on_file_loaded()
-
     def _on_position(pos: float):
         asyncio.run_coroutine_threadsafe(
             manager.broadcast({"event": "position", "pos": pos}),
@@ -190,7 +187,7 @@ async def lifespan(app: FastAPI):
     playlist_engine.load_schedule()
 
     setup_routes(playlist_engine, manager)
-    setup_ws(playlist_engine, manager)
+    setup_ws(playlist_engine, manager, _session_valid)
 
     # Detecta se o daemon já estava reproduzindo algo (crash/reinício do servidor)
     await loop.run_in_executor(None, playlist_engine.restore_after_crash)
@@ -208,8 +205,8 @@ async def lifespan(app: FastAPI):
 
 # App                                                                  #
 
-_AUTH_USER = os.environ.get("PLAYLINE_USER", "playline")
-_AUTH_PASS = os.environ.get("PLAYLINE_PASS", "playline")
+# Credenciais: core/settings.py (config.json ao lado do banco; sem arquivo valem
+# PLAYLINE_USER/PLAYLINE_PASS do ambiente ou playline/playline).
 _SESSION_TTL = 8 * 3600  # 8 horas
 
 _SESSIONS_FILE = _DATA_DIR / "sessions.json"
@@ -290,6 +287,11 @@ button:hover{{background:#3b7de8}}
 </body></html>"""
 
 
+def _session_valid(token: str) -> bool:
+    """Único critério de sessão válida, compartilhado pelo middleware HTTP e pelos WebSockets."""
+    return bool(token) and _SESSIONS.get(token, 0) > time.time()
+
+
 class _SessionAuth(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         if request.headers.get("upgrade", "").lower() == "websocket":
@@ -326,6 +328,8 @@ app.include_router(ws_router)
 
 @app.websocket("/ws/preview")
 async def preview_ws(ws: WebSocket):
+    if not await ws_authorized(ws):
+        return
     await preview_manager.connect(ws)
     try:
         while True:
@@ -339,6 +343,12 @@ async def ping():
     return {"playline": True}
 
 
+async def _credentials_ok(username, password) -> bool:
+    """PBKDF2 leva ~0,1s: roda fora do event loop para não segurar preview/WS."""
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, app_settings.verify_credentials, username, password)
+
+
 @app.get("/login")
 async def login_page():
     return HTMLResponse(_build_login_html())
@@ -347,7 +357,7 @@ async def login_page():
 @app.post("/login")
 async def login_submit(request: Request):
     form = await request.form()
-    if form.get("username") == _AUTH_USER and form.get("password") == _AUTH_PASS:
+    if await _credentials_ok(form.get("username"), form.get("password")):
         token = secrets.token_urlsafe(32)
         _SESSIONS[token] = time.time() + _SESSION_TTL
         _save_sessions(_SESSIONS)
@@ -364,7 +374,7 @@ async def api_login(request: Request):
         body = await request.json()
     except Exception:
         return JSONResponse({"ok": False, "error": "JSON inválido"}, status_code=400)
-    if body.get("username") == _AUTH_USER and body.get("password") == _AUTH_PASS:
+    if await _credentials_ok(body.get("username"), body.get("password")):
         token = secrets.token_urlsafe(32)
         _SESSIONS[token] = time.time() + _SESSION_TTL
         _save_sessions(_SESSIONS)
@@ -381,6 +391,38 @@ async def logout(request: Request):
     resp = JSONResponse({"ok": True})
     resp.delete_cookie("playline_session")
     return resp
+
+
+def _request_token(request: Request) -> str:
+    return request.cookies.get("playline_session") or request.query_params.get("session_token") or ""
+
+
+@app.post("/api/settings/credentials")
+async def change_credentials(request: Request):
+    """Troca usuário e senha. Exige usuário E senha atuais; mantém só a sessão de quem alterou.
+
+    As demais sessões (outro navegador, PlayLine-Client, PlayIngest) caem e
+    precisam entrar de novo com as credenciais novas.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON inválido"}, status_code=400)
+    if not await _credentials_ok(body.get("current_username"), body.get("current_password")):
+        return JSONResponse({"ok": False, "error": "Usuário ou senha atuais incorretos"}, status_code=403)
+    loop = asyncio.get_running_loop()
+    try:
+        username = await loop.run_in_executor(
+            None, app_settings.set_credentials, body.get("new_username"), body.get("new_password"))
+    except ValueError as exc:
+        return JSONResponse({"ok": False, "error": str(exc)}, status_code=400)
+    keep = _request_token(request)
+    for tok in list(_SESSIONS):
+        if tok != keep:
+            _SESSIONS.pop(tok, None)
+    _save_sessions(_SESSIONS)
+    logger.info("Credenciais alteradas pela interface; %d sessão(ões) mantida(s)", len(_SESSIONS))
+    return JSONResponse({"ok": True, "username": username})
 
 
 @app.get("/")
@@ -718,6 +760,26 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
 
     class _PyWebViewAPI:
         """Métodos Python expostos ao JavaScript via window.pywebview.api.*"""
+        def pick_folder(self, start_dir: str = "") -> str:
+            """Diálogo nativo de pasta (Configurações > Biblioteca). "" se cancelado.
+
+            Só existe nesta janela (a do servidor): a interface mostra o botão
+            "Procurar…" apenas quando este método está em window.pywebview.api,
+            então o PlayLine-Client, que expõe outra api, nunca abre o diálogo
+            na máquina errada.
+            """
+            if not _window:
+                return ""
+            try:
+                kwargs = {"directory": start_dir} if start_dir and os.path.isdir(start_dir) else {}
+                res = _window.create_file_dialog(webview.FOLDER_DIALOG, **kwargs)
+            except Exception as exc:
+                logger.warning("pick_folder falhou: %s", exc)
+                return ""
+            if not res:
+                return ""
+            return str(res[0]) if isinstance(res, (list, tuple)) else str(res)
+
         def close_interface_only(self):
             """Fecha a janela; daemon e servidor continuam rodando."""
             global _closing_confirmed
@@ -826,6 +888,50 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
             )
             sys.exit(1)
 
+    import subprocess as _sp_srv
+
+    def _server_cmd(port: int) -> list[str]:
+        return (
+            [sys.executable, '--server-only', '--port', str(port)]
+            if getattr(sys, 'frozen', False) else
+            [sys.executable, str(Path(__file__).resolve()), '--server-only', '--port', str(port)]
+        )
+
+    def _spawn_server(port: int) -> None:
+        _sp_srv.Popen(
+            _server_cmd(port),
+            creationflags=_sp_srv.DETACHED_PROCESS | _sp_srv.CREATE_NEW_PROCESS_GROUP,
+            close_fds=True,
+        )
+
+    _SUPERVISE_SEC  = 10   # intervalo do ping de saúde
+    _SUPERVISE_MISS = 3    # relança após esse nº de pings falhos seguidos (~30 s)
+
+    def _supervise_server(port: int) -> None:
+        """Relança o servidor se ele morrer enquanto a janela estiver aberta.
+
+        O daemon já é relançado por core/player.py; sem isto, a morte do servidor
+        deixava o MPV tocar só o item atual + 1 pré-carregado e o playout parava,
+        e nada o reiniciava. Ao voltar, restore_after_crash() reencontra o daemon
+        em reprodução e recupera o estado.
+        """
+        misses = 0
+        while not _closing_confirmed:
+            time.sleep(_SUPERVISE_SEC)
+            if _closing_confirmed:
+                return
+            if _check_playline_running(port):
+                misses = 0
+                continue
+            misses += 1
+            if misses >= _SUPERVISE_MISS:
+                logger.error("Servidor sem resposta há ~%ds — relançando", _SUPERVISE_SEC * misses)
+                misses = 0
+                try:
+                    _spawn_server(port)
+                except Exception as exc:
+                    logger.error("Falha ao relançar o servidor: %s", exc)
+
     if _check_playline_running(18000):
         _PORT = 18000
         _tok = _get_autostart_token()
@@ -841,20 +947,11 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
             js_api=_pywebview_api,
         )
         _window.events.closing += _on_closing
+        threading.Thread(target=_supervise_server, args=(_PORT,), daemon=True).start()
         _start_webview()
     else:
         _PORT = _find_free_port(18000)
-        import subprocess as _sp_srv
-        _srv_cmd = (
-            [sys.executable, '--server-only', '--port', str(_PORT)]
-            if getattr(sys, 'frozen', False) else
-            [sys.executable, str(Path(__file__).resolve()), '--server-only', '--port', str(_PORT)]
-        )
-        _sp_srv.Popen(
-            _srv_cmd,
-            creationflags=_sp_srv.DETACHED_PROCESS | _sp_srv.CREATE_NEW_PROCESS_GROUP,
-            close_fds=True,
-        )
+        _spawn_server(_PORT)
         _window = webview.create_window(
             "PlayLine",
             html=_splash,
@@ -866,6 +963,7 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
             js_api=_pywebview_api,
         )
         _window.events.closing += _on_closing
+        threading.Thread(target=_supervise_server, args=(_PORT,), daemon=True).start()
         _start_webview(
             lambda: threading.Thread(target=_wait_and_navigate, args=(_window, _PORT), daemon=True).start()
         )

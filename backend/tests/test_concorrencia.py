@@ -113,7 +113,7 @@ def test_checkpoint_escrita_concorrente(monkeypatch):
     from pathlib import Path
 
     import core.db as db
-    monkeypatch.setattr(checkpoint, "_DB_PATH", db.DB_PATH)
+    # checkpoint.py segue core.db.DB_PATH (já isolado pelo conftest) — sem patch.
 
     barrier = threading.Barrier(2)
     errors = []
