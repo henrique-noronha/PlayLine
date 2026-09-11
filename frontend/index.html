@@ -193,23 +193,7 @@
                     <span class="logo-picker-name">Temp.</span>
                   </div>
                   <div class="to-city-row">
-                    <select id="to-city-select" class="to-city-select">
-                      <option value="Palmas,TO">Palmas</option>
-                      <option value="Araguaína,TO">Araguaína</option>
-                      <option value="Araguatins,TO">Araguatins</option>
-                      <option value="Arapoema,TO">Arapoema</option>
-                      <option value="Augustinópolis,TO">Augustinópolis</option>
-                      <option value="Couto Magalhães,TO">Couto Magalhães</option>
-                      <option value="Dianópolis,TO">Dianópolis</option>
-                      <option value="Gurupi,TO">Gurupi</option>
-                      <option value="Luzimangues,TO">Luzimangues</option>
-                      <option value="Nazaré,TO">Nazaré</option>
-                      <option value="Paraíso do Tocantins,TO">Paraíso do Tocantins</option>
-                      <option value="Porto Nacional,TO">Porto Nacional</option>
-                      <option value="Praia Norte,TO">Praia Norte</option>
-                      <option value="Sampaio,TO">Sampaio</option>
-                      <option value="Tocantinópolis,TO">Tocantinópolis</option>
-                    </select>
+                    <select id="to-city-select" class="to-city-select"></select>
                   </div>
                   <div class="to-temp-row">
                     <span class="to-temp-label">Temp. manual</span>
@@ -359,8 +343,14 @@
         <button id="st-close" class="st-close" title="Fechar">✕</button>
       </div>
 
-      <section class="st-section">
-        <h4 class="st-section-title">Biblioteca</h4>
+      <div class="st-tabs">
+        <button class="st-tab st-tab-active" data-tab="biblioteca">Biblioteca</button>
+        <button class="st-tab" data-tab="cidades">Cidades</button>
+        <button class="st-tab" data-tab="transicoes">Transições</button>
+        <button class="st-tab" data-tab="acesso">Usuário e senha</button>
+      </div>
+
+      <section class="st-section st-panel" data-panel="biblioteca">
         <p class="st-help">Pasta, no computador do servidor, onde ficam os vídeos. Os itens que já estão no roteiro continuam tocando de onde estão.</p>
         <div class="st-field">
           <label class="st-label" for="st-lib-path">Pasta da biblioteca</label>
@@ -376,8 +366,25 @@
         </div>
       </section>
 
-      <section class="st-section">
-        <h4 class="st-section-title">Transições</h4>
+      <section class="st-section st-panel" data-panel="cidades">
+        <p class="st-help">Cidades disponíveis no seletor do overlay de hora e temperatura. Deixe apenas as que a emissora usa. <span id="st-cities-count">0/30</span></p>
+        <div id="st-cities-list" class="st-city-list"></div>
+        <div class="st-field">
+          <label class="st-label" for="st-city-search">Adicionar cidade</label>
+          <div class="st-path-row">
+            <input type="text" id="st-city-search" class="st-input" placeholder="Digite o nome e pressione Enter" autocomplete="off" />
+            <button type="button" id="st-city-search-btn" class="st-btn-secondary">Buscar</button>
+          </div>
+        </div>
+        <div id="st-city-results" class="st-city-results"></div>
+        <div id="st-cities-status" class="st-status"></div>
+        <div class="st-actions">
+          <button type="button" id="st-cities-reset" class="st-btn-link">Restaurar lista padrão</button>
+          <button type="button" id="st-cities-save" class="st-btn-primary">Salvar cidades</button>
+        </div>
+      </section>
+
+      <section class="st-section st-panel" data-panel="transicoes">
         <p class="st-help">O tipo, CUT (corte seco) ou FTB (fade to black), é alternado pelo botão no cabeçalho do Roteiro; por clipe, no menu ⚙ do item. Aqui fica a duração do FTB.</p>
         <div class="st-field st-field-inline">
           <label class="st-label" for="st-fade-dur">Duração do FTB (segundos)</label>
@@ -389,8 +396,7 @@
         </div>
       </section>
 
-      <section class="st-section">
-        <h4 class="st-section-title">Usuário e senha</h4>
+      <section class="st-section st-panel" data-panel="acesso">
         <p class="st-help">Confirme o usuário e a senha atuais para alterar. As outras sessões abertas (outro navegador, PlayIngest) precisarão entrar de novo.</p>
         <form id="st-cred-form" autocomplete="off">
           <div class="st-grid">

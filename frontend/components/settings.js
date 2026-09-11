@@ -14,6 +14,12 @@
   const trDur      = document.getElementById("st-fade-dur");
   const trSave     = document.getElementById("st-tr-save");
   const trStatus   = document.getElementById("st-tr-status");
+  const ctList     = document.getElementById("st-cities-list");
+  const ctCount    = document.getElementById("st-cities-count");
+  const ctSearch   = document.getElementById("st-city-search");
+  const ctResults  = document.getElementById("st-city-results");
+  const ctStatus   = document.getElementById("st-cities-status");
+  const ctSave     = document.getElementById("st-cities-save");
 
   // O diálogo nativo só existe na janela do próprio servidor (main.py expõe
   // pick_folder). O PlayLine-Client também tem window.pywebview.api, mas sem
@@ -49,12 +55,29 @@
     }
   }
 
+  // ── Abas ─────────────────────────────────────────────────────────────────
+
+  function _switchTab(name) {
+    modal.querySelectorAll(".st-tab").forEach(b =>
+      b.classList.toggle("st-tab-active", b.dataset.tab === name));
+    modal.querySelectorAll(".st-panel").forEach(p =>
+      p.classList.toggle("st-panel-active", p.dataset.panel === name));
+  }
+
+  modal.querySelectorAll(".st-tab").forEach(btn =>
+    btn.addEventListener("click", () => _switchTab(btn.dataset.tab)));
+
   function open() {
+    _switchTab("biblioteca");
     libBrowse.style.display = _hasNativePicker() ? "" : "none";
     form.reset();
     _setStatus(credStatus, "", "");
+    ctResults.innerHTML = "";
+    ctSearch.value = "";
+    _setStatus(ctStatus, "", "");
     modal.style.display = "flex";
     _load();
+    _loadCities();
   }
 
   function close() {
@@ -103,6 +126,134 @@
       if (picked) libPath.value = picked;
     } catch (err) {
       _setStatus(libStatus, "Não foi possível abrir o seletor de pasta: " + err, "error");
+    }
+  });
+
+  // ── Cidades do overlay de hora/temperatura ───────────────────────────────
+  // Lista local; só vai para o servidor ao clicar em Salvar cidades.
+
+  let _cities = [];
+  let _citiesMax = 30;
+
+  const _key = c => `${c.name},${c.state || ""}`.toLowerCase();
+
+  function _renderCities() {
+    ctList.innerHTML = "";
+    _cities.forEach((c, i) => {
+      const chip = document.createElement("span");
+      chip.className = "st-city-chip";
+      chip.innerHTML = `${esc(c.name)}<span class="uf">${esc(c.state || "")}</span>`;
+      const del = document.createElement("button");
+      del.type = "button";
+      del.textContent = "✕";
+      del.title = "Remover da lista";
+      del.addEventListener("click", () => {
+        _cities.splice(i, 1);
+        _renderCities();
+        _setStatus(ctStatus, "Lista alterada. Clique em Salvar cidades para aplicar.", "warn");
+      });
+      chip.appendChild(del);
+      ctList.appendChild(chip);
+    });
+    ctCount.textContent = `${_cities.length}/${_citiesMax}`;
+    // revalida os botões dos resultados da busca (limite ou já adicionada)
+    ctResults.querySelectorAll("button[data-key]").forEach(b => {
+      const dup = _cities.some(c => _key(c) === b.dataset.key);
+      b.disabled = dup || _cities.length >= _citiesMax;
+      b.textContent = dup ? "Já está na lista" : "Adicionar";
+    });
+  }
+
+  async function _loadCities() {
+    try {
+      const r = await fetch("/api/cities", { cache: "no-store" });
+      const d = await r.json();
+      _cities = d.cities || [];
+      if (typeof d.max === "number") _citiesMax = d.max;
+      _renderCities();
+    } catch (err) {
+      _setStatus(ctStatus, "Não foi possível carregar as cidades: " + err.message, "error");
+    }
+  }
+
+  async function _searchCities() {
+    const q = ctSearch.value.trim();
+    if (q.length < 2) { _setStatus(ctStatus, "Digite ao menos duas letras para buscar", "error"); return; }
+    _setStatus(ctStatus, "Buscando…", "loading");
+    ctResults.innerHTML = "";
+    try {
+      const r = await fetch("/api/cities/search?q=" + encodeURIComponent(q));
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { _setStatus(ctStatus, d.detail || "Falha na busca", "error"); return; }
+      const res = d.results || [];
+      if (!res.length) { _setStatus(ctStatus, `Nenhuma cidade encontrada para "${q}"`, "warn"); return; }
+      _setStatus(ctStatus, "", "");
+      res.forEach(c => {
+        const row = document.createElement("div");
+        row.className = "st-city-result";
+        row.innerHTML = `<span>${esc(c.name)} <small>${esc(c.state_name || c.state || "")}</small></span>`;
+        const add = document.createElement("button");
+        add.type = "button";
+        add.dataset.key = _key(c);
+        add.addEventListener("click", () => {
+          if (_cities.length >= _citiesMax) return;
+          _cities.push({ name: c.name, state: c.state, lat: c.lat, lon: c.lon });
+          _renderCities();
+          _setStatus(ctStatus, "Cidade adicionada. Clique em Salvar cidades para aplicar.", "warn");
+        });
+        row.appendChild(add);
+        ctResults.appendChild(row);
+      });
+      _renderCities();   // define o rótulo/estado inicial dos botões
+    } catch (err) {
+      _setStatus(ctStatus, "Erro na busca: " + err.message, "error");
+    }
+  }
+
+  async function _saveCities() {
+    if (!_cities.length) { _setStatus(ctStatus, "Mantenha pelo menos uma cidade na lista", "error"); return; }
+    ctSave.disabled = true;
+    _setStatus(ctStatus, "Salvando…", "loading");
+    try {
+      const r = await fetch("/api/cities", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cities: _cities }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { _setStatus(ctStatus, d.detail || "Não foi possível salvar", "error"); return; }
+      _cities = d.cities || _cities;
+      _renderCities();
+      ctResults.innerHTML = "";
+      ctSearch.value = "";
+      _setStatus(ctStatus, `${_cities.length} cidade(s) salva(s)`, "success");
+    } catch (err) {
+      _setStatus(ctStatus, "Erro de comunicação com o servidor: " + err.message, "error");
+    } finally {
+      ctSave.disabled = false;
+    }
+  }
+
+  ctSave.addEventListener("click", _saveCities);
+  document.getElementById("st-city-search-btn").addEventListener("click", _searchCities);
+  ctSearch.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); _searchCities(); }
+  });
+  document.getElementById("st-cities-reset").addEventListener("click", async () => {
+    _setStatus(ctStatus, "Restaurando…", "loading");
+    try {
+      const r = await fetch("/api/cities", {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reset: true }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { _setStatus(ctStatus, d.detail || "Não foi possível restaurar", "error"); return; }
+      _cities = d.cities || [];
+      ctResults.innerHTML = "";
+      _renderCities();
+      _setStatus(ctStatus, `Lista padrão restaurada (${_cities.length} cidades)`, "success");
+    } catch (err) {
+      _setStatus(ctStatus, "Erro de comunicação com o servidor: " + err.message, "error");
     }
   });
 

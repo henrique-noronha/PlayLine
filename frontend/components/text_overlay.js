@@ -175,6 +175,38 @@ function _updatePreviewOverlay() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
+// Monta o seletor a partir da lista de cidades salva (Configurações > Cidades).
+// Antes as opções eram fixas no HTML; agora o operador escolhe quais aparecem.
+async function loadCityOptions() {
+  const sel = document.getElementById("to-city-select");
+  if (!sel) return;
+  let cities = [];
+  try {
+    const r = await fetch("/api/cities", { cache: "no-store" });
+    cities = (await r.json()).cities || [];
+  } catch (_) {
+    return;   // sem rede, mantém o que já está no seletor
+  }
+  const anterior = _textState.city;
+  sel.innerHTML = "";
+  cities.forEach(c => {
+    const o = document.createElement("option");
+    o.value = c.state ? `${c.name},${c.state}` : c.name;
+    o.textContent = c.name;
+    sel.appendChild(o);
+  });
+  if (cities.some(c => (c.state ? `${c.name},${c.state}` : c.name) === anterior)) {
+    sel.value = anterior;
+  } else if (cities.length) {
+    // a cidade em uso saiu da lista: cai para a primeira e avisa o daemon
+    sel.value = sel.options[0].value;
+    _textState.city = sel.value;
+    localStorage.setItem("playline_to_city", _textState.city);
+    _sendTextOverlay();
+    log(`Cidade do overlay ajustada para ${sel.options[0].textContent}`, "info");
+  }
+}
+
 function initTextOverlayUI() {
   const toggle     = document.getElementById("btn-text-toggle");
   const timeBtn    = document.getElementById("to-show-time-btn");
@@ -183,6 +215,7 @@ function initTextOverlayUI() {
   const tempInput  = document.getElementById("to-temp-input");
   const fetchBtn   = document.getElementById("to-temp-fetch");
 
+  loadCityOptions().then(_syncTextUI);
   _syncTextUI();
 
   // Inicia clock do preview — roda sempre, _updatePreviewOverlay() verifica active

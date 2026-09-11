@@ -293,6 +293,10 @@ function handleEvent(ev) {
       log("Biblioteca alterada para " + ev.library_dir, "info");
       if (typeof loadLibraryFolders === "function") loadLibraryFolders();
       break;
+    case "cities_changed":
+      // Lista de cidades alterada em Configurações (por esta ou outra interface)
+      if (typeof loadCityOptions === "function") loadCityOptions();
+      break;
     case "transition_state":
       state.transition = ev.transition || state.transition;
       updateTransitionButton();
