@@ -18,10 +18,17 @@ GURUPI = {"name": "Gurupi", "state": "TO", "lat": -11.7279, "lon": -49.068}
 
 # ── padrão ──────────────────────────────────────────────────────────────────
 
-def test_padrao_sao_as_capitais():
+# A lista padrão é definida no código e muda por instalação (a develop traz as
+# capitais; uma emissora pode compilar com as cidades da região dela), então os
+# testes comparam com default_cities() em vez de fixar a quantidade.
+PADRAO = len(settings.default_cities())
+
+
+def test_sem_arquivo_vale_a_lista_padrao():
     c = settings.get_cities()
-    assert len(c) == 30
-    assert {"name", "state", "lat", "lon"} <= set(c[0])
+    assert c == settings.default_cities()
+    assert 0 < len(c) <= settings.CITIES_MAX
+    assert all({"name", "state", "lat", "lon"} <= set(x) for x in c)
     assert any(x["name"] == "Palmas" and x["state"] == "TO" for x in c)
 
 
@@ -55,7 +62,7 @@ def test_aceita_exatamente_30():
 def test_rejeita_mais_de_30():
     with pytest.raises(ValueError, match="limite"):
         settings.set_cities([dict(PALMAS, name=f"Cidade {i}") for i in range(31)])
-    assert len(settings.get_cities()) == 30      # padrão intacto
+    assert len(settings.get_cities()) == PADRAO   # padrão intacto
 
 
 def test_rejeita_lista_vazia_ou_invalida():
@@ -88,8 +95,8 @@ def test_estado_opcional_e_normalizado():
 def test_reset_volta_ao_padrao():
     settings.set_cities([PALMAS])
     assert len(settings.get_cities()) == 1
-    assert len(settings.reset_cities()) == 30
-    assert len(settings.get_cities()) == 30
+    assert len(settings.reset_cities()) == PADRAO
+    assert len(settings.get_cities()) == PADRAO
     assert "cities" not in json.loads(settings.config_path().read_text(encoding="utf-8"))
 
 
@@ -100,7 +107,7 @@ def test_entrada_corrompida_no_arquivo_e_ignorada():
 
 def test_lista_toda_corrompida_cai_no_padrao():
     settings.save({"cities": ["lixo", 42]})
-    assert len(settings.get_cities()) == 30
+    assert len(settings.get_cities()) == PADRAO
 
 
 def test_cidades_nao_apagam_outras_configuracoes(tmp_path):
