@@ -215,7 +215,7 @@
 /* ── Item do roteiro ── */
 .schedule-item {
   display: grid;
-  grid-template-columns: 18px 20px 50px 1fr 152px 56px;
+  grid-template-columns: 18px 20px 50px 1fr 58px 152px 56px;
   gap: 5px;
   align-items: center;
   padding: 3px 6px;
@@ -362,6 +362,35 @@
   min-width: 68px;
   justify-content: flex-end;
 }
+
+/* Categoria: 3 primeiras letras da pasta da biblioteca em que o clipe está */
+.sch-col-cat-header {
+  width: 58px;   /* coluna mais larga que o badge (40px) para ele ficar afastado de "Entrada" */
+  font-size: 8px;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.07em;
+  opacity: 0.6;
+  text-align: left;
+  flex-shrink: 0;
+}
+.item-cat {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  justify-self: start;
+  width: 40px;
+  padding: 2px 0;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: transparent;
+  white-space: nowrap;
+}
+.item-cat:empty { border-color: transparent; }
 
 .sch-col-time-header {
   display: flex;
@@ -768,6 +797,46 @@
 
 /* ── Indicador de trim no item ── */
 .item-dur.trim-active { color: var(--warning); }
+
+/* ── Transição entre clipes ── */
+/* botão global no cabeçalho do roteiro: mostra a opção atual, clique alterna */
+.sch-transition-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  transition: color .15s, background .15s, border-color .15s;
+}
+.sch-transition-btn:hover { color: var(--text); border-color: var(--muted); }
+.sch-transition-btn[data-type="fade"] {
+  color: var(--accent);
+  background: rgba(79, 142, 247, .1);
+  border-color: rgba(79, 142, 247, .35);
+}
+/* override por clipe: tag ao lado do título */
+.item-title-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.item-title-row .item-title { flex: 1 1 auto; }
+.item-transition-tag {
+  flex: 0 0 auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.item-transition-tag.fade { color: var(--accent); border-color: rgba(79, 142, 247, .4); }
+#gd-transition b { font-weight: 600; margin-left: auto; padding-left: 10px; color: var(--muted); }
+#gd-transition.active b { color: var(--accent); }
 
 /* ── Popup de recorte de clipe ── */
 .ct-popup {

@@ -5,12 +5,10 @@ import pytest
 import core.db as db
 from daemon import checkpoint
 
-
-@pytest.fixture(autouse=True)
-def patch_daemon_db(monkeypatch):
-    """Redireciona o _DB_PATH do daemon para o mesmo banco temporário do teste."""
-    monkeypatch.setattr(checkpoint, "_DB_PATH", db.DB_PATH)
-
+# Não há mais o que redirecionar: checkpoint.py lê core.db.DB_PATH na hora da
+# chamada, e o conftest já aponta isso para o banco temporário do teste. (O
+# antigo monkeypatch de checkpoint._DB_PATH mascarava justamente a divergência
+# de caminho entre daemon e servidor que existia em dev.)
 
 _DUMMY = Path("ignorado")  # checkpoint_path não é mais usado
 

@@ -12,6 +12,7 @@ const state = {
   totalPausedMs: 0,     // soma de todos os tempos pausados no clipe atual
   mpvAlive: true,       // false após mpv_closed, true após mpv_ready / now_playing
   repeat: false,
+  transition: { type: "cut", duration: 0.5 },   // global; por clipe em item.transition
 };
 
 let _remainingTimer = null;
@@ -287,6 +288,22 @@ function handleEvent(ev) {
       if (typeof ev.current_index === "number") state.currentIndex = ev.current_index;
       if (!window._schedDragging) renderSchedule();
       break;
+    case "library_changed":
+      // Pasta da biblioteca trocada em Configurações (por esta ou outra interface)
+      log("Biblioteca alterada para " + ev.library_dir, "info");
+      if (typeof loadLibraryFolders === "function") loadLibraryFolders();
+      break;
+    case "cities_changed":
+      // Lista de cidades alterada em Configurações (por esta ou outra interface)
+      if (typeof loadCityOptions === "function") loadCityOptions();
+      break;
+    case "transition_state":
+      state.transition = ev.transition || state.transition;
+      updateTransitionButton();
+      log(state.transition.type === "fade"
+        ? `Transição: FTB, fade to black (${state.transition.duration}s)`
+        : "Transição: CUT, corte seco", "info");
+      break;
     case "logo_list":
       updateLogoDropdowns(ev.files);
       break;
@@ -334,6 +351,7 @@ function applyState(s) {
   state.playing = s.running ?? false;
   state.paused = s.paused ?? false;
   if (typeof s.repeat === "boolean") { state.repeat = s.repeat; updateLoopIndicator(); }
+  if (s.transition) { state.transition = s.transition; updateTransitionButton(); }
 
   // Reconstrói o "relógio" do clipe atual a partir da posição enviada pelo servidor —
   // sem isso, os mostradores do painel de controle (calcClipRemaining/calcRemaining/

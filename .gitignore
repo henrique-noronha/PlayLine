@@ -30,6 +30,9 @@ backend/core/*.db-shm
 backend/checkpoint.json
 backend/text_overlay.json
 backend/sessions.json
+backend/config.json
+backend/core/config.json
+backend/server.pid
 backend/.playline_input.conf
 backend/standby.png
 

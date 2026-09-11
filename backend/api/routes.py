@@ -1,5 +1,6 @@
 """Rotas HTTP do PlayLine."""
 
+import asyncio
 import hashlib
 import io
 import mimetypes
@@ -13,6 +14,8 @@ from fastapi import APIRouter, HTTPException, UploadFile, File
 
 _NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
 from fastapi.responses import FileResponse, Response
+
+from core import settings as app_settings
 
 # Mesmo caminho usado pelo mpv_daemon — sem espaços para compatibilidade com lavfi
 _LOGO_WORK_DIR = Path(os.environ.get("PUBLIC", r"C:\Users\Public")) / "pltmp"
@@ -299,9 +302,15 @@ async def get_temperature(city: str = "Palmas,TO"):
     def _fetch():
         import logging
         log = logging.getLogger("api.routes")
-        owm_name = city.split(",")[0].strip()
+        # Consulta por coordenada quando a cidade está na lista salva: por nome, o
+        # OWM pode devolver a homônima de outro estado (há cinco "Palmas" no Brasil).
+        saved = app_settings.find_city(city)
+        if saved:
+            loc = f"lat={saved['lat']}&lon={saved['lon']}"
+        else:
+            loc = f"q={quote(city.split(',')[0].strip())},BR"
         try:
-            url = f"https://api.openweathermap.org/data/2.5/weather?q={quote(owm_name)},BR&appid={_API_KEY}&units=metric"
+            url = f"https://api.openweathermap.org/data/2.5/weather?{loc}&appid={_API_KEY}&units=metric"
             with urlopen(url, timeout=5) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 temp = data.get("main", {}).get("temp")
@@ -326,14 +335,114 @@ async def get_temperature(city: str = "Palmas,TO"):
     return PlainTextResponse(val or "—")
 
 
+# ── Cidades do overlay de hora/temperatura ──────────────────────────────────
+
+_GEO_URL = "https://api.openweathermap.org/geo/1.0/direct"
+
+
+@router.get("/api/cities")
+async def list_cities():
+    return {"cities": app_settings.get_cities(), "max": app_settings.CITIES_MAX}
+
+
+@router.put("/api/cities")
+async def save_cities(body: dict):
+    """Grava a lista montada na tela de Configurações (no máximo CITIES_MAX).
+
+    `{"reset": true}` descarta a lista gravada e volta à padrão (capitais).
+    """
+    if body.get("reset"):
+        cities = app_settings.reset_cities()
+    else:
+        try:
+            cities = app_settings.set_cities(body.get("cities"))
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+    if _manager:
+        await _manager.broadcast({"event": "cities_changed", "cities": cities})
+    return {"ok": True, "cities": cities}
+
+
+@router.get("/api/cities/search")
+async def search_cities(q: str = "", limit: int = 6):
+    """Busca no geocoding da OpenWeatherMap para o operador escolher a cidade certa."""
+    import asyncio
+    import json as _json
+    from urllib.parse import quote as _quote
+    from urllib.request import urlopen
+
+    termo = (q or "").strip()
+    if len(termo) < 2:
+        return {"results": []}
+    limit = max(1, min(10, int(limit)))
+    _API_KEY = "f69ea9de2f716268934177c04852b89b"
+
+    def _search():
+        url = f"{_GEO_URL}?q={_quote(termo)},BR&limit={limit}&appid={_API_KEY}"
+        with urlopen(url, timeout=6) as resp:
+            return _json.loads(resp.read().decode("utf-8"))
+
+    try:
+        data = await asyncio.get_running_loop().run_in_executor(None, _search)
+    except Exception as exc:
+        logger.warning("[cities] busca falhou: %s", exc)
+        raise HTTPException(status_code=502, detail="Não foi possível consultar a busca de cidades. Verifique a conexão com a internet")
+
+    _UF = {
+        "Acre": "AC", "Alagoas": "AL", "Amapá": "AP", "Amazonas": "AM", "Bahia": "BA",
+        "Ceará": "CE", "Federal District": "DF", "Distrito Federal": "DF",
+        "Espírito Santo": "ES", "Goiás": "GO", "Maranhão": "MA", "Mato Grosso": "MT",
+        "Mato Grosso do Sul": "MS", "Minas Gerais": "MG", "Pará": "PA", "Paraíba": "PB",
+        "Paraná": "PR", "Pernambuco": "PE", "Piauí": "PI", "Rio de Janeiro": "RJ",
+        "Rio Grande do Norte": "RN", "Rio Grande do Sul": "RS", "Rondônia": "RO",
+        "Roraima": "RR", "Santa Catarina": "SC", "São Paulo": "SP", "Sergipe": "SE",
+        "Tocantins": "TO",
+    }
+    results, vistos = [], set()
+    for item in data if isinstance(data, list) else []:
+        if item.get("country") != "BR":
+            continue
+        estado = item.get("state") or ""
+        sigla = _UF.get(estado, estado[:2].upper() if estado else "")
+        nome = (item.get("name") or "").strip()
+        if not nome:
+            continue
+        chave = f"{nome},{sigla}".lower()
+        if chave in vistos:
+            continue
+        vistos.add(chave)
+        results.append({"name": nome, "state": sigla, "state_name": estado,
+                        "lat": round(float(item["lat"]), 4), "lon": round(float(item["lon"]), 4)})
+    return {"results": results}
+
+
 # ── Biblioteca estruturada ──────────────────────────────────────────────────
 
-_LIBRARY_BASE: Path = (
+_LIBRARY_DEFAULT: Path = (
     Path(sys.executable).parent / "Biblioteca"
     if getattr(sys, "frozen", False)
     else Path(__file__).parent.parent.parent / "Biblioteca"
 )
-_LIBRARY_BASE.mkdir(exist_ok=True)
+
+
+def _initial_library_base() -> Path:
+    """Pasta configurada em config.json, ou a padrão (criada se preciso).
+
+    Se a configurada sumiu (HD externo desligado, pasta renomeada), volta à
+    padrão só nesta execução, sem apagar a configuração; o modal avisa.
+    """
+    cfg = app_settings.get_library_dir()
+    if cfg is not None:
+        if cfg.is_dir():
+            return cfg
+        logger.warning("Pasta da biblioteca configurada não encontrada (%s); usando %s",
+                       cfg, _LIBRARY_DEFAULT)
+    _LIBRARY_DEFAULT.mkdir(exist_ok=True)
+    return _LIBRARY_DEFAULT
+
+
+# Lido em tempo de chamada por todas as rotas abaixo; POST /api/settings/library troca em runtime.
+_LIBRARY_BASE: Path = _initial_library_base()
 
 
 def _scan_media(path: Path) -> list[dict]:
@@ -350,6 +459,69 @@ async def get_library_info():
     """Retorna as subpastas da Biblioteca."""
     subfolders = sorted(f.name for f in _LIBRARY_BASE.iterdir() if f.is_dir())
     return {"subfolders": subfolders, "base": str(_LIBRARY_BASE)}
+
+
+# ── Configurações (modal do painel de controle) ─────────────────────────────
+
+@router.get("/api/settings")
+async def get_settings():
+    """Usuário atual e pasta da biblioteca (atual, padrão e configurada)."""
+    cfg = app_settings.get_library_dir()
+    loop = asyncio.get_running_loop()
+    # is_dir() numa unidade de rede fora do ar pode travar: fora do event loop
+    missing = (await loop.run_in_executor(None, cfg.is_dir) is False) if cfg is not None else False
+    return {
+        "username": app_settings.get_username(),
+        "library_dir": str(_LIBRARY_BASE),
+        "library_default": str(_LIBRARY_DEFAULT),
+        "library_configured": str(cfg) if cfg else "",
+        "library_missing": missing,
+        "transition": app_settings.get_transition(),
+    }
+
+
+@router.post("/api/settings/transition")
+async def change_transition(body: dict):
+    """Transição global. O modal só altera a duração; o tipo é o botão do cabeçalho do roteiro (WS)."""
+    if _playlist_engine is None:
+        raise HTTPException(status_code=503, detail="Engine indisponível")
+    try:
+        cfg = await _playlist_engine.set_transition({k: body[k] for k in ("type", "duration") if k in body})
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    return {"ok": True, "transition": cfg}
+
+
+@router.post("/api/settings/library")
+async def change_library_dir(body: dict):
+    """Troca a pasta da biblioteca em runtime e persiste em config.json.
+
+    Os itens do roteiro guardam caminho absoluto, então o que já está programado
+    continua tocando de onde está; só listagem, upload e subpastas passam a usar
+    a nova pasta. PlayIngest e PlayLine-Client resolvem tudo pelo servidor, então
+    nada muda neles. `{"reset": true}` volta à pasta padrão.
+    """
+    global _LIBRARY_BASE
+    loop = asyncio.get_running_loop()
+    if body.get("reset"):
+        new = _LIBRARY_DEFAULT
+        await loop.run_in_executor(None, lambda: new.mkdir(exist_ok=True))
+        app_settings.set_library_dir(None)
+    else:
+        try:
+            new = await loop.run_in_executor(
+                None, app_settings.validate_library_dir, str(body.get("path") or ""))
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+        app_settings.set_library_dir(new)
+    changed = new != _LIBRARY_BASE
+    _LIBRARY_BASE = new
+    if changed:
+        logger.info("Biblioteca alterada para %s", new)
+        if _manager:
+            await _manager.broadcast({"event": "library_changed", "library_dir": str(new)})
+        asyncio.create_task(prewarm_thumbnails())
+    return {"ok": True, "library_dir": str(new), "changed": changed}
 
 
 @router.get("/api/library/files")
