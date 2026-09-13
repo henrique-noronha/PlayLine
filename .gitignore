@@ -68,4 +68,7 @@ Biblioteca/
 backend/.playline_server
 .claude/skills/
 
+# Rascunhos das notas de release (o texto final fica na página da release no GitHub)
+RELEASE_*.md
+
 
