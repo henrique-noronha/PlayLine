@@ -60,7 +60,9 @@ Requisitos: Windows 10/11 x64, [Visual C++ Redistributable](https://aka.ms/vs/17
 
 ### Hora e Temperatura
 - Bloco de hora, temperatura e cidade sobrepostos ao vídeo em tempo real
-- Seleção de 30 cidades brasileiras ou entrada manual
+- **Lista de cidades montada pelo operador** em Configurações: busque qualquer cidade do país pelo nome e mantenha até 30 na lista
+- Cada cidade guarda suas coordenadas, o que evita a temperatura de uma cidade homônima de outro estado
+- Temperatura manual quando a emissora tem serviço meteorológico próprio
 - Integração com OpenWeatherMap API, com fallback automático para wttr.in
 
 ### Histórico e Estatísticas
@@ -87,6 +89,8 @@ Requisitos: Windows 10/11 x64, [Visual C++ Redistributable](https://aka.ms/vs/17
 - Acesso protegido por usuário e senha (padrão `playline`/`playline`), exigidos também nas conexões WebSocket e nos aplicativos auxiliares
 - Troca de usuário e senha pela própria interface, mediante confirmação das credenciais atuais; a senha é guardada apenas como hash (PBKDF2-SHA256 com salt)
 - Pasta da biblioteca configurável: qualquer pasta do computador, inclusive HD externo, com seletor nativo do Windows
+- Lista de cidades do overlay de hora e temperatura, com busca por nome e limite de 30
+- Duração do fade to black entre clipes
 - Sessões de 8 horas; trocar a senha derruba as demais sessões abertas
 
 ### Transmissão sem operador
