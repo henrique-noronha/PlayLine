@@ -387,11 +387,33 @@ nav {
   overflow: hidden;
   background: url('images/ChatGPT Image 23 de jul. de 2026, 10_55_21.png') center center / cover fixed;
 }
+/* Título da seção de download: a foto tem monitores e números claros bem atrás
+   do texto. Este halo escuro cria uma "poça" de contraste que some nas bordas,
+   sem virar mais uma caixa competindo com o card logo abaixo. */
+.dl-heading {
+  position: relative;
+  max-width: 380px;
+  margin: 0 auto 26px;
+  padding: 22px 30px 18px;
+  background: rgba(17,24,39,0.82);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.dl-heading .section-sub { margin-bottom: 0; }
+#download .section-title { text-shadow: 0 2px 20px rgba(0,0,0,.55); }
+#download .dl-heading + div { margin-top: 0; }
+
 #download::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(13,17,23,1) 0%, rgba(13,17,23,0.60) 40%, rgba(13,17,23,0.60) 60%, rgba(13,17,23,1) 100%);
+  /* Escurecimento forte no miolo: a foto fica como ambiente, sem competir com
+     o texto do card. O desfoque e a dessaturação empurram a imagem pro fundo. */
+  background: linear-gradient(to bottom, rgba(13,17,23,1) 10%, rgba(13,17,23,0.40) 15%, rgba(13,17,23,0.86) 35%, rgba(13,17,23,1) 100%);
+  -webkit-backdrop-filter: blur(1px) saturate(0.75);
+  backdrop-filter: blur(1px) saturate(0.75);
   z-index: 0;
 }
 #download::after {
@@ -476,7 +498,11 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(13, 17, 23, 0.60) 0%, rgba(13, 17, 23, 0.85) 60%, rgba(13, 17, 23, 1) 100%);
+  /* Topo da página: a imagem passa por trás do menu e da logo, então precisa de
+     bastante escurecimento já no começo, senão os links do menu somem na foto. */
+  background: linear-gradient(to bottom, rgba(13, 17, 23, 0.84) 0%, rgba(13, 17, 23, 0.90) 55%, rgba(13, 17, 23, 1) 100%);
+  -webkit-backdrop-filter: blur(1px) saturate(0.75);
+  backdrop-filter: blur(1px) saturate(0.75);
   z-index: 0;
 }
 .hero-wrap::after {
@@ -697,7 +723,7 @@ acesso à informação para milhões de pessoas.</p>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       </div>
       <h3>Hora e Temperatura</h3>
-      <p>Bloco de hora, temperatura e cidade sobrepostos ao vídeo. Seleção de 30 cidades brasileiras ou entrada manual.</p>
+      <p>Bloco de hora, temperatura e cidade sobrepostos ao vídeo. Monte sua própria lista com qualquer cidade do país, até 30, buscando pelo nome. Ou informe a temperatura manualmente.</p>
     </div>
 
     <div class="feature">
@@ -757,8 +783,10 @@ acesso à informação para milhões de pessoas.</p>
 <!-- Download -->
 <section class="section" id="download">
 
-  <h2 class="section-title">PlayLine v1.2.0</h2>
-  <p class="section-sub">Windows 10 ou superior.</p>
+  <div class="dl-heading">
+    <h2 class="section-title">PlayLine v1.2.0</h2>
+    <p class="section-sub">Windows 10 ou superior.</p>
+  </div>
   <div style="max-width:380px;margin:0 auto">
 
     <div class="dl-card">
