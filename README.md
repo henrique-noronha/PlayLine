@@ -4,7 +4,7 @@
 
 **PlayLine** é um sistema de automação de playout televisivo que organiza, reproduz e gerencia a programação da sua emissora de forma **contínua e automatizada**. Desenvolvido para emissoras que não podem arcar com soluções comerciais de alto custo e não dispõem de equipe técnica dedicada, sem abrir mão das funcionalidades essenciais.
 
-🌐 **[henrique-noronha.github.io/PlayLine](https://henrique-noronha.github.io/PlayLine/)**
+🌐 **[playlinetv.com.br](https://playlinetv.com.br/)**
 
 ![Interface do PlayLine](docs/InterfacePlayLine.png)
 
@@ -160,7 +160,7 @@ A motivação central é a democratização da infraestrutura de *broadcasting* 
 ## Contato e Suporte
 
 - 📧 **playline.suporte@gmail.com**
-- 🌐 **[henrique-noronha.github.io/PlayLine](https://henrique-noronha.github.io/PlayLine/)**
+- 🌐 **[playlinetv.com.br](https://playlinetv.com.br/)**
 - 🐛 **[Issues no GitHub](https://github.com/henrique-noronha/PlayLine/issues)**
 
 ---
