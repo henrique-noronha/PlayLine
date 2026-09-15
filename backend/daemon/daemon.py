@@ -22,17 +22,19 @@ Eventos emitidos:
 """
 
 import asyncio
+import base64
 import json
 import logging
 import os
 import sys
+import tempfile
 import threading
 import time
 from pathlib import Path
 from typing import Optional
 
 
-from . import checkpoint, monitor, overlay, osd_text, preview, protocol, weather
+from . import checkpoint, monitor, overlay, osd_text, preview, preview_stream, protocol, transition, weather
 
 # Garante que libmpv-2.dll seja encontrada (em sys._MEIPASS quando empacotado)
 if getattr(sys, 'frozen', False):
@@ -47,7 +49,9 @@ os.environ["PATH"] = _BACKEND_DIR + os.pathsep + os.environ.get("PATH", "")
 CHECKPOINT_PATH      = _DATA_DIR / "checkpoint.json"
 TEXT_OVERLAY_PATH    = _DATA_DIR / "text_overlay.json"
 LOGOS_DIR            = _DATA_DIR / "logos"
+IMAGES_DIR           = _DATA_DIR / "images"
 _INPUT_CONF_PATH     = _DATA_DIR / ".playline_input.conf"
+STANDBY_SLOT         = "4"
 
 _TEXT_OVERLAY_DEFAULTS = {
     "active":      False,
@@ -66,6 +70,38 @@ def _is_youtube_url(url: str) -> bool:
     return "youtube.com" in url or "youtu.be" in url
 
 
+def _is_stream_path(path: str) -> bool:
+    """True para URLs de rede (HLS, RTMP, YouTube resolvido) — False para arquivos locais."""
+    p = (path or "").lower().lstrip()
+    return (
+        p.startswith("http://") or p.startswith("https://") or
+        p.startswith("rtmp://") or p.startswith("rtmps://") or
+        p.startswith("rtsp://")
+    )
+def _yt_url_fresh(resolved_url: str) -> bool:
+    """Verifica se a URL resolvida ainda está dentro da janela de validade.
+
+    URLs diretas do googlevideo.com carregam expire=TIMESTAMP na query ou
+    /expire/TIMESTAMP/ no path. Manifests HLS do manifest.googlevideo.com
+    também seguem o mesmo padrão. Retorna False se a URL expira em <30 s.
+    """
+    import re as _re
+    import urllib.parse as _up
+    try:
+        parsed = _up.urlparse(resolved_url)
+        # googlevideo.com direto: ?expire=1234567890
+        params = _up.parse_qs(parsed.query)
+        if "expire" in params:
+            return float(params["expire"][0]) - time.time() > 30
+        # manifest.googlevideo.com: /expire/1234567890/ no path
+        m = _re.search(r"/expire/(\d+)/", parsed.path)
+        if m:
+            return float(m.group(1)) - time.time() > 30
+    except Exception:
+        pass
+    return True  # URL sem expiry explícito → assume longa duração
+
+
 def _resolve_yt_stream(url: str) -> str:
     """Resolve URL do YouTube para URL HLS direta. Bloqueia — chamar via executor."""
     try:
@@ -75,64 +111,44 @@ def _resolve_yt_stream(url: str) -> str:
     return get_stream_url(url)
 
 
-def _create_standby_image(path: Path) -> None:
-    """Gera standby.png com Pillow. Chamado uma vez na inicialização do daemon."""
-    if path.exists():
-        return
+def _render_standby_overlay(osd_w: int, osd_h: int) -> Optional[tuple]:
+    """Renderiza problemastecnicos.png em BGRA cover-fill para overlay-add."""
     try:
-        from PIL import Image, ImageDraw, ImageFont
+        from PIL import Image
+    except ImportError:
+        logger.warning("[standby] Pillow não instalado")
+        return None
 
-        W, H = 1280, 720
-        BG   = (13, 17, 23)       # quase-preto azulado
-        FG   = (226, 232, 240)    # branco suave
-        MUTED = (100, 116, 139)   # cinza
+    img_path = IMAGES_DIR / "problemastecnicos.png"
+    if not img_path.exists():
+        logger.warning("[standby] imagem não encontrada: %s", img_path)
+        return None
 
-        img  = Image.new("RGB", (W, H), color=BG)
-        draw = ImageDraw.Draw(img)
+    try:
+        src   = Image.open(str(img_path)).convert("RGBA")
+        ratio = max(osd_w / src.width, osd_h / src.height)
+        new_w = max(1, round(src.width  * ratio))
+        new_h = max(1, round(src.height * ratio))
+        src   = src.resize((new_w, new_h), Image.LANCZOS)
 
-        # Barra de topo
-        draw.rectangle([0, 0, W, 4], fill=(245, 158, 11))
-
-        # Tenta fontes do sistema (Windows → Linux)
-        font_big = font_small = None
-        for fp in [
-            r"C:\Windows\Fonts\segoeui.ttf",
-            r"C:\Windows\Fonts\arial.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-        ]:
-            if Path(fp).exists():
-                try:
-                    font_big   = ImageFont.truetype(fp, 72)
-                    font_small = ImageFont.truetype(fp, 28)
-                    break
-                except Exception:
-                    pass
-        if font_big is None:
-            font_big = font_small = ImageFont.load_default()
-
-        # Texto principal
-        title = "Problemas técnicos"
-        tb = draw.textbbox((0, 0), title, font=font_big)
-        tw, th = tb[2] - tb[0], tb[3] - tb[1]
-        draw.text(((W - tw) / 2, (H - th) / 2 - 30), title, fill=FG, font=font_big)
-
-        # Subtexto
-        sub = "Voltamos em instantes"
-        sb = draw.textbbox((0, 0), sub, font=font_small)
-        sw = sb[2] - sb[0]
-        draw.text(((W - sw) / 2, (H + th) / 2 + 4), sub, fill=MUTED, font=font_small)
-
-        # Rodapé com marca
-        brand = "PlayLine"
-        bb = draw.textbbox((0, 0), brand, font=font_small)
-        bw = bb[2] - bb[0]
-        draw.text(((W - bw) / 2, H - 48), brand, fill=(50, 60, 80), font=font_small)
-
-        img.save(str(path))
-        logger.info("Standby PNG criado: %s", path)
+        canvas = Image.new("RGBA", (osd_w, osd_h), (0, 0, 0, 255))
+        canvas.paste(src, ((osd_w - new_w) // 2, (osd_h - new_h) // 2))
     except Exception as exc:
-        logger.warning("Não foi possível criar standby.png: %s", exc)
+        logger.warning("[standby] falha ao carregar imagem: %s", exc)
+        return None
+
+    # RGBA -> BGRA pré-multiplicado via PIL (em C), não em loop Python por pixel:
+    # em 1920x1080 são ~2 milhões de iterações, o mesmo gargalo já removido de
+    # overlay.py/osd_text.py (dezenas de vezes mais rápido).
+    from PIL import ImageChops
+    r, g, b, a = canvas.split()
+    bgra = Image.merge("RGBA", (
+        ImageChops.multiply(b, a),
+        ImageChops.multiply(g, a),
+        ImageChops.multiply(r, a),
+        a,
+    ))
+    return bgra.tobytes(), osd_w, osd_h
 
 
 try:
@@ -152,6 +168,10 @@ class MPVDaemon:
         self._last_position  = 0.0
         self._checkpoint_dirty = False
         self._window_positioned = False  # move_to_tv() só roda uma vez por sessão MPV
+        self._has_secondary = False
+        self._core_idle_since: Optional[float] = None  # debounce do preview via screenshot do MPV
+        self._desktop_capture: Optional["preview_stream.DesktopCapture"] = None
+        self._preview_restart = asyncio.Event()  # sinaliza troca de estratégia de preview
         self._volume: float  = 100.0   # persiste entre reinits do MPV (100 = 0 dB)
         self._logo: dict = {
             1: {"corner": "br", "active": False, "filename": ""},
@@ -165,8 +185,22 @@ class MPVDaemon:
         self._yt_resolving: dict = {}   # {original_url: asyncio.Task} — resolução em andamento
         self._yt_appended: dict  = {}   # {original_url: (hls_url, monotonic_ts)} — appendado na fila MPV
         self._vu_task: Optional[asyncio.Task] = None
-        self._standby_path: Path = _DATA_DIR / "standby.png"
-        _create_standby_image(self._standby_path)
+        self._current_path: str = ""
+        # Fade para preto entre clipes (daemon/transition.py). O padrão global vem
+        # do config.json (o mesmo que o servidor grava); set_transition atualiza.
+        self._fader = transition.Fader(
+            lambda: self._mpv if (self._mpv is not None and not self._mpv_dead) else None,
+            user_volume=self._volume,
+        )
+        try:
+            try:
+                from core import settings as _settings
+            except ImportError:
+                from ..core import settings as _settings
+            self._fader.configure(_settings.get_transition())
+            logger.info("[transition] global: %s %.2fs", self._fader.config["type"], self._fader.duration)
+        except Exception as exc:
+            logger.warning("[transition] config não carregada (%s); usando corte seco", exc)
 
     # ── Medição de nível de áudio via Windows Core Audio ────────────────────
 
@@ -208,7 +242,6 @@ class MPVDaemon:
         self._has_secondary = has_secondary
 
         mpv_kwargs = dict(
-            ytdl=False,
             input_default_bindings=False,
             input_vo_keyboard=False,
             input_conf=str(_INPUT_CONF_PATH),
@@ -223,9 +256,13 @@ class MPVDaemon:
             prefetch_playlist=True,
             volume_max=200,             # permite até +6 dB (200 = +6 dB)
             image_display_duration=86400,  # standby.png exibido por 24h (efetivamente infinito)
-            network_timeout=10,         # encerra stream morta em até 10s sem dados
+            network_timeout=0,          # 0 = desabilitado; watchdog detecta streams mortas pelo position (STALL_SEC=90)
             hwdec="auto-safe",          # decodificação por GPU quando disponível, software como fallback
             osc=False,                  # desativa controles na tela ao passar o mouse
+            cache=True,                  # ativa cache para arquivos locais e de rede
+            demuxer_max_bytes="512MiB",  # buffer de leitura adiantada em RAM — absorve quedas de rede sem travar
+            demuxer_max_back_bytes="128MiB",  # buffer de retrocesso
+            demuxer_readahead_secs=30,   # tenta manter ~30s de conteúdo já baixado à frente, não só um teto em bytes
         )
 
         if has_secondary:
@@ -249,12 +286,23 @@ class MPVDaemon:
 
         self._mpv.observe_property("time-pos", self._on_time_pos)
         try:
+            self._mpv.observe_property("idle-active", self._on_idle_active)
+        except Exception as exc:
+            logger.warning("observe_property(idle-active) indisponível: %s", exc)
+        self._fader.rebind()
+        try:
             self._mpv.observe_property("osd-width", self._on_osd_resize)
         except Exception as exc:
             logger.warning("observe_property(osd-width) indisponível: %s", exc)
 
         @self._mpv.event_callback("file-loaded")
         def _file_loaded(event):
+            self._remove_standby_overlay()
+            try:
+                self._current_path = self._mpv.path or ""
+            except Exception:
+                pass
+            self._fader.on_file_loaded(self._current_path)
             if not self._window_positioned:
                 target = self._move_to_tv if self._has_secondary else self._send_to_back
                 threading.Thread(target=target, daemon=True).start()
@@ -287,6 +335,8 @@ class MPVDaemon:
             logger.info("end-file reason=%s", reason)
             if reason != "stop":
                 checkpoint.clear(CHECKPOINT_PATH)
+            if reason in ("eof", "error") and _is_stream_path(self._current_path):
+                threading.Thread(target=self._apply_standby_overlay, daemon=True).start()
             self._broadcast_sync({"event": "end-file", "reason": reason})
 
         @self._mpv.event_callback("shutdown")
@@ -308,6 +358,28 @@ class MPVDaemon:
         monitor.send_window_to_back("PlayLine")
         self._window_positioned = True
 
+    async def _monitor_watchdog_task(self):
+        """Detecta conexão/desconexão de monitor secundário após o daemon já estar
+        rodando (hoje a topologia só era lida uma vez, no início do processo MPV)."""
+        while True:
+            await asyncio.sleep(3)
+            try:
+                now_has_secondary = bool(monitor.get_secondary_monitor_rect())
+            except Exception:
+                continue
+            if now_has_secondary == self._has_secondary or self._mpv is None:
+                continue
+            self._has_secondary = now_has_secondary
+            if now_has_secondary:
+                logger.info("[monitor] monitor secundário conectado — reposicionando janela")
+                threading.Thread(target=self._move_to_tv, daemon=True).start()
+            else:
+                logger.info("[monitor] monitor secundário desconectado — janela para o fundo")
+                threading.Thread(target=self._send_to_back, daemon=True).start()
+            if self._desktop_capture:
+                await self._desktop_capture.stop()
+            self._preview_restart.set()
+
     def _mpv_log(self, level, component, message):
         logger.debug("[mpv/%s] %s", component, message.strip())
 
@@ -317,6 +389,24 @@ class MPVDaemon:
         if value is not None and not self._mpv_dead:
             self._last_position = float(value)
             self._checkpoint_dirty = True
+            self._fader.on_time_pos(self._last_position, self._mpv_duration)
+
+    def _on_idle_active(self, name, value):
+        if value and not self._mpv_dead:
+            self._fader.on_idle()
+
+    def _mpv_duration(self):
+        try:
+            return self._mpv.duration if (self._mpv and not self._mpv_dead) else None
+        except Exception:
+            return None
+
+    def _mpv_has_media(self) -> bool:
+        """True se há arquivo carregado e não ocioso: uma troca agora interrompe algo no ar."""
+        try:
+            return bool(self._mpv and not self._mpv_dead and self._mpv.path and not self._mpv.idle_active)
+        except Exception:
+            return False
 
     def _on_osd_resize(self, name, value):
         """Re-aplica overlays (com debounce) quando a janela MPV é redimensionada."""
@@ -368,6 +458,43 @@ class MPVDaemon:
         if cfg.get("active"):
             manual = cfg.get("manual_temp", "").strip()
             osd_text.apply(self._mpv, cfg, manual or None)
+
+    # ── Standby overlay (problemastecnicos.png) ───────────────────────────────
+
+    def _apply_standby_overlay(self):
+        if not self._mpv or self._mpv_dead:
+            return
+        try:
+            osd_w = int(self._mpv.osd_width  or self._mpv.width  or 1920)
+            osd_h = int(self._mpv.osd_height or self._mpv.height or 1080)
+        except Exception:
+            osd_w, osd_h = 1920, 1080
+        result = _render_standby_overlay(osd_w, osd_h)
+        if result is None:
+            return
+        bgra_bytes, w, h = result
+        tmp = Path(tempfile.gettempdir()) / "playline_standby.bgra"
+        try:
+            tmp.write_bytes(bgra_bytes)
+        except Exception as exc:
+            logger.error("[standby] erro ao gravar: %s", exc)
+            return
+        try:
+            self._mpv.command(
+                "overlay-add", STANDBY_SLOT, "0", "0",
+                str(tmp), "0", "bgra", str(w), str(h), str(w * 4),
+            )
+            logger.info("[standby] overlay aplicado (%dx%d)", w, h)
+        except Exception as exc:
+            logger.warning("[standby] overlay-add falhou: %s", exc)
+
+    def _remove_standby_overlay(self):
+        if not self._mpv or self._mpv_dead:
+            return
+        try:
+            self._mpv.command("overlay-remove", STANDBY_SLOT)
+        except Exception:
+            pass
 
     # ── Checkpoint ───────────────────────────────────────────────────────────
 
@@ -459,7 +586,7 @@ class MPVDaemon:
                         self._yt_cache.pop(original_path, None)
                         logger.info("force_resolve: cache limpo para %s", original_path)
                     cached = self._yt_cache.get(original_path)
-                    if cached and (time.monotonic() - cached[1]) < 14400:
+                    if cached and (time.monotonic() - cached[1]) < 3600 and _yt_url_fresh(cached[0]):
                         path = cached[0]
                         logger.info("YouTube URL resolvida via cache: %s", original_path)
                     elif original_path in self._yt_resolving:
@@ -498,6 +625,16 @@ class MPVDaemon:
                             self._stop_vu()
                             self._vu_task = asyncio.ensure_future(self._audio_level_task())
                             return
+                # Transição de entrada deste item: override por clipe ou global.
+                # Reconexão de live (force_resolve): sem fade, já está preto/standby.
+                incoming_fade = self._fader.resolve(cmd.get("transition")) and not cmd.get("force_resolve")
+                if incoming_fade and self._mpv_has_media():
+                    await asyncio.get_running_loop().run_in_executor(None, self._fader.fade_out_blocking)
+                elif not incoming_fade:
+                    self._fader.cancel_and_clear()   # corte seco: nenhum preto sobrando
+                self._fader.on_play(original_path,
+                                    end_time if not _is_youtube_url(original_path) else None,
+                                    incoming_fade)
                 opts_parts = []
                 if not _is_youtube_url(original_path):
                     if start_time: opts_parts.append(f"start={start_time}")
@@ -508,22 +645,19 @@ class MPVDaemon:
                     self._mpv.command("loadfile", path, "replace")
                 self._mpv.pause = False
                 self._write_checkpoint(original_path)
-                logger.info("play: %s%s", original_path,
-                            f" [trim {start_time}–{end_time}]" if opts_parts else "")
+                live_tag = " [live]" if cmd.get("live") else ""
+                logger.info("play: %s%s%s", original_path,
+                            f" [trim {start_time}–{end_time}]" if opts_parts else "", live_tag)
                 self._stop_vu()
-                if _is_youtube_url(original_path):
-                    self._vu_task = asyncio.ensure_future(self._audio_level_task())
+                # Sempre pelo medidor real do Windows Core Audio, não só pra YouTube --
+                # evita depender do <video> local do navegador (autoplay/mute do
+                # navegador bloqueiam a leitura via Web Audio API em vários cenários,
+                # ex.: restaurar o clipe atual ao reabrir só a interface no PyWebView).
+                self._vu_task = asyncio.ensure_future(self._audio_level_task())
 
         elif action == "play_standby":
-            if self._mpv and not self._mpv_dead:
-                sp = str(self._standby_path)
-                if self._standby_path.exists():
-                    self._mpv.command("loadfile", sp, "replace")
-                    self._mpv.pause = False
-                    self._stop_vu()
-                    logger.info("Standby ativado: %s", sp)
-                else:
-                    logger.warning("play_standby: arquivo não encontrado (%s)", sp)
+            threading.Thread(target=self._apply_standby_overlay, daemon=True).start()
+            logger.info("[standby] overlay ativado via play_standby")
 
         elif action == "preload":
             path = cmd.get("path", "")
@@ -534,12 +668,12 @@ class MPVDaemon:
         elif action == "prefetch_yt":
             url = cmd.get("path", "")
             if url and _is_youtube_url(url):
-                cached = self._yt_cache.get(url)
-                already_fresh = cached and (time.monotonic() - cached[1]) < 14400
-                if not already_fresh and url not in self._yt_resolving:
+                if url in self._yt_resolving or url in self._yt_cache:
+                    logger.debug("prefetch_yt ignorado (já em cache ou resolvendo): %s", url)
+                else:
                     task = asyncio.ensure_future(self._prefetch_yt_bg(url))
                     self._yt_resolving[url] = task
-                    logger.info("prefetch_yt solicitado: %s", url)
+                    logger.info("prefetch_yt background: %s", url)
 
         elif action == "init_mpv":
             if self._mpv_dead or self._mpv is None:
@@ -567,6 +701,7 @@ class MPVDaemon:
         elif action == "pause":
             if self._mpv and not self._mpv_dead:
                 self._mpv.pause = True
+                self._fader.cancel_and_clear()   # não congela no meio de um fade
 
         elif action == "resume":
             if self._mpv and not self._mpv_dead:
@@ -574,6 +709,8 @@ class MPVDaemon:
 
         elif action == "stop":
             if self._mpv and not self._mpv_dead:
+                if self._fader.is_fade_global() and self._mpv_has_media():
+                    await asyncio.get_running_loop().run_in_executor(None, self._fader.fade_out_blocking)
                 self._stop_vu()
                 self._mpv.command("stop")
                 for slot in (1, 2, 3):
@@ -587,6 +724,7 @@ class MPVDaemon:
             if self._mpv and not self._mpv_dead:
                 try:
                     self._mpv.seek(cmd.get("seconds", 0.0), cmd.get("mode", "absolute"))
+                    self._fader.cancel_and_clear()
                 except Exception as exc:
                     logger.warning("seek: %s", exc)
 
@@ -616,7 +754,9 @@ class MPVDaemon:
                     if f:
                         self._logo[s]["filename"] = f
                     logger.info("[set_logo] estado: %s", self._logo)
+                    state = {str(k): dict(v) for k, v in self._logo.items()}
                 self._apply_overlay()
+                self._broadcast_sync({"event": "logo_state", "state": state})
 
             threading.Thread(target=_update, daemon=True).start()
 
@@ -625,10 +765,22 @@ class MPVDaemon:
             self._volume = float(vol)   # persiste para reaplicar no reinit
             if self._mpv and not self._mpv_dead:
                 try:
-                    self._mpv.volume = self._volume
+                    # Passa pelo fader: no meio de um fade (ou no preto) o ganho atual é mantido
+                    self._fader.set_user_volume(self._volume)
                     logger.debug("volume → %.1f (%.1f dB)", vol, 20 * __import__("math").log10(max(vol, 0.001) / 100))
                 except Exception as exc:
                     logger.warning("set_volume: %s", exc)
+
+        elif action == "set_transition":
+            try:
+                cfg = self._fader.configure({k: cmd[k] for k in ("type", "duration") if k in cmd})
+                logger.info("[transition] global: %s %.2fs", cfg["type"], cfg["duration"])
+            except (ValueError, TypeError) as exc:
+                logger.warning("[transition] set_transition inválido: %s", exc)
+
+        elif action == "next_transition":
+            # Override do próximo item ("fade"/"cut"/None): decide o fade out automático desta fronteira
+            self._fader.set_next_boundary(cmd.get("transition"))
 
         elif action == "set_text_overlay":
             cfg = {
@@ -644,6 +796,8 @@ class MPVDaemon:
             self._save_text_overlay()
             if not cfg["active"] and self._mpv and not self._mpv_dead:
                 osd_text.remove(self._mpv)
+            elif cfg["active"] and self._mpv and not self._mpv_dead:
+                threading.Thread(target=self._apply_text_overlay_delayed, daemon=True).start()
             self._broadcast_sync({"event": "text_overlay_state", **cfg})
 
         elif action == "get_text_overlay":
@@ -656,9 +810,20 @@ class MPVDaemon:
             except Exception:
                 pass
 
+        elif action == "get_logo_state":
+            with self._logo_lock:
+                state = {str(k): dict(v) for k, v in self._logo.items()}
+            resp = {"event": "logo_state", "state": state}
+            try:
+                writer.write((json.dumps(resp) + "\n").encode())
+                await writer.drain()
+            except Exception:
+                pass
+
         elif action == "get_state":
             playing_path = None
             paused       = False
+            mpv_volume   = None
             if self._mpv and not self._mpv_dead:
                 try:
                     playing_path = self._mpv.path
@@ -668,11 +833,19 @@ class MPVDaemon:
                     paused = bool(self._mpv.pause)
                 except Exception:
                     pass
+                try:
+                    mpv_volume = float(self._mpv.volume)
+                except Exception:
+                    pass
             resp = {
                 "event":        "state_response",
                 "playing_path": playing_path,
                 "position":     self._last_position,
                 "paused":       paused,
+                "transition":   dict(self._fader.config),
+                # diagnóstico do fade: 0 = tela normal, 1 = preto; volume real aplicado no MPV
+                "fade_alpha":   round(self._fader.alpha, 3),
+                "mpv_volume":   mpv_volume,
             }
             try:
                 writer.write((json.dumps(resp) + "\n").encode())
@@ -730,6 +903,11 @@ class MPVDaemon:
             elapsed = time.monotonic() - t0
             self._yt_cache[url] = (resolved, time.monotonic())
             logger.info("YouTube URL pré-resolvida em %.2fs: %s", elapsed, url)
+            # Appenda na fila do MPV pra pré-bufferizar em segundo plano enquanto
+            # o clipe atual ainda toca -- com prefetch_playlist=True, o MPV já
+            # deixa a próxima entrada pronta, e a troca fica tão instantânea
+            # quanto entre dois clipes locais (medido: ~16ms vs ~3s do loadfile
+            # a frio). _try_append_hls() já tem a guarda contra live→live.
             self._try_append_hls(url, resolved)
             return resolved
         except Exception as exc:
@@ -749,24 +927,27 @@ class MPVDaemon:
 
     async def _text_overlay_task(self):
         while True:
-            await asyncio.sleep(1)
-            if self._mpv_dead or self._mpv is None:
-                continue
-            with self._text_overlay_lock:
-                cfg = dict(self._text_overlay)
-            if not cfg.get("active"):
-                continue
-            temp = None
-            if cfg.get("show_temp"):
-                manual = cfg.get("manual_temp", "").strip()
-                if manual:
-                    temp = manual
-                else:
-                    try:
-                        temp = await weather.get_temperature(cfg.get("city", "Palmas,TO"))
-                    except Exception:
-                        pass
-            osd_text.apply(self._mpv, cfg, temp)
+            try:
+                await asyncio.sleep(1)
+                if self._mpv_dead or self._mpv is None:
+                    continue
+                with self._text_overlay_lock:
+                    cfg = dict(self._text_overlay)
+                if not cfg.get("active"):
+                    continue
+                temp = None
+                if cfg.get("show_temp"):
+                    manual = cfg.get("manual_temp", "").strip()
+                    if manual:
+                        temp = manual
+                    else:
+                        try:
+                            temp = await weather.get_temperature(cfg.get("city", "Palmas,TO"))
+                        except Exception:
+                            pass
+                osd_text.apply(self._mpv, cfg, temp)
+            except Exception as exc:
+                logger.error("[text_overlay_task] erro não capturado: %s", exc)
 
     async def _position_task(self):
         while True:
@@ -779,19 +960,95 @@ class MPVDaemon:
                 except Exception:
                     pass
 
+    _DDAGRAB_RETRY_SEC = 15  # com monitor secundário ainda conectado, retenta ddagrab depois desse tempo em fallback
+
     async def _preview_task(self):
-        """Captura frames MPV a ~10 fps e distribui para clientes TCP conectados."""
-        import base64
-        loop = asyncio.get_event_loop()
+        """Distribui frames de preview para clientes conectados.
+
+        Com monitor secundário: captura contínua via ffmpeg/ddagrab (Desktop
+        Duplication API), isolada do IPC do MPV — mais robusta em sessões
+        longas que repetir screenshot-to-file a cada frame. Sem monitor
+        secundário (janela do MPV fica atrás de tudo o resto na tela
+        principal): usa o screenshot interno do MPV, já que não há uma saída
+        de vídeo isolada para capturar.
+
+        Reavalia a estratégia sempre que `_monitor_watchdog_task` sinaliza
+        `_preview_restart` (monitor secundário conectado/desconectado em tempo real).
+
+        Uma falha do ddagrab que NÃO veio de desconexão de monitor (ex.: DXGI
+        access-lost transitório, ffmpeg travado) não deve degradar a sessão pro
+        fallback pra sempre — por isso o fallback aqui roda por tempo limitado
+        e volta a tentar ddagrab periodicamente enquanto o monitor secundário
+        continuar conectado.
+        """
         while True:
+            self._preview_restart.clear()
+            if self._has_secondary:
+                capture = preview_stream.DesktopCapture()
+                self._desktop_capture = capture
+                if await capture.start():
+                    await self._preview_task_ddagrab(capture)
+                else:
+                    logger.warning("[preview] ddagrab indisponível — usando screenshot do MPV")
+                self._desktop_capture = None
+                if self._preview_restart.is_set():
+                    continue
+                logger.warning(
+                    "[preview] captura via ddagrab encerrou — screenshot do MPV por %ds, depois tenta ddagrab de novo",
+                    self._DDAGRAB_RETRY_SEC,
+                )
+                await self._preview_task_mpv_screenshot(max_duration=self._DDAGRAB_RETRY_SEC)
+                if not self._preview_restart.is_set():
+                    await asyncio.sleep(1)  # evita loop apertado se a captura sair por engano
+                continue
+            await self._preview_task_mpv_screenshot()
+            if not self._preview_restart.is_set():
+                await asyncio.sleep(1)  # evita loop apertado se a captura sair por engano
+
+    async def _preview_task_ddagrab(self, capture: "preview_stream.DesktopCapture"):
+        try:
+            async for jpeg in capture.frames():
+                if self._clients:
+                    b64 = base64.b64encode(jpeg).decode("ascii")
+                    await self._broadcast({"event": "preview_frame", "data": b64})
+        except Exception as exc:
+            logger.warning("[preview] captura via ddagrab falhou em execução: %s", exc)
+        finally:
+            await capture.stop()
+
+    _CORE_IDLE_GRACE = 0.4  # s — tolera blips de core_idle durante troca de clipe sem cortar o preview
+
+    async def _preview_task_mpv_screenshot(self, max_duration: Optional[float] = None):
+        """Captura frames via screenshot interno do MPV a ~10 fps.
+
+        `max_duration`, quando informado, encerra a função após esse tempo mesmo
+        sem `_preview_restart` — usado pelo fallback pós-falha do ddagrab pra
+        devolver o controle a `_preview_task` e retentar ddagrab periodicamente,
+        em vez de ficar preso neste modo pelo resto da sessão.
+        """
+        loop = asyncio.get_event_loop()
+        deadline = (time.monotonic() + max_duration) if max_duration else None
+        while not self._preview_restart.is_set():
+            if deadline is not None and time.monotonic() >= deadline:
+                return
             await asyncio.sleep(0.05)   # alvo 20 fps (limitado pelo tempo de captura)
             if self._mpv_dead or self._mpv is None or not self._clients:
                 continue
             try:
-                if self._mpv.path is None:
-                    continue
+                idle = self._mpv.core_idle
             except Exception:
                 continue
+            if idle:
+                # core_idle oscila por ~0.5s a cada troca de clipe (fim do decode antigo
+                # até o novo assumir) — só trata como parado de verdade após a graça,
+                # senão o preview "pisca" sem sinal a cada avanço do roteiro.
+                now = time.monotonic()
+                if self._core_idle_since is None:
+                    self._core_idle_since = now
+                if now - self._core_idle_since > self._CORE_IDLE_GRACE:
+                    continue
+            else:
+                self._core_idle_since = None
             mpv_ref = self._mpv
             jpeg = await loop.run_in_executor(None, preview.capture_jpeg, mpv_ref)
             if jpeg and self._clients:
@@ -807,6 +1064,7 @@ class MPVDaemon:
         asyncio.create_task(self._position_task())
         asyncio.create_task(self._text_overlay_task())
         asyncio.create_task(self._preview_task())
+        asyncio.create_task(self._monitor_watchdog_task())
         async with server:
             await server.serve_forever()
 

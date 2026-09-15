@@ -6,7 +6,7 @@
 
 .schedule-card {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0; left: 0; right: 268px; bottom: 0;
   display: flex;
   flex-direction: column;
   margin: 0;
@@ -15,6 +15,7 @@
 
 .schedule-card .schedule-header {
   margin-bottom: 6px;
+  padding-right: 8px;
 }
 
 /* ── Ações do roteiro ── */
@@ -93,6 +94,7 @@
   overflow-y: auto;
   min-height: 0;
   gap: 4px;
+  padding-right: 8px;
   position: relative;
 }
 
@@ -117,6 +119,40 @@
   border-radius: 50%;
   background: var(--accent);
 }
+
+/* ── Preview de dispositivo de captura ── */
+#capture-preview-modal {
+  position: fixed;
+  z-index: 600;
+  width: 360px;
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 36px rgba(0,0,0,.75);
+}
+
+#capture-preview-video {
+  display: block;
+  width: 360px;
+  height: 203px;
+  background: #050a10;
+  object-fit: cover;
+}
+
+#capture-preview-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity .12s;
+}
+#capture-preview-close:hover { opacity: 1; }
 
 /* ── Preview de live do YouTube ── */
 #yt-preview-modal {
@@ -179,7 +215,7 @@
 /* ── Item do roteiro ── */
 .schedule-item {
   display: grid;
-  grid-template-columns: 18px 20px 50px 1fr 152px 56px;
+  grid-template-columns: 18px 20px 50px 1fr 58px 152px 56px;
   gap: 5px;
   align-items: center;
   padding: 3px 6px;
@@ -222,6 +258,24 @@
   border-radius: 4px;
   padding: 2px 7px;
   letter-spacing: 0.02em;
+}
+
+#sch-loop-indicator {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #f0b429;
+  background: rgba(240, 180, 41, 0.1);
+  border: 1px solid rgba(240, 180, 41, 0.35);
+  border-radius: 4px;
+  padding: 2px 7px;
+  letter-spacing: 0.02em;
+}
+
+.sch-menu-item.loop-active {
+  color: #f0b429;
 }
 
 .yt-live-dur { color: #dc2626; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
@@ -308,6 +362,35 @@
   min-width: 68px;
   justify-content: flex-end;
 }
+
+/* Categoria: 3 primeiras letras da pasta da biblioteca em que o clipe está */
+.sch-col-cat-header {
+  width: 58px;   /* coluna mais larga que o badge (40px) para ele ficar afastado de "Entrada" */
+  font-size: 8px;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.07em;
+  opacity: 0.6;
+  text-align: left;
+  flex-shrink: 0;
+}
+.item-cat {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  justify-self: start;
+  width: 40px;
+  padding: 2px 0;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: transparent;
+  white-space: nowrap;
+}
+.item-cat:empty { border-color: transparent; }
 
 .sch-col-time-header {
   display: flex;
@@ -714,6 +797,46 @@
 
 /* ── Indicador de trim no item ── */
 .item-dur.trim-active { color: var(--warning); }
+
+/* ── Transição entre clipes ── */
+/* botão global no cabeçalho do roteiro: mostra a opção atual, clique alterna */
+.sch-transition-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  transition: color .15s, background .15s, border-color .15s;
+}
+.sch-transition-btn:hover { color: var(--text); border-color: var(--muted); }
+.sch-transition-btn[data-type="fade"] {
+  color: var(--accent);
+  background: rgba(79, 142, 247, .1);
+  border-color: rgba(79, 142, 247, .35);
+}
+/* override por clipe: tag ao lado do título */
+.item-title-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.item-title-row .item-title { flex: 1 1 auto; }
+.item-transition-tag {
+  flex: 0 0 auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.item-transition-tag.fade { color: var(--accent); border-color: rgba(79, 142, 247, .4); }
+#gd-transition b { font-weight: 600; margin-left: auto; padding-left: 10px; color: var(--muted); }
+#gd-transition.active b { color: var(--accent); }
 
 /* ── Popup de recorte de clipe ── */
 .ct-popup {

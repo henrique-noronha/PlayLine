@@ -79,6 +79,7 @@ function updateScheduleSelectionUI() {
       <div class="sch-menu-item" id="sch-menu-duplicate"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Duplicar roteiro</div>
       <div class="sch-menu-item" id="sch-menu-save"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Salvar roteiro</div>
       <div class="sch-menu-item" id="sch-menu-load"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>Roteiros salvos</div>
+      <div class="sch-menu-item" id="sch-menu-loop"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repetir roteiro</div>
       <div class="sch-menu-separator"></div>
       <div class="sch-menu-item" id="sch-menu-clear"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Limpar roteiro</div>
     `;
@@ -117,6 +118,29 @@ function updateScheduleSelectionUI() {
     document.getElementById("sch-menu-load").addEventListener("click", () => {
       dropdown.classList.remove("open");
       openSavedSchedsModal();
+    });
+
+    document.getElementById("sch-menu-loop").addEventListener("click", () => {
+      dropdown.classList.remove("open");
+      if (state.repeat) {
+        showConfirm("Desativar o loop? O roteiro continuará normalmente a partir do clipe atual.", () => {
+          state.repeat = false;
+          fetch("/api/repeat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ enabled: false }),
+          });
+          updateLoopIndicator();
+        });
+      } else {
+        state.repeat = true;
+        fetch("/api/repeat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ enabled: true }),
+        });
+        updateLoopIndicator();
+      }
     });
 
     document.getElementById("sch-menu-clear").addEventListener("click", () => {
@@ -180,6 +204,19 @@ const _YT_LIVE_THUMB = 'data:image/svg+xml,' + encodeURIComponent(
   '<rect x="16" y="16" width="80" height="31" rx="4" fill="#dc2626"/>' +
   '<text x="56" y="37" font-family="Arial,sans-serif" font-size="11" font-weight="bold" ' +
   'fill="white" text-anchor="middle">&#9679; LIVE</text>' +
+  '</svg>'
+);
+
+// Placeholder SVG para dispositivos de captura (webcam, placa de captura)
+const _CAPTURE_THUMB = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="112" height="63" viewBox="0 0 112 63">' +
+  '<rect width="112" height="63" fill="#0c1116"/>' +
+  '<rect x="18" y="12" width="76" height="44" rx="5" fill="#111827" stroke="#1e3a4a" stroke-width="1.5"/>' +
+  '<circle cx="56" cy="34" r="13" fill="none" stroke="#1e3a4a" stroke-width="2"/>' +
+  '<circle cx="56" cy="34" r="8" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity=".7"/>' +
+  '<circle cx="56" cy="34" r="3" fill="#22d3ee" opacity=".9"/>' +
+  '<rect x="32" y="16" width="14" height="8" rx="2" fill="#1e3a4a"/>' +
+  '<text x="56" y="59" font-family="Arial,sans-serif" font-size="7" fill="#22d3ee" opacity=".7" text-anchor="middle" letter-spacing=".5">CAPTURE</text>' +
   '</svg>'
 );
 
@@ -349,7 +386,15 @@ function calcStartTimes() {
   return times;
 }
 
+function updateLoopIndicator() {
+  const indicator = document.getElementById("sch-loop-indicator");
+  if (indicator) indicator.style.display = state.repeat ? "inline-flex" : "none";
+  const menuItem = document.getElementById("sch-menu-loop");
+  if (menuItem) menuItem.classList.toggle("loop-active", !!state.repeat);
+}
+
 function calcRemaining() {
+  if (state.repeat) return Infinity;
   if (!state.playing || state.currentIndex < 0) return 0;
   // Live stream em reprodução: sem como saber o tempo restante
   const currentItem = state.schedule[state.currentIndex];
@@ -362,6 +407,17 @@ function calcRemaining() {
   const pausedMs = (state.totalPausedMs || 0) + (state.pausedAt ? Date.now() - state.pausedAt : 0);
   const elapsed = Math.max(0, (Date.now() - state.currentItemStartTime - pausedMs) / 1000);
   return Math.max(0, total - elapsed);
+}
+
+function calcClipRemaining() {
+  if (!state.playing || state.currentIndex < 0) return 0;
+  const currentItem = state.schedule[state.currentIndex];
+  if (!currentItem || currentItem.live) return 0;
+  const dur = effectiveDuration(currentItem);
+  if (!state.currentItemStartTime) return dur;
+  const pausedMs = (state.totalPausedMs || 0) + (state.pausedAt ? Date.now() - state.pausedAt : 0);
+  const elapsed = Math.max(0, (Date.now() - state.currentItemStartTime - pausedMs) / 1000);
+  return Math.max(0, dur - elapsed);
 }
 
 function updateStartTimes() {
@@ -378,7 +434,11 @@ function updateStartTimes() {
 
   const secs = calcRemaining();
   const rem = document.getElementById("remaining-time");
-  if (rem) rem.textContent = secs > 0 ? fmt(secs) : "—";
+  if (rem) rem.textContent = secs === Infinity ? "∞" : (secs > 0 ? fmt(secs) : "—");
+
+  const clipSecs = calcClipRemaining();
+  const clipRem = document.getElementById("clip-remaining-time");
+  if (clipRem) clipRem.textContent = clipSecs > 0 ? fmt(clipSecs) : "—";
 
   const nextEl = document.getElementById("next-clip-time");
   if (nextEl) {
@@ -457,6 +517,7 @@ function renderSchedule() {
     list.appendChild(empty);
     initDnD(list);
     _refreshLibSchedBadges();
+    if (typeof window._onScheduleChangedForInputQuadrant === "function") window._onScheduleChangedForInputQuadrant();
     return;
   }
 
@@ -481,9 +542,10 @@ function renderSchedule() {
       <div class="item-index">${i + 1}</div>
       <img class="item-thumb" draggable="false" alt="" />
       <div class="item-meta">
-        <span class="item-title" title="${esc(displayTitle)}">${esc(displayTitle)}</span>
+        <span class="item-title-row"><span class="item-title" title="${esc(displayTitle)}">${esc(displayTitle)}</span>${_transitionTagHtml(item)}</span>
         <input class="item-path"  value="${esc(item.path)}"   placeholder="Caminho do arquivo" data-field="path" data-idx="${i}" />
       </div>
+      ${_clipCategoryHtml(item)}
       <div class="item-time">
         <span class="item-start" data-idx="${i}">${fmtTime(startTimes[i])}</span>
         <span class="item-dur${item.live ? ' yt-live-dur' : ''}${hasTrim(item) ? ' trim-active' : ''}" data-idx="${i}">${item.live ? 'ao vivo' : (item.duration > 0 ? (hasTrim(item) ? ('✂ ' + fmt(effectiveDuration(item))) : fmt(item.duration)) : '—')}</span>
@@ -501,12 +563,17 @@ function renderSchedule() {
     if (item.path) {
       const imgEl = row.querySelector(".item-thumb");
       if (item.live) {
-        imgEl.src = _YT_LIVE_THUMB;
+        const isCapture = item.type === "capture";
+        imgEl.src = isCapture ? _CAPTURE_THUMB : _YT_LIVE_THUMB;
         imgEl.style.cursor = "pointer";
-        imgEl.title = "Clique para visualizar a live";
+        imgEl.title = isCapture ? "Clique para prévisualizar o dispositivo" : "Clique para visualizar a live";
         imgEl.addEventListener("click", e => {
           e.stopPropagation();
-          if (typeof openYtPreview === "function") openYtPreview(item.path, imgEl);
+          if (isCapture) {
+            if (typeof openCapturePreview === "function") openCapturePreview(item.path, imgEl);
+          } else {
+            if (typeof openYtPreview === "function") openYtPreview(item.path, imgEl);
+          }
         });
       } else if (item.type === "youtube_live") {
         imgEl.src = _YT_THUMB;
@@ -620,6 +687,7 @@ function renderSchedule() {
   updateScheduleSelectionUI();
   _refreshLibSchedBadges();
   _updateErrorCount();
+  if (typeof window._onScheduleChangedForInputQuadrant === "function") window._onScheduleChangedForInputQuadrant();
 }
 
 function _updateErrorCount() {
@@ -858,10 +926,98 @@ function openClipOverlayPanel(item, idx, anchorEl) {
   let left = rect.left - W - 6;
   let top  = rect.top;
   if (left < 4) left = rect.right + 6;
-  if (top + H > window.innerHeight - 8) top = window.innerHeight - H - 8;
+  // Se não couber abaixo, ancora pela base do botão (abre pra cima) em vez de
+  // pular pro rodapé da tela — fica colado no clique, não solto longe dele.
+  if (top + H > window.innerHeight - 8) top = rect.bottom - H;
   if (top < 4) top = 4;
   el.style.left = left + "px";
   el.style.top  = top  + "px";
+}
+
+// ── Categoria do clipe (pasta da biblioteca) ─────────────────────────────────
+// Derivada do caminho, sem estado no servidor: 3 primeiras letras da pasta em
+// que o arquivo está (Comerciais -> COM, Documentários -> DOC). Arquivo na raiz
+// da biblioteca fica sem categoria; YouTube -> YT; dispositivo de captura -> CAM.
+
+function _normPath(p) {
+  return String(p || "").replace(/\//g, "\\").replace(/\\+$/, "").toLowerCase();
+}
+
+function _clipCategory(item) {
+  if (item.type === "capture") return { code: "CAM", name: "Dispositivo de captura" };
+  if (item.type === "youtube_live") return { code: "YT", name: "YouTube" };
+  const p = String(item.path || "");
+  if (!p || /^(https?:|av:)/i.test(p)) return null;
+  const sep = Math.max(p.lastIndexOf("\\"), p.lastIndexOf("/"));
+  if (sep <= 0) return null;
+  const dir = p.slice(0, sep);
+  const base = window._libraryBase || "";
+  if (base && _normPath(dir) === _normPath(base)) return null;   // raiz da biblioteca
+  const folder = dir.slice(Math.max(dir.lastIndexOf("\\"), dir.lastIndexOf("/")) + 1);
+  if (!folder || /^[A-Za-z]:$/.test(folder)) return null;
+  const code = folder.normalize("NFD").replace(/\p{M}/gu, "").replace(/[^A-Za-z0-9]/g, "")
+    .slice(0, 3).toUpperCase();
+  return code ? { code, name: folder } : null;
+}
+
+// Cor estável por pasta (hash do nome), só para distinguir categorias no roteiro
+function _catHue(name) {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return h % 360;
+}
+
+function _clipCategoryHtml(item) {
+  const cat = _clipCategory(item);
+  if (!cat) return '<span class="item-cat"></span>';
+  const hue = _catHue(cat.name);
+  const style = `color:hsl(${hue} 70% 70%);border-color:hsl(${hue} 55% 45% / .55);background:hsl(${hue} 60% 50% / .12)`;
+  return `<span class="item-cat" style="${style}" title="Pasta: ${esc(cat.name)}">${esc(cat.code)}</span>`;
+}
+
+// ── Transição entre clipes ───────────────────────────────────────────────────
+// Global: botão no cabeçalho do roteiro (state.transition, vindo do servidor).
+// Por clipe: item.transition = "fade" | "cut" | ausente (segue o global).
+
+// Nomenclatura de switcher/automação de broadcast: CUT = corte seco, FTB = fade to black
+const _TRANSITION_LABELS = { cut: "CUT", fade: "FTB" };
+const _TRANSITION_ITEM_LABELS = { fade: "FTB", cut: "CUT" };
+
+function updateTransitionButton() {
+  const btn = document.getElementById("btn-transition");
+  if (!btn) return;
+  const t = state.transition || { type: "cut", duration: 0.5 };
+  btn.dataset.type = t.type;
+  btn.textContent = _TRANSITION_LABELS[t.type] || t.type;
+  btn.title = t.type === "fade"
+    ? `Transição: FTB, fade to black (${t.duration}s). Clique para voltar ao CUT.`
+    : "Transição: CUT, corte seco. Clique para usar FTB (fade to black).";
+}
+
+document.getElementById("btn-transition")?.addEventListener("click", () => {
+  const cur = state.transition?.type || "cut";
+  send({ action: "set_transition", type: cur === "fade" ? "cut" : "fade" });
+});
+
+function _transitionTagHtml(item) {
+  const t = item.transition;
+  if (t !== "fade" && t !== "cut") return "";
+  return `<span class="item-transition-tag ${t}" title="Transição de entrada deste clipe">${_TRANSITION_ITEM_LABELS[t]}</span>`;
+}
+
+function _markRowTransition(idx, value) {
+  const row = document.querySelector(`.schedule-item[data-index="${idx}"] .item-title-row`);
+  if (!row) return;
+  row.querySelector(".item-transition-tag")?.remove();
+  if (value) row.insertAdjacentHTML("beforeend", _transitionTagHtml({ transition: value }));
+}
+
+function _gdSetTransitionLabel(item) {
+  if (!_gd) return;
+  const t = item?.transition;
+  const has = t === "fade" || t === "cut";
+  _gd.querySelector("#gd-transition-val").textContent = has ? _TRANSITION_ITEM_LABELS[t] : "Padrão";
+  _gd.querySelector("#gd-transition").classList.toggle("active", has);
 }
 
 // ── Gear menu (dropdown do botão ⚙) ──────────────────────────────────────────
@@ -882,6 +1038,7 @@ function _getOrCreateGd() {
   el.style.display = "none";
   el.innerHTML = `
     <div class="gear-item" id="gd-overlays">⊡ Automação de overlays</div>
+    <div class="gear-item" id="gd-transition" title="Transição de entrada deste clipe: Padrão (segue o botão do roteiro), FTB (fade to black) ou CUT (corte seco). Clique para alternar.">◐ Transição<b id="gd-transition-val">Padrão</b></div>
     <div class="gear-sep"></div>
     <div class="gear-item" id="gd-trim">✂ Recorte de clipe</div>
   `;
@@ -894,6 +1051,17 @@ function _getOrCreateGd() {
     const item = _gdItem, idx = _gdIdx, anchor = _gdAnchor;
     _closeGd();
     if (idx !== null) openClipOverlayPanel(item, idx, anchor);
+  });
+  el.querySelector("#gd-transition").addEventListener("click", () => {
+    const item = _gdItem, idx = _gdIdx;
+    if (!item || idx === null) return;
+    // Padrão (segue o botão do cabeçalho) → FTB → CUT → Padrão
+    const order = [null, "fade", "cut"];
+    const next = order[(order.indexOf(item.transition || null) + 1) % order.length];
+    if (next) item.transition = next; else delete item.transition;
+    _gdSetTransitionLabel(item);
+    _markRowTransition(idx, item.transition || null);
+    syncOrderToServer();
   });
   el.querySelector("#gd-trim").addEventListener("click", () => {
     if (el.querySelector("#gd-trim").classList.contains("disabled")) return;
@@ -908,6 +1076,7 @@ function openGearMenu(item, idx, anchorEl) {
   const el = _getOrCreateGd();
   _gdItem = item; _gdIdx = idx; _gdAnchor = anchorEl;
   el.querySelector("#gd-overlays").classList.toggle("active", !!item.clip_overlays);
+  _gdSetTransitionLabel(item);
   el.querySelector("#gd-trim").classList.toggle("active", hasTrim(item));
   el.querySelector("#gd-trim").classList.toggle("disabled", !!item.live);
   el.style.display = "block";
@@ -915,7 +1084,9 @@ function openGearMenu(item, idx, anchorEl) {
   const rect = anchorEl.getBoundingClientRect();
   let left = rect.left - W - 6, top = rect.top;
   if (left < 4) left = rect.right + 6;
-  if (top + H > window.innerHeight - 8) top = window.innerHeight - H - 8;
+  // Se não couber abaixo, ancora pela base do botão (abre pra cima) em vez de
+  // pular pro rodapé da tela — fica colado no clique, não solto longe dele.
+  if (top + H > window.innerHeight - 8) top = rect.bottom - H;
   if (top < 4) top = 4;
   el.style.left = left + "px";
   el.style.top  = top  + "px";
@@ -1084,7 +1255,9 @@ function openClipTrimPanel(item, idx, anchorEl) {
   const rect = anchorEl.getBoundingClientRect();
   let left = rect.left - W - 6, top = rect.top;
   if (left < 4) left = rect.right + 6;
-  if (top + H > window.innerHeight - 8) top = window.innerHeight - H - 8;
+  // Se não couber abaixo, ancora pela base do botão (abre pra cima) em vez de
+  // pular pro rodapé da tela — fica colado no clique, não solto longe dele.
+  if (top + H > window.innerHeight - 8) top = rect.bottom - H;
   if (top < 4) top = 4;
   el.style.left = left + "px";
   el.style.top  = top  + "px";

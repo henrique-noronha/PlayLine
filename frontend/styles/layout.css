@@ -48,26 +48,31 @@ header {
   50%       { opacity: .4; }
 }
 
-/* ── Grid principal ── */
+/* ── Grid principal ──
+   flex:1 + min-height:0 fazem o grid preencher exatamente o espaço que sobra
+   abaixo do header, em qualquer altura de tela/zoom — sem isso, os cards
+   ficam com altura "natural" e sobra espaço em branco embaixo em telas maiores. */
 main {
   display: grid;
   grid-template-columns: clamp(380px, 26%, 520px) 1fr;
-  gap: 16px;
-  padding: 20px clamp(16px, 2vw, 40px);
+  gap: 8px;
+  padding: 8px clamp(16px, 2vw, 40px) 20px;
   align-items: stretch;
+  flex: 1;
+  min-height: 0;
 }
 
 .left-col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
   min-height: 0;
 }
 
 .right-col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
   min-height: 100%;
 }
 
@@ -76,7 +81,7 @@ main {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 14px 20px;
 }
 
 .card h2 {
@@ -84,7 +89,7 @@ main {
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--muted);
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 /* ── Cabeçalhos compartilhados (biblioteca e roteiro) ── */
@@ -92,7 +97,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 .library-header h2, .schedule-header h2 { margin-bottom: 0; }
 

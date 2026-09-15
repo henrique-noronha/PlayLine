@@ -57,49 +57,12 @@ def secondary_monitor_geometry() -> str:
     return f"{right - left}x{bottom - top}+{left}+{top}"
 
 
-def move_window_to_secondary(window_title: str) -> None:
-    """Posiciona a janela identificada por window_title no monitor secundário.
+def _find_own_window(window_title: str):
+    """Localiza, entre as janelas do PROCESSO ATUAL, a que tem exatamente window_title.
 
-    Usa SetWindowPos em vez de toggle de fullscreen para não invalidar o VO do
-    MPV (fullscreen False→True em HDMI fecha a janela).
-    """
-    import ctypes
-
-    rect = get_secondary_monitor_rect()
-    if not rect:
-        logger.info("Monitor secundário não encontrado — janela permanece no principal")
-        return
-
-    hwnd = None
-    for _ in range(30):
-        hwnd = ctypes.windll.user32.FindWindowW(None, window_title)
-        if hwnd:
-            break
-        time.sleep(0.1)
-
-    if not hwnd:
-        logger.warning("Janela '%s' não encontrada para reposicionar", window_title)
-        return
-
-    left, top, right, bottom = rect
-    width  = right - left
-    height = bottom - top
-    logger.info("Posicionando '%s' no monitor secundário: %dx%d+%d+%d",
-                window_title, width, height, left, top)
-
-    # HWND_TOPMOST=-1, SWP_NOACTIVATE=0x0010, SWP_SHOWWINDOW=0x0040
-    ctypes.windll.user32.SetWindowPos(
-        hwnd, ctypes.c_int(-1),
-        left, top, width, height,
-        0x0010 | 0x0040,
-    )
-
-
-def send_window_to_back(window_title: str) -> None:
-    """Envia a janela para HWND_BOTTOM (atrás de todas as outras).
-
-    Filtra por PID do processo atual para evitar ambiguidade quando PyWebView e MPV
-    compartilham o mesmo título "PlayLine" — apenas a janela MPV pertence ao daemon.
+    FindWindowW sozinho não serve: PyWebView e MPV rodam em processos diferentes e
+    podem compartilhar o mesmo título "PlayLine" — sem filtrar por PID, corremos o
+    risco de mover/reposicionar a janela errada (a da interface, não a do vídeo).
     """
     import ctypes
     import ctypes.wintypes
@@ -134,6 +97,50 @@ def send_window_to_back(window_title: str) -> None:
             break
         time.sleep(0.1)
 
+    return found_hwnd
+
+
+def move_window_to_secondary(window_title: str) -> None:
+    """Posiciona a janela identificada por window_title no monitor secundário.
+
+    Usa SetWindowPos em vez de toggle de fullscreen para não invalidar o VO do
+    MPV (fullscreen False→True em HDMI fecha a janela).
+    """
+    import ctypes
+
+    rect = get_secondary_monitor_rect()
+    if not rect:
+        logger.info("Monitor secundário não encontrado — janela permanece no principal")
+        return
+
+    hwnd = _find_own_window(window_title)
+    if not hwnd:
+        logger.warning("Janela '%s' não encontrada (no processo do daemon) para reposicionar", window_title)
+        return
+
+    left, top, right, bottom = rect
+    width  = right - left
+    height = bottom - top
+    logger.info("Posicionando '%s' no monitor secundário: %dx%d+%d+%d",
+                window_title, width, height, left, top)
+
+    # HWND_TOPMOST=-1, SWP_NOACTIVATE=0x0010, SWP_SHOWWINDOW=0x0040
+    ctypes.windll.user32.SetWindowPos(
+        hwnd, ctypes.c_int(-1),
+        left, top, width, height,
+        0x0010 | 0x0040,
+    )
+
+
+def send_window_to_back(window_title: str) -> None:
+    """Envia a janela para HWND_BOTTOM (atrás de todas as outras).
+
+    Filtra por PID do processo atual para evitar ambiguidade quando PyWebView e MPV
+    compartilham o mesmo título "PlayLine" — apenas a janela MPV pertence ao daemon.
+    """
+    import ctypes
+
+    found_hwnd = _find_own_window(window_title)
     if not found_hwnd:
         logger.warning("Janela '%s' não encontrada no processo atual", window_title)
         return

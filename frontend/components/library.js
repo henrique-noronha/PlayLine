@@ -19,6 +19,13 @@ async function loadLibraryFolders() {
   try {
     const res  = await fetch("/api/library");
     const data = await res.json();
+    // Raiz da biblioteca: usada pelo roteiro para derivar a categoria (pasta) de cada clipe
+    const prevBase = window._libraryBase;
+    window._libraryBase = data.base || "";
+    if (prevBase !== window._libraryBase && typeof renderSchedule === "function"
+        && state.schedule?.length && !window._schedDragging) {
+      renderSchedule();
+    }
     _renderFolderTabs(data.subfolders || []);
     loadLibraryFiles(_libCurrentFolder);
   } catch (err) {

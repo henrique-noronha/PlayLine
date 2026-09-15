@@ -1,5 +1,6 @@
 """Rotas HTTP do PlayLine."""
 
+import asyncio
 import hashlib
 import io
 import mimetypes
@@ -13,6 +14,8 @@ from fastapi import APIRouter, HTTPException, UploadFile, File
 
 _NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
 from fastapi.responses import FileResponse, Response
+
+from core import settings as app_settings
 
 # Mesmo caminho usado pelo mpv_daemon — sem espaços para compatibilidade com lavfi
 _LOGO_WORK_DIR = Path(os.environ.get("PUBLIC", r"C:\Users\Public")) / "pltmp"
@@ -202,7 +205,7 @@ def _generate_thumb(path: str) -> bytes | None:
             [
                 _ffmpeg_bin(), "-y", "-ss", "2", "-i", path,
                 "-vframes", "1",
-                "-vf", "scale=112:63:force_original_aspect_ratio=decrease,pad=112:63:(ow-iw)/2:(oh-ih)/2:color=black",
+                "-vf", "scale=112:63:force_original_aspect_ratio=increase,crop=112:63",
                 "-f", "image2", "-vcodec", "mjpeg", "pipe:1",
             ],
             capture_output=True,
@@ -299,21 +302,24 @@ async def get_temperature(city: str = "Palmas,TO"):
     def _fetch():
         import logging
         log = logging.getLogger("api.routes")
-        owm_name = city.split(",")[0].strip()  # OWM: só cidade, sem estado
-        # Tenta OpenWeatherMap primeiro
+        # Consulta por coordenada quando a cidade está na lista salva: por nome, o
+        # OWM pode devolver a homônima de outro estado (há cinco "Palmas" no Brasil).
+        saved = app_settings.find_city(city)
+        if saved:
+            loc = f"lat={saved['lat']}&lon={saved['lon']}"
+        else:
+            loc = f"q={quote(city.split(',')[0].strip())},BR"
         try:
-            url  = f"https://api.openweathermap.org/data/2.5/weather?q={quote(owm_name)},BR&appid={_API_KEY}&units=metric"
+            url = f"https://api.openweathermap.org/data/2.5/weather?{loc}&appid={_API_KEY}&units=metric"
             with urlopen(url, timeout=5) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 temp = data.get("main", {}).get("temp")
                 if temp is not None:
-                    found   = data.get("name", "?")
-                    country = data.get("sys", {}).get("country", "?")
-                    log.info("[weather] OWM: %.1f°C (%s, %s)", temp, found, country)
-                    return f"{round(temp)}°C"
+                    corrected = round(temp - 1)
+                    log.info("[weather] OWM: %.1f°C → %d°C (corrigido) (%s)", temp, corrected, city)
+                    return f"{corrected}°C"
         except Exception as e:
             log.warning("[weather] OWM falhou: %s — tentando wttr.in", e)
-        # Fallback: wttr.in — usa cidade completa com estado para evitar ambiguidade
         try:
             url = f"https://wttr.in/{quote(city)}?format=%t"
             with urlopen(url, timeout=5) as resp:
@@ -329,14 +335,114 @@ async def get_temperature(city: str = "Palmas,TO"):
     return PlainTextResponse(val or "—")
 
 
+# ── Cidades do overlay de hora/temperatura ──────────────────────────────────
+
+_GEO_URL = "https://api.openweathermap.org/geo/1.0/direct"
+
+
+@router.get("/api/cities")
+async def list_cities():
+    return {"cities": app_settings.get_cities(), "max": app_settings.CITIES_MAX}
+
+
+@router.put("/api/cities")
+async def save_cities(body: dict):
+    """Grava a lista montada na tela de Configurações (no máximo CITIES_MAX).
+
+    `{"reset": true}` descarta a lista gravada e volta à padrão (capitais).
+    """
+    if body.get("reset"):
+        cities = app_settings.reset_cities()
+    else:
+        try:
+            cities = app_settings.set_cities(body.get("cities"))
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+    if _manager:
+        await _manager.broadcast({"event": "cities_changed", "cities": cities})
+    return {"ok": True, "cities": cities}
+
+
+@router.get("/api/cities/search")
+async def search_cities(q: str = "", limit: int = 6):
+    """Busca no geocoding da OpenWeatherMap para o operador escolher a cidade certa."""
+    import asyncio
+    import json as _json
+    from urllib.parse import quote as _quote
+    from urllib.request import urlopen
+
+    termo = (q or "").strip()
+    if len(termo) < 2:
+        return {"results": []}
+    limit = max(1, min(10, int(limit)))
+    _API_KEY = "f69ea9de2f716268934177c04852b89b"
+
+    def _search():
+        url = f"{_GEO_URL}?q={_quote(termo)},BR&limit={limit}&appid={_API_KEY}"
+        with urlopen(url, timeout=6) as resp:
+            return _json.loads(resp.read().decode("utf-8"))
+
+    try:
+        data = await asyncio.get_running_loop().run_in_executor(None, _search)
+    except Exception as exc:
+        logger.warning("[cities] busca falhou: %s", exc)
+        raise HTTPException(status_code=502, detail="Não foi possível consultar a busca de cidades. Verifique a conexão com a internet")
+
+    _UF = {
+        "Acre": "AC", "Alagoas": "AL", "Amapá": "AP", "Amazonas": "AM", "Bahia": "BA",
+        "Ceará": "CE", "Federal District": "DF", "Distrito Federal": "DF",
+        "Espírito Santo": "ES", "Goiás": "GO", "Maranhão": "MA", "Mato Grosso": "MT",
+        "Mato Grosso do Sul": "MS", "Minas Gerais": "MG", "Pará": "PA", "Paraíba": "PB",
+        "Paraná": "PR", "Pernambuco": "PE", "Piauí": "PI", "Rio de Janeiro": "RJ",
+        "Rio Grande do Norte": "RN", "Rio Grande do Sul": "RS", "Rondônia": "RO",
+        "Roraima": "RR", "Santa Catarina": "SC", "São Paulo": "SP", "Sergipe": "SE",
+        "Tocantins": "TO",
+    }
+    results, vistos = [], set()
+    for item in data if isinstance(data, list) else []:
+        if item.get("country") != "BR":
+            continue
+        estado = item.get("state") or ""
+        sigla = _UF.get(estado, estado[:2].upper() if estado else "")
+        nome = (item.get("name") or "").strip()
+        if not nome:
+            continue
+        chave = f"{nome},{sigla}".lower()
+        if chave in vistos:
+            continue
+        vistos.add(chave)
+        results.append({"name": nome, "state": sigla, "state_name": estado,
+                        "lat": round(float(item["lat"]), 4), "lon": round(float(item["lon"]), 4)})
+    return {"results": results}
+
+
 # ── Biblioteca estruturada ──────────────────────────────────────────────────
 
-_LIBRARY_BASE: Path = (
+_LIBRARY_DEFAULT: Path = (
     Path(sys.executable).parent / "Biblioteca"
     if getattr(sys, "frozen", False)
     else Path(__file__).parent.parent.parent / "Biblioteca"
 )
-_LIBRARY_BASE.mkdir(exist_ok=True)
+
+
+def _initial_library_base() -> Path:
+    """Pasta configurada em config.json, ou a padrão (criada se preciso).
+
+    Se a configurada sumiu (HD externo desligado, pasta renomeada), volta à
+    padrão só nesta execução, sem apagar a configuração; o modal avisa.
+    """
+    cfg = app_settings.get_library_dir()
+    if cfg is not None:
+        if cfg.is_dir():
+            return cfg
+        logger.warning("Pasta da biblioteca configurada não encontrada (%s); usando %s",
+                       cfg, _LIBRARY_DEFAULT)
+    _LIBRARY_DEFAULT.mkdir(exist_ok=True)
+    return _LIBRARY_DEFAULT
+
+
+# Lido em tempo de chamada por todas as rotas abaixo; POST /api/settings/library troca em runtime.
+_LIBRARY_BASE: Path = _initial_library_base()
 
 
 def _scan_media(path: Path) -> list[dict]:
@@ -353,6 +459,69 @@ async def get_library_info():
     """Retorna as subpastas da Biblioteca."""
     subfolders = sorted(f.name for f in _LIBRARY_BASE.iterdir() if f.is_dir())
     return {"subfolders": subfolders, "base": str(_LIBRARY_BASE)}
+
+
+# ── Configurações (modal do painel de controle) ─────────────────────────────
+
+@router.get("/api/settings")
+async def get_settings():
+    """Usuário atual e pasta da biblioteca (atual, padrão e configurada)."""
+    cfg = app_settings.get_library_dir()
+    loop = asyncio.get_running_loop()
+    # is_dir() numa unidade de rede fora do ar pode travar: fora do event loop
+    missing = (await loop.run_in_executor(None, cfg.is_dir) is False) if cfg is not None else False
+    return {
+        "username": app_settings.get_username(),
+        "library_dir": str(_LIBRARY_BASE),
+        "library_default": str(_LIBRARY_DEFAULT),
+        "library_configured": str(cfg) if cfg else "",
+        "library_missing": missing,
+        "transition": app_settings.get_transition(),
+    }
+
+
+@router.post("/api/settings/transition")
+async def change_transition(body: dict):
+    """Transição global. O modal só altera a duração; o tipo é o botão do cabeçalho do roteiro (WS)."""
+    if _playlist_engine is None:
+        raise HTTPException(status_code=503, detail="Engine indisponível")
+    try:
+        cfg = await _playlist_engine.set_transition({k: body[k] for k in ("type", "duration") if k in body})
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    return {"ok": True, "transition": cfg}
+
+
+@router.post("/api/settings/library")
+async def change_library_dir(body: dict):
+    """Troca a pasta da biblioteca em runtime e persiste em config.json.
+
+    Os itens do roteiro guardam caminho absoluto, então o que já está programado
+    continua tocando de onde está; só listagem, upload e subpastas passam a usar
+    a nova pasta. PlayIngest e PlayLine-Client resolvem tudo pelo servidor, então
+    nada muda neles. `{"reset": true}` volta à pasta padrão.
+    """
+    global _LIBRARY_BASE
+    loop = asyncio.get_running_loop()
+    if body.get("reset"):
+        new = _LIBRARY_DEFAULT
+        await loop.run_in_executor(None, lambda: new.mkdir(exist_ok=True))
+        app_settings.set_library_dir(None)
+    else:
+        try:
+            new = await loop.run_in_executor(
+                None, app_settings.validate_library_dir, str(body.get("path") or ""))
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+        app_settings.set_library_dir(new)
+    changed = new != _LIBRARY_BASE
+    _LIBRARY_BASE = new
+    if changed:
+        logger.info("Biblioteca alterada para %s", new)
+        if _manager:
+            await _manager.broadcast({"event": "library_changed", "library_dir": str(new)})
+        asyncio.create_task(prewarm_thumbnails())
+    return {"ok": True, "library_dir": str(new), "changed": changed}
 
 
 @router.get("/api/library/files")
@@ -372,6 +541,80 @@ async def get_library_files(subfolder: str = ""):
             if sub.is_dir():
                 files += _scan_media(sub)
     return {"files": files}
+
+
+_UPLOAD_EXTS = {".mp4", ".mkv", ".mov", ".avi", ".ts", ".mxf", ".mpg", ".mpeg", ".wmv", ".flv", ".webm"}
+_MIN_FREE_MB = 200  # espaço mínimo exigido antes de aceitar upload
+
+
+@router.post("/api/upload")
+async def upload_file(subfolder: str = "", file: UploadFile = File(...)):
+    """Recebe um arquivo de mídia e salva na Biblioteca (subpasta indicada)."""
+    import errno as _errno
+    import shutil
+
+    ext = Path(file.filename).suffix.lower()
+    if ext not in _UPLOAD_EXTS:
+        raise HTTPException(status_code=415, detail=f"Extensão não suportada: {ext}")
+
+    if subfolder:
+        if ".." in subfolder or "/" in subfolder or "\\" in subfolder:
+            raise HTTPException(status_code=400, detail="Subfolder inválido")
+        dest_dir = _LIBRARY_BASE / subfolder
+        if not dest_dir.is_dir():
+            raise HTTPException(status_code=404, detail="Subpasta não encontrada")
+    else:
+        dest_dir = _LIBRARY_BASE
+
+    # Verifica espaço em disco antes de iniciar
+    try:
+        free_mb = shutil.disk_usage(dest_dir).free // (1024 * 1024)
+        if free_mb < _MIN_FREE_MB:
+            raise HTTPException(
+                status_code=507,
+                detail=f"Disco quase cheio no servidor — apenas {free_mb} MB livres (mínimo exigido: {_MIN_FREE_MB} MB)"
+            )
+    except HTTPException:
+        raise
+    except Exception:
+        pass
+
+    dest = dest_dir / file.filename
+    suffix = 1
+    while dest.exists():
+        dest = dest_dir / f"{Path(file.filename).stem}_{suffix}{ext}"
+        suffix += 1
+
+    try:
+        content = await file.read()
+        if len(content) == 0:
+            raise HTTPException(status_code=400, detail="Arquivo vazio")
+
+        needed_mb = len(content) // (1024 * 1024)
+        free_mb = shutil.disk_usage(dest_dir).free // (1024 * 1024)
+        if free_mb < needed_mb + 50:
+            raise HTTPException(
+                status_code=507,
+                detail=f"Disco cheio no servidor — arquivo precisa de {needed_mb} MB, disponível: {free_mb} MB"
+            )
+
+        dest.write_bytes(content)
+    except HTTPException:
+        raise
+    except OSError as exc:
+        if exc.errno == _errno.ENOSPC:
+            raise HTTPException(status_code=507, detail="Disco cheio no servidor — sem espaço para salvar o arquivo")
+        elif exc.errno in (_errno.EACCES, _errno.EPERM):
+            raise HTTPException(
+                status_code=403,
+                detail="Acesso negado ao salvar o arquivo — um antivírus ou política de segurança pode estar bloqueando a gravação na pasta Biblioteca"
+            )
+        else:
+            raise HTTPException(status_code=500, detail=f"Erro de sistema ao salvar arquivo: {exc}")
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+    return {"ok": True, "saved_as": dest.name, "path": str(dest)}
 
 
 @router.post("/api/library/folder")
@@ -482,9 +725,22 @@ async def get_saved_schedule_items(schedule_id: int):
     return {"items": items}
 
 
-@router.get("/api/capture-devices")
-async def list_capture_devices():
-    """Lista dispositivos de vídeo DirectShow disponíveis (webcams, placas de captura)."""
+@router.post("/api/repeat")
+async def set_repeat(body: dict):
+    enabled = bool(body.get("enabled", False))
+    _playlist_engine.set_repeat(enabled)
+    return {"repeat": enabled}
+
+
+def _list_capture_devices_sync() -> dict:
+    """Enumera dispositivos DirectShow via ffmpeg (bloqueante — chamar via run_in_executor).
+
+    subprocess.run aqui pode levar vários segundos (timeout=10). Rodar isso direto
+    numa rota async trava o event loop inteiro nesse meio-tempo — inclusive o
+    encaminhamento dos frames de preview vindos do daemon, fazendo o "Reproduzindo
+    agora" ficar sem sinal sempre que o modal de câmera é aberto, mesmo sem nenhum
+    clipe relacionado tocando.
+    """
     import re
     ffmpeg = _ffmpeg_bin()
     logger.info("capture-devices: usando ffmpeg em %r", ffmpeg)
@@ -509,6 +765,14 @@ async def list_capture_devices():
     except Exception as exc:
         logger.warning("capture-devices error: %s", exc)
         return {"devices": [], "error": str(exc)}
+
+
+@router.get("/api/capture-devices")
+async def list_capture_devices():
+    """Lista dispositivos de vídeo DirectShow disponíveis (webcams, placas de captura)."""
+    import asyncio
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, _list_capture_devices_sync)
 
 
 @router.delete("/api/library/folder")

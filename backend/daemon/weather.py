@@ -18,9 +18,24 @@ _cache_city:  str   = ""
 
 
 def _owm_query(city: str) -> str:
-    """Converte 'Palmas,TO' → 'Palmas,BR' (OWM usa código de país, não estado)."""
+    """Localização para a URL do OWM.
+
+    Usa lat/lon quando a cidade está na lista salva em config.json (o operador a
+    monta em Configurações, com coordenadas vindas do geocoding); por nome, o OWM
+    pode devolver a homônima de outro estado. Sem a lista, cai na busca por nome.
+    """
+    try:
+        try:
+            from core import settings as _settings
+        except ImportError:
+            from ..core import settings as _settings
+        saved = _settings.find_city(city)
+        if saved:
+            return f"lat={saved['lat']}&lon={saved['lon']}"
+    except Exception as exc:
+        logger.debug("[weather] lista de cidades indisponível (%s); usando o nome", exc)
     name = city.split(",")[0].strip()
-    return f"{quote(name)},BR"
+    return f"q={quote(name)},BR"
 
 
 async def get_temperature(city: str) -> Optional[str]:
@@ -37,7 +52,7 @@ async def get_temperature(city: str) -> Optional[str]:
         return _cache_value
 
     try:
-        url = f"https://api.openweathermap.org/data/2.5/weather?q={_owm_query(city)}&appid={_API_KEY}&units=metric"
+        url = f"https://api.openweathermap.org/data/2.5/weather?{_owm_query(city)}&appid={_API_KEY}&units=metric"
         loop = asyncio.get_event_loop()
         val  = await loop.run_in_executor(None, _fetch, url, city)
         if val:
@@ -62,7 +77,7 @@ def _fetch(url: str, city: str) -> Optional[str]:
             name_found = data.get("name", "?")
             country    = data.get("sys", {}).get("country", "?")
             logger.info("[weather] OWM: %.1f°C (%s, %s)", temp, name_found, country)
-            return f"{round(temp)}°C"
+            return f"{round(temp) - 1}°C"
     except HTTPError as exc:
         body = exc.read().decode("utf-8", errors="ignore")
         logger.warning("[weather] OWM HTTP %d — usando fallback wttr.in: %s", exc.code, body[:120])

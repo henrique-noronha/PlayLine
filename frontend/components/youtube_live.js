@@ -79,4 +79,7 @@
   document.addEventListener("keydown", e => {
     if (e.key === "Escape" && modal.style.display !== "none") closeModal();
   });
+
+  // Exposto pro quadrante fixo de entrada (input_quadrant.js) reaproveitar o mesmo modal
+  window.openYtModal = openModal;
 })();

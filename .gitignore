@@ -1,5 +1,6 @@
 # Claude Code — configurações locais do usuário (não compartilhar)
 .claude/settings.local.json
+CLAUDE.md
 
 # Python
 __pycache__/
@@ -9,6 +10,8 @@ __pycache__/
 # Binários externos — baixar separadamente antes de buildar
 backend/libmpv-2.dll
 backend/ffmpeg.exe
+backend/deps/yt-dlp.exe   # https://github.com/yt-dlp/yt-dlp/releases/latest
+backend/deps/node.exe     # opcional: cópia local do node.exe para builds offline
 
 # Cache de thumbnails — gerado automaticamente no startup
 cache/
@@ -27,6 +30,9 @@ backend/core/*.db-shm
 backend/checkpoint.json
 backend/text_overlay.json
 backend/sessions.json
+backend/config.json
+backend/core/config.json
+backend/server.pid
 backend/.playline_input.conf
 backend/standby.png
 
@@ -40,6 +46,9 @@ backend/build/
 backend/dist/
 backend/specs/
 backend/assets/
+playingest/build/
+playingest/dist/
+playingest/specs/
 
 # Ambiente virtual
 .venv/
@@ -58,4 +67,8 @@ Biblioteca/
 *.bak
 backend/.playline_server
 .claude/skills/
+
+# Rascunhos das notas de release (o texto final fica na página da release no GitHub)
+RELEASE_*.md
+
 

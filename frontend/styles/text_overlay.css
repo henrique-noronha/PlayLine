@@ -1,5 +1,5 @@
 /* ── Preview de texto sobre o vídeo ──
-   font-size definido por JS: max(8, round(videoH * 0.018))
+   font-size definido por JS: max(8, round(videoH * 0.028))
    Mesma fórmula e mesma fonte (Segoe UI) que o daemon PIL usa.
    Layout: [ temp | hora ] / [ cidade ] ── */
 
@@ -31,7 +31,7 @@
 .to-time {
   background: rgba(68, 68, 68, 0.745);
   color: #fff;
-  padding: 0.16em 0.25em;
+  padding: 0.28em 0.40em;
   font-size: 1em;
   display: flex;
   align-items: center;
@@ -42,7 +42,7 @@
 .to-temp {
   background: rgba(52, 52, 52, 0.745);
   color: #fff;
-  padding: 0.16em 0.25em;
+  padding: 0.28em 0.40em;
   font-size: 1em;
   display: flex;
   align-items: center;
@@ -54,7 +54,7 @@
 .to-city-lbl {
   background: rgba(38, 38, 38, 0.745);
   color: #fff;
-  padding: 0.18em 0.25em;
+  padding: 0.30em 0.40em;
   font-size: 0.72em;
   display: flex;
   align-items: center;

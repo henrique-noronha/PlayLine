@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="/static/styles/library.css" />
   <link rel="stylesheet" href="/static/styles/log.css" />
   <link rel="stylesheet" href="/static/styles/text_overlay.css" />
+  <link rel="stylesheet" href="/static/styles/input_quadrant.css" />
+  <link rel="stylesheet" href="/static/styles/settings.css" />
 </head>
 <body>
   <header>
@@ -77,6 +79,10 @@
       <section class="card controls-card">
         <div class="controls-card-head">
           <h2>Painel de Controle</h2>
+          <div class="head-clock">
+            <span class="head-clock-date" id="clock-date">—</span>
+            <span class="head-clock-time" id="clock-time">—</span>
+          </div>
           <div id="controls-menu-wrap">
             <button id="btn-controls-menu" title="Opções"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="currentColor"><circle cx="1.5" cy="1.5" r="1.5"/><rect x="4.5" y="0.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="6.5" r="1.5"/><rect x="4.5" y="5.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="11.5" r="1.5"/><rect x="4.5" y="10.5" width="10.5" height="2" rx="1"/></svg></button>
             <div id="controls-menu-dropdown">
@@ -91,18 +97,19 @@
               <div class="ctrl-menu-item" id="ctrl-menu-zoom-reset"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Redefinir zoom</div>
               <div class="ctrl-menu-sep"></div>
               <div class="ctrl-menu-item" id="ctrl-menu-history"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Histórico</div>
+              <div class="ctrl-menu-item" id="ctrl-menu-settings"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Configurações</div>
             </div>
           </div>
         </div>
         <div class="control-stats">
           <div class="stat-block">
-            <div class="stat-label">Tempo restante</div>
-            <div class="stat-value stat-remaining" id="remaining-time">—</div>
+            <div class="stat-label">Restante do clipe atual</div>
+            <div class="stat-value stat-clip-remaining" id="clip-remaining-time">—</div>
           </div>
           <div class="stat-divider"></div>
-          <div class="stat-block stat-block--clock">
-            <div class="stat-label" id="clock-date">—</div>
-            <div class="stat-value stat-clock" id="clock-time">—</div>
+          <div class="stat-block">
+            <div class="stat-label">Roteiro restante</div>
+            <div class="stat-value stat-remaining" id="remaining-time">—</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-block">
@@ -144,35 +151,23 @@
 
           <div class="logo-controls-compact">
 
-            <div class="logo-ctrl">
-              <span class="logo-label">Logo 1</span>
-              <div class="logo-pos-selector" data-slot="1">
-                <div class="pos-zone" data-slot="1" data-corner="tl" title="Superior esquerdo"></div>
-                <div class="pos-zone" data-slot="1" data-corner="tr" title="Superior direito"></div>
-                <div class="pos-zone" data-slot="1" data-corner="bl" title="Inferior esquerdo"></div>
-                <div class="pos-zone" data-slot="1" data-corner="br" title="Inferior direito"></div>
-                <div class="pos-indicator"></div>
+            <div class="logo-pair">
+              <div class="logo-ctrl">
+                <span class="logo-label">Logo 1</span>
+                <div class="logo-toggle-wrap">
+                  <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
+                  <button class="btn-logo-pick" data-slot="1" title="Selecionar logo">▾</button>
+                  <div class="logo-picker-dropdown" id="logo-picker-1"></div>
+                </div>
               </div>
-              <div class="logo-toggle-wrap">
-                <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
-                <button class="btn-logo-pick" data-slot="1" title="Selecionar logo">▾</button>
-                <div class="logo-picker-dropdown" id="logo-picker-1"></div>
-              </div>
-            </div>
 
-            <div class="logo-ctrl">
-              <span class="logo-label">Logo 2</span>
-              <div class="logo-pos-selector" data-slot="2">
-                <div class="pos-zone" data-slot="2" data-corner="tl" title="Superior esquerdo"></div>
-                <div class="pos-zone" data-slot="2" data-corner="tr" title="Superior direito"></div>
-                <div class="pos-zone" data-slot="2" data-corner="bl" title="Inferior esquerdo"></div>
-                <div class="pos-zone" data-slot="2" data-corner="br" title="Inferior direito"></div>
-                <div class="pos-indicator"></div>
-              </div>
-              <div class="logo-toggle-wrap">
-                <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
-                <button class="btn-logo-pick" data-slot="2" title="Selecionar logo">▾</button>
-                <div class="logo-picker-dropdown" id="logo-picker-2"></div>
+              <div class="logo-ctrl">
+                <span class="logo-label">Logo 2</span>
+                <div class="logo-toggle-wrap">
+                  <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
+                  <button class="btn-logo-pick" data-slot="2" title="Selecionar logo">▾</button>
+                  <div class="logo-picker-dropdown" id="logo-picker-2"></div>
+                </div>
               </div>
             </div>
 
@@ -198,42 +193,11 @@
                     <span class="logo-picker-name">Temp.</span>
                   </div>
                   <div class="to-city-row">
-                    <select id="to-city-select" class="to-city-select">
-                      <option value="Aracaju,SE">Aracaju</option>
-                      <option value="Belém,PA">Belém</option>
-                      <option value="Belo Horizonte,MG">Belo Horizonte</option>
-                      <option value="Boa Vista,RR">Boa Vista</option>
-                      <option value="Campinas,SP">Campinas</option>
-                      <option value="Campo Grande,MS">Campo Grande</option>
-                      <option value="Cuiabá,MT">Cuiabá</option>
-                      <option value="Curitiba,PR">Curitiba</option>
-                      <option value="Florianópolis,SC">Florianópolis</option>
-                      <option value="Fortaleza,CE">Fortaleza</option>
-                      <option value="Goiânia,GO">Goiânia</option>
-                      <option value="João Pessoa,PB">João Pessoa</option>
-                      <option value="Londrina,PR">Londrina</option>
-                      <option value="Macapá,AP">Macapá</option>
-                      <option value="Maceió,AL">Maceió</option>
-                      <option value="Manaus,AM">Manaus</option>
-                      <option value="Natal,RN">Natal</option>
-                      <option value="Palmas,TO">Palmas</option>
-                      <option value="Porto Alegre,RS">Porto Alegre</option>
-                      <option value="Porto Velho,RO">Porto Velho</option>
-                      <option value="Recife,PE">Recife</option>
-                      <option value="Rio Branco,AC">Rio Branco</option>
-                      <option value="Rio de Janeiro,RJ">Rio de Janeiro</option>
-                      <option value="Salvador,BA">Salvador</option>
-                      <option value="Santos,SP">Santos</option>
-                      <option value="São Luís,MA">São Luís</option>
-                      <option value="São Paulo,SP">São Paulo</option>
-                      <option value="Teresina,PI">Teresina</option>
-                      <option value="Uberlândia,MG">Uberlândia</option>
-                      <option value="Vitória,ES">Vitória</option>
-                    </select>
+                    <select id="to-city-select" class="to-city-select"></select>
                   </div>
                   <div class="to-temp-row">
                     <span class="to-temp-label">Temp. manual</span>
-                    <input type="text" id="to-temp-input" class="to-temp-input" placeholder="—" maxlength="7" />
+                    <input type="text" id="to-temp-input" class="to-temp-input" placeholder="25" maxlength="7" />
                     <button id="to-temp-fetch" class="to-temp-fetch" title="Buscar temperatura via API"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
                   </div>
                 </div>
@@ -252,8 +216,11 @@
             <div class="sch-title-group">
               <h2>Roteiro</h2>
               <span id="sch-error-count"></span>
+              <span id="sch-loop-indicator" title="Repetir roteiro ativo"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repetir</span>
+              <button id="btn-transition" class="sch-transition-btn" data-type="cut" title="Transição entre clipes: CUT (corte seco) ou FTB (fade to black). Clique para alternar.">CUT</button>
             </div>
             <div class="sch-header-right">
+              <span class="sch-col-cat-header" title="Categoria: 3 primeiras letras da pasta do clipe na biblioteca">Categ.</span>
               <div class="sch-col-time-header">
                 <span>Entrada</span>
                 <span>Duração</span>
@@ -265,6 +232,21 @@
           <div class="schedule-list" id="schedule-list">
             <div class="empty">Carregando roteiro…</div>
           </div>
+        </section>
+
+        <section class="card input-quadrant-card" id="input-quadrant-card">
+          <div class="iq-source-toggle">
+            <button class="iq-source-btn" id="iq-btn-camera" data-source="camera">Câmera</button>
+            <button class="iq-source-btn" id="iq-btn-youtube" data-source="youtube">YouTube</button>
+          </div>
+          <div class="iq-preview-wrap">
+            <video id="iq-preview-video" autoplay muted playsinline></video>
+            <iframe id="iq-preview-iframe" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen></iframe>
+            <div class="iq-preview-empty" id="iq-preview-empty">Nenhuma entrada ativa</div>
+          </div>
+          <button class="iq-add-btn" id="iq-btn-add">+ Adicionar outra câmera</button>
         </section>
       </div>
 
@@ -316,6 +298,9 @@
             <span class="yt-status yt-status-loading">Carregando dispositivos…</span>
           </div>
         </div>
+        <div id="capture-modal-preview-wrap" style="display:none">
+          <video id="capture-modal-video" autoplay muted playsinline></video>
+        </div>
       </div>
       <div class="yt-modal-actions">
         <button id="btn-capture-cancel" class="yt-btn-cancel">Cancelar</button>
@@ -347,6 +332,101 @@
         <button id="btn-yt-cancel" class="yt-btn-cancel">Cancelar</button>
         <button id="btn-yt-add" class="btn-yt-add">Adicionar ao roteiro</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal de Configurações -->
+  <div id="settings-modal" class="st-backdrop" style="display:none">
+    <div class="st-box">
+      <div class="st-header">
+        <h3>Configurações</h3>
+        <button id="st-close" class="st-close" title="Fechar">✕</button>
+      </div>
+
+      <div class="st-tabs">
+        <button class="st-tab st-tab-active" data-tab="biblioteca">Biblioteca</button>
+        <button class="st-tab" data-tab="cidades">Cidades</button>
+        <button class="st-tab" data-tab="transicoes">Transições</button>
+        <button class="st-tab" data-tab="acesso">Usuário e senha</button>
+      </div>
+
+      <section class="st-section st-panel" data-panel="biblioteca">
+        <p class="st-help">Pasta, no computador do servidor, onde ficam os vídeos. Os itens que já estão no roteiro continuam tocando de onde estão.</p>
+        <div class="st-field">
+          <label class="st-label" for="st-lib-path">Pasta da biblioteca</label>
+          <div class="st-path-row">
+            <input type="text" id="st-lib-path" class="st-input st-input-mono" placeholder="D:\Videos\Biblioteca" autocomplete="off" spellcheck="false" />
+            <button type="button" id="st-lib-browse" class="st-btn-secondary" style="display:none">Procurar…</button>
+          </div>
+        </div>
+        <div id="st-lib-status" class="st-status"></div>
+        <div class="st-actions">
+          <button type="button" id="st-lib-reset" class="st-btn-link">Usar pasta padrão</button>
+          <button type="button" id="st-lib-save" class="st-btn-primary">Salvar pasta</button>
+        </div>
+      </section>
+
+      <section class="st-section st-panel" data-panel="cidades">
+        <p class="st-help">Cidades disponíveis no seletor do overlay de hora e temperatura. Deixe apenas as que a emissora usa. <span id="st-cities-count">0/30</span></p>
+        <div id="st-cities-list" class="st-city-list"></div>
+        <div class="st-field">
+          <label class="st-label" for="st-city-search">Adicionar cidade</label>
+          <div class="st-path-row">
+            <input type="text" id="st-city-search" class="st-input" placeholder="Digite o nome e pressione Enter" autocomplete="off" />
+            <button type="button" id="st-city-search-btn" class="st-btn-secondary">Buscar</button>
+          </div>
+        </div>
+        <div id="st-city-results" class="st-city-results"></div>
+        <div id="st-cities-status" class="st-status"></div>
+        <div class="st-actions">
+          <button type="button" id="st-cities-reset" class="st-btn-link">Restaurar lista padrão</button>
+          <button type="button" id="st-cities-save" class="st-btn-primary">Salvar cidades</button>
+        </div>
+      </section>
+
+      <section class="st-section st-panel" data-panel="transicoes">
+        <p class="st-help">O tipo, CUT (corte seco) ou FTB (fade to black), é alternado pelo botão no cabeçalho do Roteiro; por clipe, no menu ⚙ do item. Aqui fica a duração do FTB.</p>
+        <div class="st-field st-field-inline">
+          <label class="st-label" for="st-fade-dur">Duração do FTB (segundos)</label>
+          <input type="number" id="st-fade-dur" class="st-input st-input-short" min="0.2" max="3" step="0.1" value="0.5" />
+        </div>
+        <div id="st-tr-status" class="st-status"></div>
+        <div class="st-actions">
+          <button type="button" id="st-tr-save" class="st-btn-primary">Salvar duração</button>
+        </div>
+      </section>
+
+      <section class="st-section st-panel" data-panel="acesso">
+        <p class="st-help">Confirme o usuário e a senha atuais para alterar. As outras sessões abertas (outro navegador, PlayIngest) precisarão entrar de novo.</p>
+        <form id="st-cred-form" autocomplete="off">
+          <div class="st-grid">
+            <div class="st-field">
+              <label class="st-label" for="st-cur-user">Usuário atual</label>
+              <input type="text" id="st-cur-user" class="st-input" autocomplete="username" />
+            </div>
+            <div class="st-field">
+              <label class="st-label" for="st-cur-pass">Senha atual</label>
+              <input type="password" id="st-cur-pass" class="st-input" autocomplete="current-password" />
+            </div>
+            <div class="st-field">
+              <label class="st-label" for="st-new-user">Novo usuário</label>
+              <input type="text" id="st-new-user" class="st-input" autocomplete="off" />
+            </div>
+            <div class="st-field">
+              <label class="st-label" for="st-new-pass">Nova senha</label>
+              <input type="password" id="st-new-pass" class="st-input" autocomplete="new-password" />
+            </div>
+            <div class="st-field st-field-wide">
+              <label class="st-label" for="st-new-pass2">Confirmar nova senha</label>
+              <input type="password" id="st-new-pass2" class="st-input" autocomplete="new-password" />
+            </div>
+          </div>
+          <div id="st-cred-status" class="st-status"></div>
+          <div class="st-actions">
+            <button type="submit" id="st-cred-save" class="st-btn-primary">Salvar usuário e senha</button>
+          </div>
+        </form>
+      </section>
     </div>
   </div>
 
@@ -453,6 +533,15 @@
   <script src="/static/components/preview_ws.js"></script>
   <script src="/static/components/youtube_live.js"></script>
   <script src="/static/components/capture.js"></script>
+  <!-- Preview de dispositivo de captura -->
+  <div id="capture-preview-modal" style="display:none">
+    <div class="yt-preview-header">
+      <span class="yt-preview-label" id="capture-preview-label" style="color:#22d3ee">⬤ Capture</span>
+      <button id="capture-preview-close">✕</button>
+    </div>
+    <video id="capture-preview-video" autoplay muted playsinline></video>
+  </div>
+
   <!-- Preview de live do YouTube -->
   <div id="yt-preview-modal" style="display:none">
     <div class="yt-preview-header">
@@ -468,7 +557,10 @@
   </div>
 
   <script src="/static/components/controls_menu.js"></script>
+  <script src="/static/components/settings.js"></script>
   <script src="/static/components/yt_preview.js"></script>
+  <script src="/static/components/capture_preview.js"></script>
+  <script src="/static/components/input_quadrant.js"></script>
   <script src="/static/components/saved_schedules.js"></script>
 
   <!-- Diálogo de fechamento da interface -->

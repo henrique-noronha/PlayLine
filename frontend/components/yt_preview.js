@@ -14,8 +14,9 @@
     return m ? (m[1] || m[2] || m[3]) : null;
   }
 
-  function _buildSrc(id) {
-    return "https://www.youtube.com/embed/" + id + "?autoplay=1" + (_muted ? "&mute=1" : "");
+  function _buildSrc(id, forceMuted) {
+    const muted = forceMuted !== undefined ? forceMuted : _muted;
+    return "https://www.youtube.com/embed/" + id + "?autoplay=1" + (muted ? "&mute=1" : "");
   }
 
   function _position(anchor) {
@@ -76,4 +77,8 @@
   document.addEventListener("keydown", e => {
     if (e.key === "Escape") _close();
   });
+
+  // Exposto pro quadrante fixo de entrada (input_quadrant.js) reaproveitar sem duplicar a regex
+  window._ytExtractId     = _extractId;
+  window._ytBuildEmbedSrc = _buildSrc;
 })();

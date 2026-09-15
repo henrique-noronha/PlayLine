@@ -57,20 +57,10 @@ function _updateTextPosSelector() {
   const selector = document.getElementById("text-pos-selector");
   if (!selector) return;
 
-  const blocked = new Set();
-  if (typeof _logoState !== "undefined") {
-    [1, 2].forEach(slot => {
-      if (_logoState[slot]?.active) blocked.add(_logoState[slot].corner);
-    });
-  }
-
   const corner = _textState.corner;
   selector.querySelectorAll(".pos-zone").forEach(z => {
     const c = z.dataset.corner;
-    const isBlocked = blocked.has(c);
-    z.classList.toggle("active",  c === corner && !isBlocked);
-    z.classList.toggle("blocked", isBlocked);
-    z.style.pointerEvents = isBlocked ? "none" : "";
+    z.classList.toggle("active", c === corner);
   });
 
   const ind = selector.querySelector(".pos-indicator");
@@ -127,7 +117,7 @@ function _updatePreviewOverlay() {
   // Usa o canvas de preview como referência de altura (o <video> agora tem height:0)
   const previewEl = document.getElementById("mpv-preview") || document.getElementById("player-video");
   const videoH    = previewEl ? (previewEl.getBoundingClientRect().height || 200) : 200;
-  el.style.fontSize = Math.max(6, Math.round(videoH * 0.020)) + "px";
+  el.style.fontSize = Math.max(8, Math.round(videoH * 0.028)) + "px";
 
   const now  = new Date();
   const hh   = String(now.getHours()).padStart(2, "0");
@@ -185,6 +175,38 @@ function _updatePreviewOverlay() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
+// Monta o seletor a partir da lista de cidades salva (Configurações > Cidades).
+// Antes as opções eram fixas no HTML; agora o operador escolhe quais aparecem.
+async function loadCityOptions() {
+  const sel = document.getElementById("to-city-select");
+  if (!sel) return;
+  let cities = [];
+  try {
+    const r = await fetch("/api/cities", { cache: "no-store" });
+    cities = (await r.json()).cities || [];
+  } catch (_) {
+    return;   // sem rede, mantém o que já está no seletor
+  }
+  const anterior = _textState.city;
+  sel.innerHTML = "";
+  cities.forEach(c => {
+    const o = document.createElement("option");
+    o.value = c.state ? `${c.name},${c.state}` : c.name;
+    o.textContent = c.name;
+    sel.appendChild(o);
+  });
+  if (cities.some(c => (c.state ? `${c.name},${c.state}` : c.name) === anterior)) {
+    sel.value = anterior;
+  } else if (cities.length) {
+    // a cidade em uso saiu da lista: cai para a primeira e avisa o daemon
+    sel.value = sel.options[0].value;
+    _textState.city = sel.value;
+    localStorage.setItem("playline_to_city", _textState.city);
+    _sendTextOverlay();
+    log(`Cidade do overlay ajustada para ${sel.options[0].textContent}`, "info");
+  }
+}
+
 function initTextOverlayUI() {
   const toggle     = document.getElementById("btn-text-toggle");
   const timeBtn    = document.getElementById("to-show-time-btn");
@@ -193,6 +215,7 @@ function initTextOverlayUI() {
   const tempInput  = document.getElementById("to-temp-input");
   const fetchBtn   = document.getElementById("to-temp-fetch");
 
+  loadCityOptions().then(_syncTextUI);
   _syncTextUI();
 
   // Inicia clock do preview — roda sempre, _updatePreviewOverlay() verifica active
@@ -268,6 +291,12 @@ function initTextOverlayUI() {
       localStorage.setItem("playline_to_manual_temp", _textState.manual_temp);
       clearTimeout(_tempTimer);
       _tempTimer = setTimeout(() => {
+        const val = _textState.manual_temp;
+        if (val && !val.includes("°")) {
+          _textState.manual_temp = val + "°C";
+          localStorage.setItem("playline_to_manual_temp", _textState.manual_temp);
+          tempInput.value = _textState.manual_temp;
+        }
         if (_textState.manual_temp) {
           _previewTemp = _textState.manual_temp;
           _updatePreviewOverlay();

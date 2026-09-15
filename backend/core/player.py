@@ -22,13 +22,15 @@ logger = logging.getLogger(__name__)
 
 
 class Player:
-    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None, on_text_overlay_state: Optional[Callable[[dict], None]] = None, on_preview_frame: Optional[Callable[[str], None]] = None, on_file_loaded: Optional[Callable[[], None]] = None):
+    def __init__(self, on_end_file: Callable[[str], None], on_position: Optional[Callable[[float], None]] = None, on_logo_list: Optional[Callable[[list], None]] = None, on_logo_state: Optional[Callable[[dict], None]] = None, on_text_overlay_state: Optional[Callable[[dict], None]] = None, on_preview_frame: Optional[Callable[[str], None]] = None, on_file_loaded: Optional[Callable[[], None]] = None, on_audio_level: Optional[Callable[[float], None]] = None):
         self._on_end_file = on_end_file
         self._on_position = on_position
         self._on_logo_list = on_logo_list
+        self._on_logo_state = on_logo_state
         self._on_text_overlay_state = on_text_overlay_state
         self._on_preview_frame = on_preview_frame
         self._on_file_loaded = on_file_loaded
+        self._on_audio_level = on_audio_level
         self._sock: Optional[socket.socket] = None
         self._send_lock = threading.Lock()
         self._connected = False
@@ -121,6 +123,9 @@ class Player:
         event = msg.get("event")
         if event == "end-file":
             self._on_end_file(msg.get("reason", "eof"))
+        elif event == "file-loaded":
+            if self._on_file_loaded:
+                self._on_file_loaded()
         elif event == "mpv_closed":
             self._on_end_file("mpv_closed")
         elif event == "position":
@@ -133,6 +138,12 @@ class Player:
         elif event == "logo_list":
             if self._on_logo_list:
                 self._on_logo_list(msg.get("files", []))
+        elif event == "logo_state":
+            if self._on_logo_state:
+                self._on_logo_state(msg)
+        elif event == "audio_level":
+            if self._on_audio_level:
+                self._on_audio_level(msg.get("db"))
         elif event == "text_overlay_state":
             if self._on_text_overlay_state:
                 self._on_text_overlay_state(msg)
@@ -173,13 +184,24 @@ class Player:
 
     # API pública                                                          #
 
-    def play(self, path: str, start_time=None, end_time=None, force_resolve: bool = False):
+    def play(self, path: str, start_time=None, end_time=None, force_resolve: bool = False,
+             live: bool = False, transition: Optional[str] = None):
         msg: dict = {"action": "play", "path": path}
         if start_time: msg["start_time"] = start_time
         if end_time:   msg["end_time"]   = end_time
         if force_resolve: msg["force_resolve"] = True
+        if live: msg["live"] = True
+        if transition: msg["transition"] = transition   # "fade"/"cut" do item; ausente = global
         self._send(msg)
         logger.info("Reproduzindo: %s", path)
+
+    def set_transition(self, cfg: dict):
+        """Transição global: {"type": "cut"|"fade", "duration": s}."""
+        self._send({"action": "set_transition", **cfg})
+
+    def set_next_transition(self, override: Optional[str]):
+        """Override do próximo item ("fade"/"cut"/None) para o fade out automático respeitar a fronteira."""
+        self._send({"action": "next_transition", "transition": override})
 
     def preload(self, path: str):
         self._send({"action": "preload", "path": path})
@@ -230,6 +252,9 @@ class Player:
 
     def request_logo_list(self):
         self._send({"action": "list_logos"})
+
+    def request_logo_state(self):
+        self._send({"action": "get_logo_state"})
 
     def set_text_overlay(self, config: dict):
         self._send({"action": "set_text_overlay", **config})

@@ -6,14 +6,14 @@
 <meta name="keywords" content="playout, playline, televisão, TV, broadcasting, broadcast, automação de TV, software de playout, playout gratuito, emissora, transmissão, programação de TV, playout televisivo, software broadcast, TV aberta, sistema de playout, playout open source">
 <meta name="author" content="Henrique Noronha">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://henrique-noronha.github.io/PlayLine/">
+<link rel="canonical" href="https://playlinetv.com.br/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://henrique-noronha.github.io/PlayLine/">
+<meta property="og:url" content="https://playlinetv.com.br/">
 <meta property="og:title" content="PlayLine — Sistema de Playout para TV">
 <meta property="og:description" content="Software gratuito de playout televisivo. Automatize a programação da sua emissora sem licenças comerciais nem equipe técnica dedicada.">
-<meta property="og:image" content="https://henrique-noronha.github.io/PlayLine/InterfacePlayLine.png">
+<meta property="og:image" content="https://playlinetv.com.br/InterfacePlayLine.png">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:site_name" content="PlayLine">
 
@@ -21,7 +21,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="PlayLine — Sistema de Playout para TV">
 <meta name="twitter:description" content="Software gratuito de playout televisivo. Automatize a programação da sua emissora sem licenças comerciais nem equipe técnica dedicada.">
-<meta name="twitter:image" content="https://henrique-noronha.github.io/PlayLine/InterfacePlayLine.png">
+<meta name="twitter:image" content="https://playlinetv.com.br/InterfacePlayLine.png">
 
 <!-- JSON-LD -->
 <script type="application/ld+json">
@@ -31,11 +31,11 @@
   "name": "PlayLine",
   "alternateName": "PlayLine Playout",
   "description": "Sistema de automação de playout televisivo gratuito e de código aberto para emissoras de TV. Permite transmissão contínua, sobreposição de logos, acesso remoto e programação automatizada.",
-  "url": "https://henrique-noronha.github.io/PlayLine/",
-  "downloadUrl": "https://github.com/henrique-noronha/PlayLine/releases/download/v.1.0.0/Playline.v1.0.0.zip",
+  "url": "https://playlinetv.com.br/",
+  "downloadUrl": "https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.0/Playline.v1.2.0.zip",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Windows 10, Windows 11",
-  "softwareVersion": "1.0.0",
+  "softwareVersion": "1.2.0",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
   "keywords": "playout, televisão, broadcast, TV, automação, broadcasting, emissora, software gratuito",
   "inLanguage": "pt-BR",
@@ -387,11 +387,33 @@ nav {
   overflow: hidden;
   background: url('images/ChatGPT Image 23 de jul. de 2026, 10_55_21.png') center center / cover fixed;
 }
+/* Título da seção de download: a foto tem monitores e números claros bem atrás
+   do texto. Este halo escuro cria uma "poça" de contraste que some nas bordas,
+   sem virar mais uma caixa competindo com o card logo abaixo. */
+.dl-heading {
+  position: relative;
+  max-width: 380px;
+  margin: 0 auto 26px;
+  padding: 22px 30px 18px;
+  background: rgba(17,24,39,0.82);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.dl-heading .section-sub { margin-bottom: 0; }
+#download .section-title { text-shadow: 0 2px 20px rgba(0,0,0,.55); }
+#download .dl-heading + div { margin-top: 0; }
+
 #download::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(13,17,23,1) 0%, rgba(13,17,23,0.60) 40%, rgba(13,17,23,0.60) 60%, rgba(13,17,23,1) 100%);
+  /* Escurecimento forte no miolo: a foto fica como ambiente, sem competir com
+     o texto do card. O desfoque e a dessaturação empurram a imagem pro fundo. */
+  background: linear-gradient(to bottom, rgba(13,17,23,1) 10%, rgba(13,17,23,0.40) 15%, rgba(13,17,23,0.86) 35%, rgba(13,17,23,1) 100%);
+  -webkit-backdrop-filter: blur(1px) saturate(0.75);
+  backdrop-filter: blur(1px) saturate(0.75);
   z-index: 0;
 }
 #download::after {
@@ -476,7 +498,11 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(13, 17, 23, 0.60) 0%, rgba(13, 17, 23, 0.85) 60%, rgba(13, 17, 23, 1) 100%);
+  /* Topo da página: a imagem passa por trás do menu e da logo, então precisa de
+     bastante escurecimento já no começo, senão os links do menu somem na foto. */
+  background: linear-gradient(to bottom, rgba(13, 17, 23, 0.84) 0%, rgba(13, 17, 23, 0.90) 55%, rgba(13, 17, 23, 1) 100%);
+  -webkit-backdrop-filter: blur(1px) saturate(0.75);
+  backdrop-filter: blur(1px) saturate(0.75);
   z-index: 0;
 }
 .hero-wrap::after {
@@ -627,7 +653,6 @@ acesso à informação para milhões de pessoas.</p>
 <!-- Por que -->
 <section class="section" id="por-que">
   <h2 class="section-title">Por que o PlayLine?</h2>
-  <p class="section-sub"></p>
   <div class="features">
 
         <div class="feature">
@@ -642,7 +667,7 @@ acesso à informação para milhões de pessoas.</p>
 
     <div class="feature">
       <h3>A transmissão não para se a interface travar</h3>
-      <p>O motor de vídeo e a interface rodam em processos separados. Se a interface fechar por acidente, o vídeo continua no ar. Ao reabrir, a interface reconecta automaticamente e retoma o controle.</p>
+      <p>O motor de vídeo e a interface rodam em processos separados. Se a interface fechar por acidente, o vídeo continua no ar. Ao reabrir, a interface reconecta automaticamente e retoma o controle. Se faltar energia, o PlayLine pode iniciar junto com o Windows e retomar a programação do ponto em que parou.</p>
     </div>
 
   </div>
@@ -658,7 +683,7 @@ acesso à informação para milhões de pessoas.</p>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
       </div>
       <h3>Biblioteca de Vídeos</h3>
-      <p>Geração automática de miniaturas. Busca por nome em tempo real. Suporta MP4, MKV, MXF, MTS e mais. Organização por subpastas.</p>
+      <p>Geração automática de miniaturas. Busca por nome em tempo real. Suporta MP4, MKV, MXF, MTS e mais. Organização por subpastas, na pasta padrão ou em qualquer outra do computador, inclusive HD externo.</p>
     </div>
 
     <div class="feature">
@@ -666,7 +691,23 @@ acesso à informação para milhões de pessoas.</p>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       </div>
       <h3>Roteiro de Programação</h3>
-      <p>Monte a grade arrastando vídeos da biblioteca. Reordene, remova e controle cada item com precisão. O histórico de exibição fica registrado diretamente no roteiro.</p>
+      <p>Monte a grade arrastando vídeos da biblioteca. Reordene, remova, recorte o trecho de cada clipe e veja o horário previsto de cada item. Salve roteiros prontos para reutilizar e ative o modo repetir para grades em loop.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      </div>
+      <h3>YouTube e Entrada ao Vivo</h3>
+      <p>Insira vídeos ou lives do YouTube e dispositivos de captura (webcam, placa, câmera HDMI) como itens do roteiro, com preview antes de entrar no ar e reconexão automática se o sinal cair.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+      </div>
+      <h3>Transições CUT e FTB</h3>
+      <p>Troca de clipe sem tela preta, por corte seco (CUT) ou fade to black (FTB), com duração ajustável. Escolha o padrão para toda a grade e a exceção para clipes específicos.</p>
     </div>
 
     <div class="feature">
@@ -682,7 +723,7 @@ acesso à informação para milhões de pessoas.</p>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       </div>
       <h3>Hora e Temperatura</h3>
-      <p>Bloco de hora, temperatura e cidade sobrepostos ao vídeo. Seleção de 30 cidades brasileiras ou entrada manual.</p>
+      <p>Bloco de hora, temperatura e cidade sobrepostos ao vídeo. Monte sua própria lista com qualquer cidade do país, até 30, buscando pelo nome. Ou informe a temperatura manualmente.</p>
     </div>
 
     <div class="feature">
@@ -698,7 +739,15 @@ acesso à informação para milhões de pessoas.</p>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
       </div>
       <h3>Acesso Remoto</h3>
-      <p>Opere de qualquer máquina da rede via navegador ou pelo PlayLine-Client, sem instalar o servidor.</p>
+      <p>Opere de qualquer máquina da rede via navegador ou pelo PlayLine-Client, sem instalar o servidor. Envie vídeos de outro computador com o PlayIngest. Acesso protegido por usuário e senha, que você troca na própria interface.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </div>
+      <h3>Histórico e Estatísticas</h3>
+      <p>Cada exibição fica registrada com data, hora e duração. Consulte o registro por dia e o ranking dos clipes mais exibidos, com o total de horas transmitidas.</p>
     </div>
 
   </div>
@@ -711,22 +760,22 @@ acesso à informação para milhões de pessoas.</p>
     <div class="step">
       <span class="step-num">Passo 01</span>
       <h3>Extraia e organize</h3>
-      <p>Extraia o arquivo <code>PlayLine-v1.0.0.zip</code> e copie seus vídeos para a pasta <code>Biblioteca</code>. Se necessário, crie subpastas dentro dela para organizar o conteúdo, por exemplo: <code>Comerciais</code>, <code>Programas</code>, <code>Vinhetas</code>. As pastas criadas aparecerão automaticamente como categorias na interface.</p>
+      <p>Extraia o arquivo <code>Playline.v1.2.0.zip</code> e copie seus vídeos para a pasta <code>Biblioteca</code>, ou escolha qualquer outra pasta depois em <code>Configurações &gt; Biblioteca</code>. Se necessário, crie subpastas para organizar o conteúdo, por exemplo: <code>Comerciais</code>, <code>Programas</code>, <code>Vinhetas</code>. As pastas criadas aparecerão automaticamente como categorias na interface.</p>
     </div>
     <div class="step">
       <span class="step-num">Passo 02</span>
       <h3>Execute e autentique</h3>
-      <p>Abra <code>PlayLine.exe</code>. Faça login com usuário <code>playline</code> e senha <code>playline</code>. A interface abrirá automaticamente.</p>
+      <p>Abra <code>PlayLine.exe</code>. Faça login com usuário <code>playline</code> e senha <code>playline</code>. A interface abrirá automaticamente. Em seguida, troque usuário e senha em <code>Configurações</code>, no menu do Painel de Controle: o par padrão só deve valer no primeiro acesso.</p>
     </div>
     <div class="step">
       <span class="step-num">Passo 03</span>
       <h3>Monte o roteiro e transmita</h3>
-      <p>Arraste vídeos da biblioteca para o roteiro, configure logos e hora/temperatura, e inicie a programação. O sinal de saída é enviado via HDMI para um segundo monitor, switch ou mesa de corte. O PlayLine detecta automaticamente as dimensões do dispositivo conectado, seja qual for a resolução ou o canal.</p>
+      <p>Arraste vídeos da biblioteca para o roteiro, configure logos, hora/temperatura e a transição entre clipes (CUT ou FTB), e inicie a programação. O sinal de saída é enviado via HDMI para um segundo monitor, switch ou mesa de corte. O PlayLine detecta automaticamente as dimensões do dispositivo conectado, seja qual for a resolução ou o canal.</p>
     </div>
     <div class="step">
       <span class="step-num">Passo 04 — Opcional</span>
       <h3>Controle de outra máquina</h3>
-      <p>Para operar a interface a partir de outro computador na mesma rede, copie o arquivo <code>PlayLine-Client.exe</code>, localizado em <code>PlayLine v1.0.0\PlayLine\</code>, para a outra máquina e execute-o. Informe o IP do computador servidor e clique em conectar. Alternativamente, acesse pelo navegador em qualquer dispositivo digitando <code>http://&lt;IP&gt;:18000</code>.</p>
+      <p>Para operar a interface a partir de outro computador na mesma rede, copie o arquivo <code>PlayLine-Client.exe</code>, que vem junto no <code>.zip</code>, para a outra máquina e execute-o. Informe o IP do computador servidor e clique em conectar. Alternativamente, acesse pelo navegador em qualquer dispositivo digitando <code>http://&lt;IP&gt;:18000</code>. Para enviar vídeos à biblioteca a partir de outra máquina, use o <code>PlayIngest.exe</code> com o mesmo IP e o mesmo login. Fora da rede da emissora, conecte-se por VPN em vez de expor o servidor à Internet.</p>
     </div>
   </div>
 </div>
@@ -734,18 +783,21 @@ acesso à informação para milhões de pessoas.</p>
 <!-- Download -->
 <section class="section" id="download">
 
-  <h2 class="section-title">PlayLine v1.0.0</h2>
-  <p class="section-sub">Windows 10 ou superior.</p>
+  <div class="dl-heading">
+    <h2 class="section-title">PlayLine v1.2.0</h2>
+    <p class="section-sub">Windows 10 ou superior.</p>
+  </div>
   <div style="max-width:380px;margin:0 auto">
 
     <div class="dl-card">
       <div class="dl-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       </div>
-      <h3>PlayLine v1.0.0</h3>
-      <p>Instalação completa para a máquina de transmissão. Inclui servidor, daemon MPV, interface e PlayLine-Client.</p>
-      <span class="dl-meta">Playline v1.0.0.zip · Windows x64</span>
-      <a class="btn btn-primary" href="https://github.com/henrique-noronha/PlayLine/releases/download/v.1.0.0/Playline.v1.0.0.zip">
+      <h3>PlayLine v1.2.0</h3>
+      <p>Instalação completa para a máquina de transmissão. Inclui servidor, daemon MPV, interface, PlayLine-Client e PlayIngest.</p>
+      <span class="dl-meta">Playline.v1.2.0.zip · Windows x64</span>
+      <span class="dl-meta" style="word-break:break-all">SHA-256: 9ec2dd49f26dd9a2d585ede49cd0aaf1b11afe1b3db4e0155d7fd6d8deef8341</span>
+      <a class="btn btn-primary" href="https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.0/Playline.v1.2.0.zip">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Baixar .zip
       </a>
