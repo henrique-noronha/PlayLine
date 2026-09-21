@@ -239,8 +239,10 @@ async function loadLibraryFiles(subfolder) {
       });
 
       item.addEventListener("dragstart", e => {
-        libDragFile = file;
-        dragSrcIdx  = null;
+        // O roteiro distingue os dois tipos de arraste pelo dataTransfer, não por
+        // flag global (ver o dragover em playlist.js). Aqui só resta zerar o
+        // índice de reordenação, que não vale para um arraste vindo da biblioteca.
+        dragSrcIdx = null;
         e.dataTransfer.effectAllowed = "all";
         e.dataTransfer.setData("library-file", JSON.stringify(file));
         if (selectedLibPaths.size > 1 && selectedLibPaths.has(file.path)) {
