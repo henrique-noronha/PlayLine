@@ -16,7 +16,6 @@ function showConfirm(message, onConfirm) {
 const thumbCache = {};
 const durLoading = new Set(); // paths com carregamento de duração em andamento
 let dragSrcIdx  = null;
-let libDragFile = null;
 let selectedScheduleIds = new Set();
 
 const THUMB_PREFIX = "playline_thumb:";
@@ -714,7 +713,6 @@ window._refreshLibSchedBadges = _refreshLibSchedBadges;
 function initDnD(list) {
   list.querySelectorAll(".schedule-item").forEach((row, i) => {
     row.addEventListener("dragstart", e => {
-      if (libDragFile) return;
       if (state.playing && i === state.currentIndex) { e.preventDefault(); return; }
       document.querySelectorAll(".schedule-item.editing").forEach(r => r.classList.remove("editing"));
       dragSrcIdx = i;
@@ -723,6 +721,12 @@ function initDnD(list) {
       setTimeout(() => row.classList.add("dragging"), 0);
     });
     row.addEventListener("dragend", () => {
+      // Zera o índice aqui, e não só no drop: um arraste abortado (Esc, solto
+      // fora da lista) deixava dragSrcIdx com o índice velho, e um drop
+      // posterior vindo de fora do app (arquivo do Explorer) caía na
+      // reordenação movendo o item errado. dragend dispara depois do drop,
+      // então a reordenação legítima continua funcionando.
+      dragSrcIdx = null;
       window._schedDragging = false;
       row.classList.remove("dragging");
       list.querySelector(".drop-indicator")?.remove();
@@ -1309,21 +1313,101 @@ function openClipTrimPanel(item, idx, anchorEl) {
     }
   }
 
+  // ── Autoscroll de borda durante o arraste ───────────────────────────────────
+  // Igual ao explorador de arquivos: aproximar o cursor do topo ou da base da
+  // lista rola sozinho, sem precisar soltar o item.
+  //
+  // O dragover sozinho não resolve: com o cursor parado na borda ele dispara no
+  // máximo a cada ~350ms, o que dá um scroll aos pulos. Daí o timer abaixo. A
+  // velocidade é em px/s multiplicada pelo tempo do passo, então oscilação no
+  // intervalo do timer não altera a velocidade percebida.
+  const _EDGE_PX    = 52;    // faixa sensível no topo e na base da lista
+  const _EDGE_SPEED = 900;   // px/s na borda extrema
+  const _EDGE_FLOOR = 0.18;  // fração da velocidade ao apenas encostar na faixa
+  const _EDGE_TICK  = 15;    // ms entre passos
+  const _EDGE_IDLE  = 700;   // ms sem dragover ⇒ encerra o laço (rede de segurança)
+
+  let _edgeTimer = 0;
+  let _edgeY     = 0;
+  let _edgeSeen  = 0;
+  let _edgeLast  = 0;
+
+  // Rampa com piso: sem ele, entrar 1px na faixa daria ~17px/s, que parece travado.
+  function _edgeRamp(depth) {
+    const t = Math.min(1, depth / _EDGE_PX);
+    return _EDGE_SPEED * (_EDGE_FLOOR + (1 - _EDGE_FLOOR) * t);
+  }
+
+  function _edgeVelocity() {
+    const r    = list.getBoundingClientRect();
+    const up   = _EDGE_PX - (_edgeY - r.top);
+    const down = _EDGE_PX - (r.bottom - _edgeY);
+    if (up   > 0) return -_edgeRamp(up);
+    if (down > 0) return  _edgeRamp(down);
+    return 0;
+  }
+
+  function _edgeStep() {
+    const now = performance.now();
+    // O arraste pode terminar sem drop/dragend/dragleave (nó de origem destruído
+    // por um re-render no meio do arraste, por exemplo). Sem isto o laço ficaria
+    // rolando a lista sozinho.
+    if (now - _edgeSeen > _EDGE_IDLE) { _edgeStop(); return; }
+    const dt  = Math.min(0.05, (now - _edgeLast) / 1000);
+    _edgeLast = now;
+    const v = _edgeVelocity();
+    if (!v) return;
+    const before = list.scrollTop;
+    list.scrollTop = before + v * dt;
+    if (list.scrollTop === before) return;  // já no topo ou no fim da lista
+    // As linhas deslizaram por baixo de um clientY que não mudou, então o alvo
+    // do drop mudou: sem isto o indicador ficaria parado enquanto a lista rola.
+    _dropIdx = _calcIdx(_edgeY);
+    if (state.playing && _dropIdx <= state.currentIndex) _hideInd();
+    else _placeInd(_dropIdx);
+  }
+
+  function _edgeStart(clientY) {
+    _edgeY    = clientY;
+    _edgeSeen = performance.now();
+    if (_edgeTimer) return;
+    _edgeLast  = _edgeSeen;
+    _edgeTimer = setInterval(_edgeStep, _EDGE_TICK);
+  }
+
+  function _edgeStop() {
+    if (_edgeTimer) clearInterval(_edgeTimer);
+    _edgeTimer = 0;
+  }
+
   list.addEventListener("dragover", e => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = libDragFile ? "copy" : "move";
+    // O tipo de arraste vem do próprio evento, não de uma variável global: uma
+    // flag podia ficar presa (arraste abortado, ou nó da biblioteca destruído
+    // por um re-render no meio do arraste) e travava a reordenação do roteiro.
+    // dataTransfer.types é legível no dragover, ao contrário do getData.
+    e.dataTransfer.dropEffect = e.dataTransfer.types.includes("library-file") ? "copy" : "move";
+    // Antes do guard abaixo de propósito: ao subir em direção à faixa bloqueada
+    // pelo clipe no ar, o scroll tem que continuar para dar passagem.
+    _edgeStart(e.clientY);
     _dropIdx = _calcIdx(e.clientY);
     if (state.playing && _dropIdx <= state.currentIndex) { _hideInd(); return; }
     _placeInd(_dropIdx);
   });
 
   list.addEventListener("dragleave", e => {
-    if (!list.contains(e.relatedTarget)) _hideInd();
+    if (!list.contains(e.relatedTarget)) { _hideInd(); _edgeStop(); }
   });
+
+  // dragend dispara no elemento de origem (.lib-item ou .schedule-item) e
+  // borbulha até o documento, então este é o único ponto que cobre os dois tipos
+  // de arraste, inclusive quando é abortado com Esc ou solto fora da janela.
+  document.addEventListener("dragend", () => { _hideInd(); _edgeStop(); });
 
   list.addEventListener("drop", e => {
     e.preventDefault();
     _hideInd();
+    _edgeStop();
     const idx = _dropIdx ?? state.schedule.length;
     _dropIdx = null;
     if (state.playing && idx <= state.currentIndex) return;
@@ -1335,7 +1419,6 @@ function openClipTrimPanel(item, idx, anchorEl) {
       files.forEach((f, j) => state.schedule.splice(idx + j, 0, {
         id: `item-${now + j}`, title: f.name, path: f.path, duration: 0,
       }));
-      libDragFile = null;
       renderSchedule();
       syncOrderToServer();
       return;
@@ -1344,7 +1427,6 @@ function openClipTrimPanel(item, idx, anchorEl) {
     const libRaw = e.dataTransfer.getData("library-file");
     if (libRaw) {
       addFromLibrary(JSON.parse(libRaw), idx);
-      libDragFile = null;
       return;
     }
 

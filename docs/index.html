@@ -403,6 +403,102 @@ nav {
 .dl-card p  { font-size: 12px; color: var(--muted); line-height: 1.55; flex: 1; }
 .dl-meta    { font-size: 11px; color: var(--muted); font-family: monospace; }
 
+/* ── Modal: dados antes do download ── */
+.lead-modal-backdrop {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(5,8,14,.72);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.lead-modal-backdrop.open { display: flex; }
+.lead-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.lead-modal h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  margin: 0 0 6px;
+  color: var(--text);
+}
+.lead-modal .lead-sub {
+  font-size: 13px;
+  color: var(--body);
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+.lead-field { margin-bottom: 14px; }
+.lead-field label,
+.lead-field .lead-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.lead-field input[type=text],
+.lead-field input[type=email] {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 11px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: inherit;
+}
+.lead-field input:focus { outline: none; border-color: var(--accent); }
+.lead-field.lead-hidden { display: none; }
+.lead-radio-group { display: flex; flex-direction: column; gap: 8px; }
+.lead-radio-row {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 13px; color: var(--text);
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 9px 11px; cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.lead-radio-row:hover { border-color: var(--accent); }
+.lead-radio-row.checked { border-color: var(--accent); background: rgba(79,142,247,.08); }
+.lead-radio-row input { accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; }
+.lead-check {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12px; color: var(--body); line-height: 1.5;
+  margin-bottom: 18px; cursor: pointer;
+}
+.lead-check input { margin-top: 3px; flex-shrink: 0; }
+.lead-privacy {
+  font-size: 11px; color: var(--muted); line-height: 1.5;
+  margin: 0 0 18px;
+}
+.lead-privacy a { color: var(--accent); text-decoration: none; }
+.lead-error {
+  font-size: 12px; color: #f87171;
+  margin: -8px 0 14px; display: none;
+}
+.lead-error.show { display: block; }
+.lead-actions { display: flex; gap: 10px; align-items: center; }
+.lead-close {
+  background: none; border: none; color: var(--muted);
+  font-size: 13px; cursor: pointer; padding: 9px 14px;
+  font-family: inherit;
+}
+.lead-close:hover { color: var(--text); }
+.lead-modal .lead-actions .btn { flex: 1; justify-content: center; }
+.lead-modal .lead-actions .btn[disabled] { opacity: .6; cursor: default; }
+@media (max-width: 480px) {
+  .lead-modal { padding: 22px; }
+}
+
 #download {
   position: relative;
   overflow: hidden;
@@ -934,7 +1030,7 @@ acesso à informação para milhões de pessoas.</p>
       <p>Instalação completa para a máquina de transmissão. Inclui servidor, daemon MPV, interface, PlayLine-Client e PlayIngest.</p>
       <span class="dl-meta">Playline.v1.2.0.zip · Windows x64</span>
       <span class="dl-meta" style="word-break:break-all">SHA-256: 9ec2dd49f26dd9a2d585ede49cd0aaf1b11afe1b3db4e0155d7fd6d8deef8341</span>
-      <a class="btn btn-primary" href="https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.0/Playline.v1.2.0.zip">
+      <a class="btn btn-primary" id="btn-download-zip" href="https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.0/Playline.v1.2.0.zip">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Baixar .zip
       </a>
@@ -973,8 +1069,208 @@ acesso à informação para milhões de pessoas.</p>
   <p>PlayLine · Desenvolvido por <strong style="color:var(--text)">Henrique Noronha Fernandes</strong> · Licenciado sob GPLv3</p>
 </footer>
 
+<!-- Modal: dados antes do download -->
+<div class="lead-modal-backdrop" id="lead-modal-backdrop">
+  <div class="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title">
+    <h3 id="lead-modal-title">Antes de baixar</h3>
+    <p class="lead-sub">Leva 10 segundos e ajuda a entender quem usa o PlayLine pelo Brasil.</p>
+
+    <div class="lead-field">
+      <label for="lead-email">Email</label>
+      <input type="email" id="lead-email" autocomplete="email" placeholder="voce@emissora.com.br">
+    </div>
+
+    <div class="lead-field">
+      <span class="lead-label">Uso do PlayLine</span>
+      <div class="lead-radio-group">
+        <label class="lead-radio-row">
+          <input type="radio" name="lead-usage" id="lead-usage-org" value="Emissora/Instituição">
+          Emissora ou instituição
+        </label>
+        <label class="lead-radio-row">
+          <input type="radio" name="lead-usage" id="lead-usage-personal" value="Uso pessoal/Testes/Estudos">
+          Uso pessoal, teste ou estudo
+        </label>
+      </div>
+    </div>
+
+    <div class="lead-field" id="lead-org-field">
+      <label for="lead-org">Nome da emissora ou instituição</label>
+      <input type="text" id="lead-org" autocomplete="organization" placeholder="Ex: TV Comunitária de Palmas">
+    </div>
+
+    <div class="lead-field">
+      <label for="lead-city">Cidade/UF</label>
+      <input type="text" id="lead-city" placeholder="Ex: Palmas/TO">
+    </div>
+
+    <label class="lead-check">
+      <input type="checkbox" id="lead-consent">
+      Aceito ser contatado para pesquisa ou feedback sobre o PlayLine
+    </label>
+
+    <p class="lead-privacy">Seu email é usado só para contato sobre o PlayLine, sem compartilhamento com terceiros. Pode pedir a exclusão a qualquer momento em <a href="mailto:playline.suporte@gmail.com">playline.suporte@gmail.com</a>.</p>
+
+    <p class="lead-error" id="lead-error">Selecione o uso, e preencha email e cidade/UF (e o nome, se for emissora).</p>
+
+    <div class="lead-actions">
+      <button type="button" class="lead-close" id="lead-cancel">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="lead-submit">Baixar .zip</button>
+    </div>
+  </div>
+</div>
+<iframe name="lead-gform-target" style="display:none" title="envio"></iframe>
+
 <script>
 (function() {
+  // ===== Configuração do Google Form =====
+  // Form real: "Contribua com o projeto PlayLine", com estas 5 perguntas, nesta ordem:
+  //      1. "Email"                             — Resposta curta, validação de resposta = Email
+  //      2. "Uso do PlayLine"                     — Múltipla escolha:
+  //             "Emissora/Instituição"
+  //             "Uso pessoal/Testes/Estudos"
+  //      3. "Nome da Emissora/Instituição"       — Resposta curta
+  //      4. "Cidade/UF"                           — Resposta curta
+  //      5. "Aceito ser contatado para pesquisa, feedback e atualizações sobre o PlayLine."
+  //                                                — Caixas de seleção, 1 única opção: "Sim"
+  //    Nenhuma pergunta obrigatória no Form (a validação já acontece aqui no site).
+  // Para pegar os 5 números entry.XXXXXXXXX: menu ⋮ do editor → "Preencher formulário
+  // automaticamente", preencher cada campo com um valor de teste e clicar em "Gerar link".
+  // Os números aparecem na URL gerada, um por pergunta, na mesma ordem.
+  // GFORM_ACTION vem do link de compartilhar (ícone de link no topo do editor), trocando
+  // o final "/viewform" por "/formResponse".
+  var GFORM_ACTION        = "https://docs.google.com/forms/d/e/1FAIpQLSdJGFbeSfX4kHpzgxpDRLvIrIX85usBN39AkzDGEmIO6YgeBA/formResponse";
+  var GFORM_ENTRY_EMAIL   = "entry.806777160";
+  var GFORM_ENTRY_USAGE   = "entry.530550820";
+  var GFORM_ENTRY_ORG     = "entry.1374658606";
+  var GFORM_ENTRY_CITY    = "entry.1408220563";
+  var GFORM_ENTRY_CONSENT = "entry.137837230";
+  var CONSENT_LABEL       = "Sim"; // precisa bater com o texto da opção no Form
+  // ========================================
+
+  var downloadBtn = document.getElementById('btn-download-zip');
+  var backdrop    = document.getElementById('lead-modal-backdrop');
+  var submitBtn   = document.getElementById('lead-submit');
+  var cancelBtn   = document.getElementById('lead-cancel');
+  var errorEl     = document.getElementById('lead-error');
+  var emailEl     = document.getElementById('lead-email');
+  var orgField    = document.getElementById('lead-org-field');
+  var orgEl       = document.getElementById('lead-org');
+  var cityEl      = document.getElementById('lead-city');
+  var consentEl   = document.getElementById('lead-consent');
+  var usageRadios = document.querySelectorAll('input[name="lead-usage"]');
+  var usageOrgEl  = document.getElementById('lead-usage-org');
+
+  if (downloadBtn && backdrop) {
+    var downloadUrl = downloadBtn.getAttribute('href');
+    var STORAGE_KEY  = 'playline_lead_ok';
+
+    function hasSubmittedBefore() {
+      try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) { return false; }
+    }
+    function rememberSubmitted() {
+      try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+    }
+
+    function openModal() {
+      backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      emailEl.focus();
+    }
+    function closeModal() {
+      backdrop.classList.remove('open');
+      document.body.style.overflow = '';
+      errorEl.classList.remove('show');
+    }
+    function emailLooksValid(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    // O nome da emissora só faz sentido quando o uso é institucional: some quando
+    // "uso pessoal" é marcado, e some junto com a validação/o envio desse campo.
+    function updateUsageUI() {
+      usageRadios.forEach(function(r) {
+        r.closest('.lead-radio-row').classList.toggle('checked', r.checked);
+      });
+      orgField.classList.toggle('lead-hidden', !usageOrgEl.checked);
+    }
+    usageRadios.forEach(function(r) { r.addEventListener('change', updateUsageUI); });
+
+    function goToDownload() {
+      window.location.href = downloadUrl;
+    }
+
+    function submitToSheet() {
+      var form = document.createElement('form');
+      form.action = GFORM_ACTION;
+      form.method = 'POST';
+      form.target = 'lead-gform-target';
+      form.style.display = 'none';
+
+      function addField(name, value) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      }
+      addField(GFORM_ENTRY_EMAIL, emailEl.value.trim());
+      if (usageOrgEl.checked) {
+        addField(GFORM_ENTRY_USAGE, usageOrgEl.value);
+        addField(GFORM_ENTRY_ORG, orgEl.value.trim());
+      } else {
+        var checked = document.querySelector('input[name="lead-usage"]:checked');
+        if (checked) addField(GFORM_ENTRY_USAGE, checked.value);
+      }
+      addField(GFORM_ENTRY_CITY, cityEl.value.trim());
+      if (consentEl.checked) addField(GFORM_ENTRY_CONSENT, CONSENT_LABEL);
+
+      document.body.appendChild(form);
+      form.submit();
+      setTimeout(function() { form.remove(); }, 3000);
+    }
+
+    downloadBtn.addEventListener('click', function(e) {
+      if (hasSubmittedBefore()) return; // já enviou antes nesse navegador, baixa direto
+      e.preventDefault();
+      openModal();
+    });
+
+    cancelBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', function(e) { if (e.target === backdrop) closeModal(); });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal();
+    });
+
+    submitBtn.addEventListener('click', function() {
+      var email      = emailEl.value.trim();
+      var city       = cityEl.value.trim();
+      var org        = orgEl.value.trim();
+      var usageEl    = document.querySelector('input[name="lead-usage"]:checked');
+      var orgNeeded  = usageOrgEl.checked;
+      if (!emailLooksValid(email) || !usageEl || !city || (orgNeeded && !org)) {
+        errorEl.classList.add('show');
+        return;
+      }
+      errorEl.classList.remove('show');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando…';
+
+      // Nunca deixa a captação bloquear o download: se o Forms não responder em
+      // 2,5s (rede, bloqueador de anúncios, form mal configurado), baixa mesmo assim.
+      var iframe = document.querySelector('iframe[name="lead-gform-target"]');
+      var done = false;
+      function finish() {
+        if (done) return;
+        done = true;
+        rememberSubmitted();
+        closeModal();
+        goToDownload();
+      }
+      if (iframe) iframe.addEventListener('load', finish, { once: true });
+      setTimeout(finish, 2500);
+      submitToSheet();
+    });
+  }
+
   var els = document.querySelectorAll('.section, .screenshot-wrap, .features, .steps, .dl-card, .hero');
   var io = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
