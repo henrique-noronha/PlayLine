@@ -16,7 +16,6 @@ function showConfirm(message, onConfirm) {
 const thumbCache = {};
 const durLoading = new Set(); // paths com carregamento de duração em andamento
 let dragSrcIdx  = null;
-let libDragFile = null;
 let selectedScheduleIds = new Set();
 
 const THUMB_PREFIX = "playline_thumb:";
@@ -261,7 +260,66 @@ function ensureDuration(path) {
 }
 
 
-// Miniaturas                                                           
+// Fila de carregamento de mídia
+// Miniatura e duração custam decodificação de vídeo. Sem fila, abrir uma pasta
+// com 50 clipes dispara ~100 elementos <video> de uma vez, e numa máquina
+// modesta isso disputa CPU com a reprodução que está no ar. Limita quantos
+// rodam ao mesmo tempo e publica o progresso para a interface mostrar.
+const _MEDIA_CONC    = 3;
+const _MEDIA_TIMEOUT = 20000;  // rede lenta ou arquivo ruim não prende a fila
+let _mediaActive  = 0;
+let _mediaDone    = 0;
+let _mediaTotal   = 0;
+const _mediaQueue = [];
+
+function _mediaEnqueue(task) {
+  _mediaTotal++;
+  _mediaQueue.push(task);
+  _mediaReport();
+  _mediaPump();
+}
+
+function _mediaPump() {
+  while (_mediaActive < _MEDIA_CONC && _mediaQueue.length) {
+    const task = _mediaQueue.shift();
+    _mediaActive++;
+    let settled = false;
+    const done = () => {
+      if (settled) return;   // tarefa pode sinalizar por mais de um caminho
+      settled = true;
+      _mediaActive--;
+      _mediaDone++;
+      _mediaReport();
+      _mediaPump();
+    };
+    setTimeout(done, _MEDIA_TIMEOUT);
+    try { task(done); } catch (_) { done(); }
+  }
+}
+
+function _mediaReport() {
+  const done = _mediaDone, total = _mediaTotal;
+  if (total > 0 && done >= total) { _mediaDone = 0; _mediaTotal = 0; }  // leva concluída
+  window._onMediaProgress?.(done, total);
+}
+
+// Duração em cache
+// Duração de um arquivo não muda. Sem isto, trocar de pasta relê os metadados
+// de todos os vídeos de novo, toda vez.
+const DUR_PREFIX = "playline_dur:";
+
+function durFromStorage(path) {
+  try {
+    const v = localStorage.getItem(DUR_PREFIX + path);
+    return v === null ? null : Number(v);
+  } catch (_) { return null; }
+}
+
+function durToStorage(path, secs) {
+  try { localStorage.setItem(DUR_PREFIX + path, String(secs)); } catch (_) {}
+}
+
+// Miniaturas
 function generateThumb(path, imgEl) {
   if (!path) return;
 
@@ -278,7 +336,9 @@ function generateThumb(path, imgEl) {
     return;
   }
 
-  // Thumb persistida no localStorage (inclui estado de erro persistido)
+  // Thumb persistida no localStorage por versões anteriores (inclui estado de
+  // erro persistido). Hoje o caminho normal não grava mais aqui: o servidor
+  // responde com Cache-Control immutable e quem guarda é o cache HTTP.
   const stored = thumbFromStorage(path);
   if (stored) {
     if (stored === "__error__") {
@@ -291,13 +351,40 @@ function generateThumb(path, imgEl) {
     return;
   }
 
-  // Primeira vez — gera via vídeo oculto (duração + frame)
   thumbCache[path] = { state: "loading", url: "", pending: [imgEl] };
+  _mediaEnqueue(done => _thumbFromServer(path, done));
+}
 
+// Caminho normal: o servidor já gera a miniatura com ffmpeg (mesmos 112x63) e
+// guarda em disco, inclusive pré-aquecendo no boot. Custa um GET de JPEG em vez
+// de decodificar vídeo no navegador, e o Cache-Control immutable evita repetir.
+function _thumbFromServer(path, done) {
+  const url = "/api/thumbnail?path=" + encodeURIComponent(path);
+  const probe = new Image();
+  probe.onload = () => {
+    const cache = thumbCache[path];
+    if (cache) {
+      cache.state = "done";
+      cache.url   = url;
+      cache.pending.forEach(el => {
+        el.src = url;
+        el.closest(".lib-item, .schedule-item")?.classList.remove("invalid");
+      });
+      cache.pending = [];
+    }
+    done();
+  };
+  // Servidor sem ffmpeg, ou arquivo que o ffmpeg não abre: tenta pelo navegador.
+  probe.onerror = () => _thumbFromBrowser(path, done);
+  probe.src = url;
+}
+
+// Fallback: decodifica no navegador e desenha num canvas. Mais caro, por isso
+// só roda quando o servidor não deu conta.
+function _thumbFromBrowser(path, done) {
   const v = document.createElement("video");
   v.muted = true;
   v.preload = "metadata";
-  v.src = "/media?path=" + encodeURIComponent(path);
 
   v.addEventListener("loadedmetadata", () => {
     v.currentTime = Math.min(2, (v.duration || 0) * 0.1 || 1);
@@ -310,44 +397,35 @@ function generateThumb(path, imgEl) {
     const url = canvas.toDataURL("image/jpeg", 0.8);
     thumbToStorage(path, url);
     const cache = thumbCache[path];
-    cache.state = "done";
-    cache.url = url;
-    cache.pending.forEach(el => {
-      el.src = url;
-      el.closest(".lib-item, .schedule-item")?.classList.remove("invalid");
-    });
-    cache.pending = [];
+    if (cache) {
+      cache.state = "done";
+      cache.url = url;
+      cache.pending.forEach(el => {
+        el.src = url;
+        el.closest(".lib-item, .schedule-item")?.classList.remove("invalid");
+      });
+      cache.pending = [];
+    }
     v.src = "";
+    done();
   }, { once: true });
 
   v.addEventListener("error", () => {
     const cache = thumbCache[path];
-    if (!cache || cache.state !== "loading") return;
-    cache.state = "error";
     v.src = "";
-    fetch("/api/thumbnail?path=" + encodeURIComponent(path))
-      .then(res => { if (!res.ok) throw 0; return res.blob(); })
-      .then(blob => {
-        const url = URL.createObjectURL(blob);
-        thumbToStorage(path, url);
-        cache.state = "done";
-        cache.url   = url;
-        cache.pending.forEach(el => {
-          el.src = url;
-          el.closest(".lib-item, .schedule-item")?.classList.remove("invalid");
-        });
-        cache.pending = [];
-      })
-      .catch(() => {
-        cache.state = "error";
-        // Browser + ffmpeg falharam → arquivo genuinamente ilegível
-        invalidPaths.add(path);
-        cache.pending.forEach(el => el.closest(".lib-item, .schedule-item")?.classList.add("invalid"));
-        cache.pending = [];
-        thumbToStorage(path, "__error__");
-        _updateErrorCount();
-      });
+    if (cache && cache.state === "loading") {
+      // Servidor e navegador falharam → arquivo genuinamente ilegível
+      cache.state = "error";
+      invalidPaths.add(path);
+      cache.pending.forEach(el => el.closest(".lib-item, .schedule-item")?.classList.add("invalid"));
+      cache.pending = [];
+      thumbToStorage(path, "__error__");
+      _updateErrorCount();
+    }
+    done();
   }, { once: true });
+
+  v.src = "/media?path=" + encodeURIComponent(path);
 }
 
 
@@ -714,7 +792,6 @@ window._refreshLibSchedBadges = _refreshLibSchedBadges;
 function initDnD(list) {
   list.querySelectorAll(".schedule-item").forEach((row, i) => {
     row.addEventListener("dragstart", e => {
-      if (libDragFile) return;
       if (state.playing && i === state.currentIndex) { e.preventDefault(); return; }
       document.querySelectorAll(".schedule-item.editing").forEach(r => r.classList.remove("editing"));
       dragSrcIdx = i;
@@ -723,6 +800,12 @@ function initDnD(list) {
       setTimeout(() => row.classList.add("dragging"), 0);
     });
     row.addEventListener("dragend", () => {
+      // Zera o índice aqui, e não só no drop: um arraste abortado (Esc, solto
+      // fora da lista) deixava dragSrcIdx com o índice velho, e um drop
+      // posterior vindo de fora do app (arquivo do Explorer) caía na
+      // reordenação movendo o item errado. dragend dispara depois do drop,
+      // então a reordenação legítima continua funcionando.
+      dragSrcIdx = null;
       window._schedDragging = false;
       row.classList.remove("dragging");
       list.querySelector(".drop-indicator")?.remove();
@@ -1309,21 +1392,101 @@ function openClipTrimPanel(item, idx, anchorEl) {
     }
   }
 
+  // ── Autoscroll de borda durante o arraste ───────────────────────────────────
+  // Igual ao explorador de arquivos: aproximar o cursor do topo ou da base da
+  // lista rola sozinho, sem precisar soltar o item.
+  //
+  // O dragover sozinho não resolve: com o cursor parado na borda ele dispara no
+  // máximo a cada ~350ms, o que dá um scroll aos pulos. Daí o timer abaixo. A
+  // velocidade é em px/s multiplicada pelo tempo do passo, então oscilação no
+  // intervalo do timer não altera a velocidade percebida.
+  const _EDGE_PX    = 52;    // faixa sensível no topo e na base da lista
+  const _EDGE_SPEED = 900;   // px/s na borda extrema
+  const _EDGE_FLOOR = 0.18;  // fração da velocidade ao apenas encostar na faixa
+  const _EDGE_TICK  = 15;    // ms entre passos
+  const _EDGE_IDLE  = 700;   // ms sem dragover ⇒ encerra o laço (rede de segurança)
+
+  let _edgeTimer = 0;
+  let _edgeY     = 0;
+  let _edgeSeen  = 0;
+  let _edgeLast  = 0;
+
+  // Rampa com piso: sem ele, entrar 1px na faixa daria ~17px/s, que parece travado.
+  function _edgeRamp(depth) {
+    const t = Math.min(1, depth / _EDGE_PX);
+    return _EDGE_SPEED * (_EDGE_FLOOR + (1 - _EDGE_FLOOR) * t);
+  }
+
+  function _edgeVelocity() {
+    const r    = list.getBoundingClientRect();
+    const up   = _EDGE_PX - (_edgeY - r.top);
+    const down = _EDGE_PX - (r.bottom - _edgeY);
+    if (up   > 0) return -_edgeRamp(up);
+    if (down > 0) return  _edgeRamp(down);
+    return 0;
+  }
+
+  function _edgeStep() {
+    const now = performance.now();
+    // O arraste pode terminar sem drop/dragend/dragleave (nó de origem destruído
+    // por um re-render no meio do arraste, por exemplo). Sem isto o laço ficaria
+    // rolando a lista sozinho.
+    if (now - _edgeSeen > _EDGE_IDLE) { _edgeStop(); return; }
+    const dt  = Math.min(0.05, (now - _edgeLast) / 1000);
+    _edgeLast = now;
+    const v = _edgeVelocity();
+    if (!v) return;
+    const before = list.scrollTop;
+    list.scrollTop = before + v * dt;
+    if (list.scrollTop === before) return;  // já no topo ou no fim da lista
+    // As linhas deslizaram por baixo de um clientY que não mudou, então o alvo
+    // do drop mudou: sem isto o indicador ficaria parado enquanto a lista rola.
+    _dropIdx = _calcIdx(_edgeY);
+    if (state.playing && _dropIdx <= state.currentIndex) _hideInd();
+    else _placeInd(_dropIdx);
+  }
+
+  function _edgeStart(clientY) {
+    _edgeY    = clientY;
+    _edgeSeen = performance.now();
+    if (_edgeTimer) return;
+    _edgeLast  = _edgeSeen;
+    _edgeTimer = setInterval(_edgeStep, _EDGE_TICK);
+  }
+
+  function _edgeStop() {
+    if (_edgeTimer) clearInterval(_edgeTimer);
+    _edgeTimer = 0;
+  }
+
   list.addEventListener("dragover", e => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = libDragFile ? "copy" : "move";
+    // O tipo de arraste vem do próprio evento, não de uma variável global: uma
+    // flag podia ficar presa (arraste abortado, ou nó da biblioteca destruído
+    // por um re-render no meio do arraste) e travava a reordenação do roteiro.
+    // dataTransfer.types é legível no dragover, ao contrário do getData.
+    e.dataTransfer.dropEffect = e.dataTransfer.types.includes("library-file") ? "copy" : "move";
+    // Antes do guard abaixo de propósito: ao subir em direção à faixa bloqueada
+    // pelo clipe no ar, o scroll tem que continuar para dar passagem.
+    _edgeStart(e.clientY);
     _dropIdx = _calcIdx(e.clientY);
     if (state.playing && _dropIdx <= state.currentIndex) { _hideInd(); return; }
     _placeInd(_dropIdx);
   });
 
   list.addEventListener("dragleave", e => {
-    if (!list.contains(e.relatedTarget)) _hideInd();
+    if (!list.contains(e.relatedTarget)) { _hideInd(); _edgeStop(); }
   });
+
+  // dragend dispara no elemento de origem (.lib-item ou .schedule-item) e
+  // borbulha até o documento, então este é o único ponto que cobre os dois tipos
+  // de arraste, inclusive quando é abortado com Esc ou solto fora da janela.
+  document.addEventListener("dragend", () => { _hideInd(); _edgeStop(); });
 
   list.addEventListener("drop", e => {
     e.preventDefault();
     _hideInd();
+    _edgeStop();
     const idx = _dropIdx ?? state.schedule.length;
     _dropIdx = null;
     if (state.playing && idx <= state.currentIndex) return;
@@ -1335,7 +1498,6 @@ function openClipTrimPanel(item, idx, anchorEl) {
       files.forEach((f, j) => state.schedule.splice(idx + j, 0, {
         id: `item-${now + j}`, title: f.name, path: f.path, duration: 0,
       }));
-      libDragFile = null;
       renderSchedule();
       syncOrderToServer();
       return;
@@ -1344,7 +1506,6 @@ function openClipTrimPanel(item, idx, anchorEl) {
     const libRaw = e.dataTransfer.getData("library-file");
     if (libRaw) {
       addFromLibrary(JSON.parse(libRaw), idx);
-      libDragFile = null;
       return;
     }
 

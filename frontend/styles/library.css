@@ -7,6 +7,31 @@
 }
 
 /* ── Cabeçalho ── */
+/* Progresso de carregamento de miniaturas/durações: avisa o operador que a
+   pasta ainda está sendo lida, em vez de a lista parecer pronta enquanto a
+   máquina ainda trabalha. margin-right:auto empurra os botões para a direita. */
+.lib-loading {
+  margin-left: 10px;
+  margin-right: auto;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.lib-loading::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: lib-loading-pulse 1s ease-in-out infinite;
+}
+@keyframes lib-loading-pulse {
+  0%, 100% { opacity: .25; }
+  50%      { opacity: 1; }
+}
+
 .lib-header-actions {
   display: flex;
   gap: 4px;

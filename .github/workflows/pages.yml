@@ -1,12 +1,14 @@
 name: Deploy GitHub Pages
 
-# Só builda/publica quando algo em docs/ realmente muda (ou quando disparado manualmente).
-# Atualizações no resto do repositório (backend, frontend do app, etc.) não acionam deploy.
+# O site oficial é playlinetv.com.br, publicado pelo Cloudflare a partir de docs/.
+# O GitHub Pages passou a servir apenas uma página de redirecionamento: servir o
+# mesmo conteúdo nos dois endereços fazia o Google indexar o github.io (mais
+# antigo) e ignorar o domínio próprio, mesmo com a tag canonical apontando para ele.
 on:
   push:
     branches: [main]
     paths:
-      - "docs/**"
+      - "docs-redirect/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -35,7 +37,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./docs"
+          path: "./docs-redirect"
 
       - name: Deploy to GitHub Pages
         id: deployment

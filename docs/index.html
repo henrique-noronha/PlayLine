@@ -6,14 +6,14 @@
 <meta name="keywords" content="playout, playline, televisão, TV, broadcasting, broadcast, automação de TV, software de playout, playout gratuito, emissora, transmissão, programação de TV, playout televisivo, software broadcast, TV aberta, sistema de playout, playout open source">
 <meta name="author" content="Henrique Noronha">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://henrique-noronha.github.io/PlayLine/">
+<link rel="canonical" href="https://playlinetv.com.br/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://henrique-noronha.github.io/PlayLine/">
+<meta property="og:url" content="https://playlinetv.com.br/">
 <meta property="og:title" content="PlayLine — Sistema de Playout para TV">
 <meta property="og:description" content="Software gratuito de playout televisivo. Automatize a programação da sua emissora sem licenças comerciais nem equipe técnica dedicada.">
-<meta property="og:image" content="https://henrique-noronha.github.io/PlayLine/InterfacePlayLine.png">
+<meta property="og:image" content="https://playlinetv.com.br/InterfacePlayLine.png">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:site_name" content="PlayLine">
 
@@ -21,7 +21,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="PlayLine — Sistema de Playout para TV">
 <meta name="twitter:description" content="Software gratuito de playout televisivo. Automatize a programação da sua emissora sem licenças comerciais nem equipe técnica dedicada.">
-<meta name="twitter:image" content="https://henrique-noronha.github.io/PlayLine/InterfacePlayLine.png">
+<meta name="twitter:image" content="https://playlinetv.com.br/InterfacePlayLine.png">
 
 <!-- JSON-LD -->
 <script type="application/ld+json">
@@ -31,8 +31,8 @@
   "name": "PlayLine",
   "alternateName": "PlayLine Playout",
   "description": "Sistema de automação de playout televisivo gratuito e de código aberto para emissoras de TV. Permite transmissão contínua, sobreposição de logos, acesso remoto e programação automatizada.",
-  "url": "https://henrique-noronha.github.io/PlayLine/",
-  "downloadUrl": "https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.0/PlayLine.v1.2.0.zip",
+  "url": "https://playlinetv.com.br/",
+  "downloadUrl": "https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.0/Playline.v1.2.0.zip",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Windows 10, Windows 11",
   "softwareVersion": "1.2.0",
@@ -61,6 +61,7 @@
   --accent-h:#3b7de8;
   --text:    #e5e7eb;
   --muted:   #6b7280;
+  --body:    #9ca3af;   /* texto corrido: contraste maior que o --muted, que agora e so para rotulos */
   --green:   #22c55e;
   --font-display: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
 }
@@ -187,14 +188,26 @@ nav {
   gap: 16px;
 }
 .about-text p {
-  font-size: 16px;
+  font-size: 17px;
+  color: var(--body);
+  line-height: 1.75;
+  text-align: left;
+  max-width: 65ch;
+  margin: 0 auto;
+}
+.about-credit {
+  font-size: 14px;
   color: var(--muted);
   line-height: 1.7;
-  text-align: center;
+  text-align: left;
+  max-width: 65ch;
+  margin: 4px auto 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
 }
 .hero-sub {
   font-size: 19px;
-  color: var(--muted);
+  color: var(--body);
   max-width: 520px;
   margin: 0 auto 40px;
   line-height: 1.55;
@@ -265,7 +278,7 @@ nav {
 }
 .section-sub {
   text-align: center;
-  color: var(--muted);
+  color: var(--body);
   font-size: 15px;
   max-width: 460px;
   margin: 0 auto 52px;
@@ -288,7 +301,15 @@ nav {
   padding: 30px 26px;
   transition: background .15s;
 }
-.feature:hover { background: var(--surf2); }
+.feature {
+  position: relative;
+  transition: background .15s, transform .15s, box-shadow .15s;
+}
+.feature:hover {
+  background: var(--surf2);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.35);
+}
 .feature-icon {
   width: 40px;
   height: 40px;
@@ -301,7 +322,7 @@ nav {
   margin-bottom: 14px;
 }
 .feature h3 { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: -.015em; }
-.feature p  { font-size: 13px; color: var(--muted); line-height: 1.55; }
+.feature p  { font-size: 13.5px; color: var(--body); line-height: 1.6; }
 
 /* ── Steps ── */
 .steps-bg {
@@ -312,7 +333,7 @@ nav {
 }
 .steps {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
@@ -338,7 +359,7 @@ nav {
   text-transform: uppercase;
 }
 .step h3 { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -.015em; }
-.step p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.step p  { font-size: 13.5px; color: var(--body); line-height: 1.65; }
 .step code {
   font-family: 'Courier New', monospace;
   background: var(--surf2);
@@ -382,16 +403,134 @@ nav {
 .dl-card p  { font-size: 12px; color: var(--muted); line-height: 1.55; flex: 1; }
 .dl-meta    { font-size: 11px; color: var(--muted); font-family: monospace; }
 
+/* ── Modal: dados antes do download ── */
+.lead-modal-backdrop {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(5,8,14,.72);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.lead-modal-backdrop.open { display: flex; }
+.lead-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.lead-modal h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  margin: 0 0 6px;
+  color: var(--text);
+}
+.lead-modal .lead-sub {
+  font-size: 13px;
+  color: var(--body);
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+.lead-field { margin-bottom: 14px; }
+.lead-field label,
+.lead-field .lead-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.lead-field input[type=text],
+.lead-field input[type=email] {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 11px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: inherit;
+}
+.lead-field input:focus { outline: none; border-color: var(--accent); }
+.lead-field.lead-hidden { display: none; }
+.lead-radio-group { display: flex; flex-direction: column; gap: 8px; }
+.lead-radio-row {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 13px; color: var(--text);
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 9px 11px; cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.lead-radio-row:hover { border-color: var(--accent); }
+.lead-radio-row.checked { border-color: var(--accent); background: rgba(79,142,247,.08); }
+.lead-radio-row input { accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; }
+.lead-check {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12px; color: var(--body); line-height: 1.5;
+  margin-bottom: 18px; cursor: pointer;
+}
+.lead-check input { margin-top: 3px; flex-shrink: 0; }
+.lead-privacy {
+  font-size: 11px; color: var(--muted); line-height: 1.5;
+  margin: 0 0 18px;
+}
+.lead-privacy a { color: var(--accent); text-decoration: none; }
+.lead-error {
+  font-size: 12px; color: #f87171;
+  margin: -8px 0 14px; display: none;
+}
+.lead-error.show { display: block; }
+.lead-actions { display: flex; gap: 10px; align-items: center; }
+.lead-close {
+  background: none; border: none; color: var(--muted);
+  font-size: 13px; cursor: pointer; padding: 9px 14px;
+  font-family: inherit;
+}
+.lead-close:hover { color: var(--text); }
+.lead-modal .lead-actions .btn { flex: 1; justify-content: center; }
+.lead-modal .lead-actions .btn[disabled] { opacity: .6; cursor: default; }
+@media (max-width: 480px) {
+  .lead-modal { padding: 22px; }
+}
+
 #download {
   position: relative;
   overflow: hidden;
   background: url('images/ChatGPT Image 23 de jul. de 2026, 10_55_21.png') center center / cover fixed;
 }
+/* Título da seção de download: a foto tem monitores e números claros bem atrás
+   do texto. Este halo escuro cria uma "poça" de contraste que some nas bordas,
+   sem virar mais uma caixa competindo com o card logo abaixo. */
+.dl-heading {
+  position: relative;
+  max-width: 380px;
+  margin: 0 auto 26px;
+  padding: 22px 30px 18px;
+  background: rgba(17,24,39,0.82);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.dl-heading .section-sub { margin-bottom: 0; }
+#download .section-title { text-shadow: 0 2px 20px rgba(0,0,0,.55); }
+#download .dl-heading + div { margin-top: 0; }
+
 #download::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(13,17,23,1) 0%, rgba(13,17,23,0.60) 40%, rgba(13,17,23,0.60) 60%, rgba(13,17,23,1) 100%);
+  /* Escurecimento forte no miolo: a foto fica como ambiente, sem competir com
+     o texto do card. O desfoque e a dessaturação empurram a imagem pro fundo. */
+  background: linear-gradient(to bottom, rgba(13,17,23,1) 10%, rgba(13,17,23,0.40) 15%, rgba(13,17,23,0.86) 35%, rgba(13,17,23,1) 100%);
+  -webkit-backdrop-filter: blur(1px) saturate(0.75);
+  backdrop-filter: blur(1px) saturate(0.75);
   z-index: 0;
 }
 #download::after {
@@ -425,6 +564,7 @@ footer {
 /* ── Tablet ── */
 @media (max-width: 1024px) {
   .steps { grid-template-columns: repeat(2, 1fr); }
+  .arq-notas { grid-template-columns: 1fr; }
   .features { grid-template-columns: repeat(2, 1fr); }
   .hero h1 { font-size: clamp(22px, 3.5vw, 34px); }
 }
@@ -437,7 +577,13 @@ footer {
   .nav-hamburger { display: flex; }
   .hero { padding: 48px 20px 36px; }
   .hero > img { max-width: 220px !important; }
-  .hero-sub { font-size: 17px; }
+  .hero-sub { font-size: 17px; margin-bottom: 28px; }
+  /* No celular os dois botões ocupam a largura toda, em vez de ficarem espremidos lado a lado */
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions .btn { justify-content: center; }
+  .arq-wrap { padding: 14px; }
+  .arq-notas { grid-template-columns: 1fr; gap: 14px; }
+  .about-text p { font-size: 16px; }
   .screenshot-wrap { padding: 0 16px; margin-bottom: 48px; }
   .section { padding: 48px 20px; }
   .features { grid-template-columns: 1fr !important; }
@@ -476,7 +622,11 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(13, 17, 23, 0.60) 0%, rgba(13, 17, 23, 0.85) 60%, rgba(13, 17, 23, 1) 100%);
+  /* Topo da página: a imagem passa por trás do menu e da logo, então precisa de
+     bastante escurecimento já no começo, senão os links do menu somem na foto. */
+  background: linear-gradient(to bottom, rgba(13, 17, 23, 0.84) 0%, rgba(13, 17, 23, 0.90) 55%, rgba(13, 17, 23, 1) 100%);
+  -webkit-backdrop-filter: blur(1px) saturate(0.75);
+  backdrop-filter: blur(1px) saturate(0.75);
   z-index: 0;
 }
 .hero-wrap::after {
@@ -556,6 +706,85 @@ body {
 }
 .nav-mobile a:last-child { border-bottom: none; }
 .nav-mobile a:hover { background: var(--surface); }
+
+/* ── Hero: selo, botões e linha de apoio ── */
+.hero-badge { margin-bottom: 22px; }
+.hero-actions { margin-bottom: 18px; }
+.hero-meta {
+  font-size: 12.5px;
+  color: var(--muted);
+  letter-spacing: .02em;
+}
+
+/* ── Screenshot dentro de moldura de navegador ── */
+.screenshot-caption {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 18px;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* ── Como funciona: diagrama de arquitetura ── */
+.arq-wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 26px;
+  background: #080b10;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+/* O diagrama original é preto sobre branco. Invertido, o traço fica claro
+   sobre fundo escuro e a figura para de brigar com o tema do site. */
+.arq-wrap img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: invert(1) hue-rotate(180deg) contrast(0.92);
+}
+.arq-notas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  max-width: 880px;
+  margin: 22px auto 0;
+}
+.arq-nota {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-left: 14px;
+  border-left: 2px solid var(--accent);
+}
+.arq-nota strong { font-size: 13px; color: var(--text); font-weight: 700; }
+.arq-nota span   { font-size: 13px; color: var(--body); line-height: 1.6; }
+
+/* ── Card de download: título e subtítulo migraram para dentro dele ── */
+.dl-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--text);
+}
+.dl-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: -4px;
+}
+/* A interface roda em janela nativa (pywebview), não em navegador: a moldura é
+   só um enquadramento, sem barra de endereço, para não sugerir o que não é. */
+.app-frame {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surf2);
+  box-shadow: 0 32px 80px rgba(0,0,0,.7);
+}
+.app-frame img { display: block; width: 100%; height: auto; }
 </style>
 
 <!-- SMPTE color bars -->
@@ -595,9 +824,18 @@ body {
 <!-- Hero -->
 <div class="hero-wrap">
 <section class="hero">
-  <img src="LogoPlayLineD.png" alt="PlayLine" style="max-width:420px;height:auto;margin-bottom:32px;display:block;margin-left:auto;margin-right:auto">
+  <img src="LogoPlayLineD.png" alt="PlayLine" style="max-width:420px;height:auto;margin-bottom:28px;display:block;margin-left:auto;margin-right:auto">
+  <a class="hero-badge" href="#download"><span class="dot"></span> Versão 1.2.0 disponível</a>
   <h1 style="font-family:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif"> Software de playout televisivo gratuito.</h1>
   <p class="hero-sub">Um sistema projetado para emissoras que precisam de transmissão contínua sem depender de licenças comerciais ou de equipe técnica especializada.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary btn-lg" href="#download">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Baixar grátis
+    </a>
+    <a class="btn btn-outline btn-lg" href="https://github.com/henrique-noronha/PlayLine" target="_blank">Ver no GitHub</a>
+  </div>
+  <p class="hero-meta">Windows 10 ou 11 · Licença GPLv3 · Sem cadastro</p>
 </section>
 
 <!-- O que é -->
@@ -614,6 +852,7 @@ dessas emissoras, o PlayLine contribui para que a <strong>televisão
 aberta</strong> continue cumprindo seu papel como principal meio de
 acesso à informação para milhões de pessoas.</p>
 
+    <p class="about-credit">Já em <strong>operação diária</strong> numa emissora legislativa, colocando a programação no ar de forma contínua.</p>
   </div>
 </section>
 
@@ -621,7 +860,10 @@ acesso à informação para milhões de pessoas.</p>
 
 <!-- Screenshot -->
 <div class="screenshot-wrap">
-  <img src="InterfacePlayLine.png" alt="Interface do PlayLine" style="display:block;width:100%;height:auto;border-radius:10px;box-shadow:0 32px 80px rgba(0,0,0,.7)" />
+  <div class="app-frame">
+    <img src="InterfacePlayLine.png" alt="Interface do PlayLine: painel de controle, roteiro de programação e biblioteca de vídeos" />
+  </div>
+  <p class="screenshot-caption">A interface completa: painel de controle, roteiro com horários calculados e biblioteca, tudo numa tela só.</p>
 </div>
 
 <!-- Por que -->
@@ -697,7 +939,7 @@ acesso à informação para milhões de pessoas.</p>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       </div>
       <h3>Hora e Temperatura</h3>
-      <p>Bloco de hora, temperatura e cidade sobrepostos ao vídeo. Seleção de 30 cidades brasileiras ou entrada manual.</p>
+      <p>Bloco de hora, temperatura e cidade sobrepostos ao vídeo. Monte sua própria lista com qualquer cidade do país, até 30, buscando pelo nome. Ou informe a temperatura manualmente.</p>
     </div>
 
     <div class="feature">
@@ -727,6 +969,29 @@ acesso à informação para milhões de pessoas.</p>
   </div>
 </section>
 
+<!-- Como funciona -->
+<section class="section" id="como-funciona">
+  <h2 class="section-title">Como funciona por dentro</h2>
+  <p class="section-sub">Três processos isolados: se um falhar, o sinal continua no ar.</p>
+  <div class="arq-wrap">
+    <img src="arquitetura.png" alt="Arquitetura do PlayLine: interface, servidor e daemon de vídeo em processos separados" />
+  </div>
+  <div class="arq-notas">
+    <div class="arq-nota">
+      <strong>Interface</strong>
+      <span>O que o operador vê. Pode fechar, travar ou ser aberta de outra máquina sem afetar a transmissão.</span>
+    </div>
+    <div class="arq-nota">
+      <strong>Servidor</strong>
+      <span>Guarda o roteiro, o histórico e as configurações. Coordena o que entra no ar e quando.</span>
+    </div>
+    <div class="arq-nota">
+      <strong>Motor de vídeo</strong>
+      <span>Processo separado que decodifica e envia o sinal para a saída HDMI. É o que mantém a TV no ar.</span>
+    </div>
+  </div>
+</section>
+
 <!-- Steps -->
 <h2 class="section-title" id="como-usar" style="padding:60px 40px 36px">Como usar</h2>
 <div style="padding:0 40px 80px">
@@ -734,7 +999,7 @@ acesso à informação para milhões de pessoas.</p>
     <div class="step">
       <span class="step-num">Passo 01</span>
       <h3>Extraia e organize</h3>
-      <p>Extraia o arquivo <code>PlayLine.v1.2.0.zip</code> e copie seus vídeos para a pasta <code>Biblioteca</code>, ou escolha qualquer outra pasta depois em <code>Configurações &gt; Biblioteca</code>. Se necessário, crie subpastas para organizar o conteúdo, por exemplo: <code>Comerciais</code>, <code>Programas</code>, <code>Vinhetas</code>. As pastas criadas aparecerão automaticamente como categorias na interface.</p>
+      <p>Extraia o arquivo <code>Playline.v1.2.0.zip</code> e copie seus vídeos para a pasta <code>Biblioteca</code>, ou escolha qualquer outra pasta depois em <code>Configurações &gt; Biblioteca</code>. Se necessário, crie subpastas para organizar o conteúdo, por exemplo: <code>Comerciais</code>, <code>Programas</code>, <code>Vinhetas</code>. As pastas criadas aparecerão automaticamente como categorias na interface.</p>
     </div>
     <div class="step">
       <span class="step-num">Passo 02</span>
@@ -757,20 +1022,15 @@ acesso à informação para milhões de pessoas.</p>
 <!-- Download -->
 <section class="section" id="download">
 
-  <h2 class="section-title">PlayLine v1.2.0</h2>
-  <p class="section-sub">Windows 10 ou superior.</p>
-  <div style="max-width:380px;margin:0 auto">
+  <div style="max-width:420px;margin:0 auto">
 
     <div class="dl-card">
-      <div class="dl-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      </div>
-      <h3>PlayLine v1.2.0</h3>
+      <h2 class="dl-title">PlayLine v1.2.0</h2>
+      <p class="dl-sub">Windows 10 ou superior</p>
       <p>Instalação completa para a máquina de transmissão. Inclui servidor, daemon MPV, interface, PlayLine-Client e PlayIngest.</p>
-      <span class="dl-meta">PlayLine.v1.2.0.zip · Windows x64</span>
-      <!-- TODO v1.2.0: substituir pelo SHA-256 do zip gerado (certutil -hashfile PlayLine.v1.2.0.zip SHA256) -->
-      <span class="dl-meta" style="word-break:break-all">SHA-256: PENDENTE (gerar após o build da v1.2.0)</span>
-      <a class="btn btn-primary" href="https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.0/PlayLine.v1.2.0.zip">
+      <span class="dl-meta">Playline.v1.2.0.zip · Windows x64</span>
+      <span class="dl-meta" style="word-break:break-all">SHA-256: 9ec2dd49f26dd9a2d585ede49cd0aaf1b11afe1b3db4e0155d7fd6d8deef8341</span>
+      <a class="btn btn-primary" id="btn-download-zip" href="https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.0/Playline.v1.2.0.zip">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Baixar .zip
       </a>
@@ -809,8 +1069,208 @@ acesso à informação para milhões de pessoas.</p>
   <p>PlayLine · Desenvolvido por <strong style="color:var(--text)">Henrique Noronha Fernandes</strong> · Licenciado sob GPLv3</p>
 </footer>
 
+<!-- Modal: dados antes do download -->
+<div class="lead-modal-backdrop" id="lead-modal-backdrop">
+  <div class="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title">
+    <h3 id="lead-modal-title">Antes de baixar</h3>
+    <p class="lead-sub">Leva 10 segundos e ajuda a entender quem usa o PlayLine pelo Brasil.</p>
+
+    <div class="lead-field">
+      <label for="lead-email">Email</label>
+      <input type="email" id="lead-email" autocomplete="email" placeholder="voce@emissora.com.br">
+    </div>
+
+    <div class="lead-field">
+      <span class="lead-label">Uso do PlayLine</span>
+      <div class="lead-radio-group">
+        <label class="lead-radio-row">
+          <input type="radio" name="lead-usage" id="lead-usage-org" value="Emissora/Instituição">
+          Emissora ou instituição
+        </label>
+        <label class="lead-radio-row">
+          <input type="radio" name="lead-usage" id="lead-usage-personal" value="Uso pessoal/Testes/Estudos">
+          Uso pessoal, teste ou estudo
+        </label>
+      </div>
+    </div>
+
+    <div class="lead-field" id="lead-org-field">
+      <label for="lead-org">Nome da emissora ou instituição</label>
+      <input type="text" id="lead-org" autocomplete="organization" placeholder="Ex: TV Comunitária de Palmas">
+    </div>
+
+    <div class="lead-field">
+      <label for="lead-city">Cidade/UF</label>
+      <input type="text" id="lead-city" placeholder="Ex: Palmas/TO">
+    </div>
+
+    <label class="lead-check">
+      <input type="checkbox" id="lead-consent">
+      Aceito ser contatado para pesquisa ou feedback sobre o PlayLine
+    </label>
+
+    <p class="lead-privacy">Seu email é usado só para contato sobre o PlayLine, sem compartilhamento com terceiros. Pode pedir a exclusão a qualquer momento em <a href="mailto:playline.suporte@gmail.com">playline.suporte@gmail.com</a>.</p>
+
+    <p class="lead-error" id="lead-error">Selecione o uso, e preencha email e cidade/UF (e o nome, se for emissora).</p>
+
+    <div class="lead-actions">
+      <button type="button" class="lead-close" id="lead-cancel">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="lead-submit">Baixar .zip</button>
+    </div>
+  </div>
+</div>
+<iframe name="lead-gform-target" style="display:none" title="envio"></iframe>
+
 <script>
 (function() {
+  // ===== Configuração do Google Form =====
+  // Form real: "Contribua com o projeto PlayLine", com estas 5 perguntas, nesta ordem:
+  //      1. "Email"                             — Resposta curta, validação de resposta = Email
+  //      2. "Uso do PlayLine"                     — Múltipla escolha:
+  //             "Emissora/Instituição"
+  //             "Uso pessoal/Testes/Estudos"
+  //      3. "Nome da Emissora/Instituição"       — Resposta curta
+  //      4. "Cidade/UF"                           — Resposta curta
+  //      5. "Aceito ser contatado para pesquisa, feedback e atualizações sobre o PlayLine."
+  //                                                — Caixas de seleção, 1 única opção: "Sim"
+  //    Nenhuma pergunta obrigatória no Form (a validação já acontece aqui no site).
+  // Para pegar os 5 números entry.XXXXXXXXX: menu ⋮ do editor → "Preencher formulário
+  // automaticamente", preencher cada campo com um valor de teste e clicar em "Gerar link".
+  // Os números aparecem na URL gerada, um por pergunta, na mesma ordem.
+  // GFORM_ACTION vem do link de compartilhar (ícone de link no topo do editor), trocando
+  // o final "/viewform" por "/formResponse".
+  var GFORM_ACTION        = "https://docs.google.com/forms/d/e/1FAIpQLSdJGFbeSfX4kHpzgxpDRLvIrIX85usBN39AkzDGEmIO6YgeBA/formResponse";
+  var GFORM_ENTRY_EMAIL   = "entry.806777160";
+  var GFORM_ENTRY_USAGE   = "entry.530550820";
+  var GFORM_ENTRY_ORG     = "entry.1374658606";
+  var GFORM_ENTRY_CITY    = "entry.1408220563";
+  var GFORM_ENTRY_CONSENT = "entry.137837230";
+  var CONSENT_LABEL       = "Sim"; // precisa bater com o texto da opção no Form
+  // ========================================
+
+  var downloadBtn = document.getElementById('btn-download-zip');
+  var backdrop    = document.getElementById('lead-modal-backdrop');
+  var submitBtn   = document.getElementById('lead-submit');
+  var cancelBtn   = document.getElementById('lead-cancel');
+  var errorEl     = document.getElementById('lead-error');
+  var emailEl     = document.getElementById('lead-email');
+  var orgField    = document.getElementById('lead-org-field');
+  var orgEl       = document.getElementById('lead-org');
+  var cityEl      = document.getElementById('lead-city');
+  var consentEl   = document.getElementById('lead-consent');
+  var usageRadios = document.querySelectorAll('input[name="lead-usage"]');
+  var usageOrgEl  = document.getElementById('lead-usage-org');
+
+  if (downloadBtn && backdrop) {
+    var downloadUrl = downloadBtn.getAttribute('href');
+    var STORAGE_KEY  = 'playline_lead_ok';
+
+    function hasSubmittedBefore() {
+      try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) { return false; }
+    }
+    function rememberSubmitted() {
+      try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+    }
+
+    function openModal() {
+      backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      emailEl.focus();
+    }
+    function closeModal() {
+      backdrop.classList.remove('open');
+      document.body.style.overflow = '';
+      errorEl.classList.remove('show');
+    }
+    function emailLooksValid(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    // O nome da emissora só faz sentido quando o uso é institucional: some quando
+    // "uso pessoal" é marcado, e some junto com a validação/o envio desse campo.
+    function updateUsageUI() {
+      usageRadios.forEach(function(r) {
+        r.closest('.lead-radio-row').classList.toggle('checked', r.checked);
+      });
+      orgField.classList.toggle('lead-hidden', !usageOrgEl.checked);
+    }
+    usageRadios.forEach(function(r) { r.addEventListener('change', updateUsageUI); });
+
+    function goToDownload() {
+      window.location.href = downloadUrl;
+    }
+
+    function submitToSheet() {
+      var form = document.createElement('form');
+      form.action = GFORM_ACTION;
+      form.method = 'POST';
+      form.target = 'lead-gform-target';
+      form.style.display = 'none';
+
+      function addField(name, value) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      }
+      addField(GFORM_ENTRY_EMAIL, emailEl.value.trim());
+      if (usageOrgEl.checked) {
+        addField(GFORM_ENTRY_USAGE, usageOrgEl.value);
+        addField(GFORM_ENTRY_ORG, orgEl.value.trim());
+      } else {
+        var checked = document.querySelector('input[name="lead-usage"]:checked');
+        if (checked) addField(GFORM_ENTRY_USAGE, checked.value);
+      }
+      addField(GFORM_ENTRY_CITY, cityEl.value.trim());
+      if (consentEl.checked) addField(GFORM_ENTRY_CONSENT, CONSENT_LABEL);
+
+      document.body.appendChild(form);
+      form.submit();
+      setTimeout(function() { form.remove(); }, 3000);
+    }
+
+    downloadBtn.addEventListener('click', function(e) {
+      if (hasSubmittedBefore()) return; // já enviou antes nesse navegador, baixa direto
+      e.preventDefault();
+      openModal();
+    });
+
+    cancelBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', function(e) { if (e.target === backdrop) closeModal(); });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal();
+    });
+
+    submitBtn.addEventListener('click', function() {
+      var email      = emailEl.value.trim();
+      var city       = cityEl.value.trim();
+      var org        = orgEl.value.trim();
+      var usageEl    = document.querySelector('input[name="lead-usage"]:checked');
+      var orgNeeded  = usageOrgEl.checked;
+      if (!emailLooksValid(email) || !usageEl || !city || (orgNeeded && !org)) {
+        errorEl.classList.add('show');
+        return;
+      }
+      errorEl.classList.remove('show');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando…';
+
+      // Nunca deixa a captação bloquear o download: se o Forms não responder em
+      // 2,5s (rede, bloqueador de anúncios, form mal configurado), baixa mesmo assim.
+      var iframe = document.querySelector('iframe[name="lead-gform-target"]');
+      var done = false;
+      function finish() {
+        if (done) return;
+        done = true;
+        rememberSubmitted();
+        closeModal();
+        goToDownload();
+      }
+      if (iframe) iframe.addEventListener('load', finish, { once: true });
+      setTimeout(finish, 2500);
+      submitToSheet();
+    });
+  }
+
   var els = document.querySelectorAll('.section, .screenshot-wrap, .features, .steps, .dl-card, .hero');
   var io = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
