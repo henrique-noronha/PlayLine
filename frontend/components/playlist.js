@@ -260,7 +260,66 @@ function ensureDuration(path) {
 }
 
 
-// Miniaturas                                                           
+// Fila de carregamento de mídia
+// Miniatura e duração custam decodificação de vídeo. Sem fila, abrir uma pasta
+// com 50 clipes dispara ~100 elementos <video> de uma vez, e numa máquina
+// modesta isso disputa CPU com a reprodução que está no ar. Limita quantos
+// rodam ao mesmo tempo e publica o progresso para a interface mostrar.
+const _MEDIA_CONC    = 3;
+const _MEDIA_TIMEOUT = 20000;  // rede lenta ou arquivo ruim não prende a fila
+let _mediaActive  = 0;
+let _mediaDone    = 0;
+let _mediaTotal   = 0;
+const _mediaQueue = [];
+
+function _mediaEnqueue(task) {
+  _mediaTotal++;
+  _mediaQueue.push(task);
+  _mediaReport();
+  _mediaPump();
+}
+
+function _mediaPump() {
+  while (_mediaActive < _MEDIA_CONC && _mediaQueue.length) {
+    const task = _mediaQueue.shift();
+    _mediaActive++;
+    let settled = false;
+    const done = () => {
+      if (settled) return;   // tarefa pode sinalizar por mais de um caminho
+      settled = true;
+      _mediaActive--;
+      _mediaDone++;
+      _mediaReport();
+      _mediaPump();
+    };
+    setTimeout(done, _MEDIA_TIMEOUT);
+    try { task(done); } catch (_) { done(); }
+  }
+}
+
+function _mediaReport() {
+  const done = _mediaDone, total = _mediaTotal;
+  if (total > 0 && done >= total) { _mediaDone = 0; _mediaTotal = 0; }  // leva concluída
+  window._onMediaProgress?.(done, total);
+}
+
+// Duração em cache
+// Duração de um arquivo não muda. Sem isto, trocar de pasta relê os metadados
+// de todos os vídeos de novo, toda vez.
+const DUR_PREFIX = "playline_dur:";
+
+function durFromStorage(path) {
+  try {
+    const v = localStorage.getItem(DUR_PREFIX + path);
+    return v === null ? null : Number(v);
+  } catch (_) { return null; }
+}
+
+function durToStorage(path, secs) {
+  try { localStorage.setItem(DUR_PREFIX + path, String(secs)); } catch (_) {}
+}
+
+// Miniaturas
 function generateThumb(path, imgEl) {
   if (!path) return;
 
@@ -277,7 +336,9 @@ function generateThumb(path, imgEl) {
     return;
   }
 
-  // Thumb persistida no localStorage (inclui estado de erro persistido)
+  // Thumb persistida no localStorage por versões anteriores (inclui estado de
+  // erro persistido). Hoje o caminho normal não grava mais aqui: o servidor
+  // responde com Cache-Control immutable e quem guarda é o cache HTTP.
   const stored = thumbFromStorage(path);
   if (stored) {
     if (stored === "__error__") {
@@ -290,13 +351,40 @@ function generateThumb(path, imgEl) {
     return;
   }
 
-  // Primeira vez — gera via vídeo oculto (duração + frame)
   thumbCache[path] = { state: "loading", url: "", pending: [imgEl] };
+  _mediaEnqueue(done => _thumbFromServer(path, done));
+}
 
+// Caminho normal: o servidor já gera a miniatura com ffmpeg (mesmos 112x63) e
+// guarda em disco, inclusive pré-aquecendo no boot. Custa um GET de JPEG em vez
+// de decodificar vídeo no navegador, e o Cache-Control immutable evita repetir.
+function _thumbFromServer(path, done) {
+  const url = "/api/thumbnail?path=" + encodeURIComponent(path);
+  const probe = new Image();
+  probe.onload = () => {
+    const cache = thumbCache[path];
+    if (cache) {
+      cache.state = "done";
+      cache.url   = url;
+      cache.pending.forEach(el => {
+        el.src = url;
+        el.closest(".lib-item, .schedule-item")?.classList.remove("invalid");
+      });
+      cache.pending = [];
+    }
+    done();
+  };
+  // Servidor sem ffmpeg, ou arquivo que o ffmpeg não abre: tenta pelo navegador.
+  probe.onerror = () => _thumbFromBrowser(path, done);
+  probe.src = url;
+}
+
+// Fallback: decodifica no navegador e desenha num canvas. Mais caro, por isso
+// só roda quando o servidor não deu conta.
+function _thumbFromBrowser(path, done) {
   const v = document.createElement("video");
   v.muted = true;
   v.preload = "metadata";
-  v.src = "/media?path=" + encodeURIComponent(path);
 
   v.addEventListener("loadedmetadata", () => {
     v.currentTime = Math.min(2, (v.duration || 0) * 0.1 || 1);
@@ -309,44 +397,35 @@ function generateThumb(path, imgEl) {
     const url = canvas.toDataURL("image/jpeg", 0.8);
     thumbToStorage(path, url);
     const cache = thumbCache[path];
-    cache.state = "done";
-    cache.url = url;
-    cache.pending.forEach(el => {
-      el.src = url;
-      el.closest(".lib-item, .schedule-item")?.classList.remove("invalid");
-    });
-    cache.pending = [];
+    if (cache) {
+      cache.state = "done";
+      cache.url = url;
+      cache.pending.forEach(el => {
+        el.src = url;
+        el.closest(".lib-item, .schedule-item")?.classList.remove("invalid");
+      });
+      cache.pending = [];
+    }
     v.src = "";
+    done();
   }, { once: true });
 
   v.addEventListener("error", () => {
     const cache = thumbCache[path];
-    if (!cache || cache.state !== "loading") return;
-    cache.state = "error";
     v.src = "";
-    fetch("/api/thumbnail?path=" + encodeURIComponent(path))
-      .then(res => { if (!res.ok) throw 0; return res.blob(); })
-      .then(blob => {
-        const url = URL.createObjectURL(blob);
-        thumbToStorage(path, url);
-        cache.state = "done";
-        cache.url   = url;
-        cache.pending.forEach(el => {
-          el.src = url;
-          el.closest(".lib-item, .schedule-item")?.classList.remove("invalid");
-        });
-        cache.pending = [];
-      })
-      .catch(() => {
-        cache.state = "error";
-        // Browser + ffmpeg falharam → arquivo genuinamente ilegível
-        invalidPaths.add(path);
-        cache.pending.forEach(el => el.closest(".lib-item, .schedule-item")?.classList.add("invalid"));
-        cache.pending = [];
-        thumbToStorage(path, "__error__");
-        _updateErrorCount();
-      });
+    if (cache && cache.state === "loading") {
+      // Servidor e navegador falharam → arquivo genuinamente ilegível
+      cache.state = "error";
+      invalidPaths.add(path);
+      cache.pending.forEach(el => el.closest(".lib-item, .schedule-item")?.classList.add("invalid"));
+      cache.pending = [];
+      thumbToStorage(path, "__error__");
+      _updateErrorCount();
+    }
+    done();
   }, { once: true });
+
+  v.src = "/media?path=" + encodeURIComponent(path);
 }
 
 

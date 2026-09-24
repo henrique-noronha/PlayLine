@@ -186,12 +186,30 @@ async function loadLibraryFiles(subfolder) {
 
       if (!audio) generateThumb(file.path, item.querySelector(".lib-thumb"));
 
+      // Duração: usa o cache quando já conhecida, senão lê os metadados pela
+      // fila. Antes isso criava um <video> por arquivo, todos de uma vez, e
+      // relia tudo a cada troca de pasta.
       const durSpan = item.querySelector(".lib-dur");
-      const dv = document.createElement("video");
-      dv.muted = true; dv.preload = "metadata";
-      dv.addEventListener("loadedmetadata", () => { durSpan.textContent = fmt(Math.round(dv.duration)); dv.src = ""; }, { once: true });
-      dv.addEventListener("error", () => { dv.src = ""; }, { once: true });
-      dv.src = "/media?path=" + encodeURIComponent(file.path);
+      const cachedDur = durFromStorage(file.path);
+      if (cachedDur !== null && cachedDur > 0) {
+        durSpan.textContent = fmt(cachedDur);
+      } else {
+        _mediaEnqueue(done => {
+          const dv = document.createElement("video");
+          dv.muted = true; dv.preload = "metadata";
+          dv.addEventListener("loadedmetadata", () => {
+            const secs = Math.round(dv.duration);
+            if (secs > 0) {
+              durSpan.textContent = fmt(secs);
+              durToStorage(file.path, secs);
+            }
+            dv.src = "";
+            done();
+          }, { once: true });
+          dv.addEventListener("error", () => { dv.src = ""; done(); }, { once: true });
+          dv.src = "/media?path=" + encodeURIComponent(file.path);
+        });
+      }
 
       // Botão "+" — adiciona direto ao roteiro (visível só em touch via CSS)
       item.querySelector(".lib-add-btn").addEventListener("click", e => {
@@ -340,3 +358,15 @@ document.getElementById("lib-search-input")?.addEventListener("input", e => {
   _libSearchQuery = e.target.value.toLowerCase().trim();
   _applyLibSearch();
 });
+
+// Progresso da fila de mídia (playlist.js) no cabeçalho da biblioteca.
+window._onMediaProgress = (done, total) => {
+  const el = document.getElementById("lib-loading");
+  if (!el) return;
+  if (total <= 0 || done >= total) {
+    el.hidden = true;
+    return;
+  }
+  el.textContent = `Carregando ${done} de ${total}`;
+  el.hidden = false;
+};
