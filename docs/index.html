@@ -45,6 +45,51 @@
 }
 </script>
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": "pt-BR",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "O PlayLine é realmente gratuito?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Sim, sem mensalidade, sem licença por canal e sem limite de tempo de uso. O código é aberto sob licença GPLv3, o que permite inclusive usar em emissora comercial." }
+    },
+    {
+      "@type": "Question",
+      "name": "Preciso de internet para transmitir?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Não para o essencial. A reprodução da grade usa arquivos que já estão no computador, então a transmissão continua mesmo com a internet fora. A conexão só é necessária para vídeos e transmissões ao vivo do YouTube e para a atualização automática de temperatura." }
+    },
+    {
+      "@type": "Question",
+      "name": "O que acontece se faltar energia?",
+      "acceptedAnswer": { "@type": "Answer", "text": "O PlayLine grava continuamente um ponto de retomada. Quando a máquina volta, ele reabre sozinho o item que estava no ar e segue a grade a partir dali, sem precisar de ninguém na emissora." }
+    },
+    {
+      "@type": "Question",
+      "name": "Que computador eu preciso para usar o PlayLine?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Windows 10 ou 11 de 64 bits, além do Visual C++ Redistributable e do WebView2 Runtime, ambos gratuitos da Microsoft. Para a saída de ar, conecte um segundo monitor ou uma placa de saída." }
+    },
+    {
+      "@type": "Question",
+      "name": "Quais formatos de vídeo o PlayLine aceita?",
+      "acceptedAnswer": { "@type": "Answer", "text": "MP4, MKV, MXF, MTS, AVI, MOV e outros. O motor de vídeo é o MPV, então a lista de formatos suportados é ampla e inclui os arquivos típicos de broadcast." }
+    },
+    {
+      "@type": "Question",
+      "name": "Dá para operar o PlayLine de outro computador?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Sim. Pelo navegador de qualquer dispositivo na mesma rede, pelo aplicativo PlayLine-Client, ou de fora da emissora por VPN. Todo acesso é protegido por usuário e senha." }
+    },
+    {
+      "@type": "Question",
+      "name": "Preciso saber programar para usar o PlayLine?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Não. A operação é visual: você arrasta os vídeos da biblioteca para o roteiro, define a ordem e o sistema cuida do resto, inclusive da troca entre clipes e da recuperação de erros." }
+    }
+  ]
+}
+</script>
+
 <link rel="icon" type="image/png" href="FavPlayline.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -220,42 +265,6 @@ nav {
   margin: 0 auto 88px;
   padding: 0 40px;
 }
-.browser-frame {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 32px 80px rgba(0,0,0,.7);
-}
-.browser-bar {
-  background: var(--surface);
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border-bottom: 1px solid var(--border);
-}
-.browser-dot { width: 10px; height: 10px; border-radius: 50%; }
-.browser-url {
-  background: var(--surf2);
-  border-radius: 4px;
-  padding: 4px 12px;
-  font-size: 11px;
-  color: var(--muted);
-  margin-left: 8px;
-  font-family: monospace;
-  flex: 1;
-}
-.browser-img {
-  display: block;
-  width: 100%;
-  background: var(--surf2);
-}
-.browser-img img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
 /* ── Sections ── */
 .section { padding: 80px 40px; }
 .section-label {
@@ -402,6 +411,64 @@ nav {
 .dl-card h3 { font-size: 14px; font-weight: 600; color: var(--text); }
 .dl-card p  { font-size: 12px; color: var(--muted); line-height: 1.55; flex: 1; }
 .dl-meta    { font-size: 11px; color: var(--muted); font-family: monospace; }
+
+/* ── Perguntas frequentes ── */
+.faq-list {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color .15s;
+}
+.faq-item[open] { border-color: var(--accent); }
+.faq-item summary {
+  padding: 18px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: "+";
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--muted);
+  flex-shrink: 0;
+  line-height: 1;
+}
+.faq-item[open] summary::after { content: "−"; color: var(--accent); }
+.faq-item summary:hover { color: var(--accent); }
+.faq-answer {
+  padding: 0 22px 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--body);
+}
+.faq-answer a { color: var(--accent); text-decoration: none; }
+.faq-answer a:hover { text-decoration: underline; }
+.faq-answer code {
+  background: var(--surf2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+@media (max-width: 640px) {
+  .faq-item summary { padding: 16px 18px; font-size: 14px; }
+  .faq-answer { padding: 0 18px 18px; font-size: 14px; }
+}
 
 /* ── Modal: dados antes do download ── */
 .lead-modal-backdrop {
@@ -1046,9 +1113,67 @@ acesso à informação para milhões de pessoas.</p>
 </section>
 
 <!-- Suporte -->
+<!-- Perguntas frequentes -->
+<section class="section" id="perguntas">
+  <h2 class="section-title">Perguntas frequentes</h2>
+
+  <div class="faq-list">
+
+    <details class="faq-item">
+      <summary>O PlayLine é realmente gratuito?</summary>
+      <div class="faq-answer">
+        Sim, sem mensalidade, sem licença por canal e sem limite de tempo de uso. O código é aberto sob licença GPLv3, o que permite inclusive usar em emissora comercial. Você baixa, instala e opera sem pagar nada a ninguém.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Preciso de internet para transmitir?</summary>
+      <div class="faq-answer">
+        Não para o essencial. A reprodução da grade usa arquivos que já estão no computador, então a transmissão continua mesmo com a internet fora. A conexão só é necessária para os recursos que dependem dela: vídeos e transmissões ao vivo do YouTube, e a atualização automática de temperatura no overlay de hora.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>O que acontece se faltar energia?</summary>
+      <div class="faq-answer">
+        O PlayLine grava continuamente um ponto de retomada. Quando a máquina volta, ele reabre sozinho o item que estava no ar e segue a grade a partir dali, sem precisar de ninguém na emissora. O clipe interrompido recomeça do início, e a programação continua na sequência em que estava, sem tentar recuperar o tempo perdido.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Que computador eu preciso?</summary>
+      <div class="faq-answer">
+        Windows 10 ou 11 de 64 bits. Além disso, o <a href="https://aka.ms/vs/17/release/vc_redist.x64.exe">Visual C++ Redistributable</a> e o <a href="https://developer.microsoft.com/microsoft-edge/webview2/">WebView2 Runtime</a>, ambos gratuitos da Microsoft e normalmente já presentes no sistema. Para a saída de ar, conecte um segundo monitor ou uma placa de saída: o sinal vai para ele automaticamente, enquanto a interface de operação fica na tela principal.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Quais formatos de vídeo são aceitos?</summary>
+      <div class="faq-answer">
+        MP4, MKV, MXF, MTS, AVI, MOV e outros. O motor de vídeo é o MPV, o mesmo usado por players profissionais, então a lista de formatos suportados é ampla e inclui os arquivos típicos de broadcast.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Dá para operar de outro computador?</summary>
+      <div class="faq-answer">
+        Sim, de três formas. Pelo navegador de qualquer dispositivo na mesma rede, acessando <code>http://&lt;IP&gt;:18000</code>. Pelo <code>PlayLine-Client.exe</code>, que vem junto no download e é um aplicativo leve para máquinas remotas. E de fora da emissora, conectando por VPN, sem precisar expor o servidor à Internet. Todo acesso é protegido por usuário e senha.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Preciso saber programar para usar?</summary>
+      <div class="faq-answer">
+        Não. O PlayLine foi feito para emissoras que não têm equipe técnica dedicada. A operação é visual: você arrasta os vídeos da biblioteca para o roteiro, define a ordem e o sistema cuida do resto, inclusive da troca entre clipes e da recuperação de erros.
+      </div>
+    </details>
+
+  </div>
+</section>
+
 <section class="section" id="suporte" style="padding:60px 40px">
   <h2 class="section-title">Precisa de ajuda?</h2>
-  <p style="text-align:center;color:var(--muted);font-size:15px;max-width:480px;margin:12px auto 32px;line-height:1.6">Encontrou um erro, tem uma dúvida ou quer sugerir uma melhoria? Entre em contato, responderemos o mais breve possível.</p>
+  <p style="text-align:center;color:var(--muted);font-size:15px;max-width:480px;margin:12px auto 32px;line-height:1.6">Não achou a resposta nas <a href="#perguntas" style="color:var(--accent);text-decoration:none">perguntas frequentes</a>? Encontrou um erro ou quer sugerir uma melhoria? Entre em contato, responderemos o mais breve possível.</p>
   <div style="text-align:center">
     <a href="mailto:playline.suporte@gmail.com" style="color:var(--accent);font-size:15px;text-decoration:none">playline.suporte@gmail.com</a>
   </div>
