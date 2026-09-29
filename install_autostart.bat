@@ -1,14 +1,17 @@
 @echo off
 :: Registra o PlayLine para iniciar sozinho no logon do Windows (Agendador de
-:: Tarefas). Rode uma vez, como administrador, na maquina da emissora, depois
-:: do build.bat. Combinado com o auto-resume (checkpoint) do servidor, uma
+:: Tarefas). Rode uma vez, como administrador, na maquina da emissora. Vem na
+:: pasta da release, ao lado do PlayLine.exe; na raiz do repositorio, usa o
+:: resultado do build.bat. Combinado com o auto-resume (checkpoint) do servidor, uma
 :: queda de energia volta ao ar sem intervencao: o Windows sobe, loga, o
 :: PlayLine abre e retoma o item que estava no ar.
 ::
 :: Uso:  install_autostart.bat          -> instala
 ::       install_autostart.bat remove   -> remove a tarefa
 setlocal
-set "EXE=%~dp0backend\dist\PlayLine\PlayLine.exe"
+:: Pasta da release (script ao lado do PlayLine.exe) ou raiz do repositorio.
+set "EXE=%~dp0PlayLine.exe"
+if not exist "%EXE%" set "EXE=%~dp0backend\dist\PlayLine\PlayLine.exe"
 set "TASK=PlayLine"
 
 if /i "%~1"=="remove" (
@@ -17,7 +20,7 @@ if /i "%~1"=="remove" (
 )
 
 if not exist "%EXE%" (
-    echo ERRO: %EXE% nao encontrado. Rode build.bat primeiro.
+    echo ERRO: PlayLine.exe nao encontrado. Deixe este arquivo na mesma pasta do PlayLine.exe.
     exit /b 1
 )
 

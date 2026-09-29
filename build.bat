@@ -100,6 +100,9 @@ if exist "logos" ( xcopy /e /i /y "logos\*" "dist\PlayLine\logos\" >nul 2>&1 )
 if not exist "dist\PlayLine\images" mkdir "dist\PlayLine\images"
 if exist "images" ( xcopy /e /i /y "images\*" "dist\PlayLine\images\" >nul 2>&1 )
 
+:: Script de inicio automatico com o Windows (procura o PlayLine.exe ao lado dele)
+copy /y "..\install_autostart.bat" "dist\PlayLine\" >nul 2>&1
+
 :: Cria pasta Biblioteca vazia
 if not exist "dist\PlayLine\Biblioteca" mkdir "dist\PlayLine\Biblioteca"
 
