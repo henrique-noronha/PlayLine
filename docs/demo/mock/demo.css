@@ -1,0 +1,84 @@
+/* PlayLine — elementos que só existem na demonstração do site.
+   Usa as mesmas variáveis do frontend (styles/base.css). */
+
+/* Os dois <video> que fazem o papel do MPV ficam atrás do canvas do preview */
+.player-wrap .demo-mpv {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+.player-wrap { isolation: isolate; }
+
+/* Prévia na página inicial: sem barras de rolagem e sem o quadrante de
+   Câmera/YouTube (fora das demonstrações básicas), dando a largura ao roteiro */
+.demo-embed, .demo-embed body { overflow: hidden; }
+.demo-embed .input-quadrant-card { display: none; }
+.demo-embed .schedule-card { right: 0; }
+
+.demo-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+  margin-right: 22px;
+  font-family: var(--font);
+}
+.demo-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--warning);
+  border: 1px solid rgba(245, 158, 11, .45);
+  background: rgba(245, 158, 11, .1);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.demo-link {
+  font-size: 12.5px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .15s;
+}
+.demo-link:hover { color: var(--text); }
+.demo-link-cta {
+  color: #fff;
+  background: var(--accent);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-weight: 600;
+}
+.demo-link-cta:hover { color: #fff; filter: brightness(1.08); }
+
+.demo-intro {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9500;
+  width: 360px;
+  max-width: calc(100vw - 48px);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, .55);
+  color: var(--text);
+  font-family: var(--font);
+}
+.demo-intro strong { display: block; font-size: 14px; margin-bottom: 6px; }
+.demo-intro p { font-size: 13px; line-height: 1.55; color: #cbd5e1; margin-bottom: 12px; }
+.demo-intro button {
+  font: 600 13px var(--font);
+  color: #fff;
+  background: var(--accent);
+  border: 0;
+  border-radius: 6px;
+  padding: 7px 16px;
+  cursor: pointer;
+}
+.demo-intro button:hover { filter: brightness(1.08); }
