@@ -6,6 +6,8 @@
 
 🌐 **[playlinetv.com.br](https://playlinetv.com.br/)**
 
+> **English:** PlayLine is a free, open-source TV playout automation system for small broadcasters. The interface is available in English, Portuguese and Spanish. Download the [latest release](https://github.com/henrique-noronha/PlayLine/releases), extract it and follow the setup wizard on first launch (language, username and password, library folder).
+
 ![Interface do PlayLine](docs/InterfacePlayLine.png)
 
 ---
@@ -13,10 +15,9 @@
 ## Primeiros passos
 
 1. Baixe o `.zip` da [última release](https://github.com/henrique-noronha/PlayLine/releases) e extraia em qualquer pasta (a instalação é portátil: banco, configurações e biblioteca ficam ao lado do `PlayLine.exe`).
-2. Copie seus vídeos para a pasta `Biblioteca`, ou escolha outra pasta depois em **Configurações > Biblioteca**.
-3. Preferencialmente antes de iniciar o software, conecte o segundo monitor (ou a placa de saída) ao computador: o sinal de saída vai para ele automaticamente. 
-4. Abra `PlayLine.exe` e entre com o usuário `playline` e a senha `playline`.
-5. Troque usuário e senha em **Configurações** (menu do Painel de Controle). 
+2. Copie seus vídeos para a pasta `Biblioteca`, ou escolha outra pasta no assistente da primeira execução (e, a qualquer momento, em **Configurações > Biblioteca**).
+3. Preferencialmente antes de iniciar o software, conecte o segundo monitor (ou a placa de saída) ao computador: o sinal de saída vai para ele automaticamente.
+4. Abra `PlayLine.exe`. Na primeira execução, um assistente pede o idioma (português, inglês ou espanhol), o usuário e a senha de acesso e a pasta da biblioteca. Ao concluir, o painel abre já logado.
 
 
 Requisitos: Windows 10/11 x64, [Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe) e [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (ambos gratuitos, normalmente já presentes).
@@ -27,12 +28,13 @@ Requisitos: Windows 10/11 x64, [Visual C++ Redistributable](https://aka.ms/vs/17
 
 ### Biblioteca de Vídeos
 - Geração automática de miniaturas
+- Miniaturas e durações carregadas em fila e guardadas em cache, com indicador de progresso: a biblioteca fica leve mesmo em máquinas modestas
 - Busca por nome em tempo real
 - Suporta MP4, MKV, MXF, MTS, AVI, MOV e mais
 - Organização por subpastas (Comerciais, Programas, Vinhetas…)
 
 ### Roteiro de Programação
-- Monte a grade arrastando vídeos da biblioteca
+- Monte a grade arrastando vídeos da biblioteca, com rolagem automática ao levar o clipe perto do topo ou do fim da lista
 - Reordene, remova e controle cada item com precisão
 - Defina **ponto de entrada e saída** de cada clipe sem precisar editar o arquivo original
 - Cálculo em tempo real de horário de início, tempo restante e previsão do próximo clipe
@@ -85,19 +87,27 @@ Requisitos: Windows 10/11 x64, [Visual C++ Redistributable](https://aka.ms/vs/17
 - Informe o IP do servidor, faça login com as mesmas credenciais e arraste os arquivos; escolha a subpasta de destino
 - Verifica espaço em disco e permissões antes de gravar
 
+### Idiomas
+- Interface em português, inglês e espanhol, escolhida na primeira execução e alterável em **Configurações > Idioma**
+- Terminologia em inglês no padrão internacional de automação de playout (Playlist, On Air, Playout Log)
+- O idioma escolhido vale também como padrão para outros navegadores da rede e para a tela de login
+
 ### Configurações e Segurança
-- Acesso protegido por usuário e senha (padrão `playline`/`playline`), exigidos também nas conexões WebSocket e nos aplicativos auxiliares
+- **Assistente de configuração inicial**: idioma, usuário e senha e pasta da biblioteca na primeira execução; por segurança, só pode ser concluído no próprio computador do PlayLine
+- Acesso protegido por usuário e senha (padrão de fábrica `playline`/`playline`, que o assistente propõe trocar), exigidos também nas conexões WebSocket e nos aplicativos auxiliares
 - Troca de usuário e senha pela própria interface, mediante confirmação das credenciais atuais; a senha é guardada apenas como hash (PBKDF2-SHA256 com salt)
 - Pasta da biblioteca configurável: qualquer pasta do computador, inclusive HD externo, com seletor nativo do Windows
 - Lista de cidades do overlay de hora e temperatura, com busca por nome e limite de 30
 - Duração do fade to black entre clipes
+- Idioma da interface
 - Sessões de 8 horas; trocar a senha derruba as demais sessões abertas
 
 ### Transmissão sem operador
 - Retomada automática do ponto em que parou após queda de energia ou reinício inesperado (checkpoint contínuo)
 - Reabertura automática do item atual se o MPV encerrar no meio da reprodução
 - Watchdog de clipe travado e de live sem sinal, com avanço ou reconexão sem intervenção
-- Supervisor do servidor na janela nativa e `install_autostart.bat` para iniciar o PlayLine junto com o Windows
+- Supervisor do servidor na janela nativa
+- `install_autostart.bat`, na pasta do PlayLine: executado uma vez como administrador, faz o PlayLine iniciar junto com o Windows
 
 ---
 
@@ -131,7 +141,7 @@ PlayLine adota uma **arquitetura orientada a eventos** com três processos isola
 |---|---|
 | Motor de vídeo | MPV + python-mpv |
 | Backend | Python 3.13 + FastAPI |
-| Persistência | SQLite (WAL mode): roteiro, checkpoint, histórico e roteiros salvos; `config.json`: credenciais, biblioteca e transições |
+| Persistência | SQLite (WAL mode): roteiro, checkpoint, histórico e roteiros salvos; `config.json`: credenciais, biblioteca, transições, cidades e idioma |
 | YouTube | yt-dlp: resolução de stream sem download |
 | Interface nativa | pywebview (WebView2) |
 | Comunicação em tempo real | WebSocket (RFC 6455), autenticado por sessão |
