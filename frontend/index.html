@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=1100, initial-scale=1.0" />
-  <title>PlayLine — Painel de Controle</title>
+  <title data-i18n="window_title">PlayLine — Painel de Controle</title>
   <link rel="icon" type="image/png" href="/api/logos/FavPlayline.png" />
   <link rel="stylesheet" href="/static/styles/base.css" />
   <link rel="stylesheet" href="/static/styles/layout.css" />
@@ -16,10 +16,23 @@
   <link rel="stylesheet" href="/static/styles/settings.css" />
 </head>
 <body>
+  <!-- Tradução: carrega antes de tudo, para o seletor de idioma (1ª execução)
+       cobrir a tela o quanto antes e o resto do JS já poder chamar t(). -->
+  <script src="/static/i18n/pt.js"></script>
+  <script src="/static/i18n/en.js"></script>
+  <script src="/static/i18n/es.js"></script>
+  <script src="/static/components/i18n.js"></script>
+
   <header>
     <div class="logo"><img src="/api/logos/LogoPlayLineD.png" alt="PlayLine" /></div>
     <div class="conn-status">
       <span class="dot" id="dot"></span>
+      <!-- Sem data-i18n aqui de propósito: o texto é reescrito imediatamente por
+           setConnStatus() (logs.js) a cada mudança de status, via window.t(). Um
+           data-i18n estático correria contra essa escrita dinâmica: applyAll()
+           rodando depois sobrescreveria o status real (ex.: "Conectado") de volta
+           para o texto padrão do atributo, ficando com a bolinha verde mas o
+           rótulo errado. -->
       <span id="conn-label">Desconectado</span>
     </div>
   </header>
@@ -28,7 +41,7 @@
     <div class="left-col">
       
       <section class="card" id="now-playing-card">
-        <h2>Reproduzindo agora</h2>
+        <h2 data-i18n="nowplaying.title">Reproduzindo agora</h2>
         <div class="player-wrap">
           <canvas id="mpv-preview" width="1280" height="720"></canvas>
           <video id="player-video" muted></video>
@@ -46,30 +59,36 @@
         </div>
         <div class="live-indicator" id="live-indicator" style="display:none">
           <span class="live-dot"></span>
-          <span class="live-label">AO VIVO</span>
+          <span class="live-label" data-i18n="nowplaying.live">AO VIVO</span>
         </div>
+        <!-- Sem data-i18n: reescrito por updateBadge() (player.js) via window.t(),
+             mesmo motivo do conn-label acima. -->
         <div class="state-badge" id="state-badge">parado</div>
         <div id="reconnect-banner" style="display:none">
           <span class="reconnect-dot"></span>
+          <!-- Sem data-i18n: _showReconnectStatus() (app.js) escreve mensagens
+             de texto livre aqui (ex.: "Live caiu — tentativa 2/5 em 10s"), não um
+             rótulo fixo. Mesmo motivo do conn-label, e esse texto específico
+             ainda não está no sistema de tradução (ver pendências reportadas). -->
           <span id="reconnect-banner-text">Reconectando...</span>
         </div>
       </section>
 
       <section class="card library-card">
         <div class="library-header">
-          <h2>Biblioteca</h2>
+          <h2 data-i18n="library.title">Biblioteca</h2>
           <span class="lib-loading" id="lib-loading" hidden></span>
           <div class="lib-header-actions">
-            <button id="btn-lib-search" title="Pesquisar vídeo"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-            <button id="btn-lib-refresh" title="Atualizar biblioteca"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
+            <button id="btn-lib-search" title="Pesquisar vídeo" data-i18n-title="library.search_title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+            <button id="btn-lib-refresh" title="Atualizar biblioteca" data-i18n-title="library.refresh_title"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
           </div>
         </div>
         <div class="lib-folders" id="lib-folders"></div>
         <div class="lib-search-row" id="lib-search-row">
-          <input id="lib-search-input" class="lib-search-input" type="text" placeholder="Pesquisar vídeo…" autocomplete="off" />
+          <input id="lib-search-input" class="lib-search-input" type="text" placeholder="Pesquisar vídeo…" data-i18n-placeholder="library.search_placeholder" autocomplete="off" />
         </div>
         <div class="library-list" id="library-list">
-          <div class="empty">Carregando…</div>
+          <div class="empty" data-i18n="library.loading">Carregando…</div>
         </div>
       </section>
 
@@ -79,51 +98,51 @@
       
       <section class="card controls-card">
         <div class="controls-card-head">
-          <h2>Painel de Controle</h2>
+          <h2 data-i18n="controls.title">Painel de Controle</h2>
           <div class="head-clock">
             <span class="head-clock-date" id="clock-date">—</span>
             <span class="head-clock-time" id="clock-time">—</span>
           </div>
           <div id="controls-menu-wrap">
-            <button id="btn-controls-menu" title="Opções"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="currentColor"><circle cx="1.5" cy="1.5" r="1.5"/><rect x="4.5" y="0.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="6.5" r="1.5"/><rect x="4.5" y="5.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="11.5" r="1.5"/><rect x="4.5" y="10.5" width="10.5" height="2" rx="1"/></svg></button>
+            <button id="btn-controls-menu" title="Opções" data-i18n-title="controls.options_title"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="currentColor"><circle cx="1.5" cy="1.5" r="1.5"/><rect x="4.5" y="0.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="6.5" r="1.5"/><rect x="4.5" y="5.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="11.5" r="1.5"/><rect x="4.5" y="10.5" width="10.5" height="2" rx="1"/></svg></button>
             <div id="controls-menu-dropdown">
               <div class="ctrl-menu-zoom-row">
-                <span class="ctrl-menu-zoom-label"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Zoom</span>
+                <span class="ctrl-menu-zoom-label"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> <span data-i18n="controls.zoom">Zoom</span></span>
                 <div class="ctrl-menu-zoom-btns">
-                  <button id="ctrl-menu-zoom-out" title="Diminuir">−</button>
+                  <button id="ctrl-menu-zoom-out" title="Diminuir" data-i18n-title="controls.zoom_out_title">−</button>
                   <span id="ctrl-menu-zoom-val">100%</span>
-                  <button id="ctrl-menu-zoom-in" title="Aumentar">+</button>
+                  <button id="ctrl-menu-zoom-in" title="Aumentar" data-i18n-title="controls.zoom_in_title">+</button>
                 </div>
               </div>
-              <div class="ctrl-menu-item" id="ctrl-menu-zoom-reset"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Redefinir zoom</div>
+              <div class="ctrl-menu-item" id="ctrl-menu-zoom-reset"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> <span data-i18n="controls.zoom_reset">Redefinir zoom</span></div>
               <div class="ctrl-menu-sep"></div>
-              <div class="ctrl-menu-item" id="ctrl-menu-history"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Histórico</div>
-              <div class="ctrl-menu-item" id="ctrl-menu-settings"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Configurações</div>
+              <div class="ctrl-menu-item" id="ctrl-menu-history"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span data-i18n="controls.history">Histórico</span></div>
+              <div class="ctrl-menu-item" id="ctrl-menu-settings"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> <span data-i18n="controls.settings">Configurações</span></div>
             </div>
           </div>
         </div>
         <div class="control-stats">
           <div class="stat-block">
-            <div class="stat-label">Restante do clipe atual</div>
+            <div class="stat-label" data-i18n="stats.clip_remaining">Restante do clipe atual</div>
             <div class="stat-value stat-clip-remaining" id="clip-remaining-time">—</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-block">
-            <div class="stat-label">Roteiro restante</div>
+            <div class="stat-label" data-i18n="stats.playlist_remaining">Roteiro restante</div>
             <div class="stat-value stat-remaining" id="remaining-time">—</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-block">
-            <div class="stat-label">Próximo clipe às</div>
+            <div class="stat-label" data-i18n="stats.next_clip_at">Próximo clipe às</div>
             <div class="stat-value stat-next" id="next-clip-time">—</div>
           </div>
         </div>
         <div class="controls-row">
 
           <div class="audio-controls">
-            <span class="audio-label">Volume</span>
+            <span class="audio-label" data-i18n="audio.volume">Volume</span>
             <div class="audio-row">
-              <button id="btn-mute" class="btn-mute" title="Mudo"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+              <button id="btn-mute" class="btn-mute" title="Mudo" data-i18n-title="audio.mute_title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
               <div class="audio-track-group">
                 <input type="range" id="volume-slider" min="-20" max="6" step="0.5" value="0" />
                 <!-- Escala compartilhada: left = calc(15px + (val+20)/26*(100%-30px)) -->
@@ -138,68 +157,68 @@
               </div>
               <div class="audio-right">
                 <span class="volume-db" id="volume-db">0 dB</span>
-                <span class="vu-clip" id="vu-clip">CLIP</span>
+                <span class="vu-clip" id="vu-clip" data-i18n="audio.clip">CLIP</span>
               </div>
             </div>
           </div>
 
           <div class="controls">
-            <button id="btn-stop"  title="Parar"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></button>
-            <button id="btn-play"  title="Play"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></button>
-            <button id="btn-pause" title="Pausar"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="4" height="18" rx="1"/><rect x="15" y="3" width="4" height="18" rx="1"/></svg></button>
-            <button id="btn-next"  title="Próximo"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 16,12 5,21"/><rect x="18" y="3" width="3" height="18" rx="1"/></svg></button>
+            <button id="btn-stop"  title="Parar" data-i18n-title="transport.stop_title"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></button>
+            <button id="btn-play"  title="Play" data-i18n-title="transport.play_title"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></button>
+            <button id="btn-pause" title="Pausar" data-i18n-title="transport.pause_title"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="4" height="18" rx="1"/><rect x="15" y="3" width="4" height="18" rx="1"/></svg></button>
+            <button id="btn-next"  title="Próximo" data-i18n-title="transport.next_title"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 16,12 5,21"/><rect x="18" y="3" width="3" height="18" rx="1"/></svg></button>
           </div>
 
           <div class="logo-controls-compact">
 
             <div class="logo-pair">
               <div class="logo-ctrl">
-                <span class="logo-label">Logo 1</span>
+                <span class="logo-label" data-i18n="logo.logo1">Logo 1</span>
                 <div class="logo-toggle-wrap">
-                  <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
-                  <button class="btn-logo-pick" data-slot="1" title="Selecionar logo">▾</button>
+                  <button class="btn-logo-toggle" data-slot="1" title="Ativar logo 1" data-i18n-title="logo.activate1_title"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
+                  <button class="btn-logo-pick" data-slot="1" title="Selecionar logo" data-i18n-title="logo.pick_title">▾</button>
                   <div class="logo-picker-dropdown" id="logo-picker-1"></div>
                 </div>
               </div>
 
               <div class="logo-ctrl">
-                <span class="logo-label">Logo 2</span>
+                <span class="logo-label" data-i18n="logo.logo2">Logo 2</span>
                 <div class="logo-toggle-wrap">
-                  <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
-                  <button class="btn-logo-pick" data-slot="2" title="Selecionar logo">▾</button>
+                  <button class="btn-logo-toggle" data-slot="2" title="Ativar logo 2" data-i18n-title="logo.activate2_title"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
+                  <button class="btn-logo-pick" data-slot="2" title="Selecionar logo" data-i18n-title="logo.pick_title">▾</button>
                   <div class="logo-picker-dropdown" id="logo-picker-2"></div>
                 </div>
               </div>
             </div>
 
             <div class="text-ctrl">
-              <span class="logo-label">Hora / Temp.</span>
+              <span class="logo-label" data-i18n="logo.clock_temp">Hora / Temp.</span>
               <div id="text-pos-selector">
-                <div class="pos-zone" data-corner="tl" title="Superior esquerdo"></div>
-                <div class="pos-zone" data-corner="tr" title="Superior direito"></div>
-                <div class="pos-zone" data-corner="bl" title="Inferior esquerdo"></div>
-                <div class="pos-zone" data-corner="br" title="Inferior direito"></div>
+                <div class="pos-zone" data-corner="tl" title="Superior esquerdo" data-i18n-title="logo.top_left"></div>
+                <div class="pos-zone" data-corner="tr" title="Superior direito" data-i18n-title="logo.top_right"></div>
+                <div class="pos-zone" data-corner="bl" title="Inferior esquerdo" data-i18n-title="logo.bottom_left"></div>
+                <div class="pos-zone" data-corner="br" title="Inferior direito" data-i18n-title="logo.bottom_right"></div>
                 <div class="pos-indicator"></div>
               </div>
               <div class="logo-toggle-wrap">
-                <button class="btn-text-toggle btn-logo-toggle" id="btn-text-toggle" title="Ativar hora/temperatura"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
-                <button class="btn-logo-pick" id="btn-text-pick" title="Selecionar itens">▾</button>
+                <button class="btn-text-toggle btn-logo-toggle" id="btn-text-toggle" title="Ativar hora/temperatura" data-i18n-title="logo.activate_clock_temp_title"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
+                <button class="btn-logo-pick" id="btn-text-pick" title="Selecionar itens" data-i18n-title="logo.pick_items_title">▾</button>
                 <div class="logo-picker-dropdown" id="text-picker-dropdown">
                   <div class="logo-picker-item" id="pick-time">
                     <span class="logo-picker-check" id="pick-time-check">✓</span>
-                    <span class="logo-picker-name">Hora</span>
+                    <span class="logo-picker-name" data-i18n="logo.clock">Hora</span>
                   </div>
                   <div class="logo-picker-item" id="pick-temp">
                     <span class="logo-picker-check" id="pick-temp-check">✓</span>
-                    <span class="logo-picker-name">Temp.</span>
+                    <span class="logo-picker-name" data-i18n="logo.temp">Temp.</span>
                   </div>
                   <div class="to-city-row">
                     <select id="to-city-select" class="to-city-select"></select>
                   </div>
                   <div class="to-temp-row">
-                    <span class="to-temp-label">Temp. manual</span>
+                    <span class="to-temp-label" data-i18n="logo.manual_temp">Temp. manual</span>
                     <input type="text" id="to-temp-input" class="to-temp-input" placeholder="25" maxlength="7" />
-                    <button id="to-temp-fetch" class="to-temp-fetch" title="Buscar temperatura via API"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+                    <button id="to-temp-fetch" class="to-temp-fetch" title="Buscar temperatura via API" data-i18n-title="logo.fetch_temp_title"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
                   </div>
                 </div>
               </div>
@@ -215,38 +234,42 @@
         <section class="card schedule-card">
           <div class="schedule-header">
             <div class="sch-title-group">
-              <h2>Roteiro</h2>
+              <h2 data-i18n="playlist.title">Roteiro</h2>
               <span id="sch-error-count"></span>
-              <span id="sch-loop-indicator" title="Repetir roteiro ativo"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repetir</span>
-              <button id="btn-transition" class="sch-transition-btn" data-type="cut" title="Transição entre clipes: CUT (corte seco) ou FTB (fade to black). Clique para alternar.">CUT</button>
+              <span id="sch-loop-indicator" title="Repetir roteiro ativo" data-i18n-title="playlist.repeat_title"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><span data-i18n="playlist.repeat">Repetir</span></span>
+              <button id="btn-transition" class="sch-transition-btn" data-type="cut" title="Transição entre clipes: CUT (corte seco) ou FTB (fade to black). Clique para alternar." data-i18n-title="playlist.transition_title">CUT</button>
             </div>
             <div class="sch-header-right">
-              <span class="sch-col-cat-header" title="Categoria: 3 primeiras letras da pasta do clipe na biblioteca">Categ.</span>
+              <span class="sch-col-cat-header" title="Categoria: 3 primeiras letras da pasta do clipe na biblioteca" data-i18n="playlist.category_header" data-i18n-title="playlist.category_title">Categ.</span>
               <div class="sch-col-time-header">
-                <span>Entrada</span>
-                <span>Duração</span>
-                <span>Data</span>
+                <span data-i18n="playlist.start_header">Entrada</span>
+                <span data-i18n="playlist.duration_header">Duração</span>
+                <span data-i18n="playlist.date_header">Data</span>
               </div>
               <div class="schedule-actions"></div>
             </div>
           </div>
           <div class="schedule-list" id="schedule-list">
-            <div class="empty">Carregando roteiro…</div>
+            <div class="empty" data-i18n="playlist.loading">Carregando roteiro…</div>
           </div>
         </section>
 
         <section class="card input-quadrant-card" id="input-quadrant-card">
           <div class="iq-source-toggle">
-            <button class="iq-source-btn" id="iq-btn-camera" data-source="camera">Câmera</button>
-            <button class="iq-source-btn" id="iq-btn-youtube" data-source="youtube">YouTube</button>
+            <button class="iq-source-btn" id="iq-btn-camera" data-source="camera" data-i18n="inputq.camera">Câmera</button>
+            <button class="iq-source-btn" id="iq-btn-youtube" data-source="youtube" data-i18n="inputq.youtube">YouTube</button>
           </div>
           <div class="iq-preview-wrap">
             <video id="iq-preview-video" autoplay muted playsinline></video>
             <iframe id="iq-preview-iframe" frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen></iframe>
+            <!-- Sem data-i18n: input_quadrant.js reescreve isto com varias
+                 mensagens de status (nao so o texto padrao), sempre via window.t(). -->
             <div class="iq-preview-empty" id="iq-preview-empty">Nenhuma entrada ativa</div>
           </div>
+          <!-- Sem data-i18n: alterna entre inputq.add_camera/add_youtube via
+               _updateToggleUI() (input_quadrant.js), mesmo motivo. -->
           <button class="iq-add-btn" id="iq-btn-add">+ Adicionar outra câmera</button>
         </section>
       </div>
@@ -256,10 +279,10 @@
     <div class="bottom-row">
       <section class="card log-card collapsed" id="log-section">
         <div class="log-header">
-          <h2>Log de eventos</h2>
+          <h2 data-i18n="eventlog.title">Log de eventos</h2>
           <div class="log-actions">
-            <button id="btn-clear-log">Limpar</button>
-            <button id="btn-toggle-log" title="Expandir/Recolher">▲</button>
+            <button id="btn-clear-log" data-i18n="eventlog.clear">Limpar</button>
+            <button id="btn-toggle-log" title="Expandir/Recolher" data-i18n-title="eventlog.toggle_title">▲</button>
           </div>
         </div>
         <div class="log" id="log"></div>
@@ -267,18 +290,18 @@
 
       <section class="card capture-card" id="capture-card">
         <div class="log-header">
-          <h2>Entrada de Vídeo</h2>
+          <h2 data-i18n="capturecard.title">Entrada de Vídeo</h2>
           <div class="log-actions">
-            <button id="btn-capture-open">+ Adicionar</button>
+            <button id="btn-capture-open" data-i18n="capturecard.add">+ Adicionar</button>
           </div>
         </div>
       </section>
 
       <section class="card youtube-card" id="youtube-live-card">
         <div class="log-header">
-          <h2>Vídeo/Live do Youtube</h2>
+          <h2 data-i18n="youtubecard.title">Vídeo/Live do Youtube</h2>
           <div class="log-actions">
-            <button id="btn-yt-open">+ Adicionar</button>
+            <button id="btn-yt-open" data-i18n="youtubecard.add">+ Adicionar</button>
           </div>
         </div>
       </section>
@@ -289,14 +312,14 @@
   <div id="capture-modal" class="yt-modal-backdrop" style="display:none">
     <div class="yt-modal-box">
       <div class="yt-modal-header">
-        <h3>Entrada de Vídeo</h3>
+        <h3 data-i18n="capturemodal.title">Entrada de Vídeo</h3>
         <button id="capture-modal-close" class="yt-modal-close">✕</button>
       </div>
       <div class="yt-modal-body">
         <div class="yt-field">
-          <label class="yt-label">Dispositivo disponível</label>
+          <label class="yt-label" data-i18n="capturemodal.device_label">Dispositivo disponível</label>
           <div id="capture-device-list" class="capture-device-list">
-            <span class="yt-status yt-status-loading">Carregando dispositivos…</span>
+            <span class="yt-status yt-status-loading" data-i18n="capturemodal.loading_devices">Carregando dispositivos…</span>
           </div>
         </div>
         <div id="capture-modal-preview-wrap" style="display:none">
@@ -304,8 +327,8 @@
         </div>
       </div>
       <div class="yt-modal-actions">
-        <button id="btn-capture-cancel" class="yt-btn-cancel">Cancelar</button>
-        <button id="btn-capture-add" class="btn-yt-add" disabled>Adicionar ao roteiro</button>
+        <button id="btn-capture-cancel" class="yt-btn-cancel" data-i18n="capturemodal.cancel">Cancelar</button>
+        <button id="btn-capture-add" class="btn-yt-add" disabled data-i18n="capturemodal.add">Adicionar ao roteiro</button>
       </div>
     </div>
   </div>
@@ -314,24 +337,24 @@
   <div id="yt-modal" class="yt-modal-backdrop" style="display:none">
     <div class="yt-modal-box">
       <div class="yt-modal-header">
-        <h3>Adicionar Vídeo/Live do YouTube</h3>
+        <h3 data-i18n="ytmodal.title">Adicionar Vídeo/Live do YouTube</h3>
         <button id="yt-modal-close" class="yt-modal-close">✕</button>
       </div>
       <div class="yt-modal-body">
         <div class="yt-field">
-          <label class="yt-label" for="yt-url-input">URL do vídeo / live</label>
+          <label class="yt-label" for="yt-url-input" data-i18n="ytmodal.url_label">URL do vídeo / live</label>
           <input type="text" id="yt-url-input" class="yt-url-input"
-                 placeholder="https://youtube.com/watch?v=…" autocomplete="off" />
+                 placeholder="https://youtube.com/watch?v=…" data-i18n-placeholder="ytmodal.url_placeholder" autocomplete="off" />
         </div>
         <div id="yt-status" class="yt-status"></div>
         <div class="yt-net-notice">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="yt-net-notice-icon"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <span>A reprodução depende da sua conexão com a internet. Qualidade e estabilidade podem variar conforme a velocidade da rede.</span>
+          <span data-i18n="ytmodal.network_notice">A reprodução depende da sua conexão com a internet. Qualidade e estabilidade podem variar conforme a velocidade da rede.</span>
         </div>
       </div>
       <div class="yt-modal-actions">
-        <button id="btn-yt-cancel" class="yt-btn-cancel">Cancelar</button>
-        <button id="btn-yt-add" class="btn-yt-add">Adicionar ao roteiro</button>
+        <button id="btn-yt-cancel" class="yt-btn-cancel" data-i18n="ytmodal.cancel">Cancelar</button>
+        <button id="btn-yt-add" class="btn-yt-add" data-i18n="ytmodal.add">Adicionar ao roteiro</button>
       </div>
     </div>
   </div>
@@ -340,93 +363,99 @@
   <div id="settings-modal" class="st-backdrop" style="display:none">
     <div class="st-box">
       <div class="st-header">
-        <h3>Configurações</h3>
-        <button id="st-close" class="st-close" title="Fechar">✕</button>
+        <h3 data-i18n="settings.title">Configurações</h3>
+        <button id="st-close" class="st-close" title="Fechar" data-i18n-title="settings.close_title">✕</button>
       </div>
 
       <div class="st-tabs">
-        <button class="st-tab st-tab-active" data-tab="biblioteca">Biblioteca</button>
-        <button class="st-tab" data-tab="cidades">Cidades</button>
-        <button class="st-tab" data-tab="transicoes">Transições</button>
-        <button class="st-tab" data-tab="acesso">Usuário e senha</button>
+        <button class="st-tab st-tab-active" data-tab="biblioteca" data-i18n="settings.tab_library">Biblioteca</button>
+        <button class="st-tab" data-tab="cidades" data-i18n="settings.tab_cities">Cidades</button>
+        <button class="st-tab" data-tab="transicoes" data-i18n="settings.tab_transitions">Transições</button>
+        <button class="st-tab" data-tab="acesso" data-i18n="settings.tab_access">Usuário e senha</button>
+        <button class="st-tab" data-tab="idioma" data-i18n="settings.tab_language">Idioma</button>
       </div>
 
       <section class="st-section st-panel" data-panel="biblioteca">
-        <p class="st-help">Pasta, no computador do servidor, onde ficam os vídeos. Os itens que já estão no roteiro continuam tocando de onde estão.</p>
+        <p class="st-help" data-i18n="settings.lib_help">Pasta, no computador do servidor, onde ficam os vídeos. Os itens que já estão no roteiro continuam tocando de onde estão.</p>
         <div class="st-field">
-          <label class="st-label" for="st-lib-path">Pasta da biblioteca</label>
+          <label class="st-label" for="st-lib-path" data-i18n="settings.lib_folder_label">Pasta da biblioteca</label>
           <div class="st-path-row">
-            <input type="text" id="st-lib-path" class="st-input st-input-mono" placeholder="D:\Videos\Biblioteca" autocomplete="off" spellcheck="false" />
-            <button type="button" id="st-lib-browse" class="st-btn-secondary" style="display:none">Procurar…</button>
+            <input type="text" id="st-lib-path" class="st-input st-input-mono" placeholder="D:\Videos\Biblioteca" data-i18n-placeholder="settings.lib_placeholder" autocomplete="off" spellcheck="false" />
+            <button type="button" id="st-lib-browse" class="st-btn-secondary" style="display:none" data-i18n="settings.lib_browse">Procurar…</button>
           </div>
         </div>
         <div id="st-lib-status" class="st-status"></div>
         <div class="st-actions">
-          <button type="button" id="st-lib-reset" class="st-btn-link">Usar pasta padrão</button>
-          <button type="button" id="st-lib-save" class="st-btn-primary">Salvar pasta</button>
+          <button type="button" id="st-lib-reset" class="st-btn-link" data-i18n="settings.lib_reset">Usar pasta padrão</button>
+          <button type="button" id="st-lib-save" class="st-btn-primary" data-i18n="settings.lib_save">Salvar pasta</button>
         </div>
       </section>
 
       <section class="st-section st-panel" data-panel="cidades">
-        <p class="st-help">Cidades disponíveis no seletor do overlay de hora e temperatura. Deixe apenas as que a emissora usa. <span id="st-cities-count">0/30</span></p>
+        <p class="st-help"><span data-i18n="settings.cities_help">Cidades disponíveis no seletor do overlay de hora e temperatura. Deixe apenas as que a emissora usa.</span> <span id="st-cities-count">0/30</span></p>
         <div id="st-cities-list" class="st-city-list"></div>
         <div class="st-field">
-          <label class="st-label" for="st-city-search">Adicionar cidade</label>
+          <label class="st-label" for="st-city-search" data-i18n="settings.cities_add_label">Adicionar cidade</label>
           <div class="st-path-row">
-            <input type="text" id="st-city-search" class="st-input" placeholder="Digite o nome e pressione Enter" autocomplete="off" />
-            <button type="button" id="st-city-search-btn" class="st-btn-secondary">Buscar</button>
+            <input type="text" id="st-city-search" class="st-input" placeholder="Digite o nome e pressione Enter" data-i18n-placeholder="settings.cities_search_placeholder" autocomplete="off" />
+            <button type="button" id="st-city-search-btn" class="st-btn-secondary" data-i18n="settings.cities_search">Buscar</button>
           </div>
         </div>
         <div id="st-city-results" class="st-city-results"></div>
         <div id="st-cities-status" class="st-status"></div>
         <div class="st-actions">
-          <button type="button" id="st-cities-reset" class="st-btn-link">Restaurar lista padrão</button>
-          <button type="button" id="st-cities-save" class="st-btn-primary">Salvar cidades</button>
+          <button type="button" id="st-cities-reset" class="st-btn-link" data-i18n="settings.cities_reset">Restaurar lista padrão</button>
+          <button type="button" id="st-cities-save" class="st-btn-primary" data-i18n="settings.cities_save">Salvar cidades</button>
         </div>
       </section>
 
       <section class="st-section st-panel" data-panel="transicoes">
-        <p class="st-help">O tipo, CUT (corte seco) ou FTB (fade to black), é alternado pelo botão no cabeçalho do Roteiro; por clipe, no menu ⚙ do item. Aqui fica a duração do FTB.</p>
+        <p class="st-help" data-i18n="settings.tr_help">O tipo, CUT (corte seco) ou FTB (fade to black), é alternado pelo botão no cabeçalho do Roteiro; por clipe, no menu ⚙ do item. Aqui fica a duração do FTB.</p>
         <div class="st-field st-field-inline">
-          <label class="st-label" for="st-fade-dur">Duração do FTB (segundos)</label>
+          <label class="st-label" for="st-fade-dur" data-i18n="settings.tr_duration_label">Duração do FTB (segundos)</label>
           <input type="number" id="st-fade-dur" class="st-input st-input-short" min="0.2" max="3" step="0.1" value="0.5" />
         </div>
         <div id="st-tr-status" class="st-status"></div>
         <div class="st-actions">
-          <button type="button" id="st-tr-save" class="st-btn-primary">Salvar duração</button>
+          <button type="button" id="st-tr-save" class="st-btn-primary" data-i18n="settings.tr_save">Salvar duração</button>
         </div>
       </section>
 
       <section class="st-section st-panel" data-panel="acesso">
-        <p class="st-help">Confirme o usuário e a senha atuais para alterar. As outras sessões abertas (outro navegador, PlayIngest) precisarão entrar de novo.</p>
+        <p class="st-help" data-i18n="settings.access_help">Confirme o usuário e a senha atuais para alterar. As outras sessões abertas (outro navegador, PlayIngest) precisarão entrar de novo.</p>
         <form id="st-cred-form" autocomplete="off">
           <div class="st-grid">
             <div class="st-field">
-              <label class="st-label" for="st-cur-user">Usuário atual</label>
+              <label class="st-label" for="st-cur-user" data-i18n="settings.access_cur_user">Usuário atual</label>
               <input type="text" id="st-cur-user" class="st-input" autocomplete="username" />
             </div>
             <div class="st-field">
-              <label class="st-label" for="st-cur-pass">Senha atual</label>
+              <label class="st-label" for="st-cur-pass" data-i18n="settings.access_cur_pass">Senha atual</label>
               <input type="password" id="st-cur-pass" class="st-input" autocomplete="current-password" />
             </div>
             <div class="st-field">
-              <label class="st-label" for="st-new-user">Novo usuário</label>
+              <label class="st-label" for="st-new-user" data-i18n="settings.access_new_user">Novo usuário</label>
               <input type="text" id="st-new-user" class="st-input" autocomplete="off" />
             </div>
             <div class="st-field">
-              <label class="st-label" for="st-new-pass">Nova senha</label>
+              <label class="st-label" for="st-new-pass" data-i18n="settings.access_new_pass">Nova senha</label>
               <input type="password" id="st-new-pass" class="st-input" autocomplete="new-password" />
             </div>
             <div class="st-field st-field-wide">
-              <label class="st-label" for="st-new-pass2">Confirmar nova senha</label>
+              <label class="st-label" for="st-new-pass2" data-i18n="settings.access_new_pass2">Confirmar nova senha</label>
               <input type="password" id="st-new-pass2" class="st-input" autocomplete="new-password" />
             </div>
           </div>
           <div id="st-cred-status" class="st-status"></div>
           <div class="st-actions">
-            <button type="submit" id="st-cred-save" class="st-btn-primary">Salvar usuário e senha</button>
+            <button type="submit" id="st-cred-save" class="st-btn-primary" data-i18n="settings.access_save">Salvar usuário e senha</button>
           </div>
         </form>
+      </section>
+
+      <section class="st-section st-panel" data-panel="idioma">
+        <p class="st-help" data-i18n="settings.lang_help">Idioma da interface. A escolha fica salva neste computador.</p>
+        <div id="st-lang-list" class="st-lang-list"></div>
       </section>
     </div>
   </div>
@@ -435,36 +464,36 @@
   <div id="history-modal" class="history-backdrop" style="display:none">
     <div class="history-box">
       <div class="history-header">
-        <h3>Histórico de exibição</h3>
+        <h3 data-i18n="historymodal.title">Histórico de exibição</h3>
         <div class="hist-tabs">
-          <button class="hist-tab hist-tab-active" data-tab="log">Registro</button>
-          <button class="hist-tab" data-tab="stats">Estatísticas</button>
+          <button class="hist-tab hist-tab-active" data-tab="log" data-i18n="historymodal.tab_log">Registro</button>
+          <button class="hist-tab" data-tab="stats" data-i18n="historymodal.tab_stats">Estatísticas</button>
         </div>
-        <button id="hist-close" title="Fechar">✕</button>
+        <button id="hist-close" title="Fechar" data-i18n-title="historymodal.close_title">✕</button>
       </div>
 
       <!-- Aba: Registro por dia -->
       <div id="hist-panel-log">
         <div class="history-nav">
-          <button id="hist-prev-day" title="Dia anterior">&#8249;</button>
+          <button id="hist-prev-day" title="Dia anterior" data-i18n-title="historymodal.prev_day_title">&#8249;</button>
           <span id="hist-date-label"></span>
-          <button id="hist-next-day" title="Próximo dia">&#8250;</button>
+          <button id="hist-next-day" title="Próximo dia" data-i18n-title="historymodal.next_day_title">&#8250;</button>
         </div>
         <div class="history-table-wrap">
           <table class="history-table">
             <thead>
               <tr>
-                <th>Entrada</th>
-                <th>Saída</th>
-                <th>Título</th>
-                <th>Duração</th>
-                <th>Status</th>
-                <th>Pause</th>
+                <th data-i18n="historymodal.col_start">Entrada</th>
+                <th data-i18n="historymodal.col_end">Saída</th>
+                <th data-i18n="historymodal.col_title">Título</th>
+                <th data-i18n="historymodal.col_duration">Duração</th>
+                <th data-i18n="historymodal.col_status">Status</th>
+                <th data-i18n="historymodal.col_pause">Pause</th>
               </tr>
             </thead>
             <tbody id="hist-tbody"></tbody>
           </table>
-          <div id="hist-empty" class="hist-empty" style="display:none">Nenhum registro para esta data.</div>
+          <div id="hist-empty" class="hist-empty" style="display:none" data-i18n="historymodal.empty_day">Nenhum registro para esta data.</div>
         </div>
       </div>
 
@@ -475,15 +504,15 @@
           <table class="history-table">
             <thead>
               <tr>
-                <th>#</th>
-                <th>Título</th>
-                <th>Exibições</th>
-                <th>Tempo total</th>
+                <th data-i18n="historymodal.col_rank">#</th>
+                <th data-i18n="historymodal.col_title">Título</th>
+                <th data-i18n="historymodal.col_plays">Exibições</th>
+                <th data-i18n="historymodal.col_total_time">Tempo total</th>
               </tr>
             </thead>
             <tbody id="hist-stats-tbody"></tbody>
           </table>
-          <div id="hist-stats-empty" class="hist-empty" style="display:none">Nenhum dado ainda.</div>
+          <div id="hist-stats-empty" class="hist-empty" style="display:none" data-i18n="historymodal.empty_stats">Nenhum dado ainda.</div>
         </div>
       </div>
     </div>
@@ -492,12 +521,12 @@
 <!-- Modal: salvar roteiro -->
 <div id="save-sched-modal" class="sv-sched-backdrop" style="display:none">
   <div class="sv-sched-box">
-    <h3 class="sv-sched-title">Salvar roteiro</h3>
-    <p class="sv-sched-sub">Dê um nome para identificar este roteiro depois.</p>
-    <input id="save-sched-input" class="sv-sched-input" type="text" maxlength="80" placeholder="Ex.: Roteiro da Tarde" autocomplete="off" />
+    <h3 class="sv-sched-title" data-i18n="savesched.title">Salvar roteiro</h3>
+    <p class="sv-sched-sub" data-i18n="savesched.sub">Dê um nome para identificar este roteiro depois.</p>
+    <input id="save-sched-input" class="sv-sched-input" type="text" maxlength="80" placeholder="Ex.: Roteiro da Tarde" data-i18n-placeholder="savesched.placeholder" autocomplete="off" />
     <div class="sv-sched-actions">
-      <button id="save-sched-cancel" class="sv-sched-btn sv-sched-cancel">Cancelar</button>
-      <button id="save-sched-ok" class="sv-sched-btn sv-sched-ok">Salvar</button>
+      <button id="save-sched-cancel" class="sv-sched-btn sv-sched-cancel" data-i18n="savesched.cancel">Cancelar</button>
+      <button id="save-sched-ok" class="sv-sched-btn sv-sched-ok" data-i18n="savesched.save">Salvar</button>
     </div>
   </div>
 </div>
@@ -506,7 +535,7 @@
 <div id="saved-scheds-modal" class="sv-sched-backdrop" style="display:none">
   <div class="sv-sched-box sv-sched-box--list">
     <div class="sv-sched-header">
-      <h3 class="sv-sched-title">Roteiros salvos</h3>
+      <h3 class="sv-sched-title" data-i18n="savedscheds.title">Roteiros salvos</h3>
       <button id="saved-scheds-close" class="sv-sched-close">✕</button>
     </div>
     <div id="saved-scheds-list" class="sv-scheds-list"></div>
@@ -517,8 +546,8 @@
     <div class="confirm-modal-box">
       <p id="confirm-modal-text"></p>
       <div class="confirm-modal-actions">
-        <button id="confirm-modal-cancel">Cancelar</button>
-        <button id="confirm-modal-ok" class="confirm-modal-danger">Confirmar</button>
+        <button id="confirm-modal-cancel" data-i18n="confirm.cancel">Cancelar</button>
+        <button id="confirm-modal-ok" class="confirm-modal-danger" data-i18n="confirm.ok">Confirmar</button>
       </div>
     </div>
   </div>
@@ -548,7 +577,7 @@
     <div class="yt-preview-header">
       <span class="yt-preview-label">▶ Youtube</span>
       <div class="yt-preview-actions">
-        <button id="yt-preview-mute" title="Ativar áudio"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button>
+        <button id="yt-preview-mute" title="Ativar áudio" data-i18n-title="ytpreview.unmute_title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button>
         <button id="yt-preview-close">✕</button>
       </div>
     </div>
@@ -567,24 +596,24 @@
   <!-- Diálogo de fechamento da interface -->
   <div id="close-dialog-overlay" class="close-dlg-overlay" style="display:none">
     <div class="close-dlg-box">
-      <h3 class="close-dlg-title">Fechar PlayLine</h3>
-      <p class="close-dlg-sub">O que deseja fazer?</p>
+      <h3 class="close-dlg-title" data-i18n="closedialog.title">Fechar PlayLine</h3>
+      <p class="close-dlg-sub" data-i18n="closedialog.sub">O que deseja fazer?</p>
       <div class="close-dlg-actions">
         <button id="close-dlg-interface" class="close-dlg-btn close-dlg-neutral">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
             <rect x="3" y="3" width="14" height="14" rx="2"/>
             <path d="M7 10h6M13 7l3 3-3 3"/>
           </svg>
-          Fechar somente a interface
+          <span data-i18n="closedialog.interface_only">Fechar somente a interface</span>
         </button>
         <button id="close-dlg-all" class="close-dlg-btn close-dlg-warn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2v10"/>
             <path d="M6.3 5.3A8 8 0 1 0 17.7 5.3"/>
           </svg>
-          Fechar interface e player
+          <span data-i18n="closedialog.interface_and_player">Fechar interface e player</span>
         </button>
-        <button id="close-dlg-cancel" class="close-dlg-btn close-dlg-cancel">Cancelar</button>
+        <button id="close-dlg-cancel" class="close-dlg-btn close-dlg-cancel" data-i18n="closedialog.cancel">Cancelar</button>
       </div>
     </div>
   </div>
@@ -595,11 +624,11 @@
   <div id="net-alert-popup" style="display:none">
     <div class="net-alert-icon">⚠</div>
     <div class="net-alert-body">
-      <div class="net-alert-title" id="net-alert-title">Stream interrompida</div>
-      <div class="net-alert-msg" id="net-alert-msg">Tentando reconectar...</div>
+      <div class="net-alert-title" id="net-alert-title" data-i18n="netalert.title">Stream interrompida</div>
+      <div class="net-alert-msg" id="net-alert-msg" data-i18n="netalert.msg">Tentando reconectar...</div>
       <div class="net-alert-countdown" id="net-alert-countdown"></div>
     </div>
-    <button class="net-alert-close" id="net-alert-close" title="Fechar aviso">✕</button>
+    <button class="net-alert-close" id="net-alert-close" title="Fechar aviso" data-i18n-title="netalert.close_title">✕</button>
   </div>
 </body>
 </html>

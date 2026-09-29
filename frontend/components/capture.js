@@ -54,19 +54,19 @@
   }
 
   async function loadDevices() {
-    deviceList.innerHTML = '<span class="yt-status yt-status-loading">Carregando dispositivos…</span>';
+    deviceList.innerHTML = `<span class="yt-status yt-status-loading">${window.t("capturemodal.loading_devices")}</span>`;
     try {
       const res  = await fetch("/api/capture-devices");
       const data = await res.json();
       renderDevices(data.devices || []);
     } catch {
-      deviceList.innerHTML = '<span class="yt-status yt-status-error">Erro ao listar dispositivos.</span>';
+      deviceList.innerHTML = `<span class="yt-status yt-status-error">${window.t("capturemodal.list_error")}</span>`;
     }
   }
 
   function renderDevices(devices) {
     if (!devices.length) {
-      deviceList.innerHTML = '<span class="yt-status yt-status-error">Nenhum dispositivo encontrado.</span>';
+      deviceList.innerHTML = `<span class="yt-status yt-status-error">${window.t("capturemodal.no_devices")}</span>`;
       return;
     }
     deviceList.innerHTML = "";

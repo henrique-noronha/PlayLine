@@ -23,6 +23,21 @@ from core import db as _db
 
 logger = logging.getLogger(__name__)
 
+
+class SettingsError(ValueError):
+    """ValueError com código estável para a interface traduzir a mensagem.
+
+    str(exc) continua sendo o texto em português (logs, PlayIngest e qualquer
+    cliente que só lê "detail"); `code` e `params` vão junto na resposta da API
+    e o frontend monta a frase no idioma do operador (dicionário "apierr").
+    """
+
+    def __init__(self, code: str, message: str, **params):
+        super().__init__(message)
+        self.code = code
+        self.params = params
+
+
 _LOCK = threading.Lock()
 _PBKDF2_ITER = 200_000
 USERNAME_MAX = 64
@@ -72,6 +87,37 @@ def _update(**fields) -> dict:
                 data[key] = value
         save(data)
         return data
+
+
+# ── Configuração inicial e idioma ───────────────────────────────────────────
+#
+# "setup_done" marca que o assistente de primeira execução (/setup) já foi
+# concluído neste computador; enquanto não existir, abrir o painel leva ao
+# assistente. "language" é o idioma padrão da interface para qualquer navegador
+# que ainda não tenha escolha própria (o frontend guarda a dele em localStorage).
+
+LANGUAGES = ("pt", "en", "es")
+DEFAULT_LANGUAGE = "en"
+
+
+def is_setup_done() -> bool:
+    return load().get("setup_done") is True
+
+
+def mark_setup_done() -> None:
+    _update(setup_done=True)
+
+
+def get_language() -> str:
+    lang = load().get("language")
+    return lang if lang in LANGUAGES else DEFAULT_LANGUAGE
+
+
+def set_language(lang) -> str:
+    if lang not in LANGUAGES:
+        raise SettingsError("language_invalid", "Idioma inválido")
+    _update(language=lang)
+    return lang
 
 
 # ── Credenciais ─────────────────────────────────────────────────────────────
@@ -128,15 +174,18 @@ def validate_new_credentials(username, password) -> tuple[str, str]:
     username = (username or "").strip()
     password = password or ""
     if not username:
-        raise ValueError("Informe o novo usuário")
+        raise SettingsError("cred_user_required", "Informe o novo usuário")
     if len(username) > USERNAME_MAX:
-        raise ValueError(f"O usuário deve ter no máximo {USERNAME_MAX} caracteres")
+        raise SettingsError("cred_user_too_long",
+                            f"O usuário deve ter no máximo {USERNAME_MAX} caracteres", max=USERNAME_MAX)
     if any(ch.isspace() for ch in username):
-        raise ValueError("O usuário não pode conter espaços")
+        raise SettingsError("cred_user_spaces", "O usuário não pode conter espaços")
     if len(password) < PASSWORD_MIN:
-        raise ValueError(f"A nova senha deve ter pelo menos {PASSWORD_MIN} caracteres")
+        raise SettingsError("cred_pass_too_short",
+                            f"A nova senha deve ter pelo menos {PASSWORD_MIN} caracteres", min=PASSWORD_MIN)
     if len(password) > PASSWORD_MAX:
-        raise ValueError(f"A nova senha deve ter no máximo {PASSWORD_MAX} caracteres")
+        raise SettingsError("cred_pass_too_long",
+                            f"A nova senha deve ter no máximo {PASSWORD_MAX} caracteres", max=PASSWORD_MAX)
     return username, password
 
 
@@ -174,22 +223,23 @@ def validate_library_dir(raw: str) -> Path:
     """
     raw = (raw or "").strip().strip('"').strip()
     if not raw:
-        raise ValueError("Informe o caminho da pasta")
+        raise SettingsError("lib_path_required", "Informe o caminho da pasta")
     p = Path(raw).expanduser()
     if not p.is_absolute():
-        raise ValueError("O caminho precisa ser absoluto (ex.: D:\\Videos\\Biblioteca)")
+        raise SettingsError("lib_path_not_absolute", "O caminho precisa ser absoluto (ex.: D:\\Videos\\Biblioteca)")
     if any(part == ".." for part in p.parts):
-        raise ValueError("Caminho inválido")
+        raise SettingsError("lib_path_invalid", "Caminho inválido")
     if not p.exists():
-        raise ValueError("A pasta não existe no servidor. Crie a pasta primeiro e tente de novo")
+        raise SettingsError("lib_not_found", "A pasta não existe no servidor. Crie a pasta primeiro e tente de novo")
     if not p.is_dir():
-        raise ValueError("O caminho aponta para um arquivo, não para uma pasta")
+        raise SettingsError("lib_not_dir", "O caminho aponta para um arquivo, não para uma pasta")
     probe = p / _WRITE_PROBE
     try:
         probe.write_bytes(b"")
         probe.unlink()
     except OSError as exc:
-        raise ValueError(f"Sem permissão de escrita na pasta ({exc.strerror or exc})")
+        reason = exc.strerror or str(exc)
+        raise SettingsError("lib_not_writable", f"Sem permissão de escrita na pasta ({reason})", reason=reason)
     return p.resolve()
 
 
@@ -207,14 +257,16 @@ def normalize_transition(cfg, base: Optional[dict] = None) -> dict:
     cfg = cfg if isinstance(cfg, dict) else {}
     t = cfg.get("type", base["type"])
     if t not in TRANSITION_TYPES:
-        raise ValueError("Tipo de transição inválido (use 'cut' ou 'fade')")
+        raise SettingsError("tr_type_invalid", "Tipo de transição inválido (use 'cut' ou 'fade')")
     try:
         d = float(cfg.get("duration", base["duration"]))
     except (TypeError, ValueError):
-        raise ValueError("Duração inválida")
+        raise SettingsError("tr_duration_invalid", "Duração inválida")
     if not (TRANSITION_MIN <= d <= TRANSITION_MAX):
-        raise ValueError(
-            f"A duração do fade deve ficar entre {TRANSITION_MIN:g} e {TRANSITION_MAX:g} segundos")
+        raise SettingsError(
+            "tr_duration_range",
+            f"A duração do fade deve ficar entre {TRANSITION_MIN:g} e {TRANSITION_MAX:g} segundos",
+            min=TRANSITION_MIN, max=TRANSITION_MAX)
     return {"type": t, "duration": round(d, 2)}
 
 
@@ -281,22 +333,24 @@ def city_key(city) -> str:
 def normalize_city(city) -> dict:
     """Valida uma cidade vinda da interface. ValueError se inválida."""
     if not isinstance(city, dict):
-        raise ValueError("Cidade em formato inválido")
+        raise SettingsError("city_invalid", "Cidade em formato inválido")
     name = str(city.get("name", "")).strip()
     state = str(city.get("state", "")).strip().upper()
     if not name:
-        raise ValueError("Cidade sem nome")
+        raise SettingsError("city_no_name", "Cidade sem nome")
     if len(name) > CITY_NAME_MAX:
-        raise ValueError(f"Nome de cidade muito longo (máximo {CITY_NAME_MAX} caracteres)")
+        raise SettingsError("city_name_too_long",
+                            f"Nome de cidade muito longo (máximo {CITY_NAME_MAX} caracteres)", max=CITY_NAME_MAX)
     if state and (len(state) != 2 or not state.isalpha()):
-        raise ValueError(f"Estado inválido em {name!r} (use a sigla, por exemplo TO)")
+        raise SettingsError("city_state_invalid",
+                            f"Estado inválido em {name!r} (use a sigla, por exemplo TO)", name=name)
     try:
         lat = float(city["lat"])
         lon = float(city["lon"])
     except (KeyError, TypeError, ValueError):
-        raise ValueError(f"Coordenadas ausentes ou inválidas em {name!r}")
+        raise SettingsError("city_coords_missing", f"Coordenadas ausentes ou inválidas em {name!r}", name=name)
     if not (-90 <= lat <= 90 and -180 <= lon <= 180):
-        raise ValueError(f"Coordenadas fora de faixa em {name!r}")
+        raise SettingsError("city_coords_range", f"Coordenadas fora de faixa em {name!r}", name=name)
     return {"name": name, "state": state, "lat": round(lat, 4), "lon": round(lon, 4)}
 
 
@@ -320,11 +374,11 @@ def get_cities() -> list[dict]:
 def set_cities(cities) -> list[dict]:
     """Grava a lista (ordem preservada, sem duplicatas). ValueError se inválida."""
     if not isinstance(cities, list):
-        raise ValueError("Lista de cidades inválida")
+        raise SettingsError("cities_invalid", "Lista de cidades inválida")
     if not cities:
-        raise ValueError("Mantenha pelo menos uma cidade na lista")
+        raise SettingsError("cities_empty", "Mantenha pelo menos uma cidade na lista")
     if len(cities) > CITIES_MAX:
-        raise ValueError(f"O limite é de {CITIES_MAX} cidades")
+        raise SettingsError("cities_limit", f"O limite é de {CITIES_MAX} cidades", max=CITIES_MAX)
     out, seen = [], set()
     for item in cities:
         c = normalize_city(item)

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="setup.window_title">PlayLine · Initial Setup</title>
+  <link rel="stylesheet" href="/static/styles/base.css" />
+  <link rel="stylesheet" href="/static/setup/setup.css" />
+</head>
+<body class="setup-body">
+  <script src="/static/i18n/pt.js"></script>
+  <script src="/static/i18n/en.js"></script>
+  <script src="/static/i18n/es.js"></script>
+  <script src="/static/components/i18n.js"></script>
+
+  <main class="setup-card" id="setup-card">
+    <div class="setup-brand">
+      <img src="/setup/logo" alt="PlayLine" onerror="this.replaceWith(Object.assign(document.createElement('span'), {className: 'setup-wordmark', textContent: 'PlayLine'}))" />
+    </div>
+    <h1 class="setup-heading" data-i18n="setup.heading">Initial Setup</h1>
+
+    <ol class="setup-steps" id="setup-steps">
+      <li data-step="0"><span class="setup-step-dot">1</span><span data-i18n="setup.step_language">Language</span></li>
+      <li data-step="1"><span class="setup-step-dot">2</span><span data-i18n="setup.step_credentials">Username &amp; Password</span></li>
+      <li data-step="2"><span class="setup-step-dot">3</span><span data-i18n="setup.step_library">Library</span></li>
+    </ol>
+
+    <!-- Etapa 1: idioma. A escolha já retraduz o assistente na hora. -->
+    <section class="setup-panel" data-panel="0">
+      <h2 data-i18n="setup.lang_title">Choose your language</h2>
+      <p class="setup-help" data-i18n="setup.lang_help"></p>
+      <div class="setup-lang-list" id="setup-lang-list"></div>
+    </section>
+
+    <!-- Etapa 2: usuário e senha (opcional manter os atuais). -->
+    <section class="setup-panel" data-panel="1" hidden>
+      <h2 data-i18n="setup.cred_title">Access username and password</h2>
+      <p class="setup-help" data-i18n="setup.cred_help"></p>
+      <label class="setup-choice">
+        <input type="radio" name="cred-mode" value="new" checked />
+        <span data-i18n="setup.cred_opt_new">Set a new username and password</span>
+      </label>
+      <div class="setup-fields" id="cred-fields">
+        <label class="setup-field"><span data-i18n="setup.cred_user">Username</span>
+          <input type="text" id="cred-user" autocomplete="off" spellcheck="false" maxlength="64" /></label>
+        <label class="setup-field"><span data-i18n="setup.cred_pass">Password</span>
+          <input type="password" id="cred-pass" autocomplete="new-password" maxlength="128" /></label>
+        <label class="setup-field"><span data-i18n="setup.cred_pass2">Confirm password</span>
+          <input type="password" id="cred-pass2" autocomplete="new-password" maxlength="128" /></label>
+      </div>
+      <label class="setup-choice">
+        <input type="radio" name="cred-mode" value="keep" />
+        <span id="cred-keep-label"></span>
+      </label>
+    </section>
+
+    <!-- Etapa 3: pasta da biblioteca. -->
+    <section class="setup-panel" data-panel="2" hidden>
+      <h2 data-i18n="setup.lib_title">Library folder</h2>
+      <p class="setup-help" data-i18n="setup.lib_help"></p>
+      <label class="setup-choice" id="lib-keep-row" hidden>
+        <input type="radio" name="lib-mode" value="keep" />
+        <span><span data-i18n="setup.lib_opt_keep">Keep the current folder</span>
+          <code class="setup-path" id="lib-current"></code></span>
+      </label>
+      <label class="setup-choice">
+        <input type="radio" name="lib-mode" value="default" />
+        <span><span data-i18n="setup.lib_opt_default">Use the default folder</span>
+          <code class="setup-path" id="lib-default"></code></span>
+      </label>
+      <label class="setup-choice">
+        <input type="radio" name="lib-mode" value="custom" />
+        <span data-i18n="setup.lib_opt_custom">Choose another folder</span>
+      </label>
+      <div class="setup-path-row" id="lib-custom-row">
+        <input type="text" id="lib-path" autocomplete="off" spellcheck="false" data-i18n-placeholder="setup.lib_placeholder" />
+        <button type="button" class="setup-btn setup-btn-ghost" id="lib-browse" hidden data-i18n="setup.lib_browse">Browse…</button>
+      </div>
+    </section>
+
+    <p class="setup-error" id="setup-error" role="alert"></p>
+
+    <footer class="setup-footer">
+      <span class="setup-progress" id="setup-progress"></span>
+      <div class="setup-actions">
+        <button type="button" class="setup-btn setup-btn-ghost" id="btn-back" data-i18n="setup.back">Back</button>
+        <!-- Sem data-i18n: o texto alterna entre Avançar e Concluir em render() (setup.js). -->
+        <button type="button" class="setup-btn setup-btn-primary" id="btn-next">Next</button>
+      </div>
+    </footer>
+  </main>
+
+  <script src="/static/setup/setup.js"></script>
+</body>
+</html>

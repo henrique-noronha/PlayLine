@@ -25,7 +25,7 @@
     ctx.font = "13px 'Segoe UI', Arial, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(_statusMsg || "Aguardando sinal de vídeo…", W / 2, H / 2);
+    ctx.fillText(_statusMsg || window.t("logmsg.waiting_signal"), W / 2, H / 2);
   }
 
   function _setLive(active) {

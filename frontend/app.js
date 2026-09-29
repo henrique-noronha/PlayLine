@@ -56,15 +56,23 @@ function _cancelPendingLoad() {
 (function startClock() {
   const elTime = document.getElementById("clock-time");
   const elDate = document.getElementById("clock-date");
-  const days = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
-  const months = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  // Nomes de dia/mês e a ordem das palavras vêm do idioma escolhido
+  // (window.tArr/window.t, ver components/i18n.js), não do relógio do Windows.
+  // "28 de set" é gramática do português; em inglês a ordem certa é "Sep 28",
+  // por isso o template inteiro também é traduzido, não só as palavras soltas.
   function tick() {
     const now = new Date();
     const hh = String(now.getHours()).padStart(2, "0");
     const mm = String(now.getMinutes()).padStart(2, "0");
     const ss = String(now.getSeconds()).padStart(2, "0");
     elTime.textContent = `${hh}:${mm}:${ss}`;
-    elDate.textContent = `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]}`;
+    const days = window.tArr ? window.tArr("clock.days") : [];
+    const months = window.tArr ? window.tArr("clock.months") : [];
+    const day = days[now.getDay()] ?? "";
+    const month = months[now.getMonth()] ?? "";
+    elDate.textContent = window.t
+      ? window.t("clock.format", { day, date: now.getDate(), month })
+      : `${day}, ${now.getDate()} de ${month}`;
   }
   tick();
   setInterval(tick, 1000);
@@ -106,7 +114,7 @@ function _clearReconnectStatus() {
 window.addEventListener("offline", () => {
   const item = state.schedule[state.currentIndex];
   if (state.playing && item?.live) {
-    _showReconnectStatus("Sem conexão com a internet — aguardando rede");
+    _showReconnectStatus(window.t("logmsg.no_internet_waiting"));
     updateBadge("reconnecting");
   }
 });
@@ -126,23 +134,23 @@ window.addEventListener("online", () => {
 function _logEvent(ev, type) {
   switch (type) {
     case "now_playing":
-      log(`Reproduzindo: ${ev.item?.title || '—'}`, "now_playing"); break;
+      log(window.t("logmsg.now_playing", { title: ev.item?.title || '—' }), "now_playing"); break;
     case "paused":
-      log("Reprodução pausada", "paused"); break;
+      log(window.t("logmsg.paused"), "paused"); break;
     case "resumed":
-      log("Reprodução retomada", "resumed"); break;
+      log(window.t("logmsg.resumed"), "resumed"); break;
     case "stopped":
-      log("Reprodução encerrada", "stopped"); break;
+      log(window.t("logmsg.stopped"), "stopped"); break;
     case "playlist_end":
-      log("Fim do roteiro", "playlist_end"); break;
+      log(window.t("logmsg.playlist_end"), "playlist_end"); break;
     case "mpv_ready":
-      log("Player pronto", "mpv_ready"); break;
+      log(window.t("logmsg.mpv_ready"), "mpv_ready"); break;
     case "mpv_closed":
-      log("Player encerrado", "mpv_closed"); break;
+      log(window.t("logmsg.mpv_closed"), "mpv_closed"); break;
     case "stream_reconnecting":
-      log(`Reconectando stream… (tentativa ${ev.attempt ?? 1})`, "stream_reconnecting"); break;
+      log(window.t("logmsg.stream_reconnecting", { n: ev.attempt ?? 1 }), "stream_reconnecting"); break;
     case "stream_reconnect_failed":
-      log("Falha ao reconectar o stream", "stream_reconnect_failed"); break;
+      log(window.t("logmsg.stream_reconnect_failed"), "stream_reconnect_failed"); break;
   }
 }
 
@@ -188,7 +196,7 @@ function handleEvent(ev) {
       highlightActive(ev.index);
       if (ev.item.live) {
         showLiveIndicator();
-        if (window._setPreviewStatus) window._setPreviewStatus("Carregando live do YouTube…");
+        if (window._setPreviewStatus) window._setPreviewStatus(window.t("logmsg.loading_youtube_live"));
       } else if (ev.item.type === "youtube_live") {
         // Vídeo do YouTube (não ao vivo): barra de progresso via eventos MPV
         hideLiveIndicator();
@@ -290,7 +298,7 @@ function handleEvent(ev) {
       break;
     case "library_changed":
       // Pasta da biblioteca trocada em Configurações (por esta ou outra interface)
-      log("Biblioteca alterada para " + ev.library_dir, "info");
+      log(window.t("logmsg.library_changed", { dir: ev.library_dir }), "info");
       if (typeof loadLibraryFolders === "function") loadLibraryFolders();
       break;
     case "cities_changed":
@@ -301,8 +309,8 @@ function handleEvent(ev) {
       state.transition = ev.transition || state.transition;
       updateTransitionButton();
       log(state.transition.type === "fade"
-        ? `Transição: FTB, fade to black (${state.transition.duration}s)`
-        : "Transição: CUT, corte seco", "info");
+        ? window.t("logmsg.transition_fade", { s: state.transition.duration })
+        : window.t("logmsg.transition_cut"), "info");
       break;
     case "logo_list":
       updateLogoDropdowns(ev.files);
@@ -320,11 +328,11 @@ function handleEvent(ev) {
       _mpvReconnectActive = true;
       let msg;
       if (ev.no_internet) {
-        msg = `Sem internet — tentativa ${attempt}/${max} em ${delay}s`;
+        msg = window.t("logmsg.retry_no_internet", { attempt, max, delay });
       } else if (ev.never_played) {
-        msg = `Live indisponível ou não iniciada — tentativa ${attempt}/${max} em ${delay}s`;
+        msg = window.t("logmsg.retry_never_played", { attempt, max, delay });
       } else {
-        msg = `Live caiu — tentativa de reconexão ${attempt}/${max} em ${delay}s`;
+        msg = window.t("logmsg.retry_dropped", { attempt, max, delay });
       }
       _showReconnectStatus(msg);
       updateBadge("reconnecting");
@@ -334,11 +342,11 @@ function handleEvent(ev) {
       _clearReconnectStatus();
       let failMsg;
       if (ev.no_internet) {
-        failMsg = "Sem conexão com a internet — verifique sua rede";
+        failMsg = window.t("stream.no_internet_failed");
       } else if (ev.never_played) {
-        failMsg = "Não foi possível carregar a live — verifique o link ou aguarde o início";
+        failMsg = window.t("stream.live_load_failed");
       } else {
-        failMsg = "Falha ao reconectar a live após várias tentativas";
+        failMsg = window.t("stream.reconnect_failed");
       }
       showToast(failMsg, "error");
       break;
@@ -485,7 +493,7 @@ function updateButtons() {
   const btnPause = document.getElementById("btn-pause");
   btnPause.disabled    = stopped;
   btnPause.innerHTML = paused ? _SVG_PLAY : _SVG_PAUSE;
-  btnPause.title       = paused ? "Retomar" : "Pausar";
+  btnPause.title       = window.t(paused ? "uimsg.resume_title" : "transport.pause_title");
 }
 
 // Lógica da Interface (Log Colapsável)                                        
@@ -499,10 +507,10 @@ if (btnToggleLog && logSection) {
     
     if (logSection.classList.contains('collapsed')) {
       btnToggleLog.innerHTML = '▲'; 
-      btnToggleLog.title = 'Expandir';
+      btnToggleLog.title = window.t("uimsg.log_expand_title");
     } else {
       btnToggleLog.innerHTML = '▼'; 
-      btnToggleLog.title = 'Recolher';
+      btnToggleLog.title = window.t("uimsg.log_collapse_title");
     }
   });
 }

@@ -29,32 +29,47 @@ def is_youtube_url(url: str) -> bool:
 
 _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
+def _starts_in(unit_code: str, unit_pt: str):
+    """Mensagem "Esta live começa em N <unidade>" com singular/plural no código."""
+    def build(m):
+        n = int(m.group(1))
+        plural = n != 1
+        return (f"{unit_code}_{'many' if plural else 'one'}",
+                f"Esta live começa em {n} {unit_pt}{'s' if plural else ''}", {"n": n})
+    return build
+
+
+# Cada entrada devolve (code, texto em português, params); o code vai para a
+# interface traduzir (dicionário "apierr"), o texto fica para logs e clientes antigos.
 _YT_ERROR_MAP = [
-    (re.compile(r"live event will begin in (\d+) hour",  re.I), lambda m: f"Esta live começa em {m.group(1)} hora{'s' if int(m.group(1)) != 1 else ''}"),
-    (re.compile(r"live event will begin in (\d+) minute", re.I), lambda m: f"Esta live começa em {m.group(1)} minuto{'s' if int(m.group(1)) != 1 else ''}"),
-    (re.compile(r"live event will begin in (\d+) day",   re.I), lambda m: f"Esta live começa em {m.group(1)} dia{'s' if int(m.group(1)) != 1 else ''}"),
-    (re.compile(r"private video",                        re.I), lambda m: "Vídeo privado"),
-    (re.compile(r"video unavailable",                    re.I), lambda m: "Vídeo indisponível"),
-    (re.compile(r"members.only",                         re.I), lambda m: "Conteúdo exclusivo para membros"),
-    (re.compile(r"confirm your age",                     re.I), lambda m: "Restrição de idade"),
-    (re.compile(r"copyright",                            re.I), lambda m: "Conteúdo bloqueado por direitos autorais"),
+    (re.compile(r"live event will begin in (\d+) hour",  re.I), _starts_in("yt_starts_hours", "hora")),
+    (re.compile(r"live event will begin in (\d+) minute", re.I), _starts_in("yt_starts_minutes", "minuto")),
+    (re.compile(r"live event will begin in (\d+) day",   re.I), _starts_in("yt_starts_days", "dia")),
+    (re.compile(r"private video",                        re.I), lambda m: ("yt_private", "Vídeo privado", {})),
+    (re.compile(r"video unavailable",                    re.I), lambda m: ("yt_video_unavailable", "Vídeo indisponível", {})),
+    (re.compile(r"members.only",                         re.I), lambda m: ("yt_members_only", "Conteúdo exclusivo para membros", {})),
+    (re.compile(r"confirm your age",                     re.I), lambda m: ("yt_age_restricted", "Restrição de idade", {})),
+    (re.compile(r"copyright",                            re.I), lambda m: ("yt_copyright", "Conteúdo bloqueado por direitos autorais", {})),
 ]
 
-def _friendly_error(exc: Exception) -> str:
+def _friendly_error(exc: Exception) -> tuple[str, str, dict]:
+    """(code, mensagem em português, params) para um erro do yt-dlp."""
     raw = _ANSI_RE.sub("", str(exc))
-    for pattern, msg_fn in _YT_ERROR_MAP:
+    for pattern, build in _YT_ERROR_MAP:
         m = pattern.search(raw)
         if m:
-            return msg_fn(m)
+            return build(m)
     # Remove prefixo "ERROR: [youtube] ID: " deixando só a mensagem
     clean = re.sub(r"^ERROR:\s*\[youtube\]\s*[A-Za-z0-9_-]+:\s*", "", raw).strip()
-    return clean or "Não foi possível obter informações do vídeo"
+    if clean:
+        return "yt_other", clean, {"reason": clean}
+    return "yt_info_failed", "Não foi possível obter informações do vídeo", {}
 
 
 def get_info(url: str) -> dict:
     """Retorna metadados básicos sem baixar o stream."""
     if _yt_dlp is None:
-        return {"valid": False, "error": "yt-dlp não instalado"}
+        return {"valid": False, "error": "yt-dlp não instalado", "code": "yt_unavailable", "params": {}}
     try:
         opts = {"quiet": True, "no_warnings": True, "skip_download": True}
         with _yt_dlp.YoutubeDL(opts) as ydl:
@@ -66,7 +81,8 @@ def get_info(url: str) -> dict:
             }
     except Exception as exc:
         logger.warning("get_info falhou: %s", exc)
-        return {"valid": False, "error": _friendly_error(exc)}
+        code, msg, params = _friendly_error(exc)
+        return {"valid": False, "error": msg, "code": code, "params": params}
 
 
 # ── Resolução via yt-dlp ─────────────────────────────────────────────────────

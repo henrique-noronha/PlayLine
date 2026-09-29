@@ -5,6 +5,7 @@ import base64
 import json
 import logging
 import os
+import re
 import secrets
 import sys
 import threading
@@ -16,7 +17,7 @@ from typing import Optional
 import uvicorn
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -233,21 +234,28 @@ def _save_sessions(sessions: dict[str, float]) -> None:
 _SESSIONS: dict[str, float] = _load_sessions()
 
 
-def _build_login_html(error: bool = False) -> str:
+def _brand_logo_file() -> Optional[Path]:
+    """Logo do PlayLine usado no login e no assistente de configuração inicial."""
     if getattr(sys, "frozen", False):
         logos_dir = Path(sys.executable).parent / "logos"
     else:
         logos_dir = Path(__file__).parent / "logos"
-
-    logo_tag = "<span style='font-size:26px;font-weight:700;color:#e5e7eb'>PlayLine</span>"
     for name in ("LogoPlayLineD.png", "FavPlayline.png"):
         lp = logos_dir / name
         if lp.exists():
-            b64 = base64.b64encode(lp.read_bytes()).decode()
-            logo_tag = f'<img src="data:image/png;base64,{b64}" style="max-width:280px;max-height:140px;object-fit:contain" alt="PlayLine" />'
-            break
+            return lp
+    return None
 
-    error_html = """<p style="color:#ef4444;font-size:12px;text-align:center;margin-top:4px">
+
+def _build_login_html(error: bool = False) -> str:
+    logo_tag = "<span style='font-size:26px;font-weight:700;color:#e5e7eb'>PlayLine</span>"
+    lp = _brand_logo_file()
+    if lp:
+        b64 = base64.b64encode(lp.read_bytes()).decode()
+        logo_tag = f'<img src="data:image/png;base64,{b64}" style="max-width:280px;max-height:140px;object-fit:contain" alt="PlayLine" />'
+    server_lang = app_settings.get_language()
+
+    error_html = """<p data-l="err" style="color:#ef4444;font-size:12px;text-align:center;margin-top:4px">
         Usuário ou senha incorretos.</p>""" if error else ""
 
     return f"""<!DOCTYPE html><html lang="pt-BR"><head>
@@ -274,16 +282,33 @@ button:hover{{background:#3b7de8}}
 </style></head><body>
 <div class="logo-wrap">
   {logo_tag}
-  <span class="subtitle">Autenticação</span>
+  <span class="subtitle" data-l="sub">Autenticação</span>
 </div>
 {error_html}
 <form method="post" action="/login">
-  <div class="field"><label>Usuário</label>
+  <div class="field"><label data-l="user">Usuário</label>
     <input type="text" name="username" autocomplete="username" autofocus /></div>
-  <div class="field"><label>Senha</label>
+  <div class="field"><label data-l="pass">Senha</label>
     <input type="password" name="password" autocomplete="current-password" /></div>
-  <button type="submit">Entrar</button>
+  <button type="submit" data-l="go">Entrar</button>
 </form>
+<script>
+// Mesmo idioma da interface (localStorage "playline_lang", mesma origem);
+// sem escolha neste navegador, o idioma definido na configuração inicial.
+(function () {{
+  var L = {{
+    pt: {{ title: "PlayLine — Autenticação", sub: "Autenticação", user: "Usuário", pass: "Senha", go: "Entrar", err: "Usuário ou senha incorretos." }},
+    en: {{ title: "PlayLine · Sign in", sub: "Sign in", user: "Username", pass: "Password", go: "Sign in", err: "Incorrect username or password." }},
+    es: {{ title: "PlayLine · Iniciar sesión", sub: "Iniciar sesión", user: "Usuario", pass: "Contraseña", go: "Entrar", err: "Usuario o contraseña incorrectos." }}
+  }};
+  var lang = "{server_lang}";
+  try {{ var v = localStorage.getItem("playline_lang"); if (L[v]) lang = v; }} catch (e) {{}}
+  var d = L[lang];
+  document.documentElement.lang = lang === "pt" ? "pt-BR" : lang;
+  document.title = d.title;
+  document.querySelectorAll("[data-l]").forEach(function (el) {{ el.textContent = d[el.getAttribute("data-l")]; }});
+}})();
+</script>
 </body></html>"""
 
 
@@ -292,13 +317,27 @@ def _session_valid(token: str) -> bool:
     return bool(token) and _SESSIONS.get(token, 0) > time.time()
 
 
+# Sem sessão: login, ping, o assistente de configuração inicial (as rotas dele
+# conferem sozinhas se o pedido vem deste computador e se ainda está pendente)
+# e os arquivos estáticos que ele usa, que não têm nada sensível.
+_PUBLIC_PATHS = ("/login", "/api/ping", "/api/login", "/setup", "/setup/logo",
+                 "/static/styles/base.css", "/static/components/i18n.js")
+_PUBLIC_PREFIXES = ("/api/setup/", "/static/setup/", "/static/i18n/")
+
+
 class _SessionAuth(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         if request.headers.get("upgrade", "").lower() == "websocket":
             return await call_next(request)
         if request.method == "OPTIONS":
             return await call_next(request)
-        if request.url.path in ("/login", "/api/ping", "/api/login"):
+        path = request.url.path
+        # Configuração inicial pendente: só a navegação para o painel/login é
+        # desviada para o assistente. APIs seguem como sempre (PlayIngest, sessões
+        # já abertas e o supervisor continuam funcionando durante a atualização).
+        if path in ("/", "/login") and request.method == "GET" and not app_settings.is_setup_done():
+            return RedirectResponse(url="/setup", status_code=302)
+        if path in _PUBLIC_PATHS or path.startswith(_PUBLIC_PREFIXES):
             return await call_next(request)
         token = request.cookies.get("playline_session")
         if token and _SESSIONS.get(token, 0) > time.time():
@@ -313,6 +352,23 @@ class _SessionAuth(BaseHTTPMiddleware):
         return RedirectResponse(url="/login", status_code=302)
 
 
+class _RevalidatingStaticFiles(StaticFiles):
+    """Arquivos do frontend com "no-cache": o navegador guarda, mas confere com o
+    servidor (ETag, resposta 304) antes de cada uso.
+
+    Sem cabeçalho de cache, o WebView2 reaproveita JS/CSS por heurística sem
+    perguntar. Com o perfil persistente (private_mode=False) isso sobrevive entre
+    execuções, e depois de uma atualização a interface rodava arquivos antigos
+    (ex.: o assistente de configuração mostrando "setup.heading" porque o pt.js
+    do cache ainda não tinha essas chaves).
+    """
+
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
 app = FastAPI(title="PlayLine", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
@@ -321,7 +377,7 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 app.add_middleware(_SessionAuth)
-app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+app.mount("/static", _RevalidatingStaticFiles(directory=str(FRONTEND_DIR)), name="static")
 app.include_router(http_router)
 app.include_router(ws_router)
 
@@ -407,15 +463,19 @@ async def change_credentials(request: Request):
     try:
         body = await request.json()
     except Exception:
-        return JSONResponse({"ok": False, "error": "JSON inválido"}, status_code=400)
+        return JSONResponse({"ok": False, "error": "JSON inválido", "code": "bad_request", "params": {}},
+                            status_code=400)
     if not await _credentials_ok(body.get("current_username"), body.get("current_password")):
-        return JSONResponse({"ok": False, "error": "Usuário ou senha atuais incorretos"}, status_code=403)
+        return JSONResponse({"ok": False, "error": "Usuário ou senha atuais incorretos",
+                             "code": "cred_wrong", "params": {}}, status_code=403)
     loop = asyncio.get_running_loop()
     try:
         username = await loop.run_in_executor(
             None, app_settings.set_credentials, body.get("new_username"), body.get("new_password"))
     except ValueError as exc:
-        return JSONResponse({"ok": False, "error": str(exc)}, status_code=400)
+        return JSONResponse({"ok": False, "error": str(exc),
+                             "code": getattr(exc, "code", "invalid_value"),
+                             "params": getattr(exc, "params", {})}, status_code=400)
     keep = _request_token(request)
     for tok in list(_SESSIONS):
         if tok != keep:
@@ -425,9 +485,198 @@ async def change_credentials(request: Request):
     return JSONResponse({"ok": True, "username": username})
 
 
+@app.post("/api/settings/language")
+async def change_language(request: Request):
+    """Idioma padrão da interface (config.json), usado por navegadores sem escolha própria."""
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    try:
+        lang = app_settings.set_language(body.get("language"))
+    except ValueError as exc:
+        return JSONResponse({"detail": str(exc), "code": getattr(exc, "code", "invalid_value"),
+                             "params": getattr(exc, "params", {})}, status_code=400)
+    return {"ok": True, "language": lang}
+
+
+# ── Assistente de configuração inicial ──────────────────────────────────────
+#
+# Idioma, usuário/senha e pasta da biblioteca, uma vez por instalação (inclusive
+# quem atualiza de uma versão anterior, já preenchido com o que estiver em uso).
+# Só responde a pedidos deste computador: ninguém na rede pode definir a senha
+# antes do operador.
+
+_LOCAL_HOSTS = ("127.0.0.1", "::1", "localhost")
+
+
+def _is_local(request: Request) -> bool:
+    return bool(request.client) and request.client.host in _LOCAL_HOSTS
+
+
+def _setup_blocked(request: Request) -> Optional[JSONResponse]:
+    if app_settings.is_setup_done():
+        return JSONResponse({"detail": "Configuração inicial já concluída", "code": "setup_done"},
+                            status_code=409)
+    if not _is_local(request):
+        return JSONResponse({"detail": "Conclua a configuração inicial no computador do PlayLine",
+                             "code": "setup_local_only"}, status_code=403)
+    return None
+
+
+_SETUP_REMOTE_HTML = """<!DOCTYPE html><html><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>PlayLine</title>
+<style>body{{background:#0f1117;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;
+display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center}}
+p{{max-width:420px;line-height:1.6;color:#94a3b8}}h1{{font-size:20px;margin-bottom:10px}}</style>
+</head><body><div><h1 id="h">PlayLine</h1><p id="m"></p></div><script>
+var M={{pt:"A configuração inicial do PlayLine ainda não foi concluída. Conclua-a no computador onde o PlayLine está instalado.",
+en:"PlayLine's initial setup has not been completed yet. Complete it on the computer where PlayLine is installed.",
+es:"La configuración inicial de PlayLine aún no se ha completado. Complétela en el equipo donde está instalado PlayLine."}};
+var l="{lang}";try{{var v=localStorage.getItem("playline_lang");if(M[v])l=v;}}catch(e){{}}
+document.getElementById("m").textContent=M[l]||M.en;</script></body></html>"""
+
+
+@app.get("/setup")
+async def setup_page(request: Request):
+    if app_settings.is_setup_done():
+        return RedirectResponse(url="/", status_code=302)
+    if not _is_local(request):
+        return HTMLResponse(_SETUP_REMOTE_HTML.format(lang=app_settings.get_language()), status_code=403)
+    # no-store: sem isso o navegador pode reexibir o assistente do cache depois
+    # de concluído, em vez de passar por aqui e ser mandado ao painel.
+    html = (FRONTEND_DIR / "setup" / "setup.html").read_text(encoding="utf-8")
+    return HTMLResponse(_with_asset_version(html), headers={"Cache-Control": "no-store"})
+
+
+@app.get("/setup/logo")
+async def setup_logo():
+    lp = _brand_logo_file()
+    if not lp:
+        return Response(status_code=404)
+    return FileResponse(str(lp), media_type="image/png")
+
+
+@app.get("/api/setup/state")
+async def setup_state(request: Request):
+    """Valores atuais para pré-preencher o assistente (quem atualiza já tem os seus)."""
+    blocked = _setup_blocked(request)
+    if blocked:
+        return blocked
+    from api import routes as _routes
+    cfg_lib = app_settings.get_library_dir()
+    raw_lang = app_settings.load().get("language")
+    return {
+        "language": raw_lang if raw_lang in app_settings.LANGUAGES else None,
+        "username": app_settings.get_username(),
+        "library_dir": str(_routes._LIBRARY_BASE),
+        "library_default": str(_routes._LIBRARY_DEFAULT),
+        "library_custom": cfg_lib is not None,
+        "password_min": app_settings.PASSWORD_MIN,
+    }
+
+
+@app.post("/api/setup/complete")
+async def setup_complete(request: Request):
+    """Aplica as três etapas de uma vez, abre a sessão e marca a configuração como concluída.
+
+    Valida tudo antes de gravar qualquer coisa: um erro na pasta não deixa a
+    senha trocada pela metade. `step` na resposta de erro indica para qual etapa
+    o assistente deve voltar.
+    """
+    blocked = _setup_blocked(request)
+    if blocked:
+        return blocked
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    loop = asyncio.get_running_loop()
+
+    def _err(step: str, exc: Exception) -> JSONResponse:
+        return JSONResponse({"detail": str(exc), "code": getattr(exc, "code", "invalid_value"),
+                             "params": getattr(exc, "params", {}), "step": step}, status_code=400)
+
+    lang = body.get("language")
+    if lang not in app_settings.LANGUAGES:
+        return _err("language", app_settings.SettingsError("language_invalid", "Idioma inválido"))
+
+    creds = body.get("credentials")
+    if creds is not None:
+        if not isinstance(creds, dict):
+            return _err("credentials", app_settings.SettingsError("invalid_value", "Credenciais inválidas"))
+        try:
+            app_settings.validate_new_credentials(creds.get("username"), creds.get("password"))
+        except ValueError as exc:
+            return _err("credentials", exc)
+
+    lib_reset = body.get("library_reset") is True   # volta à pasta padrão
+    lib_path = None if lib_reset else body.get("library_path")   # None = manter a pasta em uso
+    if lib_path is not None:
+        try:
+            await loop.run_in_executor(None, app_settings.validate_library_dir, str(lib_path))
+        except ValueError as exc:
+            return _err("library", exc)
+
+    # Tudo válido: grava.
+    app_settings.set_language(lang)
+    if creds is not None:
+        await loop.run_in_executor(
+            None, app_settings.set_credentials, creds.get("username"), creds.get("password"))
+        _SESSIONS.clear()   # sessões abertas com a senha antiga caem, como na troca pelas Configurações
+    if lib_reset or lib_path is not None:
+        from api import routes as _routes
+        resp = await _routes.change_library_dir({"reset": True} if lib_reset else {"path": lib_path})
+        if isinstance(resp, Response):   # não deveria acontecer, já validado acima
+            return resp
+    app_settings.mark_setup_done()
+
+    token = secrets.token_urlsafe(32)
+    _SESSIONS[token] = time.time() + _SESSION_TTL
+    _save_sessions(_SESSIONS)
+    logger.info("Configuração inicial concluída (idioma=%s, credenciais %s, biblioteca %s)",
+                lang, "alteradas" if creds is not None else "mantidas",
+                "padrão" if lib_reset else ("alterada" if lib_path is not None else "mantida"))
+    resp = JSONResponse({"ok": True})
+    resp.set_cookie("playline_session", token, httponly=True, samesite="lax", max_age=_SESSION_TTL)
+    return resp
+
+
+_LANG_MARKER = '<script src="/static/i18n/pt.js"></script>'
+
+
+def _frontend_version() -> str:
+    """Muda sempre que algum arquivo do frontend muda (maior mtime, em hexadecimal)."""
+    try:
+        newest = max(f.stat().st_mtime for f in FRONTEND_DIR.rglob("*") if f.is_file())
+    except (OSError, ValueError):
+        newest = time.time()
+    return format(int(newest), "x")
+
+
+_ASSET_VERSION = _frontend_version()
+_ASSET_RE = re.compile(r'((?:src|href)="/static/[^"?]+)"')
+
+
+def _with_asset_version(html: str) -> str:
+    """Acrescenta ?v=<versão> nas referências a /static/ das páginas HTML.
+
+    Depois de uma atualização a URL muda e o navegador não tem como servir um
+    JS/CSS antigo do cache (complementa o "no-cache" de _RevalidatingStaticFiles,
+    que não vale para cópias que já estavam em cache antes dele existir).
+    """
+    return _ASSET_RE.sub(rf'\1?v={_ASSET_VERSION}"', html)
+
+
 @app.get("/")
 async def index():
-    return FileResponse(str(FRONTEND_DIR / "index.html"))
+    # Idioma padrão do servidor antes dos dicionários: i18n.js usa quando este
+    # navegador ainda não tem escolha própria.
+    html = (FRONTEND_DIR / "index.html").read_text(encoding="utf-8")
+    lang = json.dumps(app_settings.get_language())
+    html = html.replace(_LANG_MARKER,
+                        f"<script>window.PLAYLINE_SERVER_LANG = {lang};</script>\n  {_LANG_MARKER}", 1)
+    return HTMLResponse(_with_asset_version(html), headers={"Cache-Control": "no-cache"})
 
 
 def _run_server(port: int = 18000):
@@ -873,10 +1122,17 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
     def _start_webview(func=None):
         import ctypes
         try:
+            # private_mode=False: o padrão do pywebview é True, que usa uma pasta
+            # de perfil do WebView2 temporária e a apaga a cada fechamento de
+            # janela. Isso zera localStorage (idioma, zoom, cache de miniaturas,
+            # posição do overlay de hora/temperatura) toda vez que a interface é
+            # fechada e reaberta, mesmo só "fechar somente a interface" mantendo
+            # servidor/daemon no ar. Com False, o pywebview usa uma pasta fixa em
+            # %APPDATA%\pywebview, que sobrevive normalmente.
             if func:
-                webview.start(func)
+                webview.start(func, private_mode=False)
             else:
-                webview.start()
+                webview.start(private_mode=False)
         except Exception as e:
             ctypes.windll.user32.MessageBoxW(
                 0,

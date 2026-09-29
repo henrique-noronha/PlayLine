@@ -9,7 +9,7 @@ function connect() {
   state.ws.onopen = () => {
     state.connected = true;
     setConnStatus("connected");
-    log("Conectado ao servidor", "info");
+    log(window.t("logmsg.ws_connected"), "info");
   };
 
   state.ws.onclose = async () => {
@@ -29,19 +29,19 @@ function connect() {
     // HTTP 403, que aqui chega como um close 1006 idêntico a queda de rede.
     // Distingue os dois casos antes de entrar em loop de reconexão a cada 3s.
     if (await _sessionExpired()) {
-      log("Sessão expirada. Faça login novamente.", "error");
+      log(window.t("logmsg.session_expired"), "error");
       location.href = "/login";
       return;
     }
-    log("Conexão perdida. Reconectando em 3s…", "error");
+    log(window.t("logmsg.connection_lost"), "error");
     setTimeout(connect, 3000);
   };
 
-  state.ws.onerror = () => log("Falha na conexão com o servidor", "error");
+  state.ws.onerror = () => log(window.t("logmsg.ws_error"), "error");
 
   state.ws.onmessage = (e) => {
     try { handleEvent(JSON.parse(e.data)); }
-    catch (err) { log("Erro ao processar mensagem do servidor", "error"); }
+    catch (err) { log(window.t("logmsg.ws_message_error"), "error"); }
   };
 }
 

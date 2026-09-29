@@ -1,0 +1,244 @@
+/* PlayLine — Assistente de configuração inicial
+   Reaproveita as variáveis de base.css; aqui só desfaz o layout de painel
+   (altura fixa, largura mínima de 1100px) para centralizar um cartão. */
+
+body.setup-body {
+  height: auto;
+  min-height: 100vh;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  overflow: auto;
+}
+
+.setup-card {
+  width: 100%;
+  max-width: 500px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 30px 34px 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.55);
+}
+
+.setup-brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.setup-brand img {
+  max-width: 220px;
+  max-height: 90px;
+  object-fit: contain;
+}
+.setup-wordmark {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.setup-heading {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+
+/* ── Etapas ── */
+.setup-steps {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 24px;
+  position: relative;
+}
+.setup-steps li {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: center;
+}
+.setup-step-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+  transition: background .15s, border-color .15s, color .15s;
+}
+.setup-steps li.active { color: var(--text); }
+.setup-steps li.active .setup-step-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.setup-steps li.done .setup-step-dot {
+  background: rgba(34,197,94,.15);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+/* ── Conteúdo das etapas ── */
+.setup-panel h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.setup-help {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.setup-lang-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.setup-lang-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 13px 18px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.setup-lang-opt:hover { border-color: var(--accent); }
+.setup-lang-opt.selected {
+  border-color: var(--accent);
+  background: rgba(79,142,247,.12);
+}
+.setup-lang-hint {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: .04em;
+}
+.setup-lang-opt.selected .setup-lang-hint { color: var(--accent); }
+
+.setup-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+.setup-choice input { margin-top: 2px; accent-color: var(--accent); }
+.setup-path {
+  display: block;
+  margin-top: 3px;
+  font-family: Consolas, monospace;
+  font-size: 11.5px;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+.setup-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 2px 0 10px 24px;
+}
+.setup-fields.disabled { opacity: .45; pointer-events: none; }
+.setup-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.setup-field input,
+.setup-path-row input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  padding: 9px 12px;
+  outline: none;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.setup-field input:focus,
+.setup-path-row input:focus { border-color: var(--accent); }
+
+.setup-path-row {
+  display: flex;
+  gap: 8px;
+  padding-left: 24px;
+}
+.setup-path-row input { flex: 1; min-width: 0; }
+.setup-path-row.disabled { opacity: .45; pointer-events: none; }
+
+.setup-error {
+  min-height: 18px;
+  margin: 14px 0 0;
+  font-size: 12.5px;
+  color: var(--danger);
+  line-height: 1.4;
+}
+
+/* ── Rodapé ── */
+.setup-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.setup-progress { font-size: 12px; color: var(--muted); }
+.setup-actions { display: flex; gap: 8px; }
+
+.setup-btn {
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background .15s, border-color .15s, opacity .15s;
+  white-space: nowrap;
+}
+.setup-btn:disabled { opacity: .5; cursor: default; }
+.setup-btn-primary { background: var(--accent); color: #fff; }
+.setup-btn-primary:hover:not(:disabled) { filter: brightness(.92); }
+.setup-btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+.setup-btn-ghost:hover:not(:disabled) { border-color: var(--accent); }

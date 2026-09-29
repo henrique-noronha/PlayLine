@@ -35,13 +35,13 @@
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        log('Erro ao salvar roteiro: ' + (err.detail || `HTTP ${res.status}`), 'error');
+        log(window.t('savesched.save_error_prefix') + (window.apiError(err) || `HTTP ${res.status}`), 'error');
       } else {
-        log(`Roteiro "${title}" salvo.`, 'info');
+        log(window.t('savesched.saved', { title }), 'info');
         _closeSaveModal();
       }
     } catch (e) {
-      log('Erro ao salvar roteiro: ' + e.message, 'error');
+      log(window.t('savesched.save_error_prefix') + e.message, 'error');
     } finally {
       saveOkBtn.disabled = false;
     }
@@ -64,14 +64,21 @@
   closeBtn.addEventListener('click', _closeListModal);
   listModal.addEventListener('click', e => { if (e.target === listModal) _closeListModal(); });
 
+  // Pluralização de "X clipe(s)": PT/EN/ES conjugam diferente (substantivo e,
+  // em alguns casos, verbo/particípio), então a chave certa é escolhida aqui
+  // pela contagem, nunca composta com "s" fixo como antes.
+  function _clipCount(n) {
+    return window.t(n === 1 ? 'savedscheds.clip_count_one' : 'savedscheds.clip_count_many', { n });
+  }
+
   async function _renderList() {
-    listWrap.innerHTML = '<p class="sv-scheds-empty">Carregando…</p>';
+    listWrap.innerHTML = `<p class="sv-scheds-empty">${window.t('savedscheds.loading')}</p>`;
     try {
       const res = await fetch('/api/saved-schedules');
       const data = await res.json();
       const schedules = data.schedules || [];
       if (!schedules.length) {
-        listWrap.innerHTML = '<p class="sv-scheds-empty">Nenhum roteiro salvo ainda.</p>';
+        listWrap.innerHTML = `<p class="sv-scheds-empty">${window.t('savedscheds.empty')}</p>`;
         return;
       }
       listWrap.innerHTML = '';
@@ -82,11 +89,11 @@
         card.innerHTML = `
           <div class="sv-sched-card-info">
             <span class="sv-sched-card-title">${_esc(s.title)}</span>
-            <span class="sv-sched-card-meta">${s.item_count} clipe${s.item_count !== 1 ? 's' : ''} · ${date}</span>
+            <span class="sv-sched-card-meta">${_clipCount(s.item_count)} · ${date}</span>
           </div>
           <div class="sv-sched-card-btns">
-            <button class="sv-sched-card-btn sv-sched-insert" data-id="${s.id}" data-title="${_esc(s.title)}" title="Inserir no roteiro atual">Inserir</button>
-            <button class="sv-sched-card-btn sv-sched-del" data-id="${s.id}" data-title="${_esc(s.title)}" title="Excluir">✕</button>
+            <button class="sv-sched-card-btn sv-sched-insert" data-id="${s.id}" data-title="${_esc(s.title)}" title="${_esc(window.t('savedscheds.insert_title'))}">${_esc(window.t('savedscheds.insert'))}</button>
+            <button class="sv-sched-card-btn sv-sched-del" data-id="${s.id}" data-title="${_esc(s.title)}" title="${_esc(window.t('savedscheds.delete'))}">✕</button>
           </div>
         `;
         listWrap.appendChild(card);
@@ -102,14 +109,14 @@
         });
       });
     } catch (e) {
-      listWrap.innerHTML = '<p class="sv-scheds-empty">Erro ao carregar roteiros.</p>';
+      listWrap.innerHTML = `<p class="sv-scheds-empty">${window.t('savedscheds.load_error')}</p>`;
     }
   }
 
   async function _insertSchedule(id, title) {
     try {
       const res = await fetch(`/api/saved-schedules/${id}/items`);
-      if (!res.ok) { log('Roteiro não encontrado.', 'error'); return; }
+      if (!res.ok) { log(window.t('savedscheds.not_found'), 'error'); return; }
       const data = await res.json();
       const items = data.items;
 
@@ -135,31 +142,37 @@
         state.schedule = [...state.schedule, ...newItems];
         renderSchedule();
         syncOrderToServer();
-        log(`${newItems.length} clipe${newItems.length !== 1 ? 's' : ''} inserido${newItems.length !== 1 ? 's' : ''} no roteiro.`, 'info');
-        showToast(title ? `"${title}" adicionado` : `${newItems.length} clipe${newItems.length !== 1 ? 's' : ''} adicionado${newItems.length !== 1 ? 's' : ''}`, "info");
+        const n = newItems.length;
+        log(window.t(n === 1 ? 'savedscheds.inserted_log_one' : 'savedscheds.inserted_log_many', { n }), 'info');
+        showToast(
+          title
+            ? window.t('savedscheds.added_titled', { title })
+            : window.t(n === 1 ? 'savedscheds.added_count_one' : 'savedscheds.added_count_many', { n }),
+          "info"
+        );
         if (typeof loadLibraryFiles === "function") loadLibraryFiles(_libCurrentFolder || "");
       };
 
       const missing = missingPaths.length;
       const total = items.length;
       const msg = missing > 0
-        ? `${missing} clipe${missing !== 1 ? 's' : ''} não ${missing !== 1 ? 'estão' : 'está'} mais na biblioteca e ${missing !== 1 ? 'aparecerão' : 'aparecerá'} com borda vermelha. Inserir mesmo assim?`
-        : `Inserir ${total} clipe${total !== 1 ? 's' : ''} no roteiro atual?`;
+        ? window.t(missing === 1 ? 'savedscheds.missing_warning_one' : 'savedscheds.missing_warning_many', { n: missing })
+        : window.t('savedscheds.confirm_insert', { count: _clipCount(total) });
       _closeListModal();
       showConfirm(msg, doInsert);
     } catch (e) {
-      log('Erro ao inserir roteiro: ' + e.message, 'error');
+      log(window.t('savedscheds.insert_error_prefix') + e.message, 'error');
     }
   }
 
   function _deleteSchedule(id, title) {
-    showConfirm(`Excluir "${title || 'este roteiro'}"? Esta ação não pode ser desfeita.`, async () => {
+    showConfirm(window.t('savedscheds.delete_confirm', { title: title || window.t('savedscheds.default_name') }), async () => {
       try {
         const res = await fetch(`/api/saved-schedules/${id}`, { method: 'DELETE' });
-        if (!res.ok) { log('Erro ao excluir roteiro.', 'error'); return; }
+        if (!res.ok) { log(window.t('savedscheds.delete_error'), 'error'); return; }
         openSavedSchedsModal();
       } catch (e) {
-        log('Erro ao excluir roteiro: ' + e.message, 'error');
+        log(window.t('savedscheds.delete_error_prefix') + e.message, 'error');
       }
     });
   }

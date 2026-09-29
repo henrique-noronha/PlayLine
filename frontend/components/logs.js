@@ -4,19 +4,22 @@ function esc(str) {
   return String(str ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
 
-const _LOG_LABELS = {
-  now_playing:            "reprodução",
-  paused:                 "pausa",
-  resumed:                "retomada",
-  stopped:                "parado",
-  playlist_end:           "roteiro",
+// Mapeia o "type" de cada chamada log(msg, type) para a chave curta traduzida
+// em i18n/*.js (eventlabels.*). A mensagem em si (msg) continua em português:
+// são centenas de strings soltas pelo código, fora do escopo desta tradução.
+const _LOG_LABEL_KEYS = {
+  now_playing:            "now_playing",
+  paused:                 "paused",
+  resumed:                "resumed",
+  stopped:                "stopped",
+  playlist_end:           "playlist_end",
   mpv_ready:              "player",
   mpv_closed:             "player",
   stream_reconnecting:    "stream",
   stream_reconnect_failed:"stream",
   info:                   "info",
-  warn:                   "aviso",
-  error:                  "erro",
+  warn:                   "warn",
+  error:                  "error",
 };
 
 function log(msg, type) {
@@ -24,7 +27,8 @@ function log(msg, type) {
   const ts = new Date().toTimeString().slice(0, 8);
   const entry = document.createElement("div");
   entry.className = `log-entry ev-${type}`;
-  const label = _LOG_LABELS[type] ?? type;
+  const labelKey = _LOG_LABEL_KEYS[type];
+  const label = labelKey ? window.t("eventlabels." + labelKey) : type;
   entry.innerHTML = `<span class="ts">${ts}</span><span class="ev">${label}</span><span class="msg">${esc(msg)}</span>`;
   div.appendChild(entry);
   div.scrollTop = div.scrollHeight;
@@ -34,7 +38,8 @@ function setConnStatus(status) {
   const dot   = document.getElementById("dot");
   const label = document.getElementById("conn-label");
   dot.className = "dot " + status;
-  label.textContent = { connected: "Conectado", connecting: "Conectando…", disconnected: "Desconectado" }[status] ?? status;
+  const key = { connected: "header.connected", connecting: "header.connecting", disconnected: "header.disconnected" }[status];
+  label.textContent = key ? window.t(key) : status;
 }
 
 document.getElementById("btn-clear-log").addEventListener("click", () => {

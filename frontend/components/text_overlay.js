@@ -203,7 +203,7 @@ async function loadCityOptions() {
     _textState.city = sel.value;
     localStorage.setItem("playline_to_city", _textState.city);
     _sendTextOverlay();
-    log(`Cidade do overlay ajustada para ${sel.options[0].textContent}`, "info");
+    log(window.t("logmsg.overlay_city_adjusted", { city: sel.options[0].textContent }), "info");
   }
 }
 

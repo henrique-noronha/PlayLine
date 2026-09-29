@@ -50,7 +50,7 @@
       // Não abre o mesmo dispositivo aqui — deixa exclusivo pro MPV, que é
       // quem realmente está transmitindo (ou está prestes a). Ver "Reproduzindo
       // agora" pro preview real.
-      _showEmpty("Ao vivo agora (ou é a próxima da fila) — sem preview duplicado para não travar a transmissão");
+      _showEmpty(window.t("inputq.live_no_preview_paren"));
       return;
     }
     if (typeof window._captureGetStream !== "function") return;
@@ -61,7 +61,7 @@
       video.style.display = "block";
       emptyEl.style.display = "none";
     } else {
-      _showEmpty("Não foi possível acessar: " + deviceName);
+      _showEmpty(window.t("inputq.cannot_access", { device: deviceName }));
     }
   }
 
@@ -69,7 +69,7 @@
     _clearPreview();
     if (typeof window._ytExtractId !== "function" || typeof window._ytBuildEmbedSrc !== "function") return;
     const id = window._ytExtractId(item.path);
-    if (!id) { _showEmpty("Link do YouTube inválido"); return; }
+    if (!id) { _showEmpty(window.t("inputq.invalid_youtube_link")); return; }
     // força mudo sempre — o preview não pode disputar áudio com a transmissão real
     iframe.src           = window._ytBuildEmbedSrc(id, true);
     iframe.style.display = "block";
@@ -80,9 +80,7 @@
     btnCamera.classList.toggle("active", _mode === "camera");
     btnYoutube.classList.toggle("active", _mode === "youtube");
     if (btnAdd) {
-      btnAdd.textContent = _mode === "youtube"
-        ? "+ Adicionar outra live"
-        : "+ Adicionar outra câmera";
+      btnAdd.textContent = window.t(_mode === "youtube" ? "inputq.add_youtube" : "inputq.add_camera");
     }
   }
 
@@ -108,7 +106,7 @@
     if (!item) {
       _mode = null;
       _clearPreview();
-      _showEmpty("Nenhuma entrada ativa");
+      _showEmpty(window.t("inputq.empty"));
       _updateToggleUI();
       return;
     }
@@ -139,10 +137,10 @@
   window._inputQuadrantForceRelease = function (path) {
     if (_mode === "camera" && _camPath === path) {
       _clearPreview();
-      _showEmpty("Ao vivo agora — sem preview duplicado para não travar a transmissão");
+      _showEmpty(window.t("inputq.live_no_preview"));
     }
   };
 
   _updateToggleUI();
-  _showEmpty("Nenhuma entrada ativa");
+  _showEmpty(window.t("inputq.empty"));
 })();
