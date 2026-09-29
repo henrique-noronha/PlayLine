@@ -78,6 +78,17 @@ def _is_stream_path(path: str) -> bool:
         p.startswith("rtmp://") or p.startswith("rtmps://") or
         p.startswith("rtsp://")
     )
+
+
+# Buffer do demuxer em RAM (leitura adiantada, retrocesso). Com cache=True o MPV
+# lê adiantado até encher o teto, então o consumo do daemon fica perto de
+# base + teto. Arquivo local não precisa de folga grande (o disco entrega bem
+# mais rápido que a reprodução); só stream de rede precisa, para absorver
+# quedas de conexão sem travar. Valores locais = os da v1.1.1.
+_BUF_LOCAL  = ("150MiB", "50MiB")
+_BUF_STREAM = ("512MiB", "128MiB")
+
+
 def _yt_url_fresh(resolved_url: str) -> bool:
     """Verifica se a URL resolvida ainda está dentro da janela de validade.
 
@@ -260,10 +271,12 @@ class MPVDaemon:
             hwdec="auto-safe",          # decodificação por GPU quando disponível, software como fallback
             osc=False,                  # desativa controles na tela ao passar o mouse
             cache=True,                  # ativa cache para arquivos locais e de rede
-            demuxer_max_bytes="512MiB",  # buffer de leitura adiantada em RAM — absorve quedas de rede sem travar
-            demuxer_max_back_bytes="128MiB",  # buffer de retrocesso
-            demuxer_readahead_secs=30,   # tenta manter ~30s de conteúdo já baixado à frente, não só um teto em bytes
+            # Perfil local por padrão; _apply_buffer_profile() troca para o de
+            # stream antes de abrir uma live/YouTube (ver _BUF_LOCAL/_BUF_STREAM).
+            demuxer_max_bytes=_BUF_LOCAL[0],
+            demuxer_max_back_bytes=_BUF_LOCAL[1],
         )
+        self._buf_stream = False
 
         if has_secondary:
             mpv_kwargs.update(border=False, fullscreen=True, ontop=True, geometry=geo)
@@ -302,6 +315,10 @@ class MPVDaemon:
                 self._current_path = self._mpv.path or ""
             except Exception:
                 pass
+            # Cobre as trocas automáticas da fila do MPV (live appendada virando
+            # atual, ou clipe local pré-carregado depois de uma live), que não
+            # passam pelo "play".
+            self._apply_buffer_profile(_is_stream_path(self._current_path))
             self._fader.on_file_loaded(self._current_path)
             if not self._window_positioned:
                 target = self._move_to_tv if self._has_secondary else self._send_to_back
@@ -349,6 +366,20 @@ class MPVDaemon:
 
         self._yt_appended.clear()
         logger.info("MPV inicializado")
+
+    def _apply_buffer_profile(self, stream: bool):
+        """Ajusta o teto do buffer do demuxer: grande para stream de rede, pequeno para arquivo local."""
+        if not self._mpv or stream == self._buf_stream:
+            return
+        max_bytes, back_bytes = _BUF_STREAM if stream else _BUF_LOCAL
+        try:
+            self._mpv["demuxer-max-bytes"] = max_bytes
+            self._mpv["demuxer-max-back-bytes"] = back_bytes
+            self._buf_stream = stream
+            logger.info("[buffer] perfil %s (%s / %s)",
+                        "stream" if stream else "local", max_bytes, back_bytes)
+        except Exception as exc:
+            logger.warning("[buffer] falha ao ajustar perfil: %s", exc)
 
     def _move_to_tv(self):
         monitor.move_window_to_secondary("PlayLine")
@@ -639,6 +670,7 @@ class MPVDaemon:
                 if not _is_youtube_url(original_path):
                     if start_time: opts_parts.append(f"start={start_time}")
                     if end_time:   opts_parts.append(f"end={end_time}")
+                self._apply_buffer_profile(_is_stream_path(path))
                 if opts_parts:
                     self._mpv.command("loadfile", path, "replace", 0, ",".join(opts_parts))
                 else:

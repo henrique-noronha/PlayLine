@@ -25,9 +25,9 @@
     _hide();
     // Renomeia o botão de confirmação para "Fechar" e usa o modal existente
     const okBtn = document.getElementById('confirm-modal-ok');
-    if (okBtn) okBtn.textContent = 'Fechar';
+    if (okBtn) okBtn.textContent = window.t("uimsg.close_btn");
     showConfirm(
-      'Tem certeza? Isso encerrará a transmissão e fechará o player.',
+      window.t("uimsg.close_all_confirm"),
       function () {
         if (window.pywebview && window.pywebview.api) {
           window.pywebview.api.close_all();
@@ -41,7 +41,7 @@
       cancelBtn.onclick = function () {
         if (_origCancel) _origCancel();
         overlay.style.display = 'flex';
-        if (okBtn) okBtn.textContent = 'Confirmar'; // restaura para outros usos
+        if (okBtn) okBtn.textContent = window.t("confirm.ok"); // restaura para outros usos
       };
     }
   });

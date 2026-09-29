@@ -13,7 +13,7 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, UploadFile, File
 
 _NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response
 
 from core import settings as app_settings
 
@@ -23,6 +23,21 @@ _LOGO_WORK_DIR = Path(os.environ.get("PUBLIC", r"C:\Users\Public")) / "pltmp"
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+def _coded_error(status: int, code: str, detail: str, **params) -> JSONResponse:
+    """Erro com código estável para a interface traduzir (dicionário "apierr").
+
+    Mantém "detail" em português como no HTTPException, então quem só lê
+    "detail" (PlayIngest, clientes antigos) não percebe diferença.
+    """
+    return JSONResponse(status_code=status,
+                        content={"detail": detail, "code": code, "params": params})
+
+
+def _settings_error(exc: ValueError, status: int = 400) -> JSONResponse:
+    return _coded_error(status, getattr(exc, "code", "invalid_value"), str(exc),
+                        **getattr(exc, "params", {}))
 
 _THUMB_CACHE_DIR: Path = (
     Path(sys.executable).parent / "cache" / "thumbs"
@@ -357,7 +372,7 @@ async def save_cities(body: dict):
         try:
             cities = app_settings.set_cities(body.get("cities"))
         except ValueError as exc:
-            raise HTTPException(status_code=400, detail=str(exc))
+            return _settings_error(exc)
     if _manager:
         await _manager.broadcast({"event": "cities_changed", "cities": cities})
     return {"ok": True, "cities": cities}
@@ -386,7 +401,8 @@ async def search_cities(q: str = "", limit: int = 6):
         data = await asyncio.get_running_loop().run_in_executor(None, _search)
     except Exception as exc:
         logger.warning("[cities] busca falhou: %s", exc)
-        raise HTTPException(status_code=502, detail="Não foi possível consultar a busca de cidades. Verifique a conexão com a internet")
+        return _coded_error(502, "city_search_unavailable",
+                            "Não foi possível consultar a busca de cidades. Verifique a conexão com a internet")
 
     _UF = {
         "Acre": "AC", "Alagoas": "AL", "Amapá": "AP", "Amazonas": "AM", "Bahia": "BA",
@@ -484,11 +500,11 @@ async def get_settings():
 async def change_transition(body: dict):
     """Transição global. O modal só altera a duração; o tipo é o botão do cabeçalho do roteiro (WS)."""
     if _playlist_engine is None:
-        raise HTTPException(status_code=503, detail="Engine indisponível")
+        return _coded_error(503, "engine_unavailable", "Engine indisponível")
     try:
         cfg = await _playlist_engine.set_transition({k: body[k] for k in ("type", "duration") if k in body})
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        return _settings_error(exc)
     return {"ok": True, "transition": cfg}
 
 
@@ -512,7 +528,7 @@ async def change_library_dir(body: dict):
             new = await loop.run_in_executor(
                 None, app_settings.validate_library_dir, str(body.get("path") or ""))
         except ValueError as exc:
-            raise HTTPException(status_code=400, detail=str(exc))
+            return _settings_error(exc)
         app_settings.set_library_dir(new)
     changed = new != _LIBRARY_BASE
     _LIBRARY_BASE = new
@@ -659,13 +675,15 @@ async def youtube_info(url: str):
         try:
             from ..core.youtube_resolver import is_youtube_url, get_info
         except ImportError:
-            raise HTTPException(status_code=501, detail="yt-dlp não disponível")
+            return _coded_error(501, "yt_unavailable", "yt-dlp não disponível")
     if not url or not is_youtube_url(url):
-        raise HTTPException(status_code=400, detail="URL do YouTube inválida")
+        return _coded_error(400, "yt_invalid_url", "URL do YouTube inválida")
     loop = asyncio.get_running_loop()
     info = await loop.run_in_executor(None, get_info, url)
     if not info.get("valid"):
-        raise HTTPException(status_code=422, detail=info.get("error", "Não foi possível obter informações"))
+        return _coded_error(422, info.get("code", "yt_info_failed"),
+                            info.get("error", "Não foi possível obter informações"),
+                            **info.get("params", {}))
     return info
 
 
@@ -702,7 +720,7 @@ async def create_saved_schedule(body: dict):
     title = (body.get("title") or "").strip()
     items = body.get("items") or []
     if not title:
-        raise HTTPException(status_code=400, detail="Título obrigatório")
+        return _coded_error(400, "schedule_title_required", "Título obrigatório")
     from core import saved_schedules as ss
     new_id = ss.save(title, items)
     return {"id": new_id}

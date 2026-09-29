@@ -27,7 +27,7 @@ function _showUnavailable() {
   if (!el) {
     el = document.createElement("div");
     el.id = "preview-unavailable";
-    el.textContent = "Preview não disponível para este formato";
+    el.textContent = window.t("uimsg.preview_unsupported_format");
     video.parentNode.appendChild(el);
   }
   el.style.display = "flex";
@@ -74,7 +74,7 @@ function _tryPlayVideo() {
   video.play().then(() => { _pendingPlayRetry = false; }).catch(e => {
     if (e.name === "AbortError") return;
     if (e.name === "NotAllowedError") { _pendingPlayRetry = true; return; }
-    log("Preview bloqueado pelo navegador", "warn");
+    log(window.t("logmsg.preview_blocked"), "warn");
   });
 }
 
@@ -174,7 +174,9 @@ function updateNowPlaying(item) {
 function updateBadge(status) {
   const badge = document.getElementById("state-badge");
   badge.className = "state-badge " + (status === "playing" ? "playing" : status === "paused" ? "paused" : status === "reconnecting" ? "reconnecting" : "");
-  badge.textContent = { playing: "reproduzindo", paused: "pausado", stopped: "parado", reconnecting: "reconectando" }[status] ?? status;
+  const key = { playing: "nowplaying.state_playing", paused: "nowplaying.state_paused",
+    stopped: "nowplaying.state_stopped", reconnecting: "nowplaying.state_reconnecting" }[status];
+  badge.textContent = key ? window.t(key) : status;
 }
 
 video.addEventListener("loadedmetadata", () => {
@@ -194,7 +196,7 @@ video.addEventListener("ended", () => {});
 
 video.addEventListener("error", () => {
   const code = video.error ? video.error.code : "?";
-  log("Não foi possível carregar o preview do vídeo", "error");
+  log(window.t("logmsg.preview_load_failed"), "error");
   // Só mostra mensagem se o canvas MPV não estiver recebendo frames
   const wrap = video.closest(".player-wrap");
   if (!wrap?.classList.contains("mpv-live")) {

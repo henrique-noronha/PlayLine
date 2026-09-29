@@ -81,14 +81,14 @@
     const deviceName = path.replace(/^av:\/\/dshow:video=/, "");
 
     if (!navigator.mediaDevices?.getUserMedia) {
-      if (typeof showToast === "function") showToast("Preview não disponível neste browser", "warn");
+      if (typeof showToast === "function") showToast(window.t("inputq.preview_unsupported"), "warn");
       return;
     }
 
     // Mesmo dispositivo está no ar (ou prestes a) — não disputa com o MPV.
     // Ver isCaptureDeviceNeededSoon() em app.js.
     if (window.isCaptureDeviceNeededSoon?.(path)) {
-      if (typeof showToast === "function") showToast("Ao vivo agora — sem preview duplicado para não travar a transmissão", "warn");
+      if (typeof showToast === "function") showToast(window.t("inputq.live_no_preview"), "warn");
       return;
     }
 
@@ -108,7 +108,7 @@
     } else {
       el.style.display = "none";
       _openPath = null;
-      if (typeof showToast === "function") showToast("Não foi possível acessar: " + deviceName, "warn");
+      if (typeof showToast === "function") showToast(window.t("inputq.cannot_access", { device: deviceName }), "warn");
     }
   };
 })();

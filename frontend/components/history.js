@@ -38,10 +38,26 @@
 
   // ── Aba: Registro ──────────────────────────────────────────────────────
 
+  // O backend manda o codigo bruto em end_reason (completed/stopped/skipped/
+  // interrupted/error) alem do end_reason_label ja em portugues — traduzimos
+  // pelo codigo, e so caimos pro label do servidor se o codigo nao for
+  // reconhecido (compativel com valores futuros sem quebrar a tela).
+  const _REASON_KEYS = {
+    completed: "historymodal.reason_completed",
+    stopped: "historymodal.reason_stopped",
+    skipped: "historymodal.reason_skipped",
+    interrupted: "historymodal.reason_interrupted",
+    error: "historymodal.reason_error",
+  };
+  function _reasonLabel(e) {
+    const key = _REASON_KEYS[e.end_reason];
+    return key ? window.t(key) : (e.end_reason_label || e.end_reason || "—");
+  }
+
   async function _load(date) {
     const tbody = document.getElementById("hist-tbody");
     const empty = document.getElementById("hist-empty");
-    tbody.innerHTML = `<tr><td colspan="6" class="hist-loading">Carregando…</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="hist-loading">${window.t("historymodal.loading")}</td></tr>`;
     empty.style.display = "none";
 
     try {
@@ -60,13 +76,13 @@
           <td class="hist-time">${e.ended_at || "—"}</td>
           <td class="hist-title" title="${_esc(e.path || "")}">${_esc(e.title || "—")}</td>
           <td class="hist-dur">${_fmtDuration(e.duration_played)}</td>
-          <td><span class="hist-badge${e.end_reason === 'error' ? ' hist-badge--error' : ''}">${_esc(e.end_reason_label || e.end_reason || "—")}</span></td>
-          <td class="hist-pause">${e.had_pause ? "Sim" : "—"}</td>
+          <td><span class="hist-badge${e.end_reason === 'error' ? ' hist-badge--error' : ''}">${_esc(_reasonLabel(e))}</span></td>
+          <td class="hist-pause">${e.had_pause ? window.t("historymodal.yes") : "—"}</td>
         `;
         tbody.appendChild(tr);
       }
     } catch (_) {
-      tbody.innerHTML = `<tr><td colspan="6" class="hist-loading">Erro ao carregar histórico.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="hist-loading">${window.t("historymodal.load_error")}</td></tr>`;
     }
   }
 
@@ -83,7 +99,7 @@
     const tbody  = document.getElementById("hist-stats-tbody");
     const empty  = document.getElementById("hist-stats-empty");
     const totals = document.getElementById("hist-stats-totals");
-    tbody.innerHTML = `<tr><td colspan="4" class="hist-loading">Carregando…</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" class="hist-loading">${window.t("historymodal.loading")}</td></tr>`;
     empty.style.display = "none";
     totals.innerHTML = "";
 
@@ -93,9 +109,9 @@
       const data = await res.json();
 
       totals.innerHTML = `
-        <div class="hist-stat-card"><span class="hist-stat-val">${data.total_plays}</span><span class="hist-stat-lbl">Exibições totais</span></div>
-        <div class="hist-stat-card"><span class="hist-stat-val">${data.total_hours}h</span><span class="hist-stat-lbl">Horas exibidas</span></div>
-        <div class="hist-stat-card"><span class="hist-stat-val">${data.total_days}</span><span class="hist-stat-lbl">Dias com exibição</span></div>
+        <div class="hist-stat-card"><span class="hist-stat-val">${data.total_plays}</span><span class="hist-stat-lbl">${window.t("historymodal.total_plays")}</span></div>
+        <div class="hist-stat-card"><span class="hist-stat-val">${data.total_hours}h</span><span class="hist-stat-lbl">${window.t("historymodal.total_hours")}</span></div>
+        <div class="hist-stat-card"><span class="hist-stat-val">${data.total_days}</span><span class="hist-stat-lbl">${window.t("historymodal.total_days")}</span></div>
       `;
 
       tbody.innerHTML = "";
@@ -114,7 +130,7 @@
         tbody.appendChild(tr);
       });
     } catch (_) {
-      tbody.innerHTML = `<tr><td colspan="4" class="hist-loading">Erro ao carregar estatísticas.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" class="hist-loading">${window.t("historymodal.stats_load_error")}</td></tr>`;
     }
   }
 

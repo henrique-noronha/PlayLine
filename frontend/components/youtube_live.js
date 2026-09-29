@@ -11,7 +11,7 @@
     input.value = "";
     setStatus("", "");
     btn.disabled = false;
-    btn.textContent = "Adicionar ao roteiro";
+    btn.textContent = window.t("ytmodal.add");
     modal.style.display = "flex";
     setTimeout(() => input.focus(), 50);
   }
@@ -30,14 +30,14 @@
     if (!url) return;
 
     btn.disabled = true;
-    btn.textContent = "Verificando…";
-    setStatus("Obtendo informações…", "loading");
+    btn.textContent = window.t("ytmodal.checking");
+    setStatus(window.t("ytmodal.fetching_info"), "loading");
 
     try {
       const res = await fetch("/api/youtube/info?url=" + encodeURIComponent(url));
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || "Erro ao verificar URL");
+        throw new Error(window.apiError(err, "ytmodal.check_error"));
       }
       const info = await res.json();
 
@@ -45,7 +45,7 @@
         id:       "item-" + Date.now(),
         type:     "youtube_live",
         live:     info.is_live,
-        title:    info.title || "Vídeo do YouTube",
+        title:    info.title || window.t("ytmodal.default_title"),
         path:     url,
         duration: info.is_live ? 0 : (info.duration || 0),
       };
@@ -54,12 +54,12 @@
       renderSchedule();
       syncOrderToServer();
 
-      setStatus("“" + info.title + "” adicionado ao roteiro", "success");
+      setStatus(window.t("ytmodal.added_success", { title: info.title }), "success");
       setTimeout(closeModal, 1800);
     } catch (err) {
       setStatus(err.message, "error");
       btn.disabled = false;
-      btn.textContent = "Adicionar ao roteiro";
+      btn.textContent = window.t("ytmodal.add");
     }
   }
 

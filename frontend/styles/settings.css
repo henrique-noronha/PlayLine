@@ -211,6 +211,28 @@
 .st-field-inline { flex-direction: row; align-items: center; gap: 12px; }
 .st-input-short { width: 110px; text-align: center; }
 
+/* ── Idioma ── */
+.st-lang-list { display: flex; flex-direction: column; gap: 8px; }
+.st-lang-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.st-lang-opt:hover { border-color: var(--accent); }
+.st-lang-opt-active { border-color: var(--accent); background: rgba(79,142,247,.1); }
+.st-lang-opt-hint { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .04em; }
+.st-lang-opt-active .st-lang-opt-hint { color: var(--accent); }
+
 /* ── Cidades do overlay de hora/temperatura ── */
 .st-city-list {
   display: flex;
@@ -224,7 +246,7 @@
   border-radius: 7px;
 }
 .st-city-list:empty::after {
-  content: "Nenhuma cidade na lista";
+  content: attr(data-empty);   /* texto traduzido, definido em settings.js */
   color: var(--muted);
   font-size: 12px;
 }

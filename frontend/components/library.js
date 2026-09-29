@@ -30,7 +30,7 @@ async function loadLibraryFolders() {
     loadLibraryFiles(_libCurrentFolder);
   } catch (err) {
     document.getElementById("library-list").innerHTML =
-      `<div class="empty">Erro ao carregar biblioteca: ${esc(err.message)}</div>`;
+      `<div class="empty">${window.t("library.error_prefix")}${esc(err.message)}</div>`;
   }
 }
 
@@ -79,7 +79,7 @@ async function _createFolder(name) {
     });
     if (!res.ok) {
       const err = await res.json();
-      log("Não foi possível criar a pasta na biblioteca", "error");
+      log(window.t("logmsg.create_folder_failed"), "error");
       return;
     }
     document.getElementById("lib-new-folder-form")?.remove();
@@ -91,7 +91,7 @@ async function _createFolder(name) {
   
     loadLibraryFiles(name);
   } catch (err) {
-    log("Não foi possível criar a pasta na biblioteca", "error");
+    log(window.t("logmsg.create_folder_failed"), "error");
   }
 }
 
@@ -144,13 +144,13 @@ function _setMultiDragImage(e, sourceItem, count) {
 
 async function loadLibraryFiles(subfolder) {
   const list = document.getElementById("library-list");
-  list.innerHTML = '<div class="empty">Carregando…</div>';
+  list.innerHTML = `<div class="empty">${window.t("library.loading")}</div>`;
   try {
     const url = subfolder
       ? `/api/library/files?subfolder=${encodeURIComponent(subfolder)}`
       : "/api/library/files";
     const res  = await fetch(url);
-    if (!res.ok) { list.innerHTML = '<div class="empty">Pasta não encontrada</div>'; return; }
+    if (!res.ok) { list.innerHTML = `<div class="empty">${window.t("library.folder_not_found")}</div>`; return; }
     const data = await res.json();
 
     selectedLibPaths.clear();
@@ -164,8 +164,8 @@ async function loadLibraryFiles(subfolder) {
 
     if (!data.files.length) {
       list.innerHTML = subfolder
-        ? '<div class="empty">Nenhum vídeo nesta pasta</div>'
-        : '<div class="empty">Cole vídeos na pasta Biblioteca para começar</div>';
+        ? `<div class="empty">${window.t("library.empty_folder")}</div>`
+        : `<div class="empty">${window.t("library.empty_root")}</div>`;
       _updateLibSelectionUI();
       return;
     }
@@ -179,9 +179,10 @@ async function loadLibraryFiles(subfolder) {
       item.className = "lib-item";
       item.setAttribute("draggable", "true");
       const audio = _isAudio(file.path);
+      const addTitle = esc(window.t("library.add_to_playlist"));
       item.innerHTML = audio
-        ? `<div class="lib-thumb-wrap"><div class="lib-audio-thumb">♪</div><span class="lib-sched-badge" data-path="${esc(file.path)}"></span></div><span class="lib-audio-badge">áudio</span><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span><button class="lib-add-btn" title="Adicionar ao roteiro">+</button>`
-        : `<div class="lib-thumb-wrap"><img class="lib-thumb" draggable="false" src="" alt="" /><span class="lib-sched-badge" data-path="${esc(file.path)}"></span></div><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span><button class="lib-add-btn" title="Adicionar ao roteiro">+</button>`;
+        ? `<div class="lib-thumb-wrap"><div class="lib-audio-thumb">♪</div><span class="lib-sched-badge" data-path="${esc(file.path)}"></span></div><span class="lib-audio-badge">${esc(window.t("library.audio_badge"))}</span><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span><button class="lib-add-btn" title="${addTitle}">+</button>`
+        : `<div class="lib-thumb-wrap"><img class="lib-thumb" draggable="false" src="" alt="" /><span class="lib-sched-badge" data-path="${esc(file.path)}"></span></div><span class="lib-name" title="${esc(file.filename)}">${esc(file.name)}</span><span class="lib-dur">—</span><button class="lib-add-btn" title="${addTitle}">+</button>`;
       list.appendChild(item);
 
       if (!audio) generateThumb(file.path, item.querySelector(".lib-thumb"));
@@ -220,7 +221,7 @@ async function loadLibraryFiles(subfolder) {
         syncOrderToServer();
         item.classList.add("lib-added");
         setTimeout(() => item.classList.remove("lib-added"), 700);
-        if (audio) showToast("♪ Arquivo de áudio — sem imagem no roteiro", "warn");
+        if (audio) showToast(window.t("library.audio_no_thumb_warn"), "warn");
       });
 
       item.addEventListener("click", e => {
@@ -282,7 +283,7 @@ async function loadLibraryFiles(subfolder) {
     _applyLibSearch();
     window._refreshLibSchedBadges?.();
   } catch (err) {
-    list.innerHTML = `<div class="empty">Erro: ${esc(err.message)}</div>`;
+    list.innerHTML = `<div class="empty">${window.t("uimsg.library_error_short")}${esc(err.message)}</div>`;
   }
 }
 
@@ -302,7 +303,7 @@ function _ensureSelBar(list) {
   selBar.id = "lib-sel-bar";
   selBar.className = "lib-sel-bar";
   selBar.style.display = "none";
-  selBar.innerHTML = `<span id="lib-sel-count"></span><button id="btn-add-selected">Adicionar ao roteiro</button>`;
+  selBar.innerHTML = `<span id="lib-sel-count"></span><button id="btn-add-selected">${window.t("library.add_selected")}</button>`;
   list.parentNode.insertBefore(selBar, list);
 
   document.getElementById("btn-add-selected").addEventListener("click", () => {
@@ -314,7 +315,7 @@ function _ensureSelBar(list) {
     renderSchedule();
     syncOrderToServer();
     const audioCount = toAdd.filter(f => _isAudio(f.path)).length;
-    if (audioCount > 0) showToast(`♪ ${audioCount} arquivo${audioCount > 1 ? "s" : ""} de áudio adicionado${audioCount > 1 ? "s" : ""} — sem imagem no roteiro`, "warn");
+    if (audioCount > 0) showToast(window.t(audioCount === 1 ? "library.audio_added_one" : "library.audio_added_many", { n: audioCount }), "warn");
     selectedLibPaths.clear();
     document.querySelectorAll(".lib-item.selected").forEach(el => el.classList.remove("selected"));
     _updateLibSelectionUI();
@@ -367,6 +368,6 @@ window._onMediaProgress = (done, total) => {
     el.hidden = true;
     return;
   }
-  el.textContent = `Carregando ${done} de ${total}`;
+  el.textContent = window.t("uimsg.library_loading_progress", { done, total });
   el.hidden = false;
 };

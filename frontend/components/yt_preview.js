@@ -39,7 +39,7 @@
 
   function _updateMuteBtn() {
     btnMute.innerHTML = _muted ? _SVG_YT_MUTED : _SVG_YT_SPEAKER;
-    btnMute.title     = _muted ? "Ativar áudio" : "Silenciar";
+    btnMute.title     = window.t(_muted ? "ytpreview.unmute_title" : "uimsg.yt_mute_title");
   }
 
   function _close() {

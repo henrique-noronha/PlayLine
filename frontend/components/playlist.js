@@ -69,18 +69,18 @@ function updateScheduleSelectionUI() {
   if (!btnMenu) {
     btnMenu = document.createElement("button");
     btnMenu.id = "btn-schedule-menu";
-    btnMenu.title = "Opções do roteiro";
+    btnMenu.title = window.t("playlist.menu_title");
     btnMenu.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="currentColor"><circle cx="1.5" cy="1.5" r="1.5"/><rect x="4.5" y="0.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="6.5" r="1.5"/><rect x="4.5" y="5.5" width="10.5" height="2" rx="1"/><circle cx="1.5" cy="11.5" r="1.5"/><rect x="4.5" y="10.5" width="10.5" height="2" rx="1"/></svg>';
 
     const dropdown = document.createElement("div");
     dropdown.id = "schedule-menu-dropdown";
     dropdown.innerHTML = `
-      <div class="sch-menu-item" id="sch-menu-duplicate"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Duplicar roteiro</div>
-      <div class="sch-menu-item" id="sch-menu-save"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Salvar roteiro</div>
-      <div class="sch-menu-item" id="sch-menu-load"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>Roteiros salvos</div>
-      <div class="sch-menu-item" id="sch-menu-loop"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repetir roteiro</div>
+      <div class="sch-menu-item" id="sch-menu-duplicate"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>${window.t("playlist.menu_duplicate")}</div>
+      <div class="sch-menu-item" id="sch-menu-save"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>${window.t("playlist.menu_save")}</div>
+      <div class="sch-menu-item" id="sch-menu-load"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>${window.t("playlist.menu_load")}</div>
+      <div class="sch-menu-item" id="sch-menu-loop"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>${window.t("playlist.menu_loop")}</div>
       <div class="sch-menu-separator"></div>
-      <div class="sch-menu-item" id="sch-menu-clear"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Limpar roteiro</div>
+      <div class="sch-menu-item" id="sch-menu-clear"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>${window.t("playlist.menu_clear")}</div>
     `;
 
     const wrap = document.createElement("div");
@@ -122,7 +122,7 @@ function updateScheduleSelectionUI() {
     document.getElementById("sch-menu-loop").addEventListener("click", () => {
       dropdown.classList.remove("open");
       if (state.repeat) {
-        showConfirm("Desativar o loop? O roteiro continuará normalmente a partir do clipe atual.", () => {
+        showConfirm(window.t("playlist.confirm_disable_loop"), () => {
           state.repeat = false;
           fetch("/api/repeat", {
             method: "POST",
@@ -145,7 +145,7 @@ function updateScheduleSelectionUI() {
     document.getElementById("sch-menu-clear").addEventListener("click", () => {
       dropdown.classList.remove("open");
       if (!state.schedule.length) return;
-      showConfirm("Tem certeza que deseja limpar o roteiro inteiro?", () => {
+      showConfirm(window.t("playlist.confirm_clear"), () => {
         const playingId = state.playing && state.currentIndex >= 0
           ? state.schedule[state.currentIndex]?.id : null;
         if (playingId) {
@@ -156,7 +156,7 @@ function updateScheduleSelectionUI() {
         selectedScheduleIds.clear();
         renderSchedule();
         syncOrderToServer();
-        showToast("Roteiro limpo", "info");
+        showToast(window.t("playlist.cleared_toast"), "info");
       });
     });
   }
@@ -166,7 +166,7 @@ function updateScheduleSelectionUI() {
   if (!btn) {
     btn = document.createElement("button");
     btn.id = "btn-delete-selected";
-    btn.title = "Remover selecionados";
+    btn.title = window.t("playlist.delete_selected");
     document.querySelector(".schedule-actions").appendChild(btn);
     btn.addEventListener("click", () => {
       const playingId = state.playing && state.currentIndex >= 0
@@ -535,7 +535,7 @@ function highlightActive(index) {
     const drag = el.querySelector(".item-drag");
     if (drag) {
       drag.textContent = locked ? "▶" : "⠿";
-      drag.title      = locked ? "Em reprodução" : "Arrastar";
+      drag.title      = locked ? window.t("playlist.playing_lock_title") : window.t("playlist.drag_title");
     }
   });
 }
@@ -550,7 +550,7 @@ async function syncOrderToServer() {
       body: JSON.stringify(state.schedule),
     });
   } catch (err) {
-    log("Erro ao salvar a ordem do roteiro", "error");
+    log(window.t("logmsg.order_save_failed"), "error");
   }
 }
 
@@ -563,7 +563,7 @@ function addFromLibrary(file, atIndex) {
   syncOrderToServer();
   const ext = file.path.slice(file.path.lastIndexOf(".")).toLowerCase();
   if (_AUDIO_EXTS_PL.has(ext) && typeof showToast === "function")
-    showToast("♪ Arquivo de áudio — sem imagem no roteiro", "warn");
+    showToast(window.t("library.audio_no_thumb_warn"), "warn");
 }
 
 // Renderização                                                         //
@@ -591,7 +591,7 @@ function renderSchedule() {
   if (!state.schedule.length) {
     const empty = document.createElement("div");
     empty.className = "empty";
-    empty.textContent = "Arraste vídeos da biblioteca para começar o roteiro";
+    empty.textContent = window.t("playlist.empty");
     list.appendChild(empty);
     initDnD(list);
     _refreshLibSchedBadges();
@@ -616,22 +616,22 @@ function renderSchedule() {
     row.setAttribute("draggable", isLocked ? "false" : "true");
 
     row.innerHTML = `
-      <div class="item-drag" title="${isLocked ? "Em reprodução" : "Arrastar"}">${isLocked ? "▶" : "⠿"}</div>
+      <div class="item-drag" title="${isLocked ? esc(window.t("playlist.playing_lock_title")) : esc(window.t("playlist.drag_title"))}">${isLocked ? "▶" : "⠿"}</div>
       <div class="item-index">${i + 1}</div>
       <img class="item-thumb" draggable="false" alt="" />
       <div class="item-meta">
         <span class="item-title-row"><span class="item-title" title="${esc(displayTitle)}">${esc(displayTitle)}</span>${_transitionTagHtml(item)}</span>
-        <input class="item-path"  value="${esc(item.path)}"   placeholder="Caminho do arquivo" data-field="path" data-idx="${i}" />
+        <input class="item-path"  value="${esc(item.path)}"   placeholder="${esc(window.t("playlist.path_placeholder"))}" data-field="path" data-idx="${i}" />
       </div>
       ${_clipCategoryHtml(item)}
       <div class="item-time">
         <span class="item-start" data-idx="${i}">${fmtTime(startTimes[i])}</span>
-        <span class="item-dur${item.live ? ' yt-live-dur' : ''}${hasTrim(item) ? ' trim-active' : ''}" data-idx="${i}">${item.live ? 'ao vivo' : (item.duration > 0 ? (hasTrim(item) ? ('✂ ' + fmt(effectiveDuration(item))) : fmt(item.duration)) : '—')}</span>
+        <span class="item-dur${item.live ? ' yt-live-dur' : ''}${hasTrim(item) ? ' trim-active' : ''}" data-idx="${i}">${item.live ? window.t('playlist.live_duration') : (item.duration > 0 ? (hasTrim(item) ? ('✂ ' + fmt(effectiveDuration(item))) : fmt(item.duration)) : '—')}</span>
         <span class="item-date ${isToday(startTimes[i]) ? "" : "future"}" data-idx="${i}">${fmtDate(startTimes[i])}</span>
       </div>
       <div class="item-actions">
-        ${!isLocked ? `<button class="btn-clip-overlay${item.clip_overlays ? ' configured' : ''}" title="Automação de overlays" data-idx="${i}">⚙</button>` : ''}
-        <button class="btn-delete" title="Remover" data-idx="${i}">✕</button>
+        ${!isLocked ? `<button class="btn-clip-overlay${item.clip_overlays ? ' configured' : ''}" title="${esc(window.t('playlist.overlay_automation_title'))}" data-idx="${i}">⚙</button>` : ''}
+        <button class="btn-delete" title="${esc(window.t('playlist.remove_title'))}" data-idx="${i}">✕</button>
       </div>
     `;
 
@@ -644,7 +644,7 @@ function renderSchedule() {
         const isCapture = item.type === "capture";
         imgEl.src = isCapture ? _CAPTURE_THUMB : _YT_LIVE_THUMB;
         imgEl.style.cursor = "pointer";
-        imgEl.title = isCapture ? "Clique para prévisualizar o dispositivo" : "Clique para visualizar a live";
+        imgEl.title = window.t(isCapture ? "playlist.preview_device_title" : "playlist.preview_live_title");
         imgEl.addEventListener("click", e => {
           e.stopPropagation();
           if (isCapture) {
@@ -656,7 +656,7 @@ function renderSchedule() {
       } else if (item.type === "youtube_live") {
         imgEl.src = _YT_THUMB;
         imgEl.style.cursor = "pointer";
-        imgEl.title = "Clique para pré-visualizar o vídeo";
+        imgEl.title = window.t("playlist.preview_video_title");
         imgEl.addEventListener("click", e => {
           e.stopPropagation();
           if (typeof openYtPreview === "function") openYtPreview(item.path, imgEl);
@@ -772,7 +772,7 @@ function _updateErrorCount() {
   const n = state.schedule.filter(it => it.path && invalidPaths.has(it.path)).length;
   const el = document.getElementById("sch-error-count");
   if (!el) return;
-  el.textContent = n === 1 ? "1 clipe com erro" : `${n} clipes com erro`;
+  el.textContent = n === 1 ? window.t("playlist.error_count_one") : `${n} ${window.t("playlist.error_count_many")}`;
   el.style.display = n > 0 ? "inline-flex" : "none";
 }
 
@@ -836,13 +836,13 @@ function _copGetOrCreate() {
     <div class="cop-header">
       <label class="cop-enable-label">
         <input type="checkbox" id="cop-enable" />
-        <span>Automatizar overlays</span>
+        <span>${window.t("clipoverlay.enable_label")}</span>
       </label>
       <button id="cop-close" class="cop-close-btn">✕</button>
     </div>
     <div id="cop-body" class="cop-body">
       <div class="cop-row">
-        <span class="cop-lbl">Logo 1</span>
+        <span class="cop-lbl">${window.t("logo.logo1")}</span>
         <button class="btn-logo-toggle cop-tog" id="cop-tog-1"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
         <div class="cop-pick-wrap">
           <button class="cop-pbtn" id="cop-pbtn-1">— ▾</button>
@@ -850,7 +850,7 @@ function _copGetOrCreate() {
         </div>
       </div>
       <div class="cop-row">
-        <span class="cop-lbl">Logo 2</span>
+        <span class="cop-lbl">${window.t("logo.logo2")}</span>
         <button class="btn-logo-toggle cop-tog" id="cop-tog-2"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
         <div class="cop-pick-wrap">
           <button class="cop-pbtn" id="cop-pbtn-2">— ▾</button>
@@ -858,16 +858,16 @@ function _copGetOrCreate() {
         </div>
       </div>
       <div class="cop-row">
-        <span class="cop-lbl">Hora / Temp.</span>
+        <span class="cop-lbl">${window.t("logo.clock_temp")}</span>
         <button class="btn-logo-toggle cop-tog" id="cop-tog-text"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>
         <div class="cop-text-opts">
           <div class="logo-picker-item" id="cop-chk-time">
             <span class="logo-picker-check" id="cop-chk-time-mark">✓</span>
-            <span class="logo-picker-name">Hora</span>
+            <span class="logo-picker-name">${window.t("logo.clock")}</span>
           </div>
           <div class="logo-picker-item" id="cop-chk-temp">
             <span class="logo-picker-check" id="cop-chk-temp-mark">✓</span>
-            <span class="logo-picker-name">Temp.</span>
+            <span class="logo-picker-name">${window.t("logo.temp")}</span>
           </div>
         </div>
       </div>
@@ -961,7 +961,7 @@ function _copRefreshBody(item) {
     const files = (typeof _logoFiles !== "undefined" ? _logoFiles : []);
     pdd.innerHTML = "";
     if (!files.length) {
-      pdd.innerHTML = '<div class="logo-picker-empty">Pasta logos/ vazia</div>';
+      pdd.innerHTML = `<div class="logo-picker-empty">${esc(window.t("clipoverlay.empty_logos_folder"))}</div>`;
     } else {
       files.forEach(f => {
         const it  = document.createElement("div");
@@ -1055,7 +1055,7 @@ function _clipCategoryHtml(item) {
   if (!cat) return '<span class="item-cat"></span>';
   const hue = _catHue(cat.name);
   const style = `color:hsl(${hue} 70% 70%);border-color:hsl(${hue} 55% 45% / .55);background:hsl(${hue} 60% 50% / .12)`;
-  return `<span class="item-cat" style="${style}" title="Pasta: ${esc(cat.name)}">${esc(cat.code)}</span>`;
+  return `<span class="item-cat" style="${style}" title="${window.t("uimsg.category_folder_title", { name: esc(cat.name) })}">${esc(cat.code)}</span>`;
 }
 
 // ── Transição entre clipes ───────────────────────────────────────────────────
@@ -1073,8 +1073,8 @@ function updateTransitionButton() {
   btn.dataset.type = t.type;
   btn.textContent = _TRANSITION_LABELS[t.type] || t.type;
   btn.title = t.type === "fade"
-    ? `Transição: FTB, fade to black (${t.duration}s). Clique para voltar ao CUT.`
-    : "Transição: CUT, corte seco. Clique para usar FTB (fade to black).";
+    ? window.t("playlist.header_transition_ftb_title", { s: t.duration })
+    : window.t("playlist.header_transition_cut_title");
 }
 
 document.getElementById("btn-transition")?.addEventListener("click", () => {
@@ -1085,7 +1085,7 @@ document.getElementById("btn-transition")?.addEventListener("click", () => {
 function _transitionTagHtml(item) {
   const t = item.transition;
   if (t !== "fade" && t !== "cut") return "";
-  return `<span class="item-transition-tag ${t}" title="Transição de entrada deste clipe">${_TRANSITION_ITEM_LABELS[t]}</span>`;
+  return `<span class="item-transition-tag ${t}" title="${window.t("playlist.item_transition_tag_title")}">${_TRANSITION_ITEM_LABELS[t]}</span>`;
 }
 
 function _markRowTransition(idx, value) {
@@ -1099,7 +1099,7 @@ function _gdSetTransitionLabel(item) {
   if (!_gd) return;
   const t = item?.transition;
   const has = t === "fade" || t === "cut";
-  _gd.querySelector("#gd-transition-val").textContent = has ? _TRANSITION_ITEM_LABELS[t] : "Padrão";
+  _gd.querySelector("#gd-transition-val").textContent = has ? _TRANSITION_ITEM_LABELS[t] : window.t("gear.transition_default");
   _gd.querySelector("#gd-transition").classList.toggle("active", has);
 }
 
@@ -1120,10 +1120,10 @@ function _getOrCreateGd() {
   el.className = "gear-dropdown";
   el.style.display = "none";
   el.innerHTML = `
-    <div class="gear-item" id="gd-overlays">⊡ Automação de overlays</div>
-    <div class="gear-item" id="gd-transition" title="Transição de entrada deste clipe: Padrão (segue o botão do roteiro), FTB (fade to black) ou CUT (corte seco). Clique para alternar.">◐ Transição<b id="gd-transition-val">Padrão</b></div>
+    <div class="gear-item" id="gd-overlays">⊡ ${window.t("gear.overlays")}</div>
+    <div class="gear-item" id="gd-transition" title="${esc(window.t("gear.transition_title"))}">◐ ${window.t("gear.transition")}<b id="gd-transition-val">${window.t("gear.transition_default")}</b></div>
     <div class="gear-sep"></div>
-    <div class="gear-item" id="gd-trim">✂ Recorte de clipe</div>
+    <div class="gear-item" id="gd-trim">✂ ${window.t("gear.trim")}</div>
   `;
   document.body.appendChild(el);
   _gd = el;
@@ -1193,24 +1193,24 @@ function _ctGetOrCreate() {
   el.style.display = "none";
   el.innerHTML = `
     <div class="ct-header">
-      <span>✂ Recorte de clipe</span>
+      <span>✂ ${window.t("gear.trim")}</span>
       <button id="ct-close" class="ct-close-btn">✕</button>
     </div>
     <div class="ct-body">
       <div class="ct-row">
-        <label class="ct-lbl">Início</label>
+        <label class="ct-lbl">${window.t("trim.start_label")}</label>
         <input id="ct-start-inp" class="ct-inp" type="text" placeholder="0:00" autocomplete="off" spellcheck="false" />
       </div>
       <div class="ct-row">
-        <label class="ct-lbl">Fim</label>
-        <input id="ct-end-inp" class="ct-inp" type="text" placeholder="duração total" autocomplete="off" spellcheck="false" />
+        <label class="ct-lbl">${window.t("trim.end_label")}</label>
+        <input id="ct-end-inp" class="ct-inp" type="text" placeholder="${esc(window.t("trim.end_placeholder"))}" autocomplete="off" spellcheck="false" />
       </div>
       <div class="ct-dur-row">
-        <span class="ct-dur-lbl">Duração efetiva</span>
+        <span class="ct-dur-lbl">${window.t("trim.effective_duration")}</span>
         <span id="ct-eff-dur" class="ct-eff-dur">—</span>
       </div>
       <div class="ct-footer-row">
-        <button id="ct-clear-btn" class="ct-clear-btn">Limpar</button>
+        <button id="ct-clear-btn" class="ct-clear-btn">${window.t("trim.clear")}</button>
         <button id="ct-ok-btn" class="ct-ok-btn">OK</button>
       </div>
     </div>
@@ -1330,7 +1330,7 @@ function openClipTrimPanel(item, idx, anchorEl) {
   const effDur   = el.querySelector("#ct-eff-dur");
   startInp.value = item.start_time > 0 ? fmtSec(item.start_time) : "";
   endInp.value   = item.end_time   > 0 ? fmtSec(item.end_time)   : "";
-  endInp.placeholder = item.duration > 0 ? fmtSec(item.duration) : "duração total";
+  endInp.placeholder = item.duration > 0 ? fmtSec(item.duration) : window.t("trim.end_placeholder");
   const eff = effectiveDuration(item);
   effDur.textContent = item.duration > 0 ? fmt(eff) : "—";
   el.style.display = "block";
