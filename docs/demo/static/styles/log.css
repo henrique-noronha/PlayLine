@@ -1,0 +1,304 @@
+/* ── Rodapé: log + YouTube lado a lado, mesma largura ──
+   Oculto por enquanto: Log de eventos, Entrada de Vídeo e YouTube saíram
+   daqui — os dois últimos viraram o quadrante fixo ao lado do Roteiro. */
+.bottom-row {
+  display: none;
+  grid-column: 1 / -1;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.bottom-row .log-card,
+.capture-card,
+.youtube-card {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Capture / YouTube cards — sempre compactos (só header) */
+.capture-card .log-header,
+.youtube-card .log-header { margin-bottom: 0; }
+
+#btn-capture-open {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+#btn-capture-open:hover { background: var(--surface2); }
+
+/* ── Lista de dispositivos no modal de captura ── */
+.capture-device-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.capture-device-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  font-size: 13px;
+  color: var(--text);
+}
+.capture-device-item:hover { background: var(--surface2); }
+.capture-device-item.selected {
+  border-color: var(--accent);
+  background: rgba(74,144,226,.08);
+}
+.capture-device-item .capture-device-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+#capture-modal-preview-wrap {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #050a10;
+}
+
+#capture-modal-video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #050a10;
+}
+
+#btn-yt-open {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+#btn-yt-open:hover { background: var(--surface2); }
+
+/* ── Modal YouTube Live ── */
+.yt-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.yt-modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 420px;
+  max-width: calc(100vw - 40px);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.yt-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.yt-modal-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: .02em;
+}
+
+.yt-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: background .15s, color .15s;
+}
+.yt-modal-close:hover { background: var(--surface2); color: var(--text); }
+
+.yt-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.yt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.yt-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.yt-url-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-size: 13px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color .15s;
+  width: 100%;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+.yt-url-input:focus { border-color: var(--accent); }
+.yt-url-input::placeholder { color: var(--muted); opacity: .5; }
+
+.yt-status {
+  font-size: 12px;
+  min-height: 16px;
+  line-height: 1.4;
+}
+.yt-status-loading { color: var(--muted); }
+.yt-status-success { color: var(--success); }
+.yt-status-error   { color: var(--danger); }
+
+.yt-net-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 8px 10px;
+  background: rgba(251,191,36,.08);
+  border: 1px solid rgba(251,191,36,.25);
+  border-radius: 7px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.yt-net-notice-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #d97706;
+}
+
+.yt-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.yt-btn-cancel {
+  padding: 8px 18px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  transition: background .15s;
+}
+.yt-btn-cancel:hover { background: var(--surface2); }
+
+.btn-yt-add {
+  background: var(--accent);
+  border: none;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 18px;
+  transition: background .15s;
+  letter-spacing: .02em;
+}
+.btn-yt-add:hover    { background: #3a7de8; }
+.btn-yt-add:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
+
+/* ── Card do log (standalone — sem bottom-row) ── */
+.log-card { grid-column: 1 / -1; }
+
+.log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.log-header h2 { margin-bottom: 0; }
+
+.log-actions { display: flex; gap: 8px; }
+
+#btn-clear-log {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+#btn-clear-log:hover { background: var(--surface2); }
+
+#btn-toggle-log {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 10px;
+}
+#btn-toggle-log:hover { background: var(--surface2); }
+
+/* ── Área de log ── */
+.log {
+  background: #090b12;
+  border-radius: 8px;
+  padding: 12px 14px;
+  height: 90px;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.log-entry { display: flex; gap: 8px; }
+.log-entry .ts  { color: #4a5568; min-width: 80px; }
+.log-entry .ev  { font-weight: 600; min-width: 120px; }
+.log-entry .msg { color: var(--muted); }
+
+.log-entry.ev-now_playing .ev            { color: var(--success); }
+.log-entry.ev-paused .ev                 { color: var(--warning); }
+.log-entry.ev-resumed .ev               { color: var(--accent); }
+.log-entry.ev-stopped .ev               { color: var(--danger); }
+.log-entry.ev-playlist_end .ev          { color: var(--accent2); }
+.log-entry.ev-mpv_ready .ev             { color: var(--success); }
+.log-entry.ev-mpv_closed .ev            { color: var(--muted); }
+.log-entry.ev-stream_reconnecting .ev   { color: var(--warning); }
+.log-entry.ev-stream_reconnect_failed .ev { color: var(--danger); }
+.log-entry.ev-warn .ev                  { color: var(--warning); }
+.log-entry.ev-info .ev                  { color: var(--accent); }
+.log-entry.ev-error .ev                 { color: var(--danger); }
+
+/* ── Estado colapsado ── */
+.log-card.collapsed .log        { display: none; }
+.log-card.collapsed             { padding-bottom: 14px; }
+.log-card.collapsed .log-header { margin-bottom: 0; }
+

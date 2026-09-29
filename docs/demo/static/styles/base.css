@@ -1,0 +1,119 @@
+/* ── Reset & Variáveis globais ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0f1117;
+  --surface:   #1a1d27;
+  --surface2:  #22263a;
+  --accent:    #4f8ef7;
+  --accent2:   #7c3aed;
+  --success:   #22c55e;
+  --warning:   #f59e0b;
+  --danger:    #ef4444;
+  --text:      #e2e8f0;
+  --muted:     #64748b;
+  --border:    #2d3148;
+  --radius:    10px;
+  --font:      'Segoe UI', system-ui, sans-serif;
+}
+
+/* ── Toast de notificação ── */
+.pl-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  color: var(--text);
+  box-shadow: 0 6px 24px rgba(0,0,0,.5);
+  opacity: 0;
+  transition: opacity .2s, transform .2s;
+  z-index: 9000;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.pl-toast.pl-toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.pl-toast.pl-toast-warn  { border-color: var(--warning); color: var(--warning); }
+.pl-toast.pl-toast-info  { border-color: var(--accent);  color: var(--accent);  }
+.pl-toast.pl-toast-error { border-color: var(--danger);  color: var(--danger);  }
+
+html { height: 100%; }
+
+/* Altura fixa (não só min-height): sem isso o flex:1 do <main> não tem o que
+   preencher e volta a crescer pelo conteúdo. Overflow interno é tratado pelas
+   próprias listas roláveis (.library-list, .schedule-list), não pela página. */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  height: 100vh;
+  min-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.empty { color: var(--muted); text-align: center; padding: 24px; }
+
+/* ── Modal de confirmação ── */
+.confirm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.confirm-modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 28px;
+  min-width: 280px;
+  max-width: 360px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.6);
+}
+.confirm-modal-box p {
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.confirm-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.confirm-modal-actions button {
+  padding: 7px 18px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.confirm-modal-actions button:hover { background: var(--border); }
+.confirm-modal-danger {
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+.confirm-modal-danger:hover {
+  background: var(--danger) !important;
+  color: #fff !important;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }

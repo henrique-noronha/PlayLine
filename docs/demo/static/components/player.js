@@ -1,0 +1,205 @@
+/* PlayLine — Player de vídeo HTML5 */
+
+const video = document.getElementById("player-video");
+let _pendingPlayRetry = false;  // true quando video.play() foi bloqueado pelo autoplay
+let _lastMpvPos    = null;
+let _lastMpvPosAt  = 0;    // performance.now() do último evento position recebido
+let _syncPending   = false;
+let _lastSyncAt    = 0;    // performance.now() do último seek de sincronização
+let _ytVideoDuration = 0;  // duração manual para vídeos YouTube (MPV não expõe via HTML5)
+
+function fmt(secs) {
+  if (secs == null || isNaN(secs)) return "00:00:00";
+  secs = Math.floor(secs);
+  const h = String(Math.floor(secs / 3600)).padStart(2, "0");
+  const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "0");
+  const s = String(secs % 60).padStart(2, "0");
+  return `${h}:${m}:${s}`;
+}
+
+function fmtTime(date) {
+  if (!date) return "--:--";
+  return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+function _showUnavailable() {
+  let el = document.getElementById("preview-unavailable");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "preview-unavailable";
+    el.textContent = window.t("uimsg.preview_unsupported_format");
+    video.parentNode.appendChild(el);
+  }
+  el.style.display = "flex";
+}
+
+function _hideUnavailable() {
+  const el = document.getElementById("preview-unavailable");
+  if (el) el.style.display = "none";
+}
+
+// Modo YouTube: usa eventos de posição do MPV para atualizar a barra de progresso,
+// já que o browser não consegue carregar a URL do YouTube diretamente.
+function setYtVideoMode(duration) {
+  _ytVideoDuration = duration || 0;
+  video.removeAttribute("src");
+  video.load();
+  resetProgress();
+}
+
+// startAt > 1: appends #t=N so the browser opens the file at that second natively,
+// avoiding a post-load manual seek (which freezes while buffering).
+function loadVideo(path, startAt = 0) {
+  _ytVideoDuration = 0;
+  _lastMpvPos = startAt > 1 ? startAt : null;
+  _syncPending = false;
+  _lastSyncAt  = 0;
+  _hideUnavailable();
+  _restoreLogoOverlays();
+  const fragment = startAt > 1 ? `#t=${Math.floor(startAt)}` : '';
+  const url = "/media?path=" + encodeURIComponent(path) + fragment;
+  video.src = url;
+  _tryPlayVideo();
+}
+
+// Ao reabrir só a interface no PyWebView (servidor/daemon continuam vivos), a
+// restauração do clipe já em andamento chama loadVideo() sem nenhum gesto
+// prévio do usuário na página nova — o autoplay do navegador bloqueia o
+// video.play() (NotAllowedError) e, sem retry, o preview/medidor de volume
+// fica mudo indefinidamente. Pular pra outro clipe "resolve" só porque o
+// próprio clique no botão já destrava o autoplay da página dali em diante.
+// Aqui isso é feito automaticamente: guarda a intenção e tenta de novo no
+// primeiro clique/toque, sem depender do usuário descobrir isso sozinho.
+function _tryPlayVideo() {
+  video.play().then(() => { _pendingPlayRetry = false; }).catch(e => {
+    if (e.name === "AbortError") return;
+    if (e.name === "NotAllowedError") { _pendingPlayRetry = true; return; }
+    log(window.t("logmsg.preview_blocked"), "warn");
+  });
+}
+
+document.addEventListener("click",      () => { if (_pendingPlayRetry) _tryPlayVideo(); });
+document.addEventListener("touchstart", () => { if (_pendingPlayRetry) _tryPlayVideo(); }, { passive: true });
+
+function _restoreLogoOverlays() {
+  if (typeof _logoState === "undefined" || typeof _updateLogoOverlay === "undefined") return;
+  [1, 2].forEach(slot => {
+    const s = _logoState[slot];
+    _updateLogoOverlay(slot, s.corner, s.active);
+  });
+}
+
+function stopVideo() {
+  _ytVideoDuration = 0;
+  _lastMpvPos   = null;
+  _lastMpvPosAt = 0;
+  _hideUnavailable();
+  video.removeAttribute("src");
+  video.load();
+  resetProgress();
+  hideLiveIndicator();
+  document.querySelectorAll(".logo-overlay").forEach(el => el.style.display = "none");
+}
+
+function showLiveIndicator() {
+  _ytVideoDuration = 0;
+  // Limpa o elemento <video> para impedir que syncPosition atualize a barra
+  video.removeAttribute("src");
+  video.load();
+  resetProgress();
+  document.getElementById("progress-wrap").style.display = "none";
+  document.getElementById("live-indicator").style.display = "flex";
+}
+
+function hideLiveIndicator() {
+  document.getElementById("progress-wrap").style.display = "";
+  document.getElementById("live-indicator").style.display = "none";
+}
+
+// Threshold alto: drift normal de playback (1-2s de buffering) nunca dispara resync.
+// Só corrige saltos reais (próximo clipe, seek manual, reconexão com grande offset).
+const _SYNC_THRESHOLD_S  = 12;   // segundos de diferença para forçar resync
+const _SYNC_COOLDOWN_MS  = 6000; // ms mínimos entre dois resyncs consecutivos
+
+function syncPosition(pos) {
+  _lastMpvPos   = pos;
+  _lastMpvPosAt = performance.now();
+
+  // Modo YouTube: atualiza barra diretamente via posição do MPV
+  if (_ytVideoDuration > 0) {
+    document.getElementById("pos").textContent = fmt(pos);
+    document.getElementById("dur").textContent = fmt(_ytVideoDuration);
+    const pct = Math.min((pos / _ytVideoDuration) * 100, 100);
+    document.getElementById("progress-fill").style.width = pct + "%";
+    return;
+  }
+
+  // Sincroniza o elemento <video> com o MPV (apenas para o preview visual)
+  if (!video.src || isNaN(video.duration) || video.duration === 0) return;
+  if (_syncPending) return;
+  if (performance.now() - _lastSyncAt < _SYNC_COOLDOWN_MS) return;
+  if (Math.abs(video.currentTime - pos) > _SYNC_THRESHOLD_S) {
+    _syncPending = true;
+    _lastSyncAt  = performance.now();
+    video.currentTime = pos;
+  }
+}
+
+// Loop de interpolação: atualiza o display de posição independentemente do
+// estado de buffering do elemento <video>. Âncora = último evento MPV +
+// tempo decorrido desde então, zerado quando pausado.
+setInterval(() => {
+  if (_lastMpvPos === null || _ytVideoDuration > 0) return;
+  const paused     = typeof state !== "undefined" ? state.paused : false;
+  const elapsed    = paused ? 0 : (performance.now() - _lastMpvPosAt) / 1000;
+  const displayPos = Math.max(0, _lastMpvPos + elapsed);
+  const dur        = (video.src && !isNaN(video.duration) && video.duration > 0) ? video.duration : 0;
+  document.getElementById("pos").textContent    = fmt(displayPos);
+  if (dur > 0) document.getElementById("dur").textContent = fmt(dur);
+  const pct = dur > 0 ? Math.min((displayPos / dur) * 100, 100) : 0;
+  document.getElementById("progress-fill").style.width = pct + "%";
+}, 100);
+
+function resetProgress() {
+  document.getElementById("progress-fill").style.width = "0%";
+  document.getElementById("pos").textContent = "0:00";
+  document.getElementById("dur").textContent = "0:00";
+}
+
+function updateNowPlaying(item) {
+  document.getElementById("np-title").textContent = item ? item.title : "—";
+  if (!item) resetProgress();
+}
+
+function updateBadge(status) {
+  const badge = document.getElementById("state-badge");
+  badge.className = "state-badge " + (status === "playing" ? "playing" : status === "paused" ? "paused" : status === "reconnecting" ? "reconnecting" : "");
+  const key = { playing: "nowplaying.state_playing", paused: "nowplaying.state_paused",
+    stopped: "nowplaying.state_stopped", reconnecting: "nowplaying.state_reconnecting" }[status];
+  badge.textContent = key ? window.t(key) : status;
+}
+
+video.addEventListener("loadedmetadata", () => {
+  // Sem seek manual aqui: quando loadVideo usa #t=N, o browser já inicia
+  // na posição certa via range request nativo, sem freeze de buffering.
+});
+
+video.addEventListener("seeked", () => {
+  _syncPending = false;
+});
+
+video.addEventListener("timeupdate", () => {
+  // Display driven by interpolation loop — não atualiza aqui.
+});
+
+video.addEventListener("ended", () => {});
+
+video.addEventListener("error", () => {
+  const code = video.error ? video.error.code : "?";
+  log(window.t("logmsg.preview_load_failed"), "error");
+  // Só mostra mensagem se o canvas MPV não estiver recebendo frames
+  const wrap = video.closest(".player-wrap");
+  if (!wrap?.classList.contains("mpv-live")) {
+    _showUnavailable();
+  }
+});
