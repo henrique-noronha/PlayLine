@@ -32,10 +32,10 @@
   "alternateName": "PlayLine Playout",
   "description": "Sistema de automação de playout televisivo gratuito e de código aberto para emissoras de TV. Permite transmissão contínua, sobreposição de logos, acesso remoto e programação automatizada.",
   "url": "https://playlinetv.com.br/",
-  "downloadUrl": "https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.0/Playline.v1.2.0.zip",
+  "downloadUrl": "https://github.com/henrique-noronha/PlayLine/releases/download/v.1.2.1/Playline.v1.2.1.zip",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Windows 10, Windows 11",
-  "softwareVersion": "1.2.0",
+  "softwareVersion": "1.2.1",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
   "keywords": "playout, televisão, broadcast, TV, automação, broadcasting, emissora, software gratuito",
   "inLanguage": "pt-BR",
@@ -85,6 +85,11 @@
       "@type": "Question",
       "name": "Preciso saber programar para usar o PlayLine?",
       "acceptedAnswer": { "@type": "Answer", "text": "Não. A operação é visual: você arrasta os vídeos da biblioteca para o roteiro, define a ordem e o sistema cuida do resto, inclusive da troca entre clipes e da recuperação de erros." }
+    },
+    {
+      "@type": "Question",
+      "name": "Em quais idiomas o PlayLine está disponível?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Português, inglês e espanhol. O idioma é escolhido no assistente da primeira execução e pode ser trocado a qualquer momento em Configurações > Idioma." }
     }
   ]
 }
@@ -892,7 +897,7 @@ body {
 <div class="hero-wrap">
 <section class="hero">
   <img src="LogoPlayLineD.png" alt="PlayLine" style="max-width:420px;height:auto;margin-bottom:28px;display:block;margin-left:auto;margin-right:auto">
-  <a class="hero-badge" href="#download"><span class="dot"></span> Versão 1.2.0 disponível</a>
+  <a class="hero-badge" href="#download"><span class="dot"></span> Versão 1.2.1 disponível</a>
   <h1 style="font-family:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif"> Software de playout televisivo gratuito.</h1>
   <p class="hero-sub">Um sistema projetado para emissoras que precisam de transmissão contínua sem depender de licenças comerciais ou de equipe técnica especializada.</p>
   <div class="hero-actions">
@@ -1066,12 +1071,12 @@ acesso à informação para milhões de pessoas.</p>
     <div class="step">
       <span class="step-num">Passo 01</span>
       <h3>Extraia e organize</h3>
-      <p>Extraia o arquivo <code>Playline.v1.2.0.zip</code> e copie seus vídeos para a pasta <code>Biblioteca</code>, ou escolha qualquer outra pasta depois em <code>Configurações &gt; Biblioteca</code>. Se necessário, crie subpastas para organizar o conteúdo, por exemplo: <code>Comerciais</code>, <code>Programas</code>, <code>Vinhetas</code>. As pastas criadas aparecerão automaticamente como categorias na interface.</p>
+      <p>Extraia o arquivo <code>Playline.v1.2.1.zip</code> e copie seus vídeos para a pasta <code>Biblioteca</code>, ou escolha outra pasta no assistente de configuração inicial (e, a qualquer momento, em <code>Configurações &gt; Biblioteca</code>). Se necessário, crie subpastas para organizar o conteúdo, por exemplo: <code>Comerciais</code>, <code>Programas</code>, <code>Vinhetas</code>. As pastas criadas aparecerão automaticamente como categorias na interface.</p>
     </div>
     <div class="step">
       <span class="step-num">Passo 02</span>
-      <h3>Execute e autentique</h3>
-      <p>Abra <code>PlayLine.exe</code>. Faça login com usuário <code>playline</code> e senha <code>playline</code>. A interface abrirá automaticamente. Em seguida, troque usuário e senha em <code>Configurações</code>, no menu do Painel de Controle: o par padrão só deve valer no primeiro acesso.</p>
+      <h3>Execute e configure</h3>
+      <p>Abra <code>PlayLine.exe</code>. Na primeira execução, um assistente pede o idioma da interface (português, inglês ou espanhol), o usuário e a senha de acesso e a pasta da biblioteca. Ao concluir, o Painel de Controle abre automaticamente. Recomendamos definir um usuário e uma senha próprios: o par padrão (<code>playline</code> / <code>playline</code>) é público. Tudo pode ser alterado depois em <code>Configurações</code>.</p>
     </div>
     <div class="step">
       <span class="step-num">Passo 03</span>
@@ -1092,12 +1097,12 @@ acesso à informação para milhões de pessoas.</p>
   <div style="max-width:420px;margin:0 auto">
 
     <div class="dl-card">
-      <h2 class="dl-title">PlayLine v1.2.0</h2>
+      <h2 class="dl-title">PlayLine v1.2.1</h2>
       <p class="dl-sub">Windows 10 ou superior</p>
       <p>Instalação completa para a máquina de transmissão. Inclui servidor, daemon MPV, interface, PlayLine-Client e PlayIngest.</p>
-      <span class="dl-meta">Playline.v1.2.0.zip · Windows x64</span>
-      <span class="dl-meta" style="word-break:break-all">SHA-256: 9ec2dd49f26dd9a2d585ede49cd0aaf1b11afe1b3db4e0155d7fd6d8deef8341</span>
-      <a class="btn btn-primary" id="btn-download-zip" href="https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.0/Playline.v1.2.0.zip">
+      <span class="dl-meta">Playline.v1.2.1.zip · Windows x64</span>
+      <span class="dl-meta" style="word-break:break-all">SHA-256: 519aaf8752a3124ae2a7f19f9345c1fcd2ce179f30e0d982f0cba4a8229c9e0b</span>
+      <a class="btn btn-primary" id="btn-download-zip" href="https://github.com/henrique-noronha/PlayLine/releases/download/v.1.2.1/Playline.v1.2.1.zip">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Baixar .zip
       </a>
@@ -1165,6 +1170,13 @@ acesso à informação para milhões de pessoas.</p>
       <summary>Preciso saber programar para usar?</summary>
       <div class="faq-answer">
         Não. O PlayLine foi feito para emissoras que não têm equipe técnica dedicada. A operação é visual: você arrasta os vídeos da biblioteca para o roteiro, define a ordem e o sistema cuida do resto, inclusive da troca entre clipes e da recuperação de erros.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Em quais idiomas o PlayLine está disponível?</summary>
+      <div class="faq-answer">
+        Português, inglês e espanhol. O idioma é escolhido no assistente da primeira execução e pode ser trocado a qualquer momento em <code>Configurações &gt; Idioma</code>. A versão em inglês segue a terminologia internacional de automação de playout (Playlist, On Air, Playout Log).
       </div>
     </details>
 
