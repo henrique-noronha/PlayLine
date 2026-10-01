@@ -927,6 +927,30 @@ body {
   .demo-open { padding-bottom: 14px; }
   .demo-open-btn { font-size: 13px; padding: 9px 14px; }
 }
+/* A demonstração é a interface real, feita para desktop (largura mínima de
+   1100px): numa tela estreita ela abre distorcida. Abaixo de 900px (mesmo
+   limite do JS que decide carregar a prévia ao vivo) todos os caminhos para
+   ela somem e o print vira imagem estática, com a nota no lugar do botão. */
+.demo-mobile-note { display: none; }
+@media (max-width: 899px) {
+  .demo-link, .demo-open, .demo-actions { display: none !important; }
+  .demo-mobile-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 16px auto 0;
+    max-width: 560px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    font-size: 13px;
+    color: var(--body);
+    line-height: 1.5;
+    text-align: center;
+  }
+}
 </style>
 
 <!-- SMPTE color bars -->
@@ -945,7 +969,7 @@ body {
   <a class="nav-logo" href="#"><img src="LogoPlayLineD.png" alt="PlayLine" style="height:44px;object-fit:contain;vertical-align:middle;width:auto;display:inline-block"></a>
   <div class="nav-links">
     <a href="#funcionalidades">Funcionalidades</a>
-    <a href="demo/">Demonstração</a>
+    <a class="demo-link" href="demo/">Demonstração</a>
     <a href="#como-usar">Como usar</a>
     <a href="#download">Download</a>
     <a href="https://github.com/henrique-noronha/PlayLine" target="_blank">GitHub</a>
@@ -958,7 +982,7 @@ body {
 
 <div class="nav-mobile" id="nav-mobile">
   <a href="#funcionalidades">Funcionalidades</a>
-  <a href="demo/">Demonstração</a>
+  <a class="demo-link" href="demo/">Demonstração</a>
   <a href="#como-usar">Como usar</a>
   <a href="#download">Download</a>
   <a href="https://github.com/henrique-noronha/PlayLine" target="_blank">GitHub ↗</a>
@@ -977,7 +1001,7 @@ body {
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Baixar grátis
     </a>
-    <a class="btn btn-outline btn-lg" href="demo/">
+    <a class="btn btn-outline btn-lg demo-link" href="demo/">
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6,4 20,12 6,20"/></svg>
       Experimentar a interface
     </a>
@@ -1022,7 +1046,11 @@ acesso à informação para milhões de pessoas.</p>
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
     </a>
   </div>
-  <p class="screenshot-caption" id="demo-caption">A interface completa: painel de controle, roteiro com horários calculados e biblioteca, tudo numa tela só. Abra a demonstração para operar a interface real com vídeos de exemplo.</p>
+  <p class="demo-mobile-note">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+    <span>A demonstração interativa, com a interface completa, está disponível somente no computador.</span>
+  </p>
+  <p class="screenshot-caption" id="demo-caption">A interface completa: painel de controle, roteiro com horários calculados e biblioteca, tudo numa tela só.<span class="demo-link"> Abra a demonstração para operar a interface real com vídeos de exemplo.</span></p>
 </div>
 
 <!-- Por que -->
