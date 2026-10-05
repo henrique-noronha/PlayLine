@@ -336,16 +336,16 @@ function generateThumb(path, imgEl) {
     return;
   }
 
-  // Thumb persistida no localStorage por versões anteriores (inclui estado de
-  // erro persistido). Hoje o caminho normal não grava mais aqui: o servidor
-  // responde com Cache-Control immutable e quem guarda é o cache HTTP.
+  // Thumb persistida no localStorage por versões anteriores. Hoje o caminho
+  // normal não grava mais aqui: o servidor responde com Cache-Control immutable
+  // e quem guarda é o cache HTTP.
   const stored = thumbFromStorage(path);
-  if (stored) {
-    if (stored === "__error__") {
-      thumbCache[path] = { state: "error", url: "", pending: [] };
-      // thumbnail indisponível mas não invalida o item
-      return;
-    }
+  if (stored === "__error__") {
+    // Erro gravado por versões anteriores: não serve de verdade (o arquivo pode
+    // ter sido corrigido) e, reaproveitado, pulava a marcação de inválido, então
+    // o item perdia a borda vermelha ao reabrir a interface. Descarta e testa de novo.
+    try { localStorage.removeItem(THUMB_PREFIX + path); } catch (_) {}
+  } else if (stored) {
     thumbCache[path] = { state: "done", url: stored, pending: [] };
     imgEl.src = stored;
     return;
@@ -419,7 +419,8 @@ function _thumbFromBrowser(path, done) {
       invalidPaths.add(path);
       cache.pending.forEach(el => el.closest(".lib-item, .schedule-item")?.classList.add("invalid"));
       cache.pending = [];
-      thumbToStorage(path, "__error__");
+      // O erro não é gravado no localStorage: com o perfil persistente ele
+      // sobreviveria entre aberturas e o arquivo nunca mais seria testado.
       _updateErrorCount();
     }
     done();
