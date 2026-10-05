@@ -636,7 +636,6 @@ footer {
 /* ── Tablet ── */
 @media (max-width: 1024px) {
   .steps { grid-template-columns: repeat(2, 1fr); }
-  .arq-notas { grid-template-columns: 1fr; }
   .features { grid-template-columns: repeat(2, 1fr); }
   .hero h1 { font-size: clamp(22px, 3.5vw, 34px); }
 }
@@ -653,8 +652,6 @@ footer {
   /* No celular os dois botões ocupam a largura toda, em vez de ficarem espremidos lado a lado */
   .hero-actions { flex-direction: column; align-items: stretch; }
   .hero-actions .btn { justify-content: center; }
-  .arq-wrap { padding: 14px; }
-  .arq-notas { grid-template-columns: 1fr; gap: 14px; }
   .about-text p { font-size: 16px; }
   .screenshot-wrap { padding: 0 16px; margin-bottom: 48px; }
   .section { padding: 48px 20px; }
@@ -800,39 +797,6 @@ body {
   line-height: 1.6;
 }
 
-/* ── Como funciona: diagrama de arquitetura ── */
-.arq-wrap {
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 26px;
-  background: #080b10;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-/* O diagrama original é preto sobre branco. Invertido, o traço fica claro
-   sobre fundo escuro e a figura para de brigar com o tema do site. */
-.arq-wrap img {
-  display: block;
-  width: 100%;
-  height: auto;
-  filter: invert(1) hue-rotate(180deg) contrast(0.92);
-}
-.arq-notas {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  max-width: 880px;
-  margin: 22px auto 0;
-}
-.arq-nota {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding-left: 14px;
-  border-left: 2px solid var(--accent);
-}
-.arq-nota strong { font-size: 13px; color: var(--text); font-weight: 700; }
-.arq-nota span   { font-size: 13px; color: var(--body); line-height: 1.6; }
 
 /* ── Card de download: título e subtítulo migraram para dentro dele ── */
 .dl-title {
@@ -1153,29 +1117,6 @@ acesso à informação para milhões de pessoas.</p>
       <p>Cada exibição fica registrada com data, hora e duração. Consulte o registro por dia e o ranking dos clipes mais exibidos, com o total de horas transmitidas.</p>
     </div>
 
-  </div>
-</section>
-
-<!-- Como funciona -->
-<section class="section" id="como-funciona">
-  <h2 class="section-title">Como funciona por dentro</h2>
-  <p class="section-sub">Três processos isolados: se um falhar, o sinal continua no ar.</p>
-  <div class="arq-wrap">
-    <img src="arquitetura.png" alt="Arquitetura do PlayLine: interface, servidor e daemon de vídeo em processos separados" />
-  </div>
-  <div class="arq-notas">
-    <div class="arq-nota">
-      <strong>Interface</strong>
-      <span>O que o operador vê. Pode fechar, travar ou ser aberta de outra máquina sem afetar a transmissão.</span>
-    </div>
-    <div class="arq-nota">
-      <strong>Servidor</strong>
-      <span>Guarda o roteiro, o histórico e as configurações. Coordena o que entra no ar e quando.</span>
-    </div>
-    <div class="arq-nota">
-      <strong>Motor de vídeo</strong>
-      <span>Processo separado que decodifica e envia o sinal para a saída HDMI. É o que mantém a TV no ar.</span>
-    </div>
   </div>
 </section>
 
