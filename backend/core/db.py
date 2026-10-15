@@ -89,6 +89,8 @@ def init_db() -> None:
                 created_at TEXT    NOT NULL,
                 items      TEXT    NOT NULL
             );
+
+            CREATE INDEX IF NOT EXISTS idx_history_date ON history(date);
         """)
         _migrate(conn)
     logger.info("[db] Banco inicializado: %s", DB_PATH)

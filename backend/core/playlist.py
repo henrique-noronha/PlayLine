@@ -100,8 +100,10 @@ class PlaylistEngine:
     def load_schedule(self) -> list[dict]:
         try:
             conn = get_conn()
-            rows = conn.execute("SELECT * FROM schedule ORDER BY position").fetchall()
-            conn.close()
+            try:
+                rows = conn.execute("SELECT * FROM schedule ORDER BY position").fetchall()
+            finally:
+                conn.close()
             self._items = []
             for r in rows:
                 item = dict(r)
@@ -187,8 +189,10 @@ class PlaylistEngine:
     def _read_checkpoint(self) -> Optional[dict]:
         try:
             conn = get_conn()
-            row = conn.execute("SELECT path, position FROM checkpoint WHERE id=1").fetchone()
-            conn.close()
+            try:
+                row = conn.execute("SELECT path, position FROM checkpoint WHERE id=1").fetchone()
+            finally:
+                conn.close()
             return dict(row) if row else None
         except Exception:
             return None

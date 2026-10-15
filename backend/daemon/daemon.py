@@ -230,6 +230,8 @@ class MPVDaemon:
         try:
             while True:
                 await asyncio.sleep(0.08)
+                if not self._clients:
+                    continue
                 db = win_audio_meter.get_peak_db()
                 if db is not None:
                     await self._broadcast({"event": "audio_level", "db": db})

@@ -60,7 +60,8 @@ class ConnectionManager:
         logger.info("WS conectado — total: %d", len(self._clients))
 
     def disconnect(self, ws: WebSocket):
-        self._clients.remove(ws)
+        if ws in self._clients:
+            self._clients.remove(ws)
         logger.info("WS desconectado — total: %d", len(self._clients))
 
     async def broadcast(self, data: dict):
@@ -225,6 +226,10 @@ def _load_sessions() -> dict[str, float]:
 
 
 def _save_sessions(sessions: dict[str, float]) -> None:
+    now = time.time()
+    expired = [t for t, exp in sessions.items() if exp <= now]
+    for t in expired:
+        sessions.pop(t, None)
     try:
         _SESSIONS_FILE.write_text(json.dumps(sessions), encoding="utf-8")
     except Exception as exc:
@@ -372,7 +377,7 @@ class _RevalidatingStaticFiles(StaticFiles):
 app = FastAPI(title="PlayLine", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})(:\d+)?$",
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
@@ -405,6 +410,39 @@ async def _credentials_ok(username, password) -> bool:
     return await loop.run_in_executor(None, app_settings.verify_credentials, username, password)
 
 
+_LOGIN_MAX_FAILS   = 5
+_LOGIN_WINDOW_SEC  = 300
+_LOGIN_LOCKOUT_SEC = 60
+_login_fails: dict[str, list[float]] = {}
+
+
+def _login_blocked(ip: str) -> bool:
+    """Retorna True se o IP excedeu o limite de tentativas."""
+    now = time.time()
+    attempts = _login_fails.get(ip)
+    if not attempts:
+        return False
+    attempts[:] = [t for t in attempts if now - t < _LOGIN_WINDOW_SEC]
+    if not attempts:
+        _login_fails.pop(ip, None)
+        return False
+    if len(attempts) >= _LOGIN_MAX_FAILS:
+        last = attempts[-1]
+        lockout = _LOGIN_LOCKOUT_SEC * (2 ** (len(attempts) - _LOGIN_MAX_FAILS))
+        if now - last < lockout:
+            return True
+    return False
+
+
+def _login_record_fail(ip: str):
+    now = time.time()
+    _login_fails.setdefault(ip, []).append(now)
+
+
+def _login_clear(ip: str):
+    _login_fails.pop(ip, None)
+
+
 @app.get("/login")
 async def login_page():
     return HTMLResponse(_build_login_html())
@@ -412,29 +450,39 @@ async def login_page():
 
 @app.post("/login")
 async def login_submit(request: Request):
+    ip = request.client.host if request.client else "unknown"
+    if _login_blocked(ip):
+        return HTMLResponse(_build_login_html(error=True), status_code=429)
     form = await request.form()
     if await _credentials_ok(form.get("username"), form.get("password")):
+        _login_clear(ip)
         token = secrets.token_urlsafe(32)
         _SESSIONS[token] = time.time() + _SESSION_TTL
         _save_sessions(_SESSIONS)
         resp = RedirectResponse(url="/", status_code=302)
         resp.set_cookie("playline_session", token, httponly=True, samesite="lax", max_age=_SESSION_TTL)
         return resp
+    _login_record_fail(ip)
     return HTMLResponse(_build_login_html(error=True), status_code=401)
 
 
 @app.post("/api/login")
 async def api_login(request: Request):
     """Login JSON para clientes externos (PlayIngest, etc.)."""
+    ip = request.client.host if request.client else "unknown"
+    if _login_blocked(ip):
+        return JSONResponse({"ok": False, "error": "Muitas tentativas, aguarde"}, status_code=429)
     try:
         body = await request.json()
     except Exception:
         return JSONResponse({"ok": False, "error": "JSON inválido"}, status_code=400)
     if await _credentials_ok(body.get("username"), body.get("password")):
+        _login_clear(ip)
         token = secrets.token_urlsafe(32)
         _SESSIONS[token] = time.time() + _SESSION_TTL
         _save_sessions(_SESSIONS)
         return JSONResponse({"ok": True, "token": token})
+    _login_record_fail(ip)
     return JSONResponse({"ok": False, "error": "Credenciais inválidas"}, status_code=401)
 
 

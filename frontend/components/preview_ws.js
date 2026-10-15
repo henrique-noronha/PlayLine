@@ -99,8 +99,9 @@
       if (e.data instanceof Blob) _drawFrame(e.data);
     };
 
-    _ws.onclose = () => {
+    _ws.onclose = (ev) => {
       _setLive(false);
+      if (ev.code === 4401) return;
       setTimeout(connect, RECONNECT_MS);
     };
 

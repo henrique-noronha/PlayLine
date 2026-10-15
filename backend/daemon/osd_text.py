@@ -14,6 +14,8 @@ _SLOT     = "3"
 _MARGIN_X = 0.04
 _MARGIN_Y = 0.07
 
+_font_cache: dict = {}
+
 _BG_TIME  = (68,  68,  68, 190)    # cinza — hora
 _BG_TEMP  = (52,  52,  52, 190)    # cinza — temp
 _BG_CITY  = (38,  38,  38, 190)    # cinza — cidade
@@ -49,17 +51,6 @@ def apply(mpv, config: dict, temperature: Optional[str]) -> None:
     x, y = _corner_pos(corner, osd_w, osd_h, w, h, margin_x, margin_y)
     logger.debug("[osd_text] osd=%dx%d font=%d bmp=%dx%d pos=(%d,%d) margin_y=%d",
                  osd_w, osd_h, font_sz, w, h, x, y, margin_y)
-    try:
-        import tempfile, datetime
-        dbg = Path(tempfile.gettempdir()) / "playline_osd_debug.txt"
-        line = (f"{datetime.datetime.now():%H:%M:%S} "
-                f"osd={osd_w}x{osd_h} font={font_sz} "
-                f"bmp={w}x{h} pos=({x},{y}) margin_y={margin_y}\n")
-        with open(dbg, "a", encoding="utf-8") as f:
-            f.write(line)
-    except Exception:
-        pass
-
     tmp = Path(tempfile.gettempdir()) / "playline_text.bgra"
     try:
         tmp.write_bytes(bgra_bytes)
@@ -102,13 +93,19 @@ def _osd_dims(mpv) -> tuple[int, int]:
 
 
 def _load_font(size: int):
+    if size in _font_cache:
+        return _font_cache[size]
     from PIL import ImageFont
     for name in ("segoeuib.ttf", "segoeui.ttf", "arial.ttf", "verdana.ttf", "cour.ttf"):
         try:
-            return ImageFont.truetype(name, size)
+            font = ImageFont.truetype(name, size)
+            _font_cache[size] = font
+            return font
         except Exception:
             pass
-    return ImageFont.load_default()
+    font = ImageFont.load_default()
+    _font_cache[size] = font
+    return font
 
 
 def _render(config: dict, temperature: Optional[str], font_sz: int) -> Optional[tuple]:

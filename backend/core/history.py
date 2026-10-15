@@ -92,35 +92,36 @@ class HistoryManager:
         """Retorna estatísticas agregadas: top clipes, totais e atividade por data."""
         try:
             conn = get_conn()
+            try:
+                top = conn.execute("""
+                    SELECT path, title,
+                           COUNT(*)                        AS play_count,
+                           SUM(duration_played)            AS total_seconds,
+                           ROUND(SUM(duration_played)/3600.0, 2) AS total_hours
+                    FROM   history
+                    GROUP  BY path
+                    ORDER  BY play_count DESC
+                    LIMIT  100
+                """).fetchall()
 
-            top = conn.execute("""
-                SELECT path, title,
-                       COUNT(*)                        AS play_count,
-                       SUM(duration_played)            AS total_seconds,
-                       ROUND(SUM(duration_played)/3600.0, 2) AS total_hours
-                FROM   history
-                GROUP  BY path
-                ORDER  BY play_count DESC
-            """).fetchall()
+                totals = conn.execute("""
+                    SELECT COUNT(*)                             AS total_plays,
+                           ROUND(SUM(duration_played)/3600.0,2) AS total_hours,
+                           COUNT(DISTINCT date)                 AS total_days
+                    FROM   history
+                """).fetchone()
 
-            totals = conn.execute("""
-                SELECT COUNT(*)                             AS total_plays,
-                       ROUND(SUM(duration_played)/3600.0,2) AS total_hours,
-                       COUNT(DISTINCT date)                 AS total_days
-                FROM   history
-            """).fetchone()
-
-            by_date = conn.execute("""
-                SELECT date,
-                       COUNT(*)            AS plays,
-                       SUM(duration_played) AS seconds
-                FROM   history
-                GROUP  BY date
-                ORDER  BY date DESC
-                LIMIT  30
-            """).fetchall()
-
-            conn.close()
+                by_date = conn.execute("""
+                    SELECT date,
+                           COUNT(*)            AS plays,
+                           SUM(duration_played) AS seconds
+                    FROM   history
+                    GROUP  BY date
+                    ORDER  BY date DESC
+                    LIMIT  30
+                """).fetchall()
+            finally:
+                conn.close()
             return {
                 "top_clips":   [dict(r) for r in top],
                 "total_plays": totals["total_plays"] or 0,
