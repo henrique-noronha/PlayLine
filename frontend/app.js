@@ -570,7 +570,7 @@ function _renderPickerDropdown(slot) {
   const s = _logoState[slot];
 
   if (!_logoFiles.length) {
-    dropdown.innerHTML = '<div class="logo-picker-empty">Pasta logos/ vazia</div>';
+    dropdown.innerHTML = `<div class="logo-picker-empty">${window.t("clipoverlay.empty_logos_folder")}</div>`;
     return;
   }
 

@@ -150,9 +150,6 @@ class Player:
         elif event == "preview_frame":
             if self._on_preview_frame:
                 self._on_preview_frame(msg.get("data", ""))
-        elif event == "file-loaded":
-            if self._on_file_loaded:
-                self._on_file_loaded()
 
     # Envio                                                                #
 

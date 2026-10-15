@@ -560,7 +560,8 @@ async def get_library_files(subfolder: str = ""):
 
 
 _UPLOAD_EXTS = {".mp4", ".mkv", ".mov", ".avi", ".ts", ".mxf", ".mpg", ".mpeg", ".wmv", ".flv", ".webm"}
-_MIN_FREE_MB = 200  # espaço mínimo exigido antes de aceitar upload
+_MIN_FREE_MB  = 200   # espaço mínimo exigido antes de aceitar upload
+_UPLOAD_CHUNK = 1024 * 1024  # 1 MB por leitura
 
 
 @router.post("/api/upload")
@@ -569,7 +570,10 @@ async def upload_file(subfolder: str = "", file: UploadFile = File(...)):
     import errno as _errno
     import shutil
 
-    ext = Path(file.filename).suffix.lower()
+    safe_name = Path(file.filename).name
+    if not safe_name or safe_name.startswith("."):
+        raise HTTPException(status_code=400, detail="Nome de arquivo inválido")
+    ext = Path(safe_name).suffix.lower()
     if ext not in _UPLOAD_EXTS:
         raise HTTPException(status_code=415, detail=f"Extensão não suportada: {ext}")
 
@@ -595,29 +599,30 @@ async def upload_file(subfolder: str = "", file: UploadFile = File(...)):
     except Exception:
         pass
 
-    dest = dest_dir / file.filename
+    dest = dest_dir / safe_name
+    if not dest.resolve().is_relative_to(dest_dir.resolve()):
+        raise HTTPException(status_code=400, detail="Nome de arquivo inválido")
     suffix = 1
     while dest.exists():
-        dest = dest_dir / f"{Path(file.filename).stem}_{suffix}{ext}"
+        dest = dest_dir / f"{Path(safe_name).stem}_{suffix}{ext}"
         suffix += 1
 
     try:
-        content = await file.read()
-        if len(content) == 0:
+        total = 0
+        with open(dest, "wb") as f:
+            while True:
+                chunk = await file.read(_UPLOAD_CHUNK)
+                if not chunk:
+                    break
+                total += len(chunk)
+                f.write(chunk)
+        if total == 0:
+            dest.unlink(missing_ok=True)
             raise HTTPException(status_code=400, detail="Arquivo vazio")
-
-        needed_mb = len(content) // (1024 * 1024)
-        free_mb = shutil.disk_usage(dest_dir).free // (1024 * 1024)
-        if free_mb < needed_mb + 50:
-            raise HTTPException(
-                status_code=507,
-                detail=f"Disco cheio no servidor — arquivo precisa de {needed_mb} MB, disponível: {free_mb} MB"
-            )
-
-        dest.write_bytes(content)
     except HTTPException:
         raise
     except OSError as exc:
+        dest.unlink(missing_ok=True)
         if exc.errno == _errno.ENOSPC:
             raise HTTPException(status_code=507, detail="Disco cheio no servidor — sem espaço para salvar o arquivo")
         elif exc.errno in (_errno.EACCES, _errno.EPERM):
@@ -628,6 +633,7 @@ async def upload_file(subfolder: str = "", file: UploadFile = File(...)):
         else:
             raise HTTPException(status_code=500, detail=f"Erro de sistema ao salvar arquivo: {exc}")
     except Exception as exc:
+        dest.unlink(missing_ok=True)
         raise HTTPException(status_code=500, detail=str(exc))
 
     return {"ok": True, "saved_as": dest.name, "path": str(dest)}
