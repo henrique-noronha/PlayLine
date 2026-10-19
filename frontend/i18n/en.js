@@ -1,9 +1,4 @@
-/* PlayLine — Translation dictionary: English
-   Terminology follows international broadcast/playout automation usage
-   (e.g. Wide Orbit, Pebble Beach, Harmonic): "Playlist" for the ordered
-   air queue, "On Air" for what's currently transmitting, "Loop" for a
-   repeating playlist, "FTB" (fade to black) kept as the industry
-   abbreviation rather than spelled out. */
+/* PlayLine — Translation dictionary: English */
 window.PLAYLINE_I18N_EN = {
   window_title: "PlayLine · Control Panel",
   meta: { name: "English", flag_hint: "EN" },

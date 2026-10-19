@@ -1,30 +1,4 @@
-"""Transição entre clipes: fade para preto (vídeo + áudio) em cima do MPV.
-
-O MPV tem um único decodificador, então não existe crossfade A/B. O que dá para
-fazer com robustez, e é a transição suave padrão de playout, é fade para preto:
-fade out no fim do clipe, preto cobrindo o instante da troca, fade in no início
-do próximo.
-
-Vídeo: retângulo preto de tela cheia via `osd-overlay` (ASS) com o alpha animado
-em ~30 passos. Custa ~0,1 ms por passo, não mexe na cadeia de filtros, persiste
-através da troca de arquivo (inclusive no append gapless) e renderiza acima dos
-`overlay-add` (logos e relógio escurecem junto).
-
-Áudio: rampa da propriedade `volume` a partir do nível do operador, com curva
-quadrática (mais próxima da percepção do que a linear).
-
-Regras (o daemon chama os métodos on_*):
-- automático: `on_time_pos` dispara o fade out `duration` s antes do fim do
-  clipe (fim efetivo = `end` do recorte, senão `duration` do arquivo). O clipe
-  termina no mesmo instante de sempre, então a grade horária não muda.
-- manual (play/stop com algo no ar): o daemon chama `fade_out_blocking()`
-  antes de trocar.
-- `on_file_loaded`: fade in se a fronteira era fade; senão limpa qualquer preto.
-- pause/seek/idle: `cancel_and_clear()` (tela e volume de volta; o fade
-  automático pode disparar de novo se ainda faltar menos que `duration`).
-- por item: `set_next_boundary("fade"|"cut"|None)` e `resolve(override)`;
-  None segue a configuração global.
-"""
+"""Transição entre clipes: fade para preto (vídeo + áudio) via osd-overlay ASS."""
 
 import logging
 import threading

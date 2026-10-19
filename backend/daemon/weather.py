@@ -18,12 +18,7 @@ _cache_city:  str   = ""
 
 
 def _owm_query(city: str) -> str:
-    """Localização para a URL do OWM.
-
-    Usa lat/lon quando a cidade está na lista salva em config.json (o operador a
-    monta em Configurações, com coordenadas vindas do geocoding); por nome, o OWM
-    pode devolver a homônima de outro estado. Sem a lista, cai na busca por nome.
-    """
+    """Localização para a URL do OWM (lat/lon se disponível, senão nome)."""
     try:
         try:
             from core import settings as _settings

@@ -47,9 +47,6 @@ else:
     FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
     _DATA_DIR    = Path(__file__).parent
 
-
-# Gerenciadores de conexões WebSocket
-
 class ConnectionManager:
     def __init__(self):
         self._clients: list[WebSocket] = []
@@ -106,9 +103,6 @@ class PreviewManager:
     @property
     def count(self) -> int:
         return len(self._clients)
-
-
-# Lifecycle                                                            #
 
 manager = ConnectionManager()
 preview_manager = PreviewManager()
@@ -191,10 +185,8 @@ async def lifespan(app: FastAPI):
     setup_routes(playlist_engine, manager)
     setup_ws(playlist_engine, manager, _session_valid)
 
-    # Detecta se o daemon já estava reproduzindo algo (crash/reinício do servidor)
     await loop.run_in_executor(None, playlist_engine.restore_after_crash)
 
-    # Pré-aquece cache de thumbnails em background (aproveita o tempo da splash + login)
     asyncio.create_task(prewarm_thumbnails())
 
     logger.info("Sistema de playout iniciado")
@@ -204,12 +196,7 @@ async def lifespan(app: FastAPI):
         player_instance.shutdown()
     logger.info("Sistema encerrado")
 
-
-# App                                                                  #
-
-# Credenciais: core/settings.py (config.json ao lado do banco; sem arquivo valem
-# PLAYLINE_USER/PLAYLINE_PASS do ambiente ou playline/playline).
-_SESSION_TTL = 8 * 3600  # 8 horas
+_SESSION_TTL = 8 * 3600
 
 _SESSIONS_FILE = _DATA_DIR / "sessions.json"
 
@@ -322,9 +309,6 @@ def _session_valid(token: str) -> bool:
     return bool(token) and _SESSIONS.get(token, 0) > time.time()
 
 
-# Sem sessão: login, ping, o assistente de configuração inicial (as rotas dele
-# conferem sozinhas se o pedido vem deste computador e se ainda está pendente)
-# e os arquivos estáticos que ele usa, que não têm nada sensível.
 _PUBLIC_PATHS = ("/login", "/api/ping", "/api/login", "/setup", "/setup/logo",
                  "/static/styles/base.css", "/static/components/i18n.js")
 _PUBLIC_PREFIXES = ("/api/setup/", "/static/setup/", "/static/i18n/")
@@ -337,9 +321,6 @@ class _SessionAuth(BaseHTTPMiddleware):
         if request.method == "OPTIONS":
             return await call_next(request)
         path = request.url.path
-        # Configuração inicial pendente: só a navegação para o painel/login é
-        # desviada para o assistente. APIs seguem como sempre (PlayIngest, sessões
-        # já abertas e o supervisor continuam funcionando durante a atualização).
         if path in ("/", "/login") and request.method == "GET" and not app_settings.is_setup_done():
             return RedirectResponse(url="/setup", status_code=302)
         if path in _PUBLIC_PATHS or path.startswith(_PUBLIC_PREFIXES):
@@ -358,15 +339,7 @@ class _SessionAuth(BaseHTTPMiddleware):
 
 
 class _RevalidatingStaticFiles(StaticFiles):
-    """Arquivos do frontend com "no-cache": o navegador guarda, mas confere com o
-    servidor (ETag, resposta 304) antes de cada uso.
-
-    Sem cabeçalho de cache, o WebView2 reaproveita JS/CSS por heurística sem
-    perguntar. Com o perfil persistente (private_mode=False) isso sobrevive entre
-    execuções, e depois de uma atualização a interface rodava arquivos antigos
-    (ex.: o assistente de configuração mostrando "setup.heading" porque o pt.js
-    do cache ainda não tinha essas chaves).
-    """
+    """Arquivos do frontend com revalidação (no-cache)."""
 
     async def get_response(self, path, scope):
         response = await super().get_response(path, scope)
@@ -503,11 +476,7 @@ def _request_token(request: Request) -> str:
 
 @app.post("/api/settings/credentials")
 async def change_credentials(request: Request):
-    """Troca usuário e senha. Exige usuário E senha atuais; mantém só a sessão de quem alterou.
-
-    As demais sessões (outro navegador, PlayLine-Client, PlayIngest) caem e
-    precisam entrar de novo com as credenciais novas.
-    """
+    """Troca usuário e senha."""
     try:
         body = await request.json()
     except Exception:
@@ -548,13 +517,6 @@ async def change_language(request: Request):
     return {"ok": True, "language": lang}
 
 
-# ── Assistente de configuração inicial ──────────────────────────────────────
-#
-# Idioma, usuário/senha e pasta da biblioteca, uma vez por instalação (inclusive
-# quem atualiza de uma versão anterior, já preenchido com o que estiver em uso).
-# Só responde a pedidos deste computador: ninguém na rede pode definir a senha
-# antes do operador.
-
 _LOCAL_HOSTS = ("127.0.0.1", "::1", "localhost")
 
 
@@ -591,8 +553,6 @@ async def setup_page(request: Request):
         return RedirectResponse(url="/", status_code=302)
     if not _is_local(request):
         return HTMLResponse(_SETUP_REMOTE_HTML.format(lang=app_settings.get_language()), status_code=403)
-    # no-store: sem isso o navegador pode reexibir o assistente do cache depois
-    # de concluído, em vez de passar por aqui e ser mandado ao painel.
     html = (FRONTEND_DIR / "setup" / "setup.html").read_text(encoding="utf-8")
     return HTMLResponse(_with_asset_version(html), headers={"Cache-Control": "no-store"})
 
@@ -626,12 +586,7 @@ async def setup_state(request: Request):
 
 @app.post("/api/setup/complete")
 async def setup_complete(request: Request):
-    """Aplica as três etapas de uma vez, abre a sessão e marca a configuração como concluída.
-
-    Valida tudo antes de gravar qualquer coisa: um erro na pasta não deixa a
-    senha trocada pela metade. `step` na resposta de erro indica para qual etapa
-    o assistente deve voltar.
-    """
+    """Aplica as três etapas de uma vez, abre a sessão e marca a configuração como concluída."""
     blocked = _setup_blocked(request)
     if blocked:
         return blocked
@@ -666,7 +621,6 @@ async def setup_complete(request: Request):
         except ValueError as exc:
             return _err("library", exc)
 
-    # Tudo válido: grava.
     app_settings.set_language(lang)
     if creds is not None:
         await loop.run_in_executor(
@@ -707,19 +661,12 @@ _ASSET_RE = re.compile(r'((?:src|href)="/static/[^"?]+)"')
 
 
 def _with_asset_version(html: str) -> str:
-    """Acrescenta ?v=<versão> nas referências a /static/ das páginas HTML.
-
-    Depois de uma atualização a URL muda e o navegador não tem como servir um
-    JS/CSS antigo do cache (complementa o "no-cache" de _RevalidatingStaticFiles,
-    que não vale para cópias que já estavam em cache antes dele existir).
-    """
+    """Acrescenta ?v=<versão> nas referências a /static/ das páginas HTML."""
     return _ASSET_RE.sub(rf'\1?v={_ASSET_VERSION}"', html)
 
 
 @app.get("/")
 async def index():
-    # Idioma padrão do servidor antes dos dicionários: i18n.js usa quando este
-    # navegador ainda não tem escolha própria.
     html = (FRONTEND_DIR / "index.html").read_text(encoding="utf-8")
     lang = json.dumps(app_settings.get_language())
     html = html.replace(_LANG_MARKER,
@@ -779,7 +726,6 @@ def _wait_and_navigate(window, port: int = 18000):
 
 
 if __name__ == "__main__":
-    # ── Modo servidor isolado (subprocesso desacoplado, sem PyWebView) ────
     if '--server-only' in sys.argv:
         try:
             _srv_port = int(sys.argv[sys.argv.index('--port') + 1])
@@ -811,11 +757,7 @@ if __name__ == "__main__":
     _unblock_meipass()
 
     def _set_gpu_preference():
-        """Garante GPU de alto desempenho para o daemon MPV via registro do Windows.
-
-        Escrito antes de spawnar o daemon — o processo filho já nasce com a preferência correta.
-        Em dev, aplica ao Python do venv (sys.executable). Não requer administrador (HKCU).
-        """
+        """Garante GPU de alto desempenho para o daemon MPV via registro do Windows."""
         try:
             import winreg
             key_path = r"SOFTWARE\Microsoft\DirectX\UserGpuPreferences"
@@ -1058,13 +1000,7 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
     class _PyWebViewAPI:
         """Métodos Python expostos ao JavaScript via window.pywebview.api.*"""
         def pick_folder(self, start_dir: str = "") -> str:
-            """Diálogo nativo de pasta (Configurações > Biblioteca). "" se cancelado.
-
-            Só existe nesta janela (a do servidor): a interface mostra o botão
-            "Procurar…" apenas quando este método está em window.pywebview.api,
-            então o PlayLine-Client, que expõe outra api, nunca abre o diálogo
-            na máquina errada.
-            """
+            """Diálogo nativo de pasta (Configurações > Biblioteca)."""
             if not _window:
                 return ""
             try:
@@ -1087,7 +1023,6 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
         def close_all(self):
             """Para o player, encerra o processo do daemon e fecha a janela PyWebView."""
             global _closing_confirmed
-            # 1. Para a engine de playlist
             try:
                 import asyncio
                 import api.routes as _routes
@@ -1096,7 +1031,6 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
                     asyncio.run_coroutine_threadsafe(eng.stop(), eng._loop)
             except Exception:
                 pass
-            # 2. Encerra o processo do daemon via porta 6600
             try:
                 import subprocess as _sp
                 r = _sp.run(
@@ -1115,7 +1049,6 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
                         break
             except Exception:
                 pass
-            # 3. Encerra o processo do servidor pelo PID salvo
             try:
                 import subprocess as _sp
                 _pid_file = _DATA_DIR / "server.pid"
@@ -1132,10 +1065,8 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
                         pass
             except Exception:
                 pass
-            # 4. Invalida a sessão para exigir autenticação no próximo acesso
             _SESSIONS.clear()
             _save_sessions(_SESSIONS)
-            # 4. Fecha a janela
             _closing_confirmed = True
             if _window:
                 _window.destroy()
@@ -1144,11 +1075,7 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
     _window = None  # preenchido abaixo
 
     def _on_closing():
-        """Intercepta o botão X — exibe diálogo customizado (exceto em sessão remota).
-
-        evaluate_js não pode ser chamado de dentro do closing handler (mesmo thread da UI →
-        deadlock com WebView2). Lançamos um thread separado e retornamos False imediatamente.
-        """
+        """Intercepta o botão X da janela."""
         if _closing_confirmed or _is_remote_session():
             return  # permite fechar normalmente
         def _deferred():
@@ -1170,13 +1097,6 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
     def _start_webview(func=None):
         import ctypes
         try:
-            # private_mode=False: o padrão do pywebview é True, que usa uma pasta
-            # de perfil do WebView2 temporária e a apaga a cada fechamento de
-            # janela. Isso zera localStorage (idioma, zoom, cache de miniaturas,
-            # posição do overlay de hora/temperatura) toda vez que a interface é
-            # fechada e reaberta, mesmo só "fechar somente a interface" mantendo
-            # servidor/daemon no ar. Com False, o pywebview usa uma pasta fixa em
-            # %APPDATA%\pywebview, que sobrevive normalmente.
             if func:
                 webview.start(func, private_mode=False)
             else:
@@ -1212,13 +1132,7 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
     _SUPERVISE_MISS = 3    # relança após esse nº de pings falhos seguidos (~30 s)
 
     def _supervise_server(port: int) -> None:
-        """Relança o servidor se ele morrer enquanto a janela estiver aberta.
-
-        O daemon já é relançado por core/player.py; sem isto, a morte do servidor
-        deixava o MPV tocar só o item atual + 1 pré-carregado e o playout parava,
-        e nada o reiniciava. Ao voltar, restore_after_crash() reencontra o daemon
-        em reprodução e recupera o estado.
-        """
+        """Relanca o servidor se ele morrer enquanto a janela estiver aberta."""
         misses = 0
         while not _closing_confirmed:
             time.sleep(_SUPERVISE_SEC)

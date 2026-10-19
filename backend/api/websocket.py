@@ -34,13 +34,7 @@ def ws_token(ws: WebSocket) -> str:
 
 
 async def ws_authorized(ws: WebSocket) -> bool:
-    """Fecha o socket com 4401 e retorna False se a sessão não for válida.
-
-    O middleware HTTP de sessão deixa passar todo upgrade de WebSocket (não dá
-    para redirecionar um handshake para /login), então a checagem tem que ser
-    feita aqui, no endpoint. Sem isso, qualquer host que alcance a porta
-    controla o playout sem senha.
-    """
+    """Fecha o socket com 4401 e retorna False se a sessão não for válida."""
     if _session_ok is None or _session_ok(ws_token(ws)):
         return True
     await ws.close(code=WS_CLOSE_UNAUTHORIZED)

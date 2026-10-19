@@ -1,13 +1,4 @@
-"""Configurações persistentes do PlayLine: credenciais de acesso e pasta da biblioteca.
-
-Ficam em `config.json` ao lado do banco (`core.db.DB_PATH.parent`): no build
-congelado ao lado do .exe, em dev em backend/core/, e nos testes no diretório
-temporário do conftest sem patch extra. `PLAYLINE_CONFIG` no ambiente sobrescreve.
-
-A senha nunca é gravada em texto: PBKDF2-HMAC-SHA256 com salt aleatório (stdlib,
-sem dependência nova). Sem arquivo, ou sem credenciais nele, valem os padrões de
-sempre: PLAYLINE_USER / PLAYLINE_PASS do ambiente, ou playline/playline.
-"""
+"""Configurações persistentes do PlayLine (config.json): credenciais, biblioteca, cidades."""
 
 import hashlib
 import hmac
@@ -25,12 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class SettingsError(ValueError):
-    """ValueError com código estável para a interface traduzir a mensagem.
-
-    str(exc) continua sendo o texto em português (logs, PlayIngest e qualquer
-    cliente que só lê "detail"); `code` e `params` vão junto na resposta da API
-    e o frontend monta a frase no idioma do operador (dicionário "apierr").
-    """
+    """ValueError com código estável para a interface traduzir a mensagem."""
 
     def __init__(self, code: str, message: str, **params):
         super().__init__(message)
@@ -89,13 +75,6 @@ def _update(**fields) -> dict:
         return data
 
 
-# ── Configuração inicial e idioma ───────────────────────────────────────────
-#
-# "setup_done" marca que o assistente de primeira execução (/setup) já foi
-# concluído neste computador; enquanto não existir, abrir o painel leva ao
-# assistente. "language" é o idioma padrão da interface para qualquer navegador
-# que ainda não tenha escolha própria (o frontend guarda a dele em localStorage).
-
 LANGUAGES = ("pt", "en", "es")
 DEFAULT_LANGUAGE = "en"
 
@@ -151,8 +130,7 @@ def get_username() -> str:
 
 
 def verify_credentials(username, password) -> bool:
-    """Compara usuário e senha em tempo constante. Custa ~0,1s (PBKDF2) quando há
-    credenciais gravadas: nas rotas async chamar via run_in_executor."""
+    """Compara usuário e senha em tempo constante."""
     username = (username or "").strip()
     password = password or ""
     auth = _stored_auth()
@@ -216,11 +194,7 @@ def set_library_dir(path: Optional[Path]) -> None:
 
 
 def validate_library_dir(raw: str) -> Path:
-    """Valida a pasta digitada/escolhida e devolve o caminho resolvido.
-
-    Faz I/O de disco (existe? consegue escrever?), que numa unidade de rede fora
-    do ar pode demorar: chamar fora do event loop.
-    """
+    """Valida a pasta digitada/escolhida e devolve o caminho resolvido."""
     raw = (raw or "").strip().strip('"').strip()
     if not raw:
         raise SettingsError("lib_path_required", "Informe o caminho da pasta")
@@ -269,13 +243,6 @@ def normalize_transition(cfg, base: Optional[dict] = None) -> dict:
             min=TRANSITION_MIN, max=TRANSITION_MAX)
     return {"type": t, "duration": round(d, 2)}
 
-
-# ── Cidades do overlay de hora/temperatura ──────────────────────────────────
-#
-# A lista fica em config.json e é montada pelo operador na tela de Configurações
-# (busca no geocoding da OpenWeatherMap). Guardar lat/lon junto do nome resolve a
-# ambiguidade de homônimos: existem cinco "Palmas" no Brasil, e a consulta por
-# nome pegava qualquer uma delas. Sem nada gravado, valem as capitais abaixo.
 
 CITIES_MAX = 30
 CITY_NAME_MAX = 64

@@ -26,11 +26,7 @@ router = APIRouter()
 
 
 def _coded_error(status: int, code: str, detail: str, **params) -> JSONResponse:
-    """Erro com código estável para a interface traduzir (dicionário "apierr").
-
-    Mantém "detail" em português como no HTTPException, então quem só lê
-    "detail" (PlayIngest, clientes antigos) não percebe diferença.
-    """
+    """Erro com código estável para a interface traduzir (dicionário 'apierr')."""
     return JSONResponse(status_code=status,
                         content={"detail": detail, "code": code, "params": params})
 
@@ -362,10 +358,7 @@ async def list_cities():
 
 @router.put("/api/cities")
 async def save_cities(body: dict):
-    """Grava a lista montada na tela de Configurações (no máximo CITIES_MAX).
-
-    `{"reset": true}` descarta a lista gravada e volta à padrão (capitais).
-    """
+    """Grava a lista montada na tela de Configurações (no máximo CITIES_MAX)."""
     if body.get("reset"):
         cities = app_settings.reset_cities()
     else:
@@ -442,11 +435,7 @@ _LIBRARY_DEFAULT: Path = (
 
 
 def _initial_library_base() -> Path:
-    """Pasta configurada em config.json, ou a padrão (criada se preciso).
-
-    Se a configurada sumiu (HD externo desligado, pasta renomeada), volta à
-    padrão só nesta execução, sem apagar a configuração; o modal avisa.
-    """
+    """Pasta configurada em config.json, ou a padrão (criada se preciso)."""
     cfg = app_settings.get_library_dir()
     if cfg is not None:
         if cfg.is_dir():
@@ -510,13 +499,7 @@ async def change_transition(body: dict):
 
 @router.post("/api/settings/library")
 async def change_library_dir(body: dict):
-    """Troca a pasta da biblioteca em runtime e persiste em config.json.
-
-    Os itens do roteiro guardam caminho absoluto, então o que já está programado
-    continua tocando de onde está; só listagem, upload e subpastas passam a usar
-    a nova pasta. PlayIngest e PlayLine-Client resolvem tudo pelo servidor, então
-    nada muda neles. `{"reset": true}` volta à pasta padrão.
-    """
+    """Troca a pasta da biblioteca em runtime e persiste em config.json."""
     global _LIBRARY_BASE
     loop = asyncio.get_running_loop()
     if body.get("reset"):
@@ -757,14 +740,7 @@ async def set_repeat(body: dict):
 
 
 def _list_capture_devices_sync() -> dict:
-    """Enumera dispositivos DirectShow via ffmpeg (bloqueante — chamar via run_in_executor).
-
-    subprocess.run aqui pode levar vários segundos (timeout=10). Rodar isso direto
-    numa rota async trava o event loop inteiro nesse meio-tempo — inclusive o
-    encaminhamento dos frames de preview vindos do daemon, fazendo o "Reproduzindo
-    agora" ficar sem sinal sempre que o modal de câmera é aberto, mesmo sem nenhum
-    clipe relacionado tocando.
-    """
+    """Enumera dispositivos DirectShow via ffmpeg (bloqueante, chamar via run_in_executor)."""
     import re
     ffmpeg = _ffmpeg_bin()
     logger.info("capture-devices: usando ffmpeg em %r", ffmpeg)

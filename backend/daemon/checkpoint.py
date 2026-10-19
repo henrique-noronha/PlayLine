@@ -9,12 +9,7 @@ logger = logging.getLogger("mpv_daemon")
 
 
 def _db_path() -> Path:
-    """Mesmo arquivo que o servidor usa (core.db.DB_PATH), lido na hora da chamada.
-
-    Não recalcula o caminho aqui: em dev, derivar de __file__ apontava para
-    backend/playline.db enquanto o servidor lia backend/core/playline.db, e o
-    checkpoint de crash ia para um arquivo sem tabelas (falha silenciosa).
-    """
+    """Mesmo arquivo que o servidor usa (core.db.DB_PATH), lido na hora da chamada."""
     try:
         from core import db as _db
     except ImportError:

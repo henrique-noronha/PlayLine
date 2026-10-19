@@ -1,9 +1,4 @@
-/* PlayLine — Assistente de configuração inicial
-   Três etapas: idioma, usuário e senha (opcional manter os atuais) e pasta da
-   biblioteca. Nada é gravado até "Concluir": POST /api/setup/complete valida
-   tudo no servidor, grava, abre a sessão e o painel carrega já logado. Se o
-   servidor recusar algo, a resposta diz a etapa ("step") e o assistente volta
-   para ela com a mensagem traduzida (window.apiError). */
+/* PlayLine — Assistente de configuração inicial */
 (function () {
   const STEPS = 3;
   const $ = (id) => document.getElementById(id);

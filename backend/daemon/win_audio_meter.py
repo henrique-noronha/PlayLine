@@ -1,8 +1,4 @@
-"""Windows Core Audio — lê o pico de áudio do endpoint de saída padrão.
-
-Usa IAudioMeterInformation::GetPeakValue() via ctypes/COM.
-Sem dependências externas, sem subprocess, sem delay.
-"""
+"""Windows Core Audio — lê o pico de áudio do endpoint de saída padrão via ctypes/COM."""
 
 import ctypes
 import ctypes.wintypes as wt

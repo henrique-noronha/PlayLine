@@ -1,8 +1,4 @@
-"""
-Player — cliente TCP para o MPV Daemon (processo separado).
-Conecta-se a 127.0.0.1:6600; se o daemon não estiver rodando, inicia-o.
-O daemon sobrevive ao crash do servidor
-"""
+"""Player — cliente TCP para o MPV Daemon (127.0.0.1:6600)."""
 
 import json
 import logging

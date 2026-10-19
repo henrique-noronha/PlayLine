@@ -1,6 +1,4 @@
-"""
-Playlist Engine — gerencia a fila de reprodução e responde a eventos do Player.
-"""
+"""Playlist Engine — gerencia a fila de reprodução e responde a eventos do Player."""
 
 import json
 import logging
@@ -40,21 +38,11 @@ def _is_capture_item(item: dict) -> bool:
     return (item.get("path") or "").lower().startswith("av://dshow:")
 
 
-# Tempo pro navegador soltar visualmente o preview de captura antes do MPV tentar
-# abrir o dispositivo. Não elimina o retry (ver comentário em play_index), só
-# evita a sobreposição visual de dois consumidores.
 _CAPTURE_RELEASE_DELAY = 0.3
 
-# Watchdog de clipe local: se a posição reportada pelo MPV não avança por esse
-# tempo num item não-live (rodando, não pausado), o MPV travou nesse arquivo sem
-# emitir end-file (arquivo corrompido, decoder preso) e o playout avança sozinho.
-# Lives têm o próprio watchdog (_live_watchdog_loop, STALL_SEC=90).
 _LOCAL_STALL_SEC = 20
 _STALL_CHECK_SEC = 5
 
-# Reabertura automática quando o MPV encerra no meio de um item: no máximo
-# _MPV_REOPEN_MAX vezes por _MPV_REOPEN_WINDOW s antes de desistir e parar,
-# pra não ficar em loop se o MPV estiver crashando de imediato.
 _MPV_REOPEN_DELAY  = 2.0
 _MPV_REOPEN_MAX    = 3
 _MPV_REOPEN_WINDOW = 60.0
@@ -178,9 +166,7 @@ class PlaylistEngine:
         return self._transition
 
     def _maybe_prefetch_yt(self):
-        """Pré-resolve todas as URLs YouTube live do roteiro.
-        O daemon deduplica: ignora URLs já em cache ou com resolução em andamento.
-        """
+        """Pré-resolve todas as URLs YouTube live do roteiro."""
         for item in self._items:
             if item.get("live") and item.get("path"):
                 self._player.prefetch_yt(item["path"])
@@ -200,10 +186,7 @@ class PlaylistEngine:
     # Recuperação após crash                                               #
 
     def restore_after_crash(self):
-        """
-        Detecta se o daemon já está reproduzindo algo após um crash/reinício
-        do servidor. Deve ser chamado via run_in_executor (é bloqueante).
-        """
+        """Detecta se o daemon já está reproduzindo algo após um crash/reinício do servidor."""
         playing = self._player.get_playing_path()
         if playing is None:
             self._maybe_resume_from_checkpoint()
@@ -337,13 +320,7 @@ class PlaylistEngine:
                 )
 
     def _maybe_resume_from_checkpoint(self):
-        """Daemon ocioso na inicialização: se sobrou checkpoint, a reprodução foi
-        interrompida de forma anormal (queda de energia, processo morto) e o
-        playout retoma sozinho no mesmo item/posição.
-
-        O checkpoint é limpo em eof/erro e no stop manual, então só sobrevive a
-        uma interrupção anormal. PLAYLINE_AUTORESUME=0 desliga (operação assistida).
-        """
+        """Retoma o playout a partir do checkpoint se houve interrupção anormal."""
         if os.environ.get("PLAYLINE_AUTORESUME", "1") == "0":
             logger.info("Daemon ocioso — aguardando comando de play (auto-resume desligado)")
             return
@@ -507,12 +484,7 @@ class PlaylistEngine:
         await self._advance(expected_seq=self._advance_seq)
 
     async def _advance(self, expected_seq: int = -1):
-        """
-        Consome o clipe atual e avança para o próximo.
-        expected_seq >= 0: ignora se outro avanço já ocorreu (evita avanço duplo
-        quando end-file natural e next/jump chegam simultaneamente).
-        expected_seq = -1: avança incondicionalmente (next manual, jump).
-        """
+        """Consome o clipe atual e avança para o próximo."""
         self._live_reconnecting = False
         self._cancel_live_watchdog()
         if expected_seq >= 0 and expected_seq != self._advance_seq:
@@ -592,22 +564,6 @@ class PlaylistEngine:
                 logger.info("MPV já está em transição para: %s", item["path"])
             else:
                 if _is_capture_item(item):
-                    # Dispositivo de captura (webcam/placa) aceita só um consumidor
-                    # por vez. Avisa o navegador pra soltar o preview (getUserMedia)
-                    # ANTES do MPV tentar abrir, em vez de só reagir depois do
-                    # "now_playing" (que só é emitido depois do play()).
-                    #
-                    # IMPORTANTE — isso melhora a experiência (o preview não fica
-                    # sobreposto no instante da troca) mas NÃO elimina a 1ª falha:
-                    # testado em bancada com delays de 0.3s a 2.5s antes desta
-                    # linha, e o 1º open do MPV falha de forma idêntica em todos
-                    # (~500ms após o play, sempre resolvido no retry seguinte).
-                    # Não é uma corrida de tempo — parece ser o Windows negociando
-                    # a troca de "dono" do dispositivo entre a API do navegador
-                    # (Media Foundation) e a API clássica que o MPV usa (DirectShow
-                    # via ffmpeg) sempre que a primeira alguma vez tocou no
-                    # dispositivo. O watchdog de reconexão existente cobre esse
-                    # retry único automaticamente.
                     await self._broadcast({"event": "capture_device_releasing", "path": item["path"]})
                     await asyncio.sleep(_CAPTURE_RELEASE_DELAY)
                 self._player.play(
@@ -623,9 +579,6 @@ class PlaylistEngine:
             self._preloading = False
             self._push_next_transition(index)
 
-            # Pré-carrega o próximo vídeo na fila do MPV para transição sem flash.
-            # Live streams e clipes com corte não são pré-carregados.
-            # A URL YouTube é pré-resolvida em background para eliminar o delay do yt-dlp.
             if index + 1 < len(self._items):
                 next_item = self._items[index + 1]
                 item_has_trim = item.get("start_time") or item.get("end_time")
@@ -639,8 +592,6 @@ class PlaylistEngine:
                     # Prefetch para qualquer → live (cobre regular→live e live→live)
                     self._player.prefetch_yt(next_item["path"])
 
-            # Retoma posição do checkpoint se for a primeira reprodução após reinício.
-            # Pula se o clipe tem start_time explícito (posição já definida pelo trim).
             cp = self._read_checkpoint()
             if cp and cp.get("path") == item["path"] and not item.get("start_time"):
                 pos = cp.get("position", 0.0)
@@ -652,8 +603,7 @@ class PlaylistEngine:
         )
 
     async def _deferred_seek(self, position: float, expected_path: str):
-        """Aguarda o MPV carregar o arquivo e então busca a posição salva.
-        Cancela o seek se o item atual mudou antes dos 1.5s."""
+        """Aguarda o MPV carregar e então busca a posição salva."""
         await asyncio.sleep(1.5)
         current_path = self._items[self._index].get("path") if 0 <= self._index < len(self._items) else None
         if current_path != expected_path:

@@ -1,6 +1,4 @@
-"""Overlay de texto (hora + temperatura + cidade) via overlay-add BGRA.
-
-"""
+"""Overlay de texto (hora + temperatura + cidade) via overlay-add BGRA."""
 
 import logging
 import tempfile
@@ -187,10 +185,6 @@ def _render(config: dict, temperature: Optional[str], font_sz: int) -> Optional[
         draw.rectangle([0, top_h, total_w - 1, total_h - 1], fill=_BG_CITY)
         draw.text(cpos(city, font_city, 0, top_h, total_w, city_h), city, font=font_city, fill=_FG_LIGHT)
 
-        # RGBA → BGRA pré-multiplicado (vetorizado via PIL, ver overlay.py —
-        # troca um loop Python por pixel por 3 operações ImageChops em C,
-        # ~24x mais rápido, sensível sobretudo em CPUs mais fracas já que
-        # roda a cada segundo enquanto a hora/temp estiver ativa)
         r, g, b, a = img.split()
         r = ImageChops.multiply(r, a)
         g = ImageChops.multiply(g, a)

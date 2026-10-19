@@ -1,12 +1,4 @@
-"""Captura contínua do monitor secundário via ffmpeg (Desktop Duplication API).
-
-Usa o filtro `ddagrab` do ffmpeg (GPU, sem round-trip de IPC com o MPV nem
-arquivo em disco) pra capturar a saída de vídeo direto do driver — a mesma
-técnica usada por softwares de captura de tela (ex.: OBS Display Capture).
-Só se aplica quando há monitor secundário: `ddagrab` captura uma SAÍDA de
-vídeo inteira, então sem monitor dedicado à TV não há região isolada do MPV
-pra capturar (a janela fica atrás de todo o resto na tela principal).
-"""
+"""Captura contínua do monitor secundário via ffmpeg (Desktop Duplication API / ddagrab)."""
 import asyncio
 import logging
 import os
@@ -22,10 +14,6 @@ _W, _H = 720, 405   # 16:9, mesma resolução alvo do preview via MPV
 _FPS   = 10
 _Q     = "5"        # qualidade MJPEG do ffmpeg (2=melhor, 31=pior)
 
-# Índice de saída DXGI a capturar — depende da ordem de enumeração do driver,
-# que nem sempre bate com a ordem lógica de monitores do Windows. 1 cobre o
-# caso comum (uma GPU, monitor principal + secundário). Ajustável sem rebuild
-# via variável de ambiente, caso a suposição esteja errada num hardware específico.
 _OUTPUT_IDX = int(os.environ.get("PLAYLINE_DDAGRAB_OUTPUT", "1"))
 
 
@@ -42,11 +30,7 @@ def _ffmpeg_path() -> Path:
 
 
 class _JpegFrameSplitter:
-    """Extrai frames JPEG completos de um stream MJPEG cru, recebendo bytes aos poucos.
-
-    Separado do laço de I/O assíncrono pra poder ser testado com bytes fake,
-    sem precisar de um processo ffmpeg de verdade.
-    """
+    """Extrai frames JPEG completos de um stream MJPEG cru."""
     _SOI = b"\xff\xd8"
     _EOI = b"\xff\xd9"
 
@@ -146,12 +130,7 @@ class DesktopCapture:
     _STALL_TIMEOUT = 6.0  # s sem nenhum byte novo — trata como travado e encerra p/ permitir retry
 
     async def frames(self) -> AsyncIterator[bytes]:
-        """Gera frames JPEG completos conforme chegam do stdout do ffmpeg (stream MJPEG cru).
-
-        Um timeout de leitura garante que um ffmpeg travado (processo vivo mas sem
-        produzir saída, ex.: preso numa chamada DXGI) não prenda o consumidor pra
-        sempre — sem isso, `daemon.py` nunca percebe a falha pra tentar de novo.
-        """
+        """Gera frames JPEG completos do stdout do ffmpeg (com timeout de stall)."""
         if not self._proc or not self._proc.stdout:
             return
         splitter = _JpegFrameSplitter()
