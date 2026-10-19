@@ -44,12 +44,7 @@ def get_secondary_monitor_rect() -> Optional[tuple]:
 
 
 def secondary_monitor_geometry() -> str:
-    """Retorna a geometry MPV do monitor secundário no formato 'WxH+X+Y'.
-
-    Exemplo: '1920x1080+1920+0'. Retorna string vazia se não houver secundário.
-    Especificar W e H explicitamente é mais confiável que apenas '+X+Y' porque o
-    MPV sabe exatamente onde e com que tamanho abrir sem depender da DPI.
-    """
+    """Retorna a geometry MPV do monitor secundário no formato 'WxH+X+Y'."""
     rect = get_secondary_monitor_rect()
     if not rect:
         return ""
@@ -58,12 +53,7 @@ def secondary_monitor_geometry() -> str:
 
 
 def _find_own_window(window_title: str):
-    """Localiza, entre as janelas do PROCESSO ATUAL, a que tem exatamente window_title.
-
-    FindWindowW sozinho não serve: PyWebView e MPV rodam em processos diferentes e
-    podem compartilhar o mesmo título "PlayLine" — sem filtrar por PID, corremos o
-    risco de mover/reposicionar a janela errada (a da interface, não a do vídeo).
-    """
+    """Localiza no processo atual a janela com exatamente window_title."""
     import ctypes
     import ctypes.wintypes
 
@@ -101,11 +91,7 @@ def _find_own_window(window_title: str):
 
 
 def move_window_to_secondary(window_title: str) -> None:
-    """Posiciona a janela identificada por window_title no monitor secundário.
-
-    Usa SetWindowPos em vez de toggle de fullscreen para não invalidar o VO do
-    MPV (fullscreen False→True em HDMI fecha a janela).
-    """
+    """Posiciona a janela identificada por window_title no monitor secundário."""
     import ctypes
 
     rect = get_secondary_monitor_rect()
@@ -133,11 +119,7 @@ def move_window_to_secondary(window_title: str) -> None:
 
 
 def send_window_to_back(window_title: str) -> None:
-    """Envia a janela para HWND_BOTTOM (atrás de todas as outras).
-
-    Filtra por PID do processo atual para evitar ambiguidade quando PyWebView e MPV
-    compartilham o mesmo título "PlayLine" — apenas a janela MPV pertence ao daemon.
-    """
+    """Envia a janela para HWND_BOTTOM (atrás de todas as outras)."""
     import ctypes
 
     found_hwnd = _find_own_window(window_title)

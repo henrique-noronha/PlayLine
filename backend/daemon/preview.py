@@ -1,9 +1,4 @@
-"""Captura de frame do MPV para preview em tempo real no browser (fallback sem monitor secundário).
-
-Usa screenshot-raw — lê o frame direto da memória do MPV (sem passar por
-arquivo em disco). A imagem é escalada para _W px de largura e codificada
-como JPEG para envio eficiente via WebSocket.
-"""
+"""Captura de frame do MPV para preview em tempo real no browser (fallback sem monitor secundário)."""
 import io
 import logging
 import time
@@ -19,11 +14,7 @@ _FAIL_LOG_INTERVAL = 10.0  # segundos mínimos entre logs de falha repetida
 
 
 def capture_jpeg(mpv) -> Optional[bytes]:
-    """Captura frame atual do MPV (com overlays) como JPEG.
-
-    Retorna None se não há vídeo ativo ou se a captura falha.
-    "window" inclui logos e overlay de texto sobrepostos pelo MPV.
-    """
+    """Captura frame atual do MPV (com overlays) como JPEG."""
     global _LAST_FAIL_LOG
     if not mpv:
         return None

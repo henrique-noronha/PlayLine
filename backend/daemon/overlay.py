@@ -1,9 +1,4 @@
-"""Renderização e aplicação de overlays de logo no MPV via overlay-add BGRA.
-
-O MPV exige pixels BGRA com alpha pré-multiplicado para overlay-add.
-A logo deve ser entregue como canvas 1920x1080 com transparência — o editor
-posiciona e dimensiona o conteúdo. O PlayLine cola o canvas inteiro em (0,0).
-"""
+"""Renderização e aplicação de overlays de logo no MPV via overlay-add BGRA."""
 
 import logging
 import tempfile
@@ -86,12 +81,7 @@ def _osd_dimensions(mpv) -> tuple[int, int]:
 
 
 def _load_for_osd(path: Path, osd_w: int, osd_h: int):
-    """Carrega a logo no tamanho original do canvas.
-
-    Escala proporcionalmente apenas quando o OSD difere do canvas 1920x1080
-    (ex: janela de debug em modo sem monitor secundário).
-    Retorna a imagem PIL (modo RGBA), ou None em caso de erro.
-    """
+    """Carrega a logo e escala proporcionalmente se o OSD difere de 1920x1080."""
     try:
         from PIL import Image
         img = Image.open(str(path)).convert("RGBA")
@@ -113,14 +103,7 @@ def _load_for_osd(path: Path, osd_w: int, osd_h: int):
 
 
 def _write_bgra_tmp(img, slot: int) -> Optional[Path]:
-    """Converte RGBA → BGRA pré-multiplicado e grava em arquivo temporário.
-
-    Premultiplica e reordena os canais via PIL (ImageChops.multiply, em C) em
-    vez de um loop Python por pixel — para uma logo típica isso troca dezenas
-    de milhares de iterações Python por 3 operações vetorizadas, sensível
-    sobretudo em CPUs mais fracas (é chamado toda vez que a logo é ativada
-    ou trocada).
-    """
+    """Converte RGBA para BGRA pré-multiplicado e grava em arquivo temporário."""
     try:
         from PIL import Image, ImageChops
         r, g, b, a = img.split()

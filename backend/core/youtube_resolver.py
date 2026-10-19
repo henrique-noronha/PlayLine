@@ -1,8 +1,4 @@
-"""Resolução de streams do YouTube.
-
-Resolve a URL do vídeo/live pra uma URL HLS direta via yt-dlp, pra o MPV
-tocar sem precisar baixar o arquivo inteiro.
-"""
+"""Resolução de streams do YouTube via yt-dlp para URL HLS direta."""
 
 import logging
 import re
@@ -39,8 +35,6 @@ def _starts_in(unit_code: str, unit_pt: str):
     return build
 
 
-# Cada entrada devolve (code, texto em português, params); o code vai para a
-# interface traduzir (dicionário "apierr"), o texto fica para logs e clientes antigos.
 _YT_ERROR_MAP = [
     (re.compile(r"live event will begin in (\d+) hour",  re.I), _starts_in("yt_starts_hours", "hora")),
     (re.compile(r"live event will begin in (\d+) minute", re.I), _starts_in("yt_starts_minutes", "minuto")),
@@ -90,24 +84,11 @@ def get_info(url: str) -> dict:
 _YTDLP_ATTEMPTS  = 2     # tenta mais de uma vez — falha de rede transitória não deve virar reconexão cara
 _YTDLP_RETRY_SEC = 1.5
 
-# O client "android" ainda serve HLS com vídeo+áudio já combinados num único
-# formato — o MPV abre um stream só e começa a decodificar. Os clients
-# padrão (mweb/web/tv/visionos) só servem formatos separados (vídeo-only +
-# áudio-only): aí a única opção é o manifesto HLS mestre, que lista ~8
-# variantes e o MPV enumera todas antes de tocar (10s+ só nisso). Por ser um
-# client específico visado pelas restrições do YouTube, uma falha aqui não é
-# retentada — cai direto pro fallback abaixo.
 _ANDROID_CLIENT = ["android"]
 
 
 def _pick_stream_url(info: dict) -> Optional[str]:
-    """Escolhe a URL de stream a partir do resultado do yt-dlp.
-
-    Prioridade: formato já muxado (vídeo+áudio juntos, quando o client
-    usado ainda oferece um) > manifesto HLS mestre (o MPV escolhe a
-    variante e a trilha de áudio sozinho) > URL direta > primeiro formato
-    disponível.
-    """
+    """Escolhe a URL de stream a partir do resultado do yt-dlp."""
     fmts = info.get("formats") or info.get("requested_formats") or []
     muxed = [f for f in fmts
              if f.get("vcodec") not in (None, "none")

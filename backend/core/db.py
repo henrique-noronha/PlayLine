@@ -1,13 +1,4 @@
-"""Banco de dados SQLite do PlayLine.
-
-Fonte única do caminho do banco: todo módulo que precisa do SQLite (inclusive o
-daemon, via daemon/checkpoint.py) deve ler `DB_PATH` daqui em vez de recalcular.
-Antes, checkpoint.py derivava o próprio caminho e, em dev, acabava num arquivo
-diferente (backend/playline.db, sem tabela nenhuma), então a recuperação de
-crash gravava no vazio em silêncio e só funcionava no build congelado.
-
-`PLAYLINE_DB` no ambiente sobrescreve o caminho (isolamento de testes/instâncias).
-"""
+"""Banco de dados SQLite do PlayLine (fonte única do caminho via DB_PATH)."""
 
 import logging
 import os
@@ -29,9 +20,6 @@ def _default_db_path() -> Path:
 
 DB_PATH: Path = _default_db_path()
 
-# Colunas fixas de `schedule`. Qualquer outra chave de um item (type, clip_overlays,
-# o que vier a existir) é serializada em `extra` (JSON) e restaurada no load, em
-# vez de ser descartada na persistência.
 SCHEDULE_COLUMNS = ("position", "id", "title", "path", "live", "start_time", "end_time", "duration")
 
 

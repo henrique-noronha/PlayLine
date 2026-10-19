@@ -1,6 +1,4 @@
-"""Ponto de entrada do daemon MPV — lançado como processo independente por player.py.
-
-"""
+"""Ponto de entrada do daemon MPV."""
 
 import asyncio
 import logging
