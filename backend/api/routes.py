@@ -1,66 +1,24 @@
-"""Rotas HTTP do PlayLine."""
+"""Rotas HTTP do PlayLine — agregador de sub-routers + schedule/playback/settings."""
 
 import asyncio
-import hashlib
-import io
-import mimetypes
 import logging
-import os
 import subprocess
-import sys
-from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, UploadFile, File
-
-_NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi import APIRouter, HTTPException
 
 from core import settings as app_settings
-
-# Mesmo caminho usado pelo mpv_daemon — sem espaços para compatibilidade com lavfi
-_LOGO_WORK_DIR = Path(os.environ.get("PUBLIC", r"C:\Users\Public")) / "pltmp"
+from api.helpers import _coded_error, _settings_error, _ffmpeg_bin, _NO_WINDOW
+from api import library_routes, cities_routes, logo_routes
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+router.include_router(library_routes.router)
+router.include_router(cities_routes.router)
+router.include_router(logo_routes.router)
 
-
-def _coded_error(status: int, code: str, detail: str, **params) -> JSONResponse:
-    """Erro com código estável para a interface traduzir (dicionário 'apierr')."""
-    return JSONResponse(status_code=status,
-                        content={"detail": detail, "code": code, "params": params})
-
-
-def _settings_error(exc: ValueError, status: int = 400) -> JSONResponse:
-    return _coded_error(status, getattr(exc, "code", "invalid_value"), str(exc),
-                        **getattr(exc, "params", {}))
-
-_THUMB_CACHE_DIR: Path = (
-    Path(sys.executable).parent / "cache" / "thumbs"
-    if getattr(sys, "frozen", False)
-    else Path(__file__).parent.parent.parent / "cache" / "thumbs"
-)
-
-
-def _validate_path(path: str, allowed_exts: set) -> Path:
-    """Valida que o caminho é absoluto, sem traversal (..) e com extensão permitida."""
-    if not path:
-        raise HTTPException(status_code=400, detail="Caminho vazio")
-    p = Path(path)
-    if not p.is_absolute():
-        raise HTTPException(status_code=400, detail="Caminho deve ser absoluto")
-    if any(part == ".." for part in p.parts):
-        raise HTTPException(status_code=400, detail="Caminho inválido")
-    if p.suffix.lower() not in allowed_exts:
-        raise HTTPException(status_code=403, detail="Tipo de arquivo não permitido")
-    return p
-
-
-_MEDIA_EXTS = {
-    ".mp4", ".avi", ".mov", ".mkv", ".mts", ".m2ts", ".mxf",
-    ".wmv", ".flv", ".webm", ".m4v", ".mpg", ".mpeg", ".ts",
-    ".mp3", ".wav", ".aac", ".m4a",
-}
+# Re-exports para backward compat (main.py importa estes nomes)
+prewarm_thumbnails = library_routes.prewarm_thumbnails
 
 _playlist_engine = None
 _manager = None
@@ -70,7 +28,11 @@ def setup(playlist_engine, manager):
     global _playlist_engine, _manager
     _playlist_engine = playlist_engine
     _manager = manager
+    library_routes.setup(manager)
+    cities_routes.setup(manager)
 
+
+# ── Playback / Schedule ───────────────────────────────────────────────────
 
 @router.post("/api/stop")
 async def stop_playback():
@@ -108,377 +70,25 @@ async def get_state():
     return _playlist_engine.state()
 
 
-@router.get("/media")
-async def serve_media(path: str):
-    p = _validate_path(path, _MEDIA_EXTS)
-    if not p.is_file():
-        raise HTTPException(status_code=404, detail="Arquivo não encontrado")
-    mime, _ = mimetypes.guess_type("x" + p.suffix.lower())
-    return FileResponse(str(p), media_type=mime or "video/mp4")
+@router.post("/api/repeat")
+async def set_repeat(body: dict):
+    enabled = bool(body.get("enabled", False))
+    _playlist_engine.set_repeat(enabled)
+    return {"repeat": enabled}
 
 
-_IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg"}
-
-_LOGOS_STATIC_DIR = (
-    Path(sys.executable).parent / "logos"
-    if getattr(sys, 'frozen', False)
-    else Path(__file__).parent.parent / "logos"
-)
-
-
-@router.get("/api/logos")
-async def list_logos():
-    """Lista os arquivos de logo disponíveis na pasta logos/."""
-    try:
-        files = sorted(
-            f.name for f in _LOGOS_STATIC_DIR.iterdir()
-            if f.is_file() and f.suffix.lower() in {".png", ".jpg", ".jpeg"}
-        )
-    except Exception:
-        files = []
-    return {"files": files}
-
-
-@router.get("/api/logos/{filename}")
-async def get_logo_static(filename: str):
-    """Serve um arquivo de logo da pasta estática logos/ (para preview na interface)."""
-    if "/" in filename or "\\" in filename or ".." in filename:
-        raise HTTPException(status_code=400, detail="Nome de arquivo inválido")
-    p = _LOGOS_STATIC_DIR / filename
-    if not p.is_file() or p.suffix.lower() not in {".png", ".jpg", ".jpeg"}:
-        raise HTTPException(status_code=404, detail="Logo não encontrado")
-    mime = "image/png" if p.suffix.lower() == ".png" else "image/jpeg"
-    return FileResponse(str(p), media_type=mime)
-
-
-_MAX_LOGO_BYTES = 5 * 1024 * 1024  # 5 MB
-
-
-@router.post("/api/logo/{slot}")
-async def upload_logo(slot: int, file: UploadFile = File(...)):
-    """Recebe um PNG, redimensiona para padrão emissora e salva no dir de trabalho."""
-    if slot not in (1, 2):
-        raise HTTPException(status_code=400, detail="Slot inválido (use 1 ou 2)")
-    if not file.content_type or not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Apenas imagens são aceitas")
-    try:
-        from PIL import Image
-        data = await file.read(_MAX_LOGO_BYTES + 1)
-        if len(data) > _MAX_LOGO_BYTES:
-            raise HTTPException(status_code=413, detail="Arquivo muito grande (limite 5 MB)")
-        img = Image.open(io.BytesIO(data)).convert("RGBA")
-        target_h = 90
-        if img.height != target_h:
-            ratio = target_h / img.height
-            img = img.resize((max(1, int(img.width * ratio)), target_h), Image.LANCZOS)
-        _LOGO_WORK_DIR.mkdir(parents=True, exist_ok=True)
-        work = _LOGO_WORK_DIR / f"l{slot}.png"
-        img.save(str(work), "PNG")
-        logger.info("Logo %d salvo: %s (%dx%d)", slot, work, img.width, img.height)
-        return {"ok": True, "slot": slot, "name": file.filename, "w": img.width, "h": img.height}
-    except Exception as exc:
-        logger.error("Erro ao salvar logo %d: %s", slot, exc)
-        raise HTTPException(status_code=500, detail=str(exc))
-
-
-@router.get("/api/logo/{slot}")
-async def get_logo_slot(slot: int):
-    """Serve o arquivo de trabalho do logo (para preview na interface)."""
-    if slot not in (1, 2):
-        raise HTTPException(status_code=400)
-    work = _LOGO_WORK_DIR / f"l{slot}.png"
-    if not work.is_file():
-        raise HTTPException(status_code=404, detail="Logo não enviado ainda")
-    return FileResponse(str(work), media_type="image/png")
-
-
-def _ffmpeg_bin() -> str:
-    if getattr(sys, "frozen", False):
-        local = Path(sys._MEIPASS) / "ffmpeg.exe"
-        if local.is_file():
-            return str(local)
-    # Dev mode: ffmpeg.exe alongside the backend package
-    local_dev = Path(__file__).parent.parent / "ffmpeg.exe"
-    if local_dev.is_file():
-        return str(local_dev)
-    return "ffmpeg"
-
-
-def _thumb_cache_file(path: str) -> Path:
-    key = hashlib.md5(path.encode()).hexdigest()
-    return _THUMB_CACHE_DIR / f"{key}.jpg"
-
-
-def _generate_thumb(path: str) -> bytes | None:
-    """Gera thumbnail via ffmpeg. Retorna bytes JPEG ou None em caso de falha."""
-    try:
-        result = subprocess.run(
-            [
-                _ffmpeg_bin(), "-y", "-ss", "2", "-i", path,
-                "-vframes", "1",
-                "-vf", "scale=112:63:force_original_aspect_ratio=increase,crop=112:63",
-                "-f", "image2", "-vcodec", "mjpeg", "pipe:1",
-            ],
-            capture_output=True,
-            timeout=15,
-            creationflags=_NO_WINDOW,
-        )
-        if result.returncode == 0 and result.stdout:
-            return result.stdout
-    except FileNotFoundError:
-        pass
-    except Exception as exc:
-        logger.warning("Thumbnail ffmpeg error: %s", exc)
-    return None
-
-
-@router.get("/api/thumbnail")
-async def get_thumbnail(path: str):
-    p = _validate_path(path, _MEDIA_EXTS)
-    if not p.is_file():
-        raise HTTPException(status_code=404)
-
-    cache_file = _thumb_cache_file(path)
-    _CACHE_HEADERS = {"Cache-Control": "public, max-age=604800, immutable"}
-    if cache_file.is_file():
-        return FileResponse(str(cache_file), media_type="image/jpeg", headers=_CACHE_HEADERS)
-
-    import asyncio
-    data = await asyncio.get_event_loop().run_in_executor(None, _generate_thumb, path)
-    if data:
-        try:
-            _THUMB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-            cache_file.write_bytes(data)
-        except Exception:
-            pass
-        return Response(content=data, media_type="image/jpeg", headers=_CACHE_HEADERS)
-    raise HTTPException(status_code=404, detail="Thumbnail não disponível")
-
-
-async def prewarm_thumbnails() -> None:
-    """Gera thumbnails em cache para todos os arquivos da biblioteca durante o startup."""
-    import asyncio
-    await asyncio.sleep(1)  # aguarda o servidor estabilizar
-
-    loop = asyncio.get_event_loop()
-
-    def _collect():
-        files = []
-        try:
-            for f in _LIBRARY_BASE.rglob("*"):
-                if f.is_file() and f.suffix.lower() in _MEDIA_EXTS:
-                    files.append(f)
-        except Exception:
-            pass
-        return files
-
-    files = await loop.run_in_executor(None, _collect)
-    logger.info("[prewarm] %d arquivo(s) encontrado(s) na biblioteca", len(files))
-
-    warmed = 0
-    for f in files:
-        cache_file = _thumb_cache_file(str(f))
-        if cache_file.is_file():
-            continue
-
-        def _gen(src=f, dst=cache_file):
-            data = _generate_thumb(str(src))
-            if data:
-                try:
-                    _THUMB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-                    dst.write_bytes(data)
-                except Exception:
-                    pass
-                return True
-            return False
-
-        ok = await loop.run_in_executor(None, _gen)
-        if ok:
-            warmed += 1
-        await asyncio.sleep(0.05)  # ~20 por segundo — não bloqueia o event loop
-
-    logger.info("[prewarm] %d thumbnail(s) gerado(s) em cache", warmed)
-
-
-@router.get("/api/temperature")
-async def get_temperature(city: str = "Palmas,TO"):
-    """Proxy para OpenWeatherMap — retorna temperatura como texto (ex: '24°C')."""
-    import asyncio, json
-    from urllib.request import urlopen
-    from urllib.parse import quote
-    from fastapi.responses import PlainTextResponse
-
-    _API_KEY = "f69ea9de2f716268934177c04852b89b"
-
-    def _fetch():
-        import logging
-        log = logging.getLogger("api.routes")
-        # Consulta por coordenada quando a cidade está na lista salva: por nome, o
-        # OWM pode devolver a homônima de outro estado (há cinco "Palmas" no Brasil).
-        saved = app_settings.find_city(city)
-        if saved:
-            loc = f"lat={saved['lat']}&lon={saved['lon']}"
-        else:
-            loc = f"q={quote(city.split(',')[0].strip())},BR"
-        try:
-            url = f"https://api.openweathermap.org/data/2.5/weather?{loc}&appid={_API_KEY}&units=metric"
-            with urlopen(url, timeout=5) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-                temp = data.get("main", {}).get("temp")
-                if temp is not None:
-                    corrected = round(temp - 1)
-                    log.info("[weather] OWM: %.1f°C → %d°C (corrigido) (%s)", temp, corrected, city)
-                    return f"{corrected}°C"
-        except Exception as e:
-            log.warning("[weather] OWM falhou: %s — tentando wttr.in", e)
-        try:
-            url = f"https://wttr.in/{quote(city)}?format=%t"
-            with urlopen(url, timeout=5) as resp:
-                val = resp.read().decode("utf-8").strip().lstrip("+")
-                log.info("[weather] wttr.in fallback: %s", val)
-                return val
-        except Exception as e:
-            log.warning("[weather] wttr.in também falhou: %s", e)
-            return ""
-
-    loop = asyncio.get_running_loop()
-    val = await loop.run_in_executor(None, _fetch)
-    return PlainTextResponse(val or "—")
-
-
-# ── Cidades do overlay de hora/temperatura ──────────────────────────────────
-
-_GEO_URL = "https://api.openweathermap.org/geo/1.0/direct"
-
-
-@router.get("/api/cities")
-async def list_cities():
-    return {"cities": app_settings.get_cities(), "max": app_settings.CITIES_MAX}
-
-
-@router.put("/api/cities")
-async def save_cities(body: dict):
-    """Grava a lista montada na tela de Configurações (no máximo CITIES_MAX)."""
-    if body.get("reset"):
-        cities = app_settings.reset_cities()
-    else:
-        try:
-            cities = app_settings.set_cities(body.get("cities"))
-        except ValueError as exc:
-            return _settings_error(exc)
-    if _manager:
-        await _manager.broadcast({"event": "cities_changed", "cities": cities})
-    return {"ok": True, "cities": cities}
-
-
-@router.get("/api/cities/search")
-async def search_cities(q: str = "", limit: int = 6):
-    """Busca no geocoding da OpenWeatherMap para o operador escolher a cidade certa."""
-    import asyncio
-    import json as _json
-    from urllib.parse import quote as _quote
-    from urllib.request import urlopen
-
-    termo = (q or "").strip()
-    if len(termo) < 2:
-        return {"results": []}
-    limit = max(1, min(10, int(limit)))
-    _API_KEY = "f69ea9de2f716268934177c04852b89b"
-
-    def _search():
-        url = f"{_GEO_URL}?q={_quote(termo)},BR&limit={limit}&appid={_API_KEY}"
-        with urlopen(url, timeout=6) as resp:
-            return _json.loads(resp.read().decode("utf-8"))
-
-    try:
-        data = await asyncio.get_running_loop().run_in_executor(None, _search)
-    except Exception as exc:
-        logger.warning("[cities] busca falhou: %s", exc)
-        return _coded_error(502, "city_search_unavailable",
-                            "Não foi possível consultar a busca de cidades. Verifique a conexão com a internet")
-
-    _UF = {
-        "Acre": "AC", "Alagoas": "AL", "Amapá": "AP", "Amazonas": "AM", "Bahia": "BA",
-        "Ceará": "CE", "Federal District": "DF", "Distrito Federal": "DF",
-        "Espírito Santo": "ES", "Goiás": "GO", "Maranhão": "MA", "Mato Grosso": "MT",
-        "Mato Grosso do Sul": "MS", "Minas Gerais": "MG", "Pará": "PA", "Paraíba": "PB",
-        "Paraná": "PR", "Pernambuco": "PE", "Piauí": "PI", "Rio de Janeiro": "RJ",
-        "Rio Grande do Norte": "RN", "Rio Grande do Sul": "RS", "Rondônia": "RO",
-        "Roraima": "RR", "Santa Catarina": "SC", "São Paulo": "SP", "Sergipe": "SE",
-        "Tocantins": "TO",
-    }
-    results, vistos = [], set()
-    for item in data if isinstance(data, list) else []:
-        if item.get("country") != "BR":
-            continue
-        estado = item.get("state") or ""
-        sigla = _UF.get(estado, estado[:2].upper() if estado else "")
-        nome = (item.get("name") or "").strip()
-        if not nome:
-            continue
-        chave = f"{nome},{sigla}".lower()
-        if chave in vistos:
-            continue
-        vistos.add(chave)
-        results.append({"name": nome, "state": sigla, "state_name": estado,
-                        "lat": round(float(item["lat"]), 4), "lon": round(float(item["lon"]), 4)})
-    return {"results": results}
-
-
-# ── Biblioteca estruturada ──────────────────────────────────────────────────
-
-_LIBRARY_DEFAULT: Path = (
-    Path(sys.executable).parent / "Biblioteca"
-    if getattr(sys, "frozen", False)
-    else Path(__file__).parent.parent.parent / "Biblioteca"
-)
-
-
-def _initial_library_base() -> Path:
-    """Pasta configurada em config.json, ou a padrão (criada se preciso)."""
-    cfg = app_settings.get_library_dir()
-    if cfg is not None:
-        if cfg.is_dir():
-            return cfg
-        logger.warning("Pasta da biblioteca configurada não encontrada (%s); usando %s",
-                       cfg, _LIBRARY_DEFAULT)
-    _LIBRARY_DEFAULT.mkdir(exist_ok=True)
-    return _LIBRARY_DEFAULT
-
-
-# Lido em tempo de chamada por todas as rotas abaixo; POST /api/settings/library troca em runtime.
-_LIBRARY_BASE: Path = _initial_library_base()
-
-
-def _scan_media(path: Path) -> list[dict]:
-    return sorted(
-        [{"name": f.stem, "filename": f.name, "path": str(f)}
-         for f in path.iterdir()
-         if f.is_file() and f.suffix.lower() in _MEDIA_EXTS],
-        key=lambda x: x["filename"].lower(),
-    )
-
-
-@router.get("/api/library")
-async def get_library_info():
-    """Retorna as subpastas da Biblioteca."""
-    subfolders = sorted(f.name for f in _LIBRARY_BASE.iterdir() if f.is_dir())
-    return {"subfolders": subfolders, "base": str(_LIBRARY_BASE)}
-
-
-# ── Configurações (modal do painel de controle) ─────────────────────────────
+# ── Configurações ─────────────────────────────────────────────────────────
 
 @router.get("/api/settings")
 async def get_settings():
     """Usuário atual e pasta da biblioteca (atual, padrão e configurada)."""
     cfg = app_settings.get_library_dir()
     loop = asyncio.get_running_loop()
-    # is_dir() numa unidade de rede fora do ar pode travar: fora do event loop
     missing = (await loop.run_in_executor(None, cfg.is_dir) is False) if cfg is not None else False
     return {
         "username": app_settings.get_username(),
-        "library_dir": str(_LIBRARY_BASE),
-        "library_default": str(_LIBRARY_DEFAULT),
+        "library_dir": str(library_routes._LIBRARY_BASE),
+        "library_default": str(library_routes._LIBRARY_DEFAULT),
         "library_configured": str(cfg) if cfg else "",
         "library_missing": missing,
         "transition": app_settings.get_transition(),
@@ -497,166 +107,11 @@ async def change_transition(body: dict):
     return {"ok": True, "transition": cfg}
 
 
-@router.post("/api/settings/library")
-async def change_library_dir(body: dict):
-    """Troca a pasta da biblioteca em runtime e persiste em config.json."""
-    global _LIBRARY_BASE
-    loop = asyncio.get_running_loop()
-    if body.get("reset"):
-        new = _LIBRARY_DEFAULT
-        await loop.run_in_executor(None, lambda: new.mkdir(exist_ok=True))
-        app_settings.set_library_dir(None)
-    else:
-        try:
-            new = await loop.run_in_executor(
-                None, app_settings.validate_library_dir, str(body.get("path") or ""))
-        except ValueError as exc:
-            return _settings_error(exc)
-        app_settings.set_library_dir(new)
-    changed = new != _LIBRARY_BASE
-    _LIBRARY_BASE = new
-    if changed:
-        logger.info("Biblioteca alterada para %s", new)
-        if _manager:
-            await _manager.broadcast({"event": "library_changed", "library_dir": str(new)})
-        asyncio.create_task(prewarm_thumbnails())
-    return {"ok": True, "library_dir": str(new), "changed": changed}
-
-
-@router.get("/api/library/files")
-async def get_library_files(subfolder: str = ""):
-    """Retorna arquivos de mídia de uma subpasta ou de toda a Biblioteca."""
-    if subfolder:
-        if ".." in subfolder or "/" in subfolder or "\\" in subfolder:
-            raise HTTPException(status_code=400, detail="Subfolder inválido")
-        target = _LIBRARY_BASE / subfolder
-        if not target.is_dir():
-            raise HTTPException(status_code=404, detail="Pasta não encontrada")
-        files = _scan_media(target)
-    else:
-        # Todos: raiz + todas as subpastas
-        files = _scan_media(_LIBRARY_BASE)
-        for sub in sorted(_LIBRARY_BASE.iterdir()):
-            if sub.is_dir():
-                files += _scan_media(sub)
-    return {"files": files}
-
-
-_UPLOAD_EXTS = {".mp4", ".mkv", ".mov", ".avi", ".ts", ".mxf", ".mpg", ".mpeg", ".wmv", ".flv", ".webm"}
-_MIN_FREE_MB  = 200   # espaço mínimo exigido antes de aceitar upload
-_UPLOAD_CHUNK = 1024 * 1024  # 1 MB por leitura
-
-
-@router.post("/api/upload")
-async def upload_file(subfolder: str = "", file: UploadFile = File(...)):
-    """Recebe um arquivo de mídia e salva na Biblioteca (subpasta indicada)."""
-    import errno as _errno
-    import shutil
-
-    safe_name = Path(file.filename).name
-    if not safe_name or safe_name.startswith("."):
-        raise HTTPException(status_code=400, detail="Nome de arquivo inválido")
-    ext = Path(safe_name).suffix.lower()
-    if ext not in _UPLOAD_EXTS:
-        raise HTTPException(status_code=415, detail=f"Extensão não suportada: {ext}")
-
-    if subfolder:
-        if ".." in subfolder or "/" in subfolder or "\\" in subfolder:
-            raise HTTPException(status_code=400, detail="Subfolder inválido")
-        dest_dir = _LIBRARY_BASE / subfolder
-        if not dest_dir.is_dir():
-            raise HTTPException(status_code=404, detail="Subpasta não encontrada")
-    else:
-        dest_dir = _LIBRARY_BASE
-
-    # Verifica espaço em disco antes de iniciar
-    try:
-        free_mb = shutil.disk_usage(dest_dir).free // (1024 * 1024)
-        if free_mb < _MIN_FREE_MB:
-            raise HTTPException(
-                status_code=507,
-                detail=f"Disco quase cheio no servidor — apenas {free_mb} MB livres (mínimo exigido: {_MIN_FREE_MB} MB)"
-            )
-    except HTTPException:
-        raise
-    except Exception:
-        pass
-
-    dest = dest_dir / safe_name
-    if not dest.resolve().is_relative_to(dest_dir.resolve()):
-        raise HTTPException(status_code=400, detail="Nome de arquivo inválido")
-    suffix = 1
-    while dest.exists():
-        dest = dest_dir / f"{Path(safe_name).stem}_{suffix}{ext}"
-        suffix += 1
-
-    try:
-        total = 0
-        with open(dest, "wb") as f:
-            while True:
-                chunk = await file.read(_UPLOAD_CHUNK)
-                if not chunk:
-                    break
-                total += len(chunk)
-                f.write(chunk)
-        if total == 0:
-            dest.unlink(missing_ok=True)
-            raise HTTPException(status_code=400, detail="Arquivo vazio")
-    except HTTPException:
-        raise
-    except OSError as exc:
-        dest.unlink(missing_ok=True)
-        if exc.errno == _errno.ENOSPC:
-            raise HTTPException(status_code=507, detail="Disco cheio no servidor — sem espaço para salvar o arquivo")
-        elif exc.errno in (_errno.EACCES, _errno.EPERM):
-            raise HTTPException(
-                status_code=403,
-                detail="Acesso negado ao salvar o arquivo — um antivírus ou política de segurança pode estar bloqueando a gravação na pasta Biblioteca"
-            )
-        else:
-            raise HTTPException(status_code=500, detail=f"Erro de sistema ao salvar arquivo: {exc}")
-    except Exception as exc:
-        dest.unlink(missing_ok=True)
-        raise HTTPException(status_code=500, detail=str(exc))
-
-    return {"ok": True, "saved_as": dest.name, "path": str(dest)}
-
-
-@router.post("/api/library/folder")
-async def create_library_folder(body: dict):
-    """Cria uma nova subpasta na Biblioteca."""
-    name = (body.get("name") or "").strip()
-    if not name or ".." in name or "/" in name or "\\" in name:
-        raise HTTPException(status_code=400, detail="Nome inválido")
-    ((_LIBRARY_BASE / name)).mkdir(exist_ok=True)
-    return {"created": name}
-
-
-@router.patch("/api/library/folder")
-async def rename_library_folder(body: dict):
-    """Renomeia uma subpasta da Biblioteca."""
-    old = (body.get("old") or "").strip()
-    new = (body.get("new") or "").strip()
-    for v in (old, new):
-        if not v or ".." in v or "/" in v or "\\" in v:
-            raise HTTPException(status_code=400, detail="Nome inválido")
-    src = _LIBRARY_BASE / old
-    dst = _LIBRARY_BASE / new
-    if not src.is_dir():
-        raise HTTPException(status_code=404, detail="Pasta não encontrada")
-    if dst.exists():
-        raise HTTPException(status_code=409, detail="Já existe uma pasta com esse nome")
-    try:
-        src.rename(dst)
-    except OSError as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao renomear: {e}")
-    return {"renamed": {"old": old, "new": new}}
-
+# ── YouTube ───────────────────────────────────────────────────────────────
 
 @router.get("/api/youtube/info")
 async def youtube_info(url: str):
     """Valida URL do YouTube e retorna título e flag is_live."""
-    import asyncio
     url = (url or "").strip()
     try:
         from core.youtube_resolver import is_youtube_url, get_info
@@ -675,6 +130,8 @@ async def youtube_info(url: str):
                             **info.get("params", {}))
     return info
 
+
+# ── MPV ───────────────────────────────────────────────────────────────────
 
 @router.post("/api/mpv/quit")
 async def quit_mpv():
@@ -696,7 +153,7 @@ async def init_mpv():
     return {"ok": True}
 
 
-# ── Roteiros salvos ────────────────────────────────────────────────────────
+# ── Roteiros salvos ──────────────────────────────────────────────────────
 
 @router.get("/api/saved-schedules")
 async def list_saved_schedules():
@@ -732,12 +189,7 @@ async def get_saved_schedule_items(schedule_id: int):
     return {"items": items}
 
 
-@router.post("/api/repeat")
-async def set_repeat(body: dict):
-    enabled = bool(body.get("enabled", False))
-    _playlist_engine.set_repeat(enabled)
-    return {"repeat": enabled}
-
+# ── Dispositivos de captura ──────────────────────────────────────────────
 
 def _list_capture_devices_sync() -> dict:
     """Enumera dispositivos DirectShow via ffmpeg (bloqueante, chamar via run_in_executor)."""
@@ -770,21 +222,5 @@ def _list_capture_devices_sync() -> dict:
 @router.get("/api/capture-devices")
 async def list_capture_devices():
     """Lista dispositivos de vídeo DirectShow disponíveis (webcams, placas de captura)."""
-    import asyncio
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, _list_capture_devices_sync)
-
-
-@router.delete("/api/library/folder")
-async def delete_library_folder(subfolder: str):
-    """Remove uma subpasta vazia da Biblioteca."""
-    if ".." in subfolder or "/" in subfolder or "\\" in subfolder:
-        raise HTTPException(status_code=400, detail="Nome inválido")
-    target = _LIBRARY_BASE / subfolder
-    if not target.is_dir():
-        raise HTTPException(status_code=404, detail="Pasta não encontrada")
-    try:
-        target.rmdir()  # só remove se estiver vazia
-    except OSError:
-        raise HTTPException(status_code=409, detail="A pasta não está vazia")
-    return {"deleted": subfolder}

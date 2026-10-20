@@ -19,11 +19,14 @@ from fastapi import FastAPI, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
-from starlette.middleware.base import BaseHTTPMiddleware
 
 from core.player import Player
 from core.playlist import PlaylistEngine
 from api.routes import router as http_router, setup as setup_routes, prewarm_thumbnails
+from api.auth import (
+    router as auth_router, SessionAuth, session_valid, SESSIONS, save_sessions,
+    SESSION_TTL, _brand_logo_file,
+)
 from api.websocket import router as ws_router, setup as setup_ws, ws_authorized
 from core.db import init_db, migrate_from_json
 from core import settings as app_settings
@@ -183,7 +186,7 @@ async def lifespan(app: FastAPI):
     playlist_engine.load_schedule()
 
     setup_routes(playlist_engine, manager)
-    setup_ws(playlist_engine, manager, _session_valid)
+    setup_ws(playlist_engine, manager, session_valid)
 
     await loop.run_in_executor(None, playlist_engine.restore_after_crash)
 
@@ -196,146 +199,6 @@ async def lifespan(app: FastAPI):
         player_instance.shutdown()
     logger.info("Sistema encerrado")
 
-_SESSION_TTL = 8 * 3600
-
-_SESSIONS_FILE = _DATA_DIR / "sessions.json"
-
-
-def _load_sessions() -> dict[str, float]:
-    try:
-        if not _SESSIONS_FILE.exists():
-            return {}
-        data = json.loads(_SESSIONS_FILE.read_text(encoding="utf-8"))
-        now = time.time()
-        return {t: exp for t, exp in data.items() if isinstance(exp, (int, float)) and exp > now}
-    except Exception:
-        return {}
-
-
-def _save_sessions(sessions: dict[str, float]) -> None:
-    now = time.time()
-    expired = [t for t, exp in sessions.items() if exp <= now]
-    for t in expired:
-        sessions.pop(t, None)
-    try:
-        _SESSIONS_FILE.write_text(json.dumps(sessions), encoding="utf-8")
-    except Exception as exc:
-        logger.warning("Não foi possível salvar sessões: %s", exc)
-
-
-_SESSIONS: dict[str, float] = _load_sessions()
-
-
-def _brand_logo_file() -> Optional[Path]:
-    """Logo do PlayLine usado no login e no assistente de configuração inicial."""
-    if getattr(sys, "frozen", False):
-        logos_dir = Path(sys.executable).parent / "logos"
-    else:
-        logos_dir = Path(__file__).parent / "logos"
-    for name in ("LogoPlayLineD.png", "FavPlayline.png"):
-        lp = logos_dir / name
-        if lp.exists():
-            return lp
-    return None
-
-
-def _build_login_html(error: bool = False) -> str:
-    logo_tag = "<span style='font-size:26px;font-weight:700;color:#e5e7eb'>PlayLine</span>"
-    lp = _brand_logo_file()
-    if lp:
-        b64 = base64.b64encode(lp.read_bytes()).decode()
-        logo_tag = f'<img src="data:image/png;base64,{b64}" style="max-width:280px;max-height:140px;object-fit:contain" alt="PlayLine" />'
-    server_lang = app_settings.get_language()
-
-    error_html = """<p data-l="err" style="color:#ef4444;font-size:12px;text-align:center;margin-top:4px">
-        Usuário ou senha incorretos.</p>""" if error else ""
-
-    return f"""<!DOCTYPE html><html lang="pt-BR"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PlayLine — Autenticação</title>
-<style>
-*{{box-sizing:border-box;margin:0;padding:0}}
-body{{background:#111827;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;height:100vh;gap:32px;
-  font-family:'Segoe UI',system-ui,sans-serif;color:#e5e7eb}}
-.logo-wrap{{display:flex;flex-direction:column;align-items:center;gap:12px}}
-.subtitle{{font-size:12px;color:#6b7280;letter-spacing:.08em;text-transform:uppercase;font-weight:500}}
-form{{display:flex;flex-direction:column;gap:12px;width:280px}}
-.field{{display:flex;flex-direction:column;gap:5px}}
-label{{font-size:11px;color:#4b5563;font-weight:600;letter-spacing:.06em;text-transform:uppercase}}
-input{{background:#1a2332;border:1px solid #2d3748;border-radius:8px;color:#e5e7eb;
-  font-size:14px;padding:10px 13px;outline:none;transition:border-color .15s;width:100%;
-  font-family:'Segoe UI',system-ui,sans-serif}}
-input:focus{{border-color:#4f8ef7;background:#1e2a40}}
-button{{background:#4f8ef7;border:none;border-radius:8px;color:#fff;cursor:pointer;
-  font-size:13px;font-weight:600;padding:11px;width:100%;margin-top:4px;
-  transition:background .15s;letter-spacing:.02em}}
-button:hover{{background:#3b7de8}}
-</style></head><body>
-<div class="logo-wrap">
-  {logo_tag}
-  <span class="subtitle" data-l="sub">Autenticação</span>
-</div>
-{error_html}
-<form method="post" action="/login">
-  <div class="field"><label data-l="user">Usuário</label>
-    <input type="text" name="username" autocomplete="username" autofocus /></div>
-  <div class="field"><label data-l="pass">Senha</label>
-    <input type="password" name="password" autocomplete="current-password" /></div>
-  <button type="submit" data-l="go">Entrar</button>
-</form>
-<script>
-// Mesmo idioma da interface (localStorage "playline_lang", mesma origem);
-// sem escolha neste navegador, o idioma definido na configuração inicial.
-(function () {{
-  var L = {{
-    pt: {{ title: "PlayLine — Autenticação", sub: "Autenticação", user: "Usuário", pass: "Senha", go: "Entrar", err: "Usuário ou senha incorretos." }},
-    en: {{ title: "PlayLine · Sign in", sub: "Sign in", user: "Username", pass: "Password", go: "Sign in", err: "Incorrect username or password." }},
-    es: {{ title: "PlayLine · Iniciar sesión", sub: "Iniciar sesión", user: "Usuario", pass: "Contraseña", go: "Entrar", err: "Usuario o contraseña incorrectos." }}
-  }};
-  var lang = "{server_lang}";
-  try {{ var v = localStorage.getItem("playline_lang"); if (L[v]) lang = v; }} catch (e) {{}}
-  var d = L[lang];
-  document.documentElement.lang = lang === "pt" ? "pt-BR" : lang;
-  document.title = d.title;
-  document.querySelectorAll("[data-l]").forEach(function (el) {{ el.textContent = d[el.getAttribute("data-l")]; }});
-}})();
-</script>
-</body></html>"""
-
-
-def _session_valid(token: str) -> bool:
-    """Único critério de sessão válida, compartilhado pelo middleware HTTP e pelos WebSockets."""
-    return bool(token) and _SESSIONS.get(token, 0) > time.time()
-
-
-_PUBLIC_PATHS = ("/login", "/api/ping", "/api/login", "/setup", "/setup/logo",
-                 "/static/styles/base.css", "/static/components/i18n.js")
-_PUBLIC_PREFIXES = ("/api/setup/", "/static/setup/", "/static/i18n/")
-
-
-class _SessionAuth(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
-        if request.headers.get("upgrade", "").lower() == "websocket":
-            return await call_next(request)
-        if request.method == "OPTIONS":
-            return await call_next(request)
-        path = request.url.path
-        if path in ("/", "/login") and request.method == "GET" and not app_settings.is_setup_done():
-            return RedirectResponse(url="/setup", status_code=302)
-        if path in _PUBLIC_PATHS or path.startswith(_PUBLIC_PREFIXES):
-            return await call_next(request)
-        token = request.cookies.get("playline_session")
-        if token and _SESSIONS.get(token, 0) > time.time():
-            return await call_next(request)
-        url_token = request.query_params.get("session_token")
-        if url_token and _SESSIONS.get(url_token, 0) > time.time():
-            if request.url.path.startswith("/api/"):
-                return await call_next(request)
-            resp = RedirectResponse(url=request.url.path, status_code=302)
-            resp.set_cookie("playline_session", url_token, httponly=True, samesite="lax", max_age=_SESSION_TTL)
-            return resp
-        return RedirectResponse(url="/login", status_code=302)
 
 
 class _RevalidatingStaticFiles(StaticFiles):
@@ -354,9 +217,10 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
-app.add_middleware(_SessionAuth)
+app.add_middleware(SessionAuth)
 app.mount("/static", _RevalidatingStaticFiles(directory=str(FRONTEND_DIR)), name="static")
 app.include_router(http_router)
+app.include_router(auth_router)
 app.include_router(ws_router)
 
 
@@ -375,146 +239,6 @@ async def preview_ws(ws: WebSocket):
 @app.get("/api/ping")
 async def ping():
     return {"playline": True}
-
-
-async def _credentials_ok(username, password) -> bool:
-    """PBKDF2 leva ~0,1s: roda fora do event loop para não segurar preview/WS."""
-    loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(None, app_settings.verify_credentials, username, password)
-
-
-_LOGIN_MAX_FAILS   = 5
-_LOGIN_WINDOW_SEC  = 300
-_LOGIN_LOCKOUT_SEC = 60
-_login_fails: dict[str, list[float]] = {}
-
-
-def _login_blocked(ip: str) -> bool:
-    """Retorna True se o IP excedeu o limite de tentativas."""
-    now = time.time()
-    attempts = _login_fails.get(ip)
-    if not attempts:
-        return False
-    attempts[:] = [t for t in attempts if now - t < _LOGIN_WINDOW_SEC]
-    if not attempts:
-        _login_fails.pop(ip, None)
-        return False
-    if len(attempts) >= _LOGIN_MAX_FAILS:
-        last = attempts[-1]
-        lockout = _LOGIN_LOCKOUT_SEC * (2 ** (len(attempts) - _LOGIN_MAX_FAILS))
-        if now - last < lockout:
-            return True
-    return False
-
-
-def _login_record_fail(ip: str):
-    now = time.time()
-    _login_fails.setdefault(ip, []).append(now)
-
-
-def _login_clear(ip: str):
-    _login_fails.pop(ip, None)
-
-
-@app.get("/login")
-async def login_page():
-    return HTMLResponse(_build_login_html())
-
-
-@app.post("/login")
-async def login_submit(request: Request):
-    ip = request.client.host if request.client else "unknown"
-    if _login_blocked(ip):
-        return HTMLResponse(_build_login_html(error=True), status_code=429)
-    form = await request.form()
-    if await _credentials_ok(form.get("username"), form.get("password")):
-        _login_clear(ip)
-        token = secrets.token_urlsafe(32)
-        _SESSIONS[token] = time.time() + _SESSION_TTL
-        _save_sessions(_SESSIONS)
-        resp = RedirectResponse(url="/", status_code=302)
-        resp.set_cookie("playline_session", token, httponly=True, samesite="lax", max_age=_SESSION_TTL)
-        return resp
-    _login_record_fail(ip)
-    return HTMLResponse(_build_login_html(error=True), status_code=401)
-
-
-@app.post("/api/login")
-async def api_login(request: Request):
-    """Login JSON para clientes externos (PlayIngest, etc.)."""
-    ip = request.client.host if request.client else "unknown"
-    if _login_blocked(ip):
-        return JSONResponse({"ok": False, "error": "Muitas tentativas, aguarde"}, status_code=429)
-    try:
-        body = await request.json()
-    except Exception:
-        return JSONResponse({"ok": False, "error": "JSON inválido"}, status_code=400)
-    if await _credentials_ok(body.get("username"), body.get("password")):
-        _login_clear(ip)
-        token = secrets.token_urlsafe(32)
-        _SESSIONS[token] = time.time() + _SESSION_TTL
-        _save_sessions(_SESSIONS)
-        return JSONResponse({"ok": True, "token": token})
-    _login_record_fail(ip)
-    return JSONResponse({"ok": False, "error": "Credenciais inválidas"}, status_code=401)
-
-
-@app.post("/api/logout")
-async def logout(request: Request):
-    """Invalida a sessão atual — o cookie continua no browser mas o token não é mais aceito."""
-    token = request.cookies.get("playline_session", "")
-    _SESSIONS.pop(token, None)
-    _save_sessions(_SESSIONS)
-    resp = JSONResponse({"ok": True})
-    resp.delete_cookie("playline_session")
-    return resp
-
-
-def _request_token(request: Request) -> str:
-    return request.cookies.get("playline_session") or request.query_params.get("session_token") or ""
-
-
-@app.post("/api/settings/credentials")
-async def change_credentials(request: Request):
-    """Troca usuário e senha."""
-    try:
-        body = await request.json()
-    except Exception:
-        return JSONResponse({"ok": False, "error": "JSON inválido", "code": "bad_request", "params": {}},
-                            status_code=400)
-    if not await _credentials_ok(body.get("current_username"), body.get("current_password")):
-        return JSONResponse({"ok": False, "error": "Usuário ou senha atuais incorretos",
-                             "code": "cred_wrong", "params": {}}, status_code=403)
-    loop = asyncio.get_running_loop()
-    try:
-        username = await loop.run_in_executor(
-            None, app_settings.set_credentials, body.get("new_username"), body.get("new_password"))
-    except ValueError as exc:
-        return JSONResponse({"ok": False, "error": str(exc),
-                             "code": getattr(exc, "code", "invalid_value"),
-                             "params": getattr(exc, "params", {})}, status_code=400)
-    keep = _request_token(request)
-    for tok in list(_SESSIONS):
-        if tok != keep:
-            _SESSIONS.pop(tok, None)
-    _save_sessions(_SESSIONS)
-    logger.info("Credenciais alteradas pela interface; %d sessão(ões) mantida(s)", len(_SESSIONS))
-    return JSONResponse({"ok": True, "username": username})
-
-
-@app.post("/api/settings/language")
-async def change_language(request: Request):
-    """Idioma padrão da interface (config.json), usado por navegadores sem escolha própria."""
-    try:
-        body = await request.json()
-    except Exception:
-        body = {}
-    try:
-        lang = app_settings.set_language(body.get("language"))
-    except ValueError as exc:
-        return JSONResponse({"detail": str(exc), "code": getattr(exc, "code", "invalid_value"),
-                             "params": getattr(exc, "params", {})}, status_code=400)
-    return {"ok": True, "language": lang}
 
 
 _LOCAL_HOSTS = ("127.0.0.1", "::1", "localhost")
@@ -571,14 +295,14 @@ async def setup_state(request: Request):
     blocked = _setup_blocked(request)
     if blocked:
         return blocked
-    from api import routes as _routes
+    from api import library_routes as _lib
     cfg_lib = app_settings.get_library_dir()
     raw_lang = app_settings.load().get("language")
     return {
         "language": raw_lang if raw_lang in app_settings.LANGUAGES else None,
         "username": app_settings.get_username(),
-        "library_dir": str(_routes._LIBRARY_BASE),
-        "library_default": str(_routes._LIBRARY_DEFAULT),
+        "library_dir": str(_lib._LIBRARY_BASE),
+        "library_default": str(_lib._LIBRARY_DEFAULT),
         "library_custom": cfg_lib is not None,
         "password_min": app_settings.PASSWORD_MIN,
     }
@@ -625,22 +349,22 @@ async def setup_complete(request: Request):
     if creds is not None:
         await loop.run_in_executor(
             None, app_settings.set_credentials, creds.get("username"), creds.get("password"))
-        _SESSIONS.clear()   # sessões abertas com a senha antiga caem, como na troca pelas Configurações
+        SESSIONS.clear()
     if lib_reset or lib_path is not None:
-        from api import routes as _routes
-        resp = await _routes.change_library_dir({"reset": True} if lib_reset else {"path": lib_path})
-        if isinstance(resp, Response):   # não deveria acontecer, já validado acima
+        from api import library_routes as _lib
+        resp = await _lib.change_library_dir({"reset": True} if lib_reset else {"path": lib_path})
+        if isinstance(resp, Response):
             return resp
     app_settings.mark_setup_done()
 
     token = secrets.token_urlsafe(32)
-    _SESSIONS[token] = time.time() + _SESSION_TTL
-    _save_sessions(_SESSIONS)
+    SESSIONS[token] = time.time() + SESSION_TTL
+    save_sessions(SESSIONS)
     logger.info("Configuração inicial concluída (idioma=%s, credenciais %s, biblioteca %s)",
                 lang, "alteradas" if creds is not None else "mantidas",
                 "padrão" if lib_reset else ("alterada" if lib_path is not None else "mantida"))
     resp = JSONResponse({"ok": True})
-    resp.set_cookie("playline_session", token, httponly=True, samesite="lax", max_age=_SESSION_TTL)
+    resp.set_cookie("playline_session", token, httponly=True, samesite="lax", max_age=SESSION_TTL)
     return resp
 
 
@@ -690,6 +414,7 @@ _SPLASH_MIN_SECONDS = 4
 
 def _get_autostart_token() -> Optional[str]:
     """Lê o token válido mais recente direto do disco para auto-login na reabertura."""
+    from api.auth import _SESSIONS_FILE
     try:
         if not _SESSIONS_FILE.exists():
             logger.info("Auto-login: sessions.json não encontrado em %s", _SESSIONS_FILE)
@@ -1065,8 +790,8 @@ body{{background:#111827;display:flex;flex-direction:column;align-items:center;
                         pass
             except Exception:
                 pass
-            _SESSIONS.clear()
-            _save_sessions(_SESSIONS)
+            SESSIONS.clear()
+            save_sessions(SESSIONS)
             _closing_confirmed = True
             if _window:
                 _window.destroy()

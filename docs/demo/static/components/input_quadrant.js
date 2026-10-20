@@ -1,8 +1,4 @@
-/* PlayLine — Quadrante fixo de entrada (Câmera / YouTube) ao lado do Roteiro.
-
-   Reaproveita o que já existe: getUserMedia (capture_preview.js) e o embed
-   do YouTube (yt_preview.js) pra manter um preview persistente aqui, e os
-   modais de sempre (capture.js/youtube_live.js) pra configurar/adicionar. */
+/* PlayLine — Quadrante fixo de entrada (Câmera / YouTube) */
 (function () {
   const btnCamera  = document.getElementById("iq-btn-camera");
   const btnYoutube = document.getElementById("iq-btn-youtube");
