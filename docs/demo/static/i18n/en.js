@@ -186,6 +186,13 @@ window.PLAYLINE_I18N_EN = {
     preview_unsupported: "Preview not available in this browser",
   },
 
+  recentaired: {
+    title: "Recently aired",
+    see_all: "See all",
+    empty: "Nothing aired yet",
+    tooltip: "{{date}}, {{start}} to {{end}} ({{reason}})",
+  },
+
   eventlog: {
     title: "Event Log",
     clear: "Clear",

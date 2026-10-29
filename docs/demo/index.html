@@ -276,6 +276,15 @@
           <!-- Sem data-i18n: alterna entre inputq.add_camera/add_youtube via
                _updateToggleUI() (input_quadrant.js), mesmo motivo. -->
           <button class="iq-add-btn" id="iq-btn-add">+ Adicionar outra câmera</button>
+
+          <div class="ra-panel">
+            <div class="ra-header">
+              <h2 data-i18n="recentaired.title">Últimos exibidos</h2>
+              <button class="ra-see-all" id="ra-see-all" data-i18n="recentaired.see_all">Ver tudo</button>
+            </div>
+            <ul class="ra-list" id="ra-list"></ul>
+            <div class="ra-empty" id="ra-empty" data-i18n="recentaired.empty">Nenhum clipe exibido ainda</div>
+          </div>
         </section>
       </div>
 
@@ -558,6 +567,7 @@
   </div>
 
   <script src="static/components/history.js"></script>
+  <script src="static/components/recent_aired.js"></script>
   <script src="static/components/logs.js"></script>
   <script src="static/components/player.js"></script>
   <script src="static/components/playlist.js"></script>
