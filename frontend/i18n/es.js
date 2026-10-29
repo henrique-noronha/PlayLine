@@ -186,6 +186,13 @@ window.PLAYLINE_I18N_ES = {
     preview_unsupported: "Vista previa no disponible en este navegador",
   },
 
+  recentaired: {
+    title: "Últimos emitidos",
+    see_all: "Ver todo",
+    empty: "Nada emitido todavía",
+    tooltip: "{{date}}, {{start}} a {{end}} ({{reason}})",
+  },
+
   eventlog: {
     title: "Registro de Eventos",
     clear: "Limpiar",

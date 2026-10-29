@@ -1,9 +1,4 @@
-/* PlayLine — Diccionario de traducción: Español
-   Terminología alineada con el uso internacional en automatización de
-   playout ("Al Aire" para lo que está en emisión, "Bucle" para una lista
-   que se repite, "Lista de reproducción" para la cola de emisión). CUT y
-   FTB (fade to black) se mantienen sin traducir por ser abreviaturas
-   estándar de la industria. */
+/* PlayLine — Diccionario de traducción: Español */
 window.PLAYLINE_I18N_ES = {
   window_title: "PlayLine · Panel de Control",
   meta: { name: "Español", flag_hint: "ES" },
@@ -189,6 +184,13 @@ window.PLAYLINE_I18N_ES = {
     cannot_access: "No se pudo acceder: {{device}}",
     invalid_youtube_link: "Enlace de YouTube inválido",
     preview_unsupported: "Vista previa no disponible en este navegador",
+  },
+
+  recentaired: {
+    title: "Últimos emitidos",
+    see_all: "Ver todo",
+    empty: "Nada emitido todavía",
+    tooltip: "{{date}}, {{start}} a {{end}} ({{reason}})",
   },
 
   eventlog: {

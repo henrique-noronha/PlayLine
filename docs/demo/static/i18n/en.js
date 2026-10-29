@@ -1,9 +1,4 @@
-/* PlayLine — Translation dictionary: English
-   Terminology follows international broadcast/playout automation usage
-   (e.g. Wide Orbit, Pebble Beach, Harmonic): "Playlist" for the ordered
-   air queue, "On Air" for what's currently transmitting, "Loop" for a
-   repeating playlist, "FTB" (fade to black) kept as the industry
-   abbreviation rather than spelled out. */
+/* PlayLine — Translation dictionary: English */
 window.PLAYLINE_I18N_EN = {
   window_title: "PlayLine · Control Panel",
   meta: { name: "English", flag_hint: "EN" },
@@ -189,6 +184,13 @@ window.PLAYLINE_I18N_EN = {
     cannot_access: "Could not access: {{device}}",
     invalid_youtube_link: "Invalid YouTube link",
     preview_unsupported: "Preview not available in this browser",
+  },
+
+  recentaired: {
+    title: "Recently aired",
+    see_all: "See all",
+    empty: "Nothing aired yet",
+    tooltip: "{{date}}, {{start}} to {{end}} ({{reason}})",
   },
 
   eventlog: {

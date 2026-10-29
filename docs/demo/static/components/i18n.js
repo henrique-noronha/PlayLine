@@ -1,13 +1,4 @@
-/* PlayLine — Motor de tradução da interface
-   O idioma escolhido neste navegador fica em localStorage (mesmo padrão já
-   usado para zoom, miniaturas e preferências de overlay). Sem escolha própria,
-   vale o idioma padrão do servidor, definido no assistente de configuração
-   inicial (/setup) e injetado na página como window.PLAYLINE_SERVER_LANG.
-
-   Uso: elementos marcados com data-i18n="chave.aninhada" recebem o texto
-   traduzido via textContent; data-i18n-placeholder e data-i18n-title fazem
-   o mesmo para os atributos placeholder/title. Chamadas de JS usam
-   window.t("chave.aninhada") diretamente. */
+/* PlayLine — Motor de tradução da interface */
 (function () {
   const LANG_KEY = "playline_lang";
   const SUPPORTED = ["pt", "en", "es"];

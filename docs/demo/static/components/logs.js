@@ -4,9 +4,6 @@ function esc(str) {
   return String(str ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
 
-// Mapeia o "type" de cada chamada log(msg, type) para a chave curta traduzida
-// em i18n/*.js (eventlabels.*). A mensagem em si (msg) continua em português:
-// são centenas de strings soltas pelo código, fora do escopo desta tradução.
 const _LOG_LABEL_KEYS = {
   now_playing:            "now_playing",
   paused:                 "paused",

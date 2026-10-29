@@ -44,7 +44,7 @@ function _renderFolderTabs(subfolders) {
     _libCurrentFolder = "";
   }
 
-  el.appendChild(_makeTab("Todos", ""));
+  el.appendChild(_makeTab(window.t("library.all_folders"), ""));
   subfolders.forEach(sf => el.appendChild(_makeTab(sf, sf)));
 
 }

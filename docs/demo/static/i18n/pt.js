@@ -1,6 +1,4 @@
-/* PlayLine — Dicionário de tradução: Português (Brasil)
-   Serve também de referência canônica das chaves: toda chave nova entra
-   primeiro aqui, com o texto original que já existia na interface. */
+/* PlayLine — Dicionário de tradução: Português (Brasil) */
 window.PLAYLINE_I18N_PT = {
   window_title: "PlayLine · Painel de Controle",
   meta: { name: "Português", flag_hint: "PT-BR" },
@@ -186,6 +184,13 @@ window.PLAYLINE_I18N_PT = {
     cannot_access: "Não foi possível acessar: {{device}}",
     invalid_youtube_link: "Link do YouTube inválido",
     preview_unsupported: "Preview não disponível neste browser",
+  },
+
+  recentaired: {
+    title: "Últimos exibidos",
+    see_all: "Ver tudo",
+    empty: "Nenhum clipe exibido ainda",
+    tooltip: "{{date}}, {{start}} às {{end}} ({{reason}})",
   },
 
   eventlog: {

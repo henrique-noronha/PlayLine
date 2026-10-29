@@ -186,6 +186,13 @@ window.PLAYLINE_I18N_PT = {
     preview_unsupported: "Preview não disponível neste browser",
   },
 
+  recentaired: {
+    title: "Últimos exibidos",
+    see_all: "Ver tudo",
+    empty: "Nenhum clipe exibido ainda",
+    tooltip: "{{date}}, {{start}} às {{end}} ({{reason}})",
+  },
+
   eventlog: {
     title: "Log de eventos",
     clear: "Limpar",

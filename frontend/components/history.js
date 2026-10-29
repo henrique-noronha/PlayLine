@@ -3,8 +3,14 @@
 (function () {
   let _currentDate = "";
 
+  // Data local (o servidor grava com datetime.now(); toISOString() daria UTC
+  // e, no horário de Brasília, viraria o dia seguinte a partir das 21h)
+  function _localIso(d) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+
   function _todayStr() {
-    return new Date().toISOString().slice(0, 10);
+    return _localIso(new Date());
   }
 
   function _fmtDate(iso) {
@@ -15,7 +21,7 @@
   function _shiftDate(iso, days) {
     const d = new Date(iso + "T00:00:00");
     d.setDate(d.getDate() + days);
-    return d.toISOString().slice(0, 10);
+    return _localIso(d);
   }
 
   function _fmtDuration(secs) {

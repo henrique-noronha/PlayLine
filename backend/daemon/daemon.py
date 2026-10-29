@@ -556,286 +556,304 @@ class MPVDaemon:
 
     async def _handle_command(self, cmd: dict, writer: asyncio.StreamWriter):
         action = cmd.get("action")
+        handler = self._CMD_DISPATCH.get(action)
+        if handler:
+            await handler(self, cmd, writer)
 
-        if action == "play":
-            path = cmd.get("path", "")
-            original_path = path
-            start_time = cmd.get("start_time")
-            end_time   = cmd.get("end_time")
-            if not path:
-                return
-            if self._mpv_dead or self._mpv is None:
-                logger.info("Reinicializando MPV para reprodução...")
-                self._init_mpv()
-            if self._mpv:
-                if _is_youtube_url(path):
-                    if cmd.get("force_resolve"):
-                        self._yt_cache.pop(original_path, None)
-                        logger.info("force_resolve: cache limpo para %s", original_path)
-                    cached = self._yt_cache.get(original_path)
-                    if cached and (time.monotonic() - cached[1]) < 3600 and _yt_url_fresh(cached[0]):
-                        path = cached[0]
-                        logger.info("YouTube URL resolvida via cache: %s", original_path)
-                    elif original_path in self._yt_resolving:
-                        logger.info("Aguardando prefetch em andamento para: %s", original_path)
-                        try:
-                            path = await self._yt_resolving[original_path]
-                        except Exception as exc:
-                            logger.error("Prefetch falhou: %s", exc)
-                            await self._broadcast({"event": "end-file", "reason": "error"})
-                            return
-                    else:
-                        if cached:
-                            del self._yt_cache[original_path]
-                        task = asyncio.ensure_future(self._prefetch_yt_bg(original_path))
-                        self._yt_resolving[original_path] = task
-                        try:
-                            t0 = time.monotonic()
-                            path = await task
-                            logger.info("YouTube stream resolvido em %.2fs: %s",
-                                        time.monotonic() - t0, original_path)
-                        except Exception as exc:
-                            logger.error("Falha ao resolver YouTube URL: %s", exc)
-                            await self._broadcast({"event": "end-file", "reason": "error"})
-                            return
-                    # Verifica se MPV já transitou automaticamente para o HLS appendado
-                    appended = self._yt_appended.pop(original_path, None)
-                    if appended and appended[0] == path and (time.monotonic() - appended[1]) < 300:
-                        try:
-                            cur = self._mpv.path
-                        except Exception:
-                            cur = None
-                        if cur == path:
-                            self._mpv.pause = False
-                            self._write_checkpoint(original_path)
-                            logger.info("play (MPV já em HLS, sem loadfile): %s", original_path)
-                            self._stop_vu()
-                            self._vu_task = asyncio.ensure_future(self._audio_level_task())
-                            return
-                # Transição de entrada deste item: override por clipe ou global.
-                # Reconexão de live (force_resolve): sem fade, já está preto/standby.
-                incoming_fade = self._fader.resolve(cmd.get("transition")) and not cmd.get("force_resolve")
-                if incoming_fade and self._mpv_has_media():
-                    await asyncio.get_running_loop().run_in_executor(None, self._fader.fade_out_blocking)
-                elif not incoming_fade:
-                    self._fader.cancel_and_clear()   # corte seco: nenhum preto sobrando
-                self._fader.on_play(original_path,
-                                    end_time if not _is_youtube_url(original_path) else None,
-                                    incoming_fade)
-                opts_parts = []
-                if not _is_youtube_url(original_path):
-                    if start_time: opts_parts.append(f"start={start_time}")
-                    if end_time:   opts_parts.append(f"end={end_time}")
-                self._apply_buffer_profile(_is_stream_path(path))
-                if opts_parts:
-                    self._mpv.command("loadfile", path, "replace", 0, ",".join(opts_parts))
-                else:
-                    self._mpv.command("loadfile", path, "replace")
-                self._mpv.pause = False
-                self._write_checkpoint(original_path)
-                live_tag = " [live]" if cmd.get("live") else ""
-                logger.info("play: %s%s%s", original_path,
-                            f" [trim {start_time}–{end_time}]" if opts_parts else "", live_tag)
-                self._stop_vu()
-                self._vu_task = asyncio.ensure_future(self._audio_level_task())
-
-        elif action == "play_standby":
-            threading.Thread(target=self._apply_standby_overlay, daemon=True).start()
-            logger.info("[standby] overlay ativado via play_standby")
-
-        elif action == "preload":
-            path = cmd.get("path", "")
-            if path and self._mpv and not self._mpv_dead:
-                self._mpv.command("loadfile", path, "append")
-                logger.info("preload: %s", path)
-
-        elif action == "prefetch_yt":
-            url = cmd.get("path", "")
-            if url and _is_youtube_url(url):
-                if url in self._yt_resolving or url in self._yt_cache:
-                    logger.debug("prefetch_yt ignorado (já em cache ou resolvendo): %s", url)
-                else:
-                    task = asyncio.ensure_future(self._prefetch_yt_bg(url))
-                    self._yt_resolving[url] = task
-                    logger.info("prefetch_yt background: %s", url)
-
-        elif action == "init_mpv":
-            if self._mpv_dead or self._mpv is None:
-                logger.info("Reinicializando MPV via init_mpv")
-                self._init_mpv()
-            await self._broadcast({"event": "mpv_ready"})
-
-        elif action == "quit_mpv":
-            if self._mpv and not self._mpv_dead:
-                self._mpv_dead = True
-                mpv_ref  = self._mpv
-                self._mpv = None
-                await self._broadcast({"event": "mpv_closed"})
-
-                def _terminate():
+    async def _cmd_play(self, cmd, writer):
+        path = cmd.get("path", "")
+        original_path = path
+        start_time = cmd.get("start_time")
+        end_time   = cmd.get("end_time")
+        if not path:
+            return
+        if self._mpv_dead or self._mpv is None:
+            logger.info("Reinicializando MPV para reprodução...")
+            self._init_mpv()
+        if self._mpv:
+            if _is_youtube_url(path):
+                if cmd.get("force_resolve"):
+                    self._yt_cache.pop(original_path, None)
+                    logger.info("force_resolve: cache limpo para %s", original_path)
+                cached = self._yt_cache.get(original_path)
+                if cached and (time.monotonic() - cached[1]) < 3600 and _yt_url_fresh(cached[0]):
+                    path = cached[0]
+                    logger.info("YouTube URL resolvida via cache: %s", original_path)
+                elif original_path in self._yt_resolving:
+                    logger.info("Aguardando prefetch em andamento para: %s", original_path)
                     try:
-                        # terminate() chama mpv_terminate_destroy(), fechando a janela Win32
-                        mpv_ref.terminate()
-                        logger.info("MPV encerrado via terminate()")
+                        path = await self._yt_resolving[original_path]
                     except Exception as exc:
-                        logger.warning("quit_mpv terminate: %s", exc)
-
-                threading.Thread(target=_terminate, daemon=True).start()
-
-        elif action == "pause":
-            if self._mpv and not self._mpv_dead:
-                self._mpv.pause = True
-                self._fader.cancel_and_clear()   # não congela no meio de um fade
-
-        elif action == "resume":
-            if self._mpv and not self._mpv_dead:
-                self._mpv.pause = False
-
-        elif action == "stop":
-            if self._mpv and not self._mpv_dead:
-                if self._fader.is_fade_global() and self._mpv_has_media():
-                    await asyncio.get_running_loop().run_in_executor(None, self._fader.fade_out_blocking)
-                self._stop_vu()
-                self._mpv.command("stop")
-                for slot in (1, 2, 3):
+                        logger.error("Prefetch falhou: %s", exc)
+                        await self._broadcast({"event": "end-file", "reason": "error"})
+                        return
+                else:
+                    if cached:
+                        del self._yt_cache[original_path]
+                    task = asyncio.ensure_future(self._prefetch_yt_bg(original_path))
+                    self._yt_resolving[original_path] = task
                     try:
-                        self._mpv.command("overlay-remove", str(slot))
+                        t0 = time.monotonic()
+                        path = await task
+                        logger.info("YouTube stream resolvido em %.2fs: %s",
+                                    time.monotonic() - t0, original_path)
+                    except Exception as exc:
+                        logger.error("Falha ao resolver YouTube URL: %s", exc)
+                        await self._broadcast({"event": "end-file", "reason": "error"})
+                        return
+                appended = self._yt_appended.pop(original_path, None)
+                if appended and appended[0] == path and (time.monotonic() - appended[1]) < 300:
+                    try:
+                        cur = self._mpv.path
                     except Exception:
-                        pass
-            checkpoint.clear(CHECKPOINT_PATH)
+                        cur = None
+                    if cur == path:
+                        self._mpv.pause = False
+                        self._write_checkpoint(original_path)
+                        logger.info("play (MPV já em HLS, sem loadfile): %s", original_path)
+                        self._stop_vu()
+                        self._vu_task = asyncio.ensure_future(self._audio_level_task())
+                        return
+            incoming_fade = self._fader.resolve(cmd.get("transition")) and not cmd.get("force_resolve")
+            if incoming_fade and self._mpv_has_media():
+                await asyncio.get_running_loop().run_in_executor(None, self._fader.fade_out_blocking)
+            elif not incoming_fade:
+                self._fader.cancel_and_clear()
+            self._fader.on_play(original_path,
+                                end_time if not _is_youtube_url(original_path) else None,
+                                incoming_fade)
+            opts_parts = []
+            if not _is_youtube_url(original_path):
+                if start_time: opts_parts.append(f"start={start_time}")
+                if end_time:   opts_parts.append(f"end={end_time}")
+            self._apply_buffer_profile(_is_stream_path(path))
+            if opts_parts:
+                self._mpv.command("loadfile", path, "replace", 0, ",".join(opts_parts))
+            else:
+                self._mpv.command("loadfile", path, "replace")
+            self._mpv.pause = False
+            self._write_checkpoint(original_path)
+            live_tag = " [live]" if cmd.get("live") else ""
+            logger.info("play: %s%s%s", original_path,
+                        f" [trim {start_time}–{end_time}]" if opts_parts else "", live_tag)
+            self._stop_vu()
+            self._vu_task = asyncio.ensure_future(self._audio_level_task())
 
-        elif action == "seek":
-            if self._mpv and not self._mpv_dead:
+    async def _cmd_play_standby(self, cmd, writer):
+        threading.Thread(target=self._apply_standby_overlay, daemon=True).start()
+        logger.info("[standby] overlay ativado via play_standby")
+
+    async def _cmd_preload(self, cmd, writer):
+        path = cmd.get("path", "")
+        if path and self._mpv and not self._mpv_dead:
+            self._mpv.command("loadfile", path, "append")
+            logger.info("preload: %s", path)
+
+    async def _cmd_prefetch_yt(self, cmd, writer):
+        url = cmd.get("path", "")
+        if url and _is_youtube_url(url):
+            if url in self._yt_resolving or url in self._yt_cache:
+                logger.debug("prefetch_yt ignorado (já em cache ou resolvendo): %s", url)
+            else:
+                task = asyncio.ensure_future(self._prefetch_yt_bg(url))
+                self._yt_resolving[url] = task
+                logger.info("prefetch_yt background: %s", url)
+
+    async def _cmd_init_mpv(self, cmd, writer):
+        if self._mpv_dead or self._mpv is None:
+            logger.info("Reinicializando MPV via init_mpv")
+            self._init_mpv()
+        await self._broadcast({"event": "mpv_ready"})
+
+    async def _cmd_quit_mpv(self, cmd, writer):
+        if self._mpv and not self._mpv_dead:
+            self._mpv_dead = True
+            mpv_ref  = self._mpv
+            self._mpv = None
+            await self._broadcast({"event": "mpv_closed"})
+
+            def _terminate():
                 try:
-                    self._mpv.seek(cmd.get("seconds", 0.0), cmd.get("mode", "absolute"))
-                    self._fader.cancel_and_clear()
+                    mpv_ref.terminate()
+                    logger.info("MPV encerrado via terminate()")
                 except Exception as exc:
-                    logger.warning("seek: %s", exc)
+                    logger.warning("quit_mpv terminate: %s", exc)
 
-        elif action == "list_logos":
+            threading.Thread(target=_terminate, daemon=True).start()
+
+    async def _cmd_pause(self, cmd, writer):
+        if self._mpv and not self._mpv_dead:
+            self._mpv.pause = True
+            self._fader.cancel_and_clear()
+
+    async def _cmd_resume(self, cmd, writer):
+        if self._mpv and not self._mpv_dead:
+            self._mpv.pause = False
+
+    async def _cmd_stop(self, cmd, writer):
+        if self._mpv and not self._mpv_dead:
+            if self._fader.is_fade_global() and self._mpv_has_media():
+                await asyncio.get_running_loop().run_in_executor(None, self._fader.fade_out_blocking)
+            self._stop_vu()
+            self._mpv.command("stop")
+            for slot in (1, 2, 3):
+                try:
+                    self._mpv.command("overlay-remove", str(slot))
+                except Exception:
+                    pass
+        checkpoint.clear(CHECKPOINT_PATH)
+
+    async def _cmd_seek(self, cmd, writer):
+        if self._mpv and not self._mpv_dead:
             try:
-                files = _list_logos(LOGOS_DIR)
-                writer.write((json.dumps({"event": "logo_list", "files": files}) + "\n").encode())
-                await writer.drain()
+                self._mpv.seek(cmd.get("seconds", 0.0), cmd.get("mode", "absolute"))
+                self._fader.cancel_and_clear()
             except Exception as exc:
-                logger.error("Erro ao listar logos: %s", exc)
+                logger.warning("seek: %s", exc)
 
-        elif action == "set_logo":
-            slot = cmd.get("slot", 1)
-            if slot not in (1, 2):
-                logger.warning("[set_logo] slot inválido: %s", slot)
-                return
-            corner   = cmd.get("corner",   "br")
-            active   = cmd.get("active",   False)
-            filename = cmd.get("filename", "")
-            logger.info("[set_logo] slot=%s filename=%r corner=%s active=%s",
-                        slot, filename, corner, active)
+    async def _cmd_list_logos(self, cmd, writer):
+        try:
+            files = _list_logos(LOGOS_DIR)
+            writer.write((json.dumps({"event": "logo_list", "files": files}) + "\n").encode())
+            await writer.drain()
+        except Exception as exc:
+            logger.error("Erro ao listar logos: %s", exc)
 
-            def _update(s=slot, c=corner, a=active, f=filename):
-                with self._logo_lock:
-                    self._logo[s]["corner"] = c
-                    self._logo[s]["active"] = a
-                    if f:
-                        self._logo[s]["filename"] = f
-                    logger.info("[set_logo] estado: %s", self._logo)
-                    state = {str(k): dict(v) for k, v in self._logo.items()}
-                self._apply_overlay()
-                self._broadcast_sync({"event": "logo_state", "state": state})
+    async def _cmd_set_logo(self, cmd, writer):
+        slot = cmd.get("slot", 1)
+        if slot not in (1, 2):
+            logger.warning("[set_logo] slot inválido: %s", slot)
+            return
+        corner   = cmd.get("corner",   "br")
+        active   = cmd.get("active",   False)
+        filename = cmd.get("filename", "")
+        logger.info("[set_logo] slot=%s filename=%r corner=%s active=%s",
+                    slot, filename, corner, active)
 
-            threading.Thread(target=_update, daemon=True).start()
-
-        elif action == "set_volume":
-            vol = max(0, min(200, int(cmd.get("volume", 100))))
-            self._volume = float(vol)   # persiste para reaplicar no reinit
-            if self._mpv and not self._mpv_dead:
-                try:
-                    # Passa pelo fader: no meio de um fade (ou no preto) o ganho atual é mantido
-                    self._fader.set_user_volume(self._volume)
-                    logger.debug("volume → %.1f (%.1f dB)", vol, 20 * __import__("math").log10(max(vol, 0.001) / 100))
-                except Exception as exc:
-                    logger.warning("set_volume: %s", exc)
-
-        elif action == "set_transition":
-            try:
-                cfg = self._fader.configure({k: cmd[k] for k in ("type", "duration") if k in cmd})
-                logger.info("[transition] global: %s %.2fs", cfg["type"], cfg["duration"])
-            except (ValueError, TypeError) as exc:
-                logger.warning("[transition] set_transition inválido: %s", exc)
-
-        elif action == "next_transition":
-            # Override do próximo item ("fade"/"cut"/None): decide o fade out automático desta fronteira
-            self._fader.set_next_boundary(cmd.get("transition"))
-
-        elif action == "set_text_overlay":
-            cfg = {
-                "active":      bool(cmd.get("active",    False)),
-                "show_time":   bool(cmd.get("show_time", True)),
-                "show_temp":   bool(cmd.get("show_temp", True)),
-                "corner":      str(cmd.get("corner",    "tl")),
-                "city":        str(cmd.get("city",      "Palmas,TO")),
-                "manual_temp": str(cmd.get("manual_temp", "")),
-            }
-            with self._text_overlay_lock:
-                self._text_overlay.update(cfg)
-            self._save_text_overlay()
-            if not cfg["active"] and self._mpv and not self._mpv_dead:
-                osd_text.remove(self._mpv)
-            elif cfg["active"] and self._mpv and not self._mpv_dead:
-                threading.Thread(target=self._apply_text_overlay_delayed, daemon=True).start()
-            self._broadcast_sync({"event": "text_overlay_state", **cfg})
-
-        elif action == "get_text_overlay":
-            with self._text_overlay_lock:
-                cfg = dict(self._text_overlay)
-            resp = {"event": "text_overlay_state", **cfg}
-            try:
-                writer.write((json.dumps(resp) + "\n").encode())
-                await writer.drain()
-            except Exception:
-                pass
-
-        elif action == "get_logo_state":
+        def _update(s=slot, c=corner, a=active, f=filename):
             with self._logo_lock:
+                self._logo[s]["corner"] = c
+                self._logo[s]["active"] = a
+                if f:
+                    self._logo[s]["filename"] = f
+                logger.info("[set_logo] estado: %s", self._logo)
                 state = {str(k): dict(v) for k, v in self._logo.items()}
-            resp = {"event": "logo_state", "state": state}
-            try:
-                writer.write((json.dumps(resp) + "\n").encode())
-                await writer.drain()
-            except Exception:
-                pass
+            self._apply_overlay()
+            self._broadcast_sync({"event": "logo_state", "state": state})
 
-        elif action == "get_state":
-            playing_path = None
-            paused       = False
-            mpv_volume   = None
-            if self._mpv and not self._mpv_dead:
-                try:
-                    playing_path = self._mpv.path
-                except Exception:
-                    pass
-                try:
-                    paused = bool(self._mpv.pause)
-                except Exception:
-                    pass
-                try:
-                    mpv_volume = float(self._mpv.volume)
-                except Exception:
-                    pass
-            resp = {
-                "event":        "state_response",
-                "playing_path": playing_path,
-                "position":     self._last_position,
-                "paused":       paused,
-                "transition":   dict(self._fader.config),
-                # diagnóstico do fade: 0 = tela normal, 1 = preto; volume real aplicado no MPV
-                "fade_alpha":   round(self._fader.alpha, 3),
-                "mpv_volume":   mpv_volume,
-            }
+        threading.Thread(target=_update, daemon=True).start()
+
+    async def _cmd_set_volume(self, cmd, writer):
+        vol = max(0, min(200, int(cmd.get("volume", 100))))
+        self._volume = float(vol)
+        if self._mpv and not self._mpv_dead:
             try:
-                writer.write((json.dumps(resp) + "\n").encode())
-                await writer.drain()
+                self._fader.set_user_volume(self._volume)
+                logger.debug("volume → %.1f (%.1f dB)", vol, 20 * __import__("math").log10(max(vol, 0.001) / 100))
+            except Exception as exc:
+                logger.warning("set_volume: %s", exc)
+
+    async def _cmd_set_transition(self, cmd, writer):
+        try:
+            cfg = self._fader.configure({k: cmd[k] for k in ("type", "duration") if k in cmd})
+            logger.info("[transition] global: %s %.2fs", cfg["type"], cfg["duration"])
+        except (ValueError, TypeError) as exc:
+            logger.warning("[transition] set_transition inválido: %s", exc)
+
+    async def _cmd_next_transition(self, cmd, writer):
+        self._fader.set_next_boundary(cmd.get("transition"))
+
+    async def _cmd_set_text_overlay(self, cmd, writer):
+        cfg = {
+            "active":      bool(cmd.get("active",    False)),
+            "show_time":   bool(cmd.get("show_time", True)),
+            "show_temp":   bool(cmd.get("show_temp", True)),
+            "corner":      str(cmd.get("corner",    "tl")),
+            "city":        str(cmd.get("city",      "Palmas,TO")),
+            "manual_temp": str(cmd.get("manual_temp", "")),
+        }
+        with self._text_overlay_lock:
+            self._text_overlay.update(cfg)
+        self._save_text_overlay()
+        if not cfg["active"] and self._mpv and not self._mpv_dead:
+            osd_text.remove(self._mpv)
+        elif cfg["active"] and self._mpv and not self._mpv_dead:
+            threading.Thread(target=self._apply_text_overlay_delayed, daemon=True).start()
+        self._broadcast_sync({"event": "text_overlay_state", **cfg})
+
+    async def _cmd_get_text_overlay(self, cmd, writer):
+        with self._text_overlay_lock:
+            cfg = dict(self._text_overlay)
+        resp = {"event": "text_overlay_state", **cfg}
+        try:
+            writer.write((json.dumps(resp) + "\n").encode())
+            await writer.drain()
+        except Exception:
+            pass
+
+    async def _cmd_get_logo_state(self, cmd, writer):
+        with self._logo_lock:
+            state = {str(k): dict(v) for k, v in self._logo.items()}
+        resp = {"event": "logo_state", "state": state}
+        try:
+            writer.write((json.dumps(resp) + "\n").encode())
+            await writer.drain()
+        except Exception:
+            pass
+
+    async def _cmd_get_state(self, cmd, writer):
+        playing_path = None
+        paused       = False
+        mpv_volume   = None
+        if self._mpv and not self._mpv_dead:
+            try:
+                playing_path = self._mpv.path
             except Exception:
                 pass
+            try:
+                paused = bool(self._mpv.pause)
+            except Exception:
+                pass
+            try:
+                mpv_volume = float(self._mpv.volume)
+            except Exception:
+                pass
+        resp = {
+            "event":        "state_response",
+            "playing_path": playing_path,
+            "position":     self._last_position,
+            "paused":       paused,
+            "transition":   dict(self._fader.config),
+            "fade_alpha":   round(self._fader.alpha, 3),
+            "mpv_volume":   mpv_volume,
+        }
+        try:
+            writer.write((json.dumps(resp) + "\n").encode())
+            await writer.drain()
+        except Exception:
+            pass
+
+    _CMD_DISPATCH = {
+        "play":             _cmd_play,
+        "play_standby":     _cmd_play_standby,
+        "preload":          _cmd_preload,
+        "prefetch_yt":      _cmd_prefetch_yt,
+        "init_mpv":         _cmd_init_mpv,
+        "quit_mpv":         _cmd_quit_mpv,
+        "pause":            _cmd_pause,
+        "resume":           _cmd_resume,
+        "stop":             _cmd_stop,
+        "seek":             _cmd_seek,
+        "list_logos":       _cmd_list_logos,
+        "set_logo":         _cmd_set_logo,
+        "set_volume":       _cmd_set_volume,
+        "set_transition":   _cmd_set_transition,
+        "next_transition":  _cmd_next_transition,
+        "set_text_overlay": _cmd_set_text_overlay,
+        "get_text_overlay": _cmd_get_text_overlay,
+        "get_logo_state":   _cmd_get_logo_state,
+        "get_state":        _cmd_get_state,
+    }
 
     # ── Text overlay (hora + temperatura) ────────────────────────────────────
 

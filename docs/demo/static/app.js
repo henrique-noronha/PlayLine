@@ -159,6 +159,10 @@ function handleEvent(ev) {
   if (type !== "position") {
     _logEvent(ev, type);
   }
+  // Momentos em que o servidor fecha (ou pode ter fechado) uma entrada do histórico
+  if (type === "state" || type === "now_playing" || type === "stopped" || type === "playlist_end") {
+    window._recentAired?.refresh();
+  }
 
   switch (type) {
     case "state":
@@ -570,7 +574,7 @@ function _renderPickerDropdown(slot) {
   const s = _logoState[slot];
 
   if (!_logoFiles.length) {
-    dropdown.innerHTML = '<div class="logo-picker-empty">Pasta logos/ vazia</div>';
+    dropdown.innerHTML = `<div class="logo-picker-empty">${window.t("clipoverlay.empty_logos_folder")}</div>`;
     return;
   }
 
