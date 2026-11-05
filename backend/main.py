@@ -482,7 +482,13 @@ if __name__ == "__main__":
     _unblock_meipass()
 
     def _set_gpu_preference():
-        """Garante GPU de alto desempenho para o daemon MPV via registro do Windows."""
+        """Sugere GPU de alto desempenho para o daemon MPV via registro do Windows.
+
+        Só grava quando ainda não há preferência para o executável: se o operador
+        escolheu outra GPU em Configurações > Tela > Elementos gráficos (ex.: a
+        integrada, quando a "de alto desempenho" é uma placa antiga), a escolha
+        dele é mantida entre inicializações.
+        """
         try:
             import winreg
             key_path = r"SOFTWARE\Microsoft\DirectX\UserGpuPreferences"
@@ -501,9 +507,8 @@ if __name__ == "__main__":
                     exe_str = str(exe)
                     try:
                         current, _ = winreg.QueryValueEx(key, exe_str)
-                        if "GpuPreference=2" in current:
-                            logger.info("GPU de alto desempenho já configurada para: %s", exe_str)
-                            continue
+                        logger.info("Preferência de GPU já definida para %s (%s), mantida", exe_str, current)
+                        continue
                     except FileNotFoundError:
                         pass
                     winreg.SetValueEx(key, exe_str, 0, winreg.REG_SZ, "GpuPreference=2;")

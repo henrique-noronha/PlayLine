@@ -186,7 +186,6 @@ function handleEvent(ev) {
       break;
     case "now_playing":
       _clearReconnectStatus();
-      window._netMonitor?.onNowPlaying(ev.item);
       state.mpvAlive = true;
       _cancelPendingLoad();
       state.currentIndex = ev.index;
@@ -249,7 +248,6 @@ function handleEvent(ev) {
       break;
     case "stopped":
       _clearReconnectStatus();
-      window._netMonitor?.onStopped();
       _vuBackendDb = null;
       _cancelPendingLoad();
       state.playing = false;
@@ -271,7 +269,6 @@ function handleEvent(ev) {
       break;
     case "playlist_end":
       _clearReconnectStatus();
-      window._netMonitor?.onStopped();
       _cancelPendingLoad();
       state.playing = false;
       state.currentItemStartTime = null;
