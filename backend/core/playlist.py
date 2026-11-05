@@ -579,6 +579,7 @@ class PlaylistEngine:
             self._preloading = False
             self._push_next_transition(index)
 
+ 
             if index + 1 < len(self._items):
                 next_item = self._items[index + 1]
                 item_has_trim = item.get("start_time") or item.get("end_time")
