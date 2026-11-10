@@ -1,5 +1,5 @@
 # Claude Code — configurações locais do usuário (não compartilhar)
-.claude/settings.local.json
+.claude/
 CLAUDE.md
 
 # Python
@@ -66,7 +66,6 @@ Biblioteca/
 *.pdf
 *.bak
 backend/.playline_server
-.claude/skills/
 
 # Rascunhos das notas de release (o texto final fica na página da release no GitHub)
 RELEASE_*.md
