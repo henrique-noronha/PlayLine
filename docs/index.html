@@ -32,7 +32,7 @@
   "alternateName": "PlayLine Playout",
   "description": "Sistema de automação de playout televisivo gratuito e de código aberto para emissoras de TV. Permite transmissão contínua, sobreposição de logos, acesso remoto e programação automatizada.",
   "url": "https://playlinetv.com.br/",
-  "downloadUrl": "https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.3/PlayLine.v1.2.3.zip",
+  "downloadUrl": "https://playlinetv.com.br/#download",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Windows 10, Windows 11",
   "softwareVersion": "1.2.3",
@@ -1158,10 +1158,12 @@ acesso à informação para milhões de pessoas.</p>
       <p>Instalação completa para a máquina de transmissão. Inclui servidor, daemon MPV, interface, PlayLine-Client e PlayIngest.</p>
       <span class="dl-meta">PlayLine.v1.2.3.zip · Windows x64</span>
       <span class="dl-meta" style="word-break:break-all">SHA-256: 5c5987d394f45a78ca541ad5b92a3507835f21470bdd13401797f080b60abec1</span>
-      <a class="btn btn-primary" id="btn-download-zip" href="https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.3/PlayLine.v1.2.3.zip">
+      <!-- Botão, não link: sem href não há "abrir em nova guia", clique do meio
+           nem "copiar endereço do link" para pular o formulário. -->
+      <button type="button" class="btn btn-primary" id="btn-download-zip" data-href="https://github.com/henrique-noronha/PlayLine/releases/download/v1.2.3/PlayLine.v1.2.3.zip">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Baixar .zip
-      </a>
+      </button>
     </div>
 
   </div>
@@ -1256,7 +1258,6 @@ acesso à informação para milhões de pessoas.</p>
 <footer>
   <div class="footer-links">
     <a href="https://github.com/henrique-noronha/PlayLine" target="_blank">GitHub</a>
-    <a href="https://github.com/henrique-noronha/PlayLine/releases" target="_blank">Releases</a>
     <a href="https://github.com/henrique-noronha/PlayLine/blob/main/LICENSE" target="_blank">Licença GPLv3</a>
   </div>
   <p>PlayLine · Desenvolvido por <strong style="color:var(--text)">Henrique Noronha Fernandes</strong> · Licenciado sob GPLv3</p>
@@ -1355,7 +1356,7 @@ acesso à informação para milhões de pessoas.</p>
   var usageOrgEl  = document.getElementById('lead-usage-org');
 
   if (downloadBtn && backdrop) {
-    var downloadUrl = downloadBtn.getAttribute('href');
+    var downloadUrl = downloadBtn.getAttribute('data-href');
     var STORAGE_KEY  = 'playline_lead_ok';
 
     function hasSubmittedBefore() {
@@ -1421,9 +1422,8 @@ acesso à informação para milhões de pessoas.</p>
       setTimeout(function() { form.remove(); }, 3000);
     }
 
-    downloadBtn.addEventListener('click', function(e) {
-      if (hasSubmittedBefore()) return; // já enviou antes nesse navegador, baixa direto
-      e.preventDefault();
+    downloadBtn.addEventListener('click', function() {
+      if (hasSubmittedBefore()) { goToDownload(); return; } // já enviou antes nesse navegador, baixa direto
       openModal();
     });
 

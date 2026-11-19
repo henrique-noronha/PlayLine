@@ -6,7 +6,7 @@
 
 🌐 **[playlinetv.com.br](https://playlinetv.com.br/)**
 
-> **English:** PlayLine is a free, open-source TV playout automation system for small broadcasters. The interface is available in English, Portuguese and Spanish. Download the [latest release](https://github.com/henrique-noronha/PlayLine/releases), extract it and follow the setup wizard on first launch (language, username and password, library folder).
+> **English:** PlayLine is a free, open-source TV playout automation system for small broadcasters. The interface is available in English, Portuguese and Spanish. Download the latest version from [playlinetv.com.br](https://playlinetv.com.br/#download), extract it and follow the setup wizard on first launch (language, username and password, library folder).
 
 ![Interface do PlayLine](docs/InterfacePlayLine.png)
 
@@ -14,7 +14,7 @@
 
 ## Primeiros passos
 
-1. Baixe o `.zip` da [última release](https://github.com/henrique-noronha/PlayLine/releases) e extraia em qualquer pasta (a instalação é portátil: banco, configurações e biblioteca ficam ao lado do `PlayLine.exe`).
+1. Baixe o `.zip` da versão mais recente em [playlinetv.com.br](https://playlinetv.com.br/#download) e extraia em qualquer pasta (a instalação é portátil: banco, configurações e biblioteca ficam ao lado do `PlayLine.exe`).
 2. Copie seus vídeos para a pasta `Biblioteca`, ou escolha outra pasta no assistente da primeira execução (e, a qualquer momento, em **Configurações > Biblioteca**).
 3. Preferencialmente antes de iniciar o software, conecte o segundo monitor (ou a placa de saída) ao computador: o sinal de saída vai para ele automaticamente.
 4. Abra `PlayLine.exe`. Na primeira execução, um assistente pede o idioma (português, inglês ou espanhol), o usuário e a senha de acesso e a pasta da biblioteca. Ao concluir, o painel abre já logado.
